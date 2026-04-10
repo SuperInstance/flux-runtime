@@ -1,0 +1,20 @@
+# Auto-detect text files and normalize line endings
+* text=auto
+
+# Python — enable word-level diff
+*.py diff=python
+
+# Plain-text docs
+*.md text
+LICENSE text
+
+# Binary files
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
+# Linguist overrides
+playground/index.html linguist-generated
