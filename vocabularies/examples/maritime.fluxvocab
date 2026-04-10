@@ -1,0 +1,33 @@
+---
+pattern: "steer heading $degrees"
+expand: |
+    MOVI R0, ${degrees}
+    MOVI R1, 270
+    CMP R0, R1
+    HALT
+result: R13
+name: steer-heading
+description: Compare desired heading to due west. R13=-1 left, 0 on course, 1 right
+tags: autopilot, navigation
+---
+pattern: "check depth $depth safe minimum $min"
+expand: |
+    MOVI R0, ${depth}
+    MOVI R1, ${min}
+    CMP R0, R1
+    HALT
+result: R13
+name: depth-check
+description: Check depth against minimum. R13=1 safe, 0 at min, -1 DANGER
+tags: autopilot, safety
+---
+pattern: "distance $nm nautical miles at $knots knots"
+expand: |
+    MOVI R0, ${nm}
+    MOVI R1, ${knots}
+    IDIV R0, R0, R1
+    HALT
+result: R0
+name: eta-hours
+description: Calculate hours to cover distance at speed
+tags: autopilot, navigation

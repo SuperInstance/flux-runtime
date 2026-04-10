@@ -44,11 +44,16 @@ class VocabEntry:
     
     def compile(self):
         """Convert $var patterns to regex capture groups."""
-        regex_str = self.pattern
-        # Replace $var with named capture groups
-        regex_str = re.sub(r'\$(\w+)', r'(?P<\1>\\d+)', regex_str)
-        # Allow flexible whitespace and case
-        regex_str = regex_str.strip()
+        # Split on $var, escape literal parts, then rejoin with capture groups
+        parts = re.split(r'(\$\w+)', self.pattern)
+        regex_parts = []
+        for part in parts:
+            if part.startswith('$'):
+                name = part[1:]
+                regex_parts.append(f'(?P<{name}>\\d+)')
+            else:
+                regex_parts.append(re.escape(part))
+        regex_str = ''.join(regex_parts).strip()
         self._regex = re.compile(regex_str, re.IGNORECASE)
     
     def match(self, text: str) -> Optional[Dict[str, str]]:
