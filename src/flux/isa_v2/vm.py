@@ -70,9 +70,9 @@ class IsaV2VM:
             # [op][rd][imm_lo][imm_hi]
             rd = byte1
             imm = byte2 | (byte3 << 8)
-            # Sign extend for negative values
+            # Convert to signed 16-bit
             if imm & 0x8000:
-                imm |= 0xFFFF0000
+                imm -= 0x10000
             self.registers[rd] = imm
 
         elif opcode == Opcode.MOV:
@@ -133,9 +133,9 @@ class IsaV2VM:
             # [op][rd][off_lo][off_hi]
             rd = byte1
             offset = byte2 | (byte3 << 8)
-            # Sign extend
+            # Convert to signed 16-bit
             if offset & 0x8000:
-                offset |= 0xFFFF0000
+                offset -= 0x10000
             if self.registers[rd] != 0:
                 self.pc += offset
 
@@ -143,18 +143,18 @@ class IsaV2VM:
             # [op][rd][off_lo][off_hi]
             rd = byte1
             offset = byte2 | (byte3 << 8)
-            # Sign extend
+            # Convert to signed 16-bit
             if offset & 0x8000:
-                offset |= 0xFFFF0000
+                offset -= 0x10000
             if self.registers[rd] == 0:
                 self.pc += offset
 
         elif opcode == Opcode.JMP:
             # [op][0x00][off_lo][off_hi]
             offset = byte2 | (byte3 << 8)
-            # Sign extend
+            # Convert to signed 16-bit
             if offset & 0x8000:
-                offset |= 0xFFFF0000
+                offset -= 0x10000
             self.pc += offset
 
         elif opcode == Opcode.PUSH:
