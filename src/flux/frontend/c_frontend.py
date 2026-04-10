@@ -603,7 +603,9 @@ class CFrontendCompiler:
 
     def _make_const(self, value: int | float, ftype: FIRType) -> Value:
         """Create a virtual constant Value."""
-        return self._builder._new_value(f"const_{value}", ftype)
+        val = self._builder._new_value(f"const_{value}", ftype)
+        val.const_value = value  # Store the constant value for materialization
+        return val
 
     def _load_var(self, name: str) -> Value:
         """Load a variable's value from its alloca slot."""

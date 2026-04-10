@@ -12,6 +12,11 @@ class Value:
     id: int
     name: str  # human-readable name like "x", "tmp1"
     type: FIRType
+    const_value: int | float | None = None  # For constant materialization
+
+    def is_const(self) -> bool:
+        """Check if this value represents a constant."""
+        return self.const_value is not None
 
     def __repr__(self) -> str:
         return f"%{self.name}:{self.type}"

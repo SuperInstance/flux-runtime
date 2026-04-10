@@ -35,6 +35,12 @@ Usage::
     # Migrate source files to FLUX.MD format
     flux migrate input.py --output-dir ./flux_output
     flux migrate src/ --lang auto --verbose
+
+    # Disassemble bytecode
+    flux disasm bytecode.bin
+
+    # Debug bytecode interactively
+    flux debug bytecode.bin
 """
 
 from __future__ import annotations
@@ -42,6 +48,14 @@ from __future__ import annotations
 import struct
 import sys
 import argparse
+
+# Import get_instruction_color for debugger output
+try:
+    from flux.disasm import get_instruction_color
+except ImportError:
+    # Fallback if disasm module is not available
+    def get_instruction_color(opcode):
+        return ""
 
 
 def main() -> None:
@@ -178,6 +192,69 @@ def main() -> None:
         help="Show detailed progress information",
     )
 
+    # ── flux repl ──────────────────────────────────────────────────────────
+    subparsers.add_parser(
+        "repl",
+        help="Start interactive FLUX REPL",
+    )
+
+    # ── flux disasm <input> [-o output] [-j] [--no-color] ─────────────────────
+    disasm_parser = subparsers.add_parser(
+        "disasm",
+        help="Disassemble FLUX bytecode to human-readable format",
+    )
+    disasm_parser.add_argument(
+        "input",
+        help="Bytecode file to disassemble (.bin)",
+    )
+    disasm_parser.add_argument(
+        "-o", "--output",
+        help="Output file (default: stdout)",
+    )
+    disasm_parser.add_argument(
+        "-j", "--json",
+        action="store_true",
+        default=False,
+        help="Output JSON instead of formatted text",
+    )
+    disasm_parser.add_argument(
+        "--no-color",
+        action="store_true",
+        default=False,
+        help="Disable ANSI color codes in output",
+    )
+
+    # ── flux debug <input> [--bp-offsets] [--watch-regs] ───────────────────────
+    debug_parser = subparsers.add_parser(
+        "debug",
+        help="Start interactive debugger for FLUX bytecode",
+    )
+    debug_parser.add_argument(
+        "input",
+        help="Bytecode file to debug (.bin)",
+    )
+    debug_parser.add_argument(
+        "--bp",
+        "--breakpoint",
+        dest="breakpoints",
+        action="append",
+        type=lambda x: int(x, 0),
+        help="Add breakpoint at offset (e.g., --bp 0x10 or --bp 16)",
+    )
+    debug_parser.add_argument(
+        "--watch",
+        dest="watchpoints",
+        action="append",
+        type=int,
+        help="Add watchpoint for register (e.g., --watch 0)",
+    )
+    debug_parser.add_argument(
+        "--cycles",
+        type=int,
+        default=100_000,
+        help="Maximum execution cycles (default: 100000)",
+    )
+
     args = parser.parse_args()
 
     # ── Dispatch ───────────────────────────────────────────────────────────
@@ -211,6 +288,15 @@ def main() -> None:
 
     elif args.command == "migrate":
         _cmd_migrate(args)
+
+    elif args.command == "repl":
+        _cmd_repl()
+
+    elif args.command == "disasm":
+        _cmd_disasm(args)
+
+    elif args.command == "debug":
+        _cmd_debug(args)
 
     else:
         _show_banner()
@@ -681,6 +767,226 @@ def _cmd_migrate(args: argparse.Namespace) -> None:
     print(report.to_text())
 
 
+def _cmd_repl() -> None:
+    """Handle the ``repl`` subcommand."""
+    try:
+        from flux.repl import run_repl
+        run_repl()
+    except ImportError as e:
+        print(f"Error: cannot import flux.repl — {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error: REPL failed — {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+def _cmd_disasm(args: argparse.Namespace) -> None:
+    """Handle the ``disasm`` subcommand."""
+    from flux.disasm import disassemble, disassemble_to_json
+
+    with open(args.input, "rb") as f:
+        bytecode = f.read()
+
+    if args.json:
+        output = disassemble_to_json(bytecode)
+    else:
+        output = disassemble(bytecode, color_output=not args.no_color)
+
+    if args.output:
+        with open(args.output, "w") as f:
+            f.write(output)
+        print(f"Disassembly written to {args.output}")
+    else:
+        print(output)
+
+
+def _cmd_debug(args: argparse.Namespace) -> None:
+    """Handle the ``debug`` subcommand — interactive debugger."""
+    from flux.debugger import FluxDebugger
+    import cmd
+
+    with open(args.input, "rb") as f:
+        bytecode = f.read()
+
+    # Initialize debugger
+    debugger = FluxDebugger(bytecode, max_cycles=args.cycles)
+
+    # Set breakpoints if specified
+    if args.breakpoints:
+        for bp_offset in args.breakpoints:
+            debugger.add_breakpoint(bp_offset)
+            print(f"Breakpoint set at offset 0x{bp_offset:x}")
+
+    # Set watchpoints if specified
+    if args.watchpoints:
+        for wp_reg in args.watchpoints:
+            debugger.watch_reg(wp_reg)
+            print(f"Watchpoint set for R{wp_reg}")
+
+    # Interactive debugger shell
+    class DebugShell(cmd.Cmd):
+        intro = f"""
+FLUX Debugger - {args.input}
+Type 'help' for a list of commands.
+
+Initial state:
+{debugger.format_state()}
+"""
+        prompt = "(flux-debug) "
+
+        def do_step(self, arg: str) -> None:
+            """Step one instruction: step [N]"""
+            count = int(arg) if arg else 1
+            for _ in range(count):
+                result = debugger.step()
+                if result.instruction:
+                    color = get_instruction_color(result.instruction.opcode)
+                    print(f"0x{result.pc_before:04x}: {result.instruction.opcode_name} {result.instruction.operands}")
+                if result.halted:
+                    print("Program halted.")
+                    break
+                if result.breakpoint_hit:
+                    print(f"Breakpoint hit at 0x{result.pc_before:04x}")
+                    break
+                if not result.success:
+                    print(f"Error: {result.error}")
+                    break
+
+        def do_continue(self, arg: str) -> None:
+            """Continue execution until breakpoint or halt"""
+            print("Continuing...")
+            result = debugger.continue_exec()
+            print(f"Stopped at 0x{result.pc_after:04x}")
+            if result.breakpoint_hit:
+                print("Breakpoint hit!")
+            if result.halted:
+                print("Program halted.")
+
+        def do_regs(self, arg: str) -> None:
+            """Show all registers"""
+            print(debugger.format_state())
+
+        def do_bp(self, arg: str) -> None:
+            """Manage breakpoints: bp [list|add OFFSET|del OFFSET]"""
+            if not arg or arg == "list":
+                bps = debugger.list_breakpoints()
+                if bps:
+                    for bp in bps:
+                        status = "+" if bp["enabled"] else "-"
+                        print(f"  {status} 0x{bp['offset']:04x} (hit {bp['hit_count']} times)")
+                else:
+                    print("  No breakpoints set")
+            elif arg.startswith("add "):
+                offset_str = arg[4:].strip()
+                try:
+                    offset = int(offset_str, 0)  # auto-detect hex/dec
+                    debugger.add_breakpoint(offset)
+                    print(f"Breakpoint added at 0x{offset:x}")
+                except ValueError:
+                    print(f"Invalid offset: {offset_str}")
+            elif arg.startswith("del "):
+                offset_str = arg[4:].strip()
+                try:
+                    offset = int(offset_str, 0)
+                    if debugger.remove_breakpoint(offset):
+                        print(f"Breakpoint removed at 0x{offset:x}")
+                    else:
+                        print(f"No breakpoint at 0x{offset:x}")
+                except ValueError:
+                    print(f"Invalid offset: {offset_str}")
+
+        def do_watch(self, arg: str) -> None:
+            """Manage watchpoints: watch [list|add REG|del REG]"""
+            if not arg or arg == "list":
+                wps = debugger.list_watchpoints()
+                if wps:
+                    for wp in wps:
+                        print(f"  {wp}")
+                else:
+                    print("  No watchpoints set")
+            elif arg.startswith("add "):
+                reg_str = arg[4:].strip()
+                try:
+                    reg = int(reg_str)
+                    debugger.watch_reg(reg)
+                    print(f"Watchpoint added for R{reg}")
+                except ValueError:
+                    print(f"Invalid register: {reg_str}")
+            elif arg.startswith("del "):
+                reg_str = arg[4:].strip()
+                try:
+                    reg = int(reg_str)
+                    if debugger.unwatch_reg(reg):
+                        print(f"Watchpoint removed for R{reg}")
+                    else:
+                        print(f"No watchpoint for R{reg}")
+                except ValueError:
+                    print(f"Invalid register: {reg_str}")
+
+        def do_mem(self, arg: str) -> None:
+            """Inspect memory: mem ADDR [LENGTH]"""
+            if not arg:
+                print("Usage: mem ADDR [LENGTH]")
+                return
+            parts = arg.split()
+            try:
+                addr = int(parts[0], 0)
+                length = int(parts[1]) if len(parts) > 1 else 16
+                data = debugger.inspect_mem(addr, length)
+                print(f"Memory at 0x{addr:x}:")
+                for i in range(0, len(data), 16):
+                    chunk = data[i:i+16]
+                    hex_str = " ".join(f"{b:02x}" for b in chunk)
+                    ascii_str = "".join(chr(b) if 32 <= b < 127 else "." for b in chunk)
+                    print(f"  0x{addr + i:04x}: {hex_str:<48s}  {ascii_str}")
+            except ValueError:
+                print("Invalid address or length")
+
+        def do_backtrace(self, arg: str) -> None:
+            """Show call stack backtrace"""
+            frames = debugger.backtrace()
+            if frames:
+                print("Call stack:")
+                for i, frame in enumerate(frames):
+                    print(f"  #{i} 0x{frame['pc']:04x} ({frame['type']})")
+            else:
+                print("No call stack")
+
+        def do_disasm(self, arg: str) -> None:
+            """Disassemble instructions: disasm [OFFSET] [COUNT]"""
+            parts = arg.split()
+            offset = int(parts[0], 0) if parts and parts[0] else debugger.pc
+            count = int(parts[1]) if len(parts) > 1 else 5
+
+            instrs = debugger.disassemble_at(offset, count)
+            if instrs:
+                print(f"Disassembly from 0x{offset:x}:")
+                for instr in instrs:
+                    print(f"  {instr.offset:04x}: {instr.opcode_name} {instr.operands}")
+
+        def do_reset(self, arg: str) -> None:
+            """Reset the VM to initial state"""
+            debugger.reset()
+            print("VM reset. PC = 0")
+
+        def do_quit(self, arg: str) -> None:
+            """Exit the debugger"""
+            print("Goodbye!")
+            return True
+
+        def do_exit(self, arg: str) -> None:
+            """Exit the debugger"""
+            return self.do_quit(arg)
+
+        def default(self, line: str) -> None:
+            """Handle unknown commands"""
+            print(f"Unknown command: {line}")
+            print("Type 'help' for a list of commands")
+
+    shell = DebugShell()
+    shell.cmdloop()
+
+
 def _show_banner() -> None:
     """Show the welcome banner when no subcommand is given."""
     banner = r"""
@@ -706,11 +1012,16 @@ def _show_banner() -> None:
     print("    replay        Replay a bytecode trace with logging")
     print("    playground    Open the HTML playground in a browser")
     print("    migrate       Migrate source files to FLUX.MD format")
+    print("    repl          Start interactive FLUX REPL")
+    print("    disasm        Disassemble FLUX bytecode")
+    print("    debug         Start interactive debugger")
     print()
     print("  Quick start:")
     print("    flux hello                              Run the hello world demo")
     print("    flux compile file.c -o out.bin           Compile to bytecode")
     print("    flux run out.bin                         Run bytecode in the VM")
+    print("    flux disasm out.bin                      Disassemble bytecode")
+    print("    flux debug out.bin                       Debug bytecode interactively")
     print()
     print("  GitHub: https://github.com/SuperInstance/flux-runtime")
     print()

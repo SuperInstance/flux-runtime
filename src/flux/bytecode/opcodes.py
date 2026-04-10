@@ -170,10 +170,6 @@ FORMAT_C = frozenset({
     Op.LOAD8, Op.STORE8,
     Op.ALLOCA, Op.CAST,
     Op.RET,
-    # Binary arithmetic: [op][rs1][rs2]
-    Op.IADD, Op.ISUB, Op.IMUL, Op.IDIV, Op.IMOD, Op.IREM,
-    Op.IAND, Op.IOR, Op.IXOR, Op.ISHL, Op.ISHR,
-    Op.FADD, Op.FSUB, Op.FMUL, Op.FDIV,
     # Comparison: [op][lhs][rhs]
     Op.IEQ, Op.ILT, Op.ILE, Op.IGT, Op.IGE,
     Op.FEQ, Op.FLT, Op.FLE, Op.FGT, Op.FGE,
@@ -190,6 +186,10 @@ FORMAT_D = frozenset({
 # Format E: 4 bytes — opcode + rd:u8 + rs1:u8 + rs2:u8 (ternary ops)
 FORMAT_E = frozenset({
     Op.VFMA,
+    # Binary arithmetic: [op][rd][rs1][rs2]
+    Op.IADD, Op.ISUB, Op.IMUL, Op.IDIV, Op.IMOD, Op.IREM,
+    Op.IAND, Op.IOR, Op.IXOR, Op.ISHL, Op.ISHR,
+    Op.FADD, Op.FSUB, Op.FMUL, Op.FDIV,
 })
 
 # Format G: variable — opcode + len:u16 + data:len bytes

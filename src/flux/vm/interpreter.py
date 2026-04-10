@@ -156,7 +156,7 @@ class Interpreter:
         Returns the total number of cycles consumed.
         """
         self.running = True
-        while self.running and self.cycle_count < self.max_cycles:
+        while self.running and not self.halted and self.cycle_count < self.max_cycles:
             self._step()
             self.cycle_count += 1
         self.running = False
@@ -795,6 +795,12 @@ class Interpreter:
             return
 
         if opcode_byte == Op.RET:
+            stack = self.memory.get_region("stack")
+            # Check if stack is empty (returning from main function)
+            if self.regs.sp >= stack.size - 4:
+                # Stack is empty, halt the VM
+                self.halted = True
+                return
             addr = self._stack_pop()
             self.pc = addr
             return

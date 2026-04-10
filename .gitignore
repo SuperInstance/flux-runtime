@@ -55,3 +55,4 @@ htmlcov/
 .env
 .env.*
 !.env.example
+.aider*

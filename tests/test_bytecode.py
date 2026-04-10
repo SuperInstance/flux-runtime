@@ -97,14 +97,21 @@ def test_encode_decode_simple():
     func = functions[0]
     assert func.name == "add", f"Expected 'add', got {func.name!r}"
 
-    # Should have 2 instructions: IADD + RET
+    # Should have instructions: MOVI(s) for constants + IADD + RET
     assert len(func.instructions) >= 2, f"Expected >= 2 instructions, got {len(func.instructions)}"
 
-    # First instruction should be IADD
-    iadd_instr = func.instructions[0]
-    assert iadd_instr.opcode == Op.IADD, f"Expected IADD, got {iadd_instr.opcode}"
-    assert iadd_instr.operands[0] == 0, f"Expected lhs reg 0, got {iadd_instr.operands[0]}"
-    assert iadd_instr.operands[1] == 1, f"Expected rhs reg 1, got {iadd_instr.operands[1]}"
+    # Find the IADD instruction (may be preceded by MOVI for constant materialization)
+    iadd_instr = None
+    for instr in func.instructions:
+        if instr.opcode == Op.IADD:
+            iadd_instr = instr
+            break
+    assert iadd_instr is not None, "No IADD instruction found"
+    # Format E: [rd, rs1, rs2] — rd is result, rs1 and rs2 are sources
+    assert len(iadd_instr.operands) == 3, f"Expected 3 operands (Format E), got {len(iadd_instr.operands)}"
+    # rs1 and rs2 should reference the function arguments (operands[1] and operands[2])
+    assert iadd_instr.operands[1] == 0, f"Expected rs1=0, got {iadd_instr.operands[1]}"
+    assert iadd_instr.operands[2] == 1, f"Expected rs2=1, got {iadd_instr.operands[2]}"
 
     # Last instruction should be RET
     ret_instr = func.instructions[-1]
@@ -175,26 +182,27 @@ def test_encode_arithmetic():
     a = _make_value(5, "a")
     b = _make_value(10, "b")
 
-    # IADD
+    # IADD (Format E: [opcode][rd][rs1][rs2])
     iadd = IAdd(lhs=a, rhs=b)
     iadd_bytes = encoder._encode_instruction(iadd)
-    assert len(iadd_bytes) == 3, f"IADD should be 3 bytes (Format C), got {len(iadd_bytes)}"
+    assert len(iadd_bytes) == 4, f"IADD should be 4 bytes (Format E), got {len(iadd_bytes)}"
     assert iadd_bytes[0] == Op.IADD
-    assert iadd_bytes[1] == 5  # lhs register
-    assert iadd_bytes[2] == 10  # rhs register
+    assert iadd_bytes[1] == 0  # rd (result, defaults to 0 without instr_to_result)
+    assert iadd_bytes[2] == 5  # rs1 (lhs register)
+    assert iadd_bytes[3] == 10  # rs2 (rhs register)
 
-    # ISUB
+    # ISUB (Format E: 4 bytes)
     isub = ISub(lhs=a, rhs=b)
     isub_bytes = encoder._encode_instruction(isub)
-    assert len(isub_bytes) == 3, f"ISUB should be 3 bytes (Format C), got {len(isub_bytes)}"
+    assert len(isub_bytes) == 4, f"ISUB should be 4 bytes (Format E), got {len(isub_bytes)}"
     assert isub_bytes[0] == Op.ISUB
-    assert isub_bytes[1] == 5
-    assert isub_bytes[2] == 10
+    assert isub_bytes[2] == 5   # rs1
+    assert isub_bytes[3] == 10  # rs2
 
-    # IMUL
+    # IMUL (Format E: 4 bytes)
     imul = IMul(lhs=a, rhs=b)
     imul_bytes = encoder._encode_instruction(imul)
-    assert len(imul_bytes) == 3
+    assert len(imul_bytes) == 4
     assert imul_bytes[0] == Op.IMUL
 
     # INEG (unary → Format B: 2 bytes)
@@ -427,14 +435,14 @@ def test_encode_decode_float_ops():
 
     fadd = FAdd(lhs=a, rhs=b)
     fadd_bytes = encoder._encode_instruction(fadd)
-    assert len(fadd_bytes) == 3
+    assert len(fadd_bytes) == 4
     assert fadd_bytes[0] == Op.FADD
-    assert fadd_bytes[1] == 10
-    assert fadd_bytes[2] == 11
+    assert fadd_bytes[2] == 10  # rs1 (Format E)
+    assert fadd_bytes[3] == 11  # rs2
 
     fdiv = FDiv(lhs=a, rhs=b)
     fdiv_bytes = encoder._encode_instruction(fdiv)
-    assert len(fdiv_bytes) == 3
+    assert len(fdiv_bytes) == 4
     assert fdiv_bytes[0] == Op.FDIV
 
     print("  ✓ test_encode_decode_float_ops")

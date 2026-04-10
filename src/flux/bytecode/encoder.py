@@ -26,6 +26,7 @@ import struct
 from typing import TYPE_CHECKING
 
 from .opcodes import Op
+from ..fir.values import Value
 
 if TYPE_CHECKING:
     from ..fir.blocks import FIRModule, FIRFunction
@@ -227,14 +228,71 @@ class BytecodeEncoder:
     def _encode_function(self, func: "FIRFunction") -> bytes:
         """Encode all blocks of a FIRFunction into bytecode."""
         buf = bytearray()
+
+        # ── Build value mapping ───────────────────────────────────────────
+        # Track which instructions produce which values
+        instr_to_result: dict[object, int] = {}  # instruction -> value_id
+        all_values: dict[int, Value] = {}  # value_id -> Value
+
+        # Collect all values and find which instructions produce them
         for block in func.blocks:
             for instr in block.instructions:
-                buf.extend(self._encode_instruction(instr))
+                # Check if this instruction produces a value (has a non-None result_type)
+                if hasattr(instr, 'result_type') and instr.result_type is not None:
+                    # Assign a value ID to this instruction's result
+                    value_id = len(all_values)
+                    instr_to_result[id(instr)] = value_id
+                    # Create a temporary Value to track the type
+                    from ..fir.values import Value
+                    temp_val = Value(id=value_id, name=f"_v{value_id}", type=instr.result_type)
+                    all_values[value_id] = temp_val
+
+        # ── Constant materialization pass ────────────────────────────────
+        # Before encoding instructions, emit MOVI instructions for all constants
+        const_values: dict[int, int | float] = {}  # value_id -> const_value
+        for block in func.blocks:
+            for instr in block.instructions:
+                # Scan all value references in the instruction
+                for attr_name in dir(instr):
+                    if attr_name.startswith('_'):
+                        continue
+                    try:
+                        attr_val = getattr(instr, attr_name)
+                        if isinstance(attr_val, Value) and attr_val.is_const():
+                            const_values[attr_val.id] = attr_val.const_value
+                    except Exception:
+                        pass
+
+        # Emit MOVI instructions for constants at the start of the function
+        # Sort by value_id to ensure deterministic ordering
+        for value_id in sorted(const_values.keys()):
+            const_val = const_values[value_id]
+            reg = value_id & 0x3F  # Map SSA value ID to register number
+            if isinstance(const_val, float):
+                # For float constants, we need to handle them specially
+                # For now, convert to int bits (simplified approach)
+                const_val = struct.unpack('<i', struct.pack('<f', const_val))[0]
+
+            # MOVI is Format D: [opcode][reg:u8][imm16:i16]
+            # Clamp to 16-bit signed range
+            imm16 = int(const_val)
+            if imm16 < -32768:
+                imm16 = -32768
+            elif imm16 > 32767:
+                imm16 = 32767
+
+            buf.extend(struct.pack("<BBh", Op.MOVI, reg, imm16))
+
+        # ── Encode instructions ───────────────────────────────────────────
+        for block in func.blocks:
+            for instr in block.instructions:
+                # Pass the instruction-to-result mapping to _encode_instruction
+                buf.extend(self._encode_instruction(instr, instr_to_result))
         return bytes(buf)
 
     # ── Instruction encoding ─────────────────────────────────────────────
 
-    def _encode_instruction(self, instr: "Instruction") -> bytes:
+    def _encode_instruction(self, instr: "Instruction", instr_to_result: dict[object, int] = None) -> bytes:
         """Encode one FIR instruction to bytecode."""
         op_name = instr.opcode
 
@@ -242,19 +300,30 @@ class BytecodeEncoder:
         if op_name == "nop":
             return bytes([Op.NOP])
 
-        # ── Binary arithmetic (Format C: [op][rs1][rs2]) ─────────────
+        # ── Binary arithmetic (Format E: [op][rd][rs1][rs2]) ─────────
         if op_name in _BIN_ARITH:
             bc_op = _BIN_ARITH[op_name]
-            return struct.pack("<BBB", bc_op, self._vid(instr.lhs), self._vid(instr.rhs))
+            # Get the result value ID for this instruction
+            rd = 0
+            if instr_to_result and id(instr) in instr_to_result:
+                rd = instr_to_result[id(instr)] & 0x3F
+            return struct.pack("<BBBB", bc_op, rd, self._vid(instr.lhs), self._vid(instr.rhs))
 
-        # ── Binary comparison (Format C: [op][rs1][rs2]) ──────────
+        # ── Binary comparison (Format E: [op][rd][rs1][rs2]) ──────────
         if op_name in _BIN_CMP:
             bc_op = _BIN_CMP[op_name]
-            return struct.pack("<BBB", bc_op, self._vid(instr.lhs), self._vid(instr.rhs))
+            # Get the result value ID for this instruction
+            rd = 0
+            if instr_to_result and id(instr) in instr_to_result:
+                rd = instr_to_result[id(instr)] & 0x3F
+            return struct.pack("<BBBB", bc_op, rd, self._vid(instr.lhs), self._vid(instr.rhs))
 
         # INe → IEQ (same opcode, different semantic at runtime)
         if op_name == "ine":
-            return struct.pack("<BBB", Op.IEQ, self._vid(instr.lhs), self._vid(instr.rhs))
+            rd = 0
+            if instr_to_result and id(instr) in instr_to_result:
+                rd = instr_to_result[id(instr)] & 0x3F
+            return struct.pack("<BBBB", Op.IEQ, rd, self._vid(instr.lhs), self._vid(instr.rhs))
 
         # ── Unary (Format B: [op][src]) ───────────────────────────────────
         if op_name in _UNARY:
