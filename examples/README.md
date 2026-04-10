@@ -1,24 +1,74 @@
 # FLUX Examples — Practical, Runnable Demos
 
 Welcome to the FLUX example gallery. Each example is a self-contained Python
-script that demonstrates a key FLUX concept with beautiful terminal output.
+script or FLUX.MD document that demonstrates a key FLUX concept with beautiful
+terminal output.
 
 ## Quick Start
 
+New to FLUX? Read the **[Quick Start Guide](QUICKSTART.md)** first.
+
 ```bash
-cd /home/z/my-project/flux-repo
+cd /home/z/my-project/flux-py
+source .venv/bin/activate
 PYTHONPATH=src python3 examples/01_hello_world.py
 ```
 
 ---
 
-## Examples
+## FLUX.MD Documents (Markdown → Bytecode)
 
-### 01 — Hello World
-**`examples/01_hello_world.py`**
+These `.md` files are **executable FLUX programs**. The parser extracts code
+blocks, compiles them through the C or Python frontend, and produces bytecode.
 
-The simplest possible FLUX programs — three approaches:
-- **Raw bytecode**: Hand-encode MOVI + IADD + HALT bytes, run on the VM
+### hello_world.md — Flagship Example
+**Difficulty:** Beginner
+
+The definitive FLUX.MD hello world. Covers the 6-layer architecture,
+C and Python compilation, bytecode format, VM register file, and opcode
+reference. The best starting point for understanding FLUX.
+
+```
+PYTHONPATH=src python3 -c "
+from flux.pipeline.e2e import FluxPipeline
+result = FluxPipeline().run(open('examples/hello_world.md').read(), lang='md')
+print(f'Cycles: {result.cycles}, Success: {result.success}')
+"
+```
+
+### 02_polyglot_add.md — Polyglot Math
+**Difficulty:** Beginner
+
+Mixes C (for fast math) and Python (for glue logic) in a single FLUX.MD
+document. Demonstrates the polyglot compilation concept and introduces the
+A2A agent communication model.
+
+### 03_fibonacci.md — Fibonacci at Three Levels
+**Difficulty:** Beginner
+
+Computes fibonacci through: C source code, hand-crafted raw bytecode with
+hex dumps, and a VM execution trace table. Shows how the same algorithm
+looks at every layer of the stack.
+
+### 04_agent_handshake.md — A2A Protocol Demo
+**Difficulty:** Intermediate
+
+Demonstrates the A2A (Agent-to-Agent) protocol: message headers, the
+complete handshake sequence between Agent A (Producer) and Agent B (Worker),
+all A2A opcodes, and the INCREMENTS+2 trust engine.
+
+---
+
+## Python Scripts (Interactive Demos)
+
+These `.py` files are standalone Python scripts that demonstrate specific
+FLUX subsystems with rich terminal output.
+
+### 01_hello_world.py — Three Ways to Run FLUX
+**Difficulty:** Beginner
+
+The simplest possible FLUX programs:
+- **Raw bytecode**: Hand-encode MOVI + IADD + HALT, run on the VM
 - **FIR builder**: Use FIRBuilder to build SSA IR, encode, run
 - **Pipeline**: Compile C source through FluxPipeline, execute on VM
 - **Bonus**: A bytecode loop computing Sum(1..5)
@@ -27,118 +77,100 @@ The simplest possible FLUX programs — three approaches:
 PYTHONPATH=src python3 examples/01_hello_world.py
 ```
 
-**Expected output**: Register dumps, cycle counts, and disassembly for each approach.
+### 02_polyglot.py — Polyglot Pipeline
+**Difficulty:** Beginner
 
----
-
-### 02 — Polyglot
-**`examples/02_polyglot.md`** + **`examples/02_polyglot.py`**
-
-FLUX.MD lets you mix C and Python in a single Markdown document. The Python
-script parses the `.md` file, extracts code blocks, and compiles each through
-the appropriate frontend.
+Parses a FLUX.MD file, extracts C and Python code blocks, compiles each
+through the appropriate frontend, and runs the full pipeline.
 
 ```bash
 PYTHONPATH=src python3 examples/02_polyglot.py
 ```
 
-**Expected output**: Parsed code blocks, compilation results, pipeline execution.
+### 03_a2a_agents.py — Agent Communication
+**Difficulty:** Intermediate
 
----
-
-### 03 — A2A Agents
-**`examples/03_a2a_agents.py`**
-
-Demonstrates agent-to-agent communication using FLUX's binary A2A message
-format with 52-byte headers, trust tokens, capabilities, and priority levels.
-
-- Creates 3 agents (Producer → Transformer → Consumer)
-- Serializes/deserializes messages
-- Shows trust score evolution over exchanges
-- Lists all A2A protocol opcodes (0x60–0x7B)
+Creates 3 agents (Producer → Transformer → Consumer), demonstrates binary
+A2A message serialization, trust score evolution, and the full opcode table.
 
 ```bash
 PYTHONPATH=src python3 examples/03_a2a_agents.py
 ```
 
-**Expected output**: Message anatomy, binary round-trip verification, trust growth chart.
+### 04_adaptive_profiling.py — Adaptive Profiler
+**Difficulty:** Intermediate
 
----
-
-### 04 — Adaptive Profiling
-**`examples/04_adaptive_profiling.py`**
-
-Shows the adaptive subsystem that drives language selection:
-- Creates a profiler and records calls for a simulated audio pipeline
-- Classifies modules by heat level (FROZEN → COOL → WARM → HOT → HEAT)
-- Generates language recommendations (Python → C + SIMD)
-- Displays a beautiful heatmap table with colored bars
+Simulates an audio processing pipeline, classifies modules by heat level
+(FROZEN → COOL → WARM → HOT → HEAT), generates language recommendations,
+and displays a colored heatmap.
 
 ```bash
 PYTHONPATH=src python3 examples/04_adaptive_profiling.py
 ```
 
-**Expected output**: Colored heatmap, heat distribution, language recommendations,
-top bottlenecks, speedup estimates, system metrics.
+### 05_bytecode_playground.py — Interactive REPL
+**Difficulty:** Beginner
 
----
+An interactive REPL where you type expressions like `3 + 4` or `10 * 6 + 2`
+and see the generated bytecode, disassembly, execution trace, and register
+state. Also supports `:fib N`, `:c CODE`, `:py CODE`, `:trace`, and more.
 
-### 05 — Tile Composition
-**`examples/05_tile_composition.py`**
+```bash
+PYTHONPATH=src python3 examples/05_bytecode_playground.py
+```
 
-The tile system is FLUX's reusable computation pattern library:
-- Explores the 34 built-in tiles across 6 categories
-- Creates a custom `audio_filter` tile with FIR blueprint
-- Composes tiles: chain (map → filter), parallel (4× loop)
-- Searches the registry, finds alternatives, analyzes costs
+### 05_tile_composition.py — Tile System
+**Difficulty:** Intermediate
+
+Explores the 34 built-in computation tiles, creates custom tiles, composes
+them (chain, parallel), searches the registry, and analyzes costs.
 
 ```bash
 PYTHONPATH=src python3 examples/05_tile_composition.py
 ```
 
-**Expected output**: Tile library overview, composition examples, cost analysis,
-tile type distribution chart.
+### 06_evolution.py — Self-Evolution Engine
+**Difficulty:** Advanced
 
----
-
-### 06 — Self-Evolution
-**`examples/06_evolution.py`**
-
-Demonstrates the evolution engine that makes FLUX self-improving:
-- Creates a genome from a system snapshot
-- Mines execution traces for hot patterns
-- Proposes mutations (language recompilation, tile fusion)
-- Validates correctness and commits successful mutations
-- Shows fitness progress over generations with colored bars
+Demonstrates the evolution engine: genome snapshots, pattern mining for
+hot execution paths, mutation proposals, correctness validation, and
+fitness progress over generations.
 
 ```bash
 PYTHONPATH=src python3 examples/06_evolution.py
 ```
 
-**Expected output**: Heat classification, discovered patterns, mutation proposals,
-fitness progress chart, evolution summary with success rates.
+### 07_full_synthesis.py — The Grand Tour
+**Difficulty:** Advanced
 
----
-
-### 07 — Full Synthesis (Grand Tour)
-**`examples/07_full_synthesis.py`**
-
-The "wow" demo — wires every FLUX subsystem together:
-1. Boots a FluxSynthesizer with 12 audio processing modules
-2. Profiles a realistic workload
-3. Classifies all modules by heat
-4. Gets language recommendations per module
-5. Hot-reloads a module (zero downtime)
-6. Runs 3 generations of self-evolution
-7. Identifies top bottlenecks
-8. Produces a full system report
+The "wow" demo — wires every FLUX subsystem together: boots 12 modules,
+profiles a workload, classifies by heat, gets language recommendations,
+hot-reloads a module, runs 3 generations of self-evolution, and produces
+a full system report.
 
 ```bash
 PYTHONPATH=src python3 examples/07_full_synthesis.py
 ```
 
-**Expected output**: A complete system lifecycle from boot to self-improvement,
-with boxes, tables, and colored output at every step.
+---
+
+## Example Index
+
+| # | File | Type | Difficulty | Topic |
+|---|------|------|-----------|-------|
+| — | [QUICKSTART.md](QUICKSTART.md) | Guide | Beginner | Getting started |
+| — | [hello_world.md](hello_world.md) | FLUX.MD | Beginner | Architecture overview |
+| 01 | [01_hello_world.py](01_hello_world.py) | Python | Beginner | Three execution approaches |
+| 02 | [02_polyglot.py](02_polyglot.py) | Python | Beginner | Polyglot compilation |
+| 02 | [02_polyglot_add.md](02_polyglot_add.md) | FLUX.MD | Beginner | C + Python in one doc |
+| 03 | [03_a2a_agents.py](03_a2a_agents.py) | Python | Intermediate | Agent communication |
+| 03 | [03_fibonacci.md](03_fibonacci.md) | FLUX.MD | Beginner | Fibonacci at 3 levels |
+| 04 | [04_adaptive_profiling.py](04_adaptive_profiling.py) | Python | Intermediate | Heat classification |
+| 04 | [04_agent_handshake.md](04_agent_handshake.md) | FLUX.MD | Intermediate | A2A protocol |
+| 05 | [05_bytecode_playground.py](05_bytecode_playground.py) | Python | Beginner | Interactive REPL |
+| 05 | [05_tile_composition.py](05_tile_composition.py) | Python | Intermediate | Tile system |
+| 06 | [06_evolution.py](06_evolution.py) | Python | Advanced | Self-evolution |
+| 07 | [07_full_synthesis.py](07_full_synthesis.py) | Python | Advanced | Complete system |
 
 ---
 
@@ -159,31 +191,23 @@ FLUX.MD ──→ Parser ──→ FIR Builder ──→ Optimizer ──→ Byt
 
 ```
 src/flux/
-├── a2a/messages.py        # Binary A2A message protocol
-├── adaptive/
-│   ├── profiler.py        # Runtime profiling & heat classification
-│   └── selector.py        # Language recommendation engine
-├── bytecode/
-│   ├── encoder.py         # FIR → bytecode encoder
-│   └── opcodes.py         # 100+ opcode definitions
-├── compiler/pipeline.py   # Multi-language compilation (C, Python, MD)
-├── evolution/             # Self-evolution engine
-│   ├── genome.py          # System DNA (snapshots, diff, fitness)
-│   ├── mutator.py         # Mutation proposals & application
-│   ├── pattern_mining.py  # Hot pattern discovery
-│   └── validator.py       # Correctness validation
-├── fir/builder.py         # SSA IR builder
-├── modules/
-│   ├── container.py       # Fractal module hierarchy
-│   └── granularity.py     # TRAIN → CARRIAGE → ... → CARD
-├── pipeline/e2e.py        # End-to-end compilation pipeline
-├── synthesis/synthesizer.py  # The complete FLUX system (the DJ)
-├── tiles/
-│   ├── library.py         # 34 built-in tiles
-│   ├── registry.py        # Tile search & discovery
-│   └── tile.py            # Tile, CompositeTile, ParallelTile
-└── vm/
-    ├── interpreter.py     # Fetch-decode-execute VM
-    ├── memory.py          # Memory regions
-    └── registers.py       # 64-register file (GP + FP + VEC)
+├── a2a/                # Binary A2A message protocol
+├── adaptive/           # Profiler + language selector
+├── bytecode/           # Encoder, decoder, validator, opcodes
+├── compiler/           # Multi-language compilation pipeline
+├── evolution/          # Self-evolution engine
+├── fir/                # SSA intermediate representation
+├── frontend/           # C and Python frontend compilers
+├── jit/                # JIT compiler + cache
+├── memory/             # Learning and bandit algorithms
+├── modules/            # Fractal hot-reload module system
+├── optimizer/          # FIR optimization passes
+├── parser/             # FLUX.MD parser
+├── pipeline/           # End-to-end pipeline + debugger
+├── protocol/           # Messages, channels, negotiation
+├── runtime/            # Agent runtime + orchestrator
+├── stdlib/             # Math, strings, collections, agents
+├── synthesis/          # The complete FLUX synthesizer
+├── tiles/              # Composable computation patterns
+└── vm/                 # Micro-VM interpreter
 ```

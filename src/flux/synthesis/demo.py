@@ -173,5 +173,10 @@ def run_demo() -> None:
     print(synth.get_system_report().to_text())
 
 
-if __name__ == "__main__":
+def run() -> None:
+    """Public entry point called by ``flux demo``."""
     run_demo()
+
+
+if __name__ == "__main__":
+    run()

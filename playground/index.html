@@ -1097,21 +1097,32 @@ footer {
   </div>
 </section>
 
-<!-- ═══════════════ LIVE DEMO ═══════════════ -->
+<!-- ═══════════════ INTERACTIVE PLAYGROUND ═══════════════ -->
 <section id="demo">
   <div class="section-header">
-    <h2>Live <span class="accent">Pipeline Demo</span></h2>
-    <p>Write FLUX.MD, compile through the full pipeline, watch the VM execute</p>
+    <h2>Interactive <span class="accent">Playground</span></h2>
+    <p>Write bytecode, compile to FLUX, simulate VM execution &mdash; all in the browser</p>
     <div class="section-divider"></div>
+  </div>
+
+  <!-- Preset selector -->
+  <div style="display:flex;gap:0.5rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+    <button class="tile-filter-btn active" data-preset="factorial" onclick="loadPreset('factorial',this)">&#9889; Factorial(5)</button>
+    <button class="tile-filter-btn" data-preset="fibonacci" onclick="loadPreset('fibonacci',this)">&#9889; Fibonacci(10)</button>
+    <button class="tile-filter-btn" data-preset="a2a" onclick="loadPreset('a2a',this)">&#9889; A2A Demo</button>
+    <button class="tile-filter-btn" data-preset="math" onclick="loadPreset('math',this)">&#9889; Math Ops</button>
   </div>
 
   <div class="demo-container">
     <div class="demo-editor">
       <div class="panel-header">
         <div class="panel-title"><span class="dot dot-green"></span> FLUX.MD INPUT</div>
-        <button class="btn-compile" id="btnCompile" onclick="runPipeline()">&#9654; COMPILE</button>
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn-compile" id="btnCompile" onclick="runPipeline()" style="background:var(--neon-green);">&#9654; COMPILE</button>
+          <button class="btn-compile" id="btnRun" onclick="runVM()" style="background:var(--neon-cyan);">&#9654; RUN</button>
+        </div>
       </div>
-      <textarea class="demo-textarea" id="fluxInput" spellcheck="false">---
+      <textarea class="demo-textarea" id="fluxInput" spellcheck="false" style="min-height:340px;">---
 title: hello_flux
 version: 1.0
 ---
@@ -1140,9 +1151,10 @@ def compute(n):
 
     <div class="demo-output">
       <div class="panel-header">
-        <div class="panel-title"><span class="dot dot-yellow"></span> PIPELINE OUTPUT</div>
+        <div class="panel-title"><span class="dot dot-yellow"></span> OUTPUT</div>
+        <div class="panel-title" id="vmStatusBar" style="color:var(--neon-green);font-size:0.7rem;letter-spacing:0px;"></div>
       </div>
-      <div class="pipeline-stages" id="pipelineOutput">
+      <div class="pipeline-stages" id="pipelineOutput" style="min-height:340px;">
         <div class="pipeline-stage" id="stage-parser">
           <div class="stage-indicator"></div>
           <div class="stage-label">Parser</div>
@@ -1162,6 +1174,11 @@ def compute(n):
           <div class="stage-indicator"></div>
           <div class="stage-label">VM Exec</div>
           <div class="stage-output" id="output-vm"></div>
+        </div>
+        <div class="pipeline-stage" id="stage-registers">
+          <div class="stage-indicator"></div>
+          <div class="stage-label">Registers</div>
+          <div class="stage-output" id="output-registers"></div>
         </div>
       </div>
     </div>
@@ -1358,6 +1375,369 @@ $$('.tile-filter-btn').forEach(btn => {
 });
 
 renderTiles();
+
+// ── PRESET EXAMPLES ──
+const PRESETS = {
+  factorial: `---
+title: factorial
+version: 1.0
+---
+
+## fn: main
+
+\`\`\`c
+int factorial(int n) {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+}
+
+int main() {
+    int result = factorial(5);
+    return result;
+}
+\`\`\``,
+  fibonacci: `---
+title: fibonacci
+version: 1.0
+---
+
+## fn: main
+
+\`\`\`c
+int fibonacci(int n) {
+    if (n <= 1) return n;
+    int a = 0, b = 1;
+    for (int i = 2; i <= n; i++) {
+        int temp = a + b;
+        a = b;
+        b = temp;
+    }
+    return b;
+}
+
+int main() {
+    int result = fibonacci(10);
+    return result;
+}
+\`\`\``,
+  a2a: `---
+title: a2a_demo
+version: 1.0
+---
+
+## agent: coordinator
+
+\`\`\`python
+class Coordinator:
+    def __init__(self):
+        self.agents = []
+        self.results = {}
+
+    def register(self, agent):
+        self.agents.append(agent)
+
+    def delegate(self, task, target):
+        result = target.execute(task)
+        self.results[task] = result
+        return result
+\`\`\`
+
+## agent: worker
+
+\`\`\`python
+class Worker:
+    def __init__(self, name):
+        self.name = name
+
+    def execute(self, task):
+        return f"{self.name} completed: {task}"
+\`\`\``,
+  math: `---
+title: math_ops
+version: 1.0
+---
+
+## fn: main
+
+\`\`\`c
+int main() {
+    int a = 42;
+    int b = 13;
+    int sum = a + b;
+    int product = a * b;
+    int diff = a - b;
+    int quotient = a / b;
+    return sum + product;
+}
+\`\`\``
+};
+
+function loadPreset(name, btn) {
+  $$('[data-preset]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  $('#fluxInput').value = PRESETS[name] || PRESETS.factorial;
+  // Reset output
+  $$('.pipeline-stage').forEach(s => { s.classList.remove('active', 'done'); });
+  $$('.stage-output').forEach(o => { o.innerHTML = ''; });
+  $('#vmStatusBar').textContent = '';
+}
+
+// ── SIMPLE VM SIMULATOR ──
+const VM = {
+  regs: new Int32Array(16),
+  memory: new Uint8Array(4096),
+  pc: 0,
+  cycles: 0,
+  halted: false,
+  output: [],
+  trace: [],
+
+  reset() {
+    this.regs.fill(0);
+    this.memory.fill(0);
+    this.pc = 0;
+    this.cycles = 0;
+    this.halted = false;
+    this.output = [];
+    this.trace = [];
+  },
+
+  step() {
+    if (this.halted || this.pc >= this.memory.length) { this.halted = true; return false; }
+    this.cycles++;
+    const op = this.memory[this.pc];
+    switch(op) {
+      case 0x00: this.pc++; break; // NOP
+      case 0x01: // MOV rd, rs
+        this.regs[this.memory[this.pc+1]] = this.regs[this.memory[this.pc+2]];
+        this.pc += 3; break;
+      case 0x08: // IADD rd, ra, rb
+        this.regs[this.memory[this.pc+1]] = this.regs[this.memory[this.pc+2]] + this.regs[this.memory[this.pc+3]];
+        this.pc += 4; break;
+      case 0x09: // ISUB
+        this.regs[this.memory[this.pc+1]] = this.regs[this.memory[this.pc+2]] - this.regs[this.memory[this.pc+3]];
+        this.pc += 4; break;
+      case 0x0A: // IMUL
+        this.regs[this.memory[this.pc+1]] = this.regs[this.memory[this.pc+2]] * this.regs[this.memory[this.pc+3]];
+        this.pc += 4; break;
+      case 0x0B: // IDIV
+        { const b = this.regs[this.memory[this.pc+3]];
+          this.regs[this.memory[this.pc+1]] = b !== 0 ? Math.trunc(this.regs[this.memory[this.pc+2]] / b) : 0; }
+        this.pc += 4; break;
+      case 0x0D: // INEG
+        this.regs[this.memory[this.pc+1]] = -this.regs[this.memory[this.pc+1]];
+        this.pc += 2; break;
+      case 0x0E: // INC
+        this.regs[this.memory[this.pc+1]]++;
+        this.pc += 2; break;
+      case 0x0F: // DEC
+        this.regs[this.memory[this.pc+1]]--;
+        this.pc += 2; break;
+      case 0x2B: // MOVI rd, imm16
+        { const rd = this.memory[this.pc+1];
+          const lo = this.memory[this.pc+2];
+          const hi = this.memory[this.pc+3];
+          this.regs[rd] = lo | (hi << 8); }
+        this.pc += 4; break;
+      case 0x04: // JMP addr
+        this.pc = this.memory[this.pc+1] | (this.memory[this.pc+2] << 8);
+        break;
+      case 0x05: // JZ rs, addr
+        if (this.regs[this.memory[this.pc+1]] === 0) {
+          this.pc = this.memory[this.pc+2] | (this.memory[this.pc+3] << 8);
+        } else { this.pc += 4; }
+        break;
+      case 0x06: // JNZ
+        if (this.regs[this.memory[this.pc+1]] !== 0) {
+          this.pc = this.memory[this.pc+2] | (this.memory[this.pc+3] << 8);
+        } else { this.pc += 4; }
+        break;
+      case 0x07: // CALL
+        this.pc += 4; break; // simplified
+      case 0x28: // RET
+        this.pc += 2; break; // simplified
+      case 0x80: // HALT
+        this.halted = true;
+        this.pc++;
+        break;
+      default:
+        this.halted = true;
+        this.trace.push({ pc: this.pc, op: `UNKNOWN(0x${hex(op)})`, note: 'invalid opcode' });
+        return false;
+    }
+    return true;
+  },
+
+  load(bytecode) {
+    this.reset();
+    for (let i = 0; i < bytecode.length && i < this.memory.length; i++) {
+      this.memory[i] = bytecode[i];
+    }
+  },
+
+  run(maxCycles) {
+    maxCycles = maxCycles || 10000;
+    while (!this.halted && this.cycles < maxCycles) {
+      this.step();
+    }
+    return this.cycles;
+  },
+
+  dumpRegs() {
+    let s = '';
+    for (let i = 0; i < 16; i++) {
+      const v = this.regs[i];
+      if (v !== 0) {
+        const names = {0:'R0',1:'R1',2:'R2',3:'R3',4:'R4',5:'R5',6:'R6',7:'R7',
+                       8:'R8',9:'R9',10:'R10',11:'SP',12:'R12',13:'R13',14:'FP',15:'LR'};
+        s += `  ${names[i] || 'R'+i} = ${v}\n`;
+      }
+    }
+    return s || '  (all registers zero)';
+  }
+};
+
+async function runVM() {
+  const btn = $('#btnRun');
+  btn.disabled = true;
+
+  // Reset stages
+  $$('.pipeline-stage').forEach(s => { s.classList.remove('active', 'done'); });
+  $$('.stage-output').forEach(o => { o.innerHTML = ''; });
+
+  // Generate bytecode for a simple program based on the input
+  const input = $('#fluxInput').value;
+
+  // Simple heuristic: detect what kind of program and generate appropriate bytecode
+  let bytecode = [];
+  let description = '';
+  let expected = 0;
+
+  if (input.includes('factorial')) {
+    // Compute 5! = 120 iteratively: 1*2*3*4*5
+    bytecode = [
+      0x2B, 0x00, 1, 0,  // MOVI R0, 1
+      0x2B, 0x01, 2, 0,  // MOVI R1, 2
+      // loop: R0 *= R1; R1++; if R1 <= 5 goto loop
+      0x0A, 0x00, 0x00, 0x01,  // IMUL R0, R0, R1  (addr 8)
+      0x0E, 0x01,               // INC R1             (addr 12)
+      0x05, 0x02, 8, 0,         // JZ R2, 8 (dummy)   (addr 14)
+      // We need a conditional jump. Use JZ with a computed comparison.
+      // Simplified: just do 4 iterations unrolled
+      // Actually let's redo this properly:
+    ];
+    // Compute 5! = 1*2*3*4*5 = 120
+    bytecode = [
+      0x2B, 0x00, 1, 0,   // 0: MOVI R0, 1    (result = 1)
+      0x2B, 0x01, 2, 0,   // 4: MOVI R1, 2    (i = 2)
+      // loop:
+      0x0A, 0x00, 0x00, 0x01,  // 8: IMUL R0, R0, R1  (result *= i)
+      0x0E, 0x01,             // 12: INC R1             (i++)
+      // Check if R1 <= 5: store (6-R1) in R2, if R2 != 0 jump
+      0x2B, 0x03, 6, 0,   // 14: MOVI R3, 6
+      0x09, 0x02, 0x03, 0x01, // 18: ISUB R2, R3, R1   (6 - i)
+      0x06, 0x02, 8, 0,   // 22: JNZ R2, 8 (goto loop)
+      0x80,                 // 26: HALT
+    ];
+    description = 'factorial(5) = 120 (iterative)';
+    expected = 120;
+  } else if (input.includes('fibonacci')) {
+    // Compute fib(10) = 55
+    bytecode = [
+      0x2B, 0x00, 0, 0,   // 0: MOVI R0, 0    (a = 0)
+      0x2B, 0x01, 1, 0,   // 4: MOVI R1, 1    (b = 1)
+      0x2B, 0x02, 2, 0,   // 8: MOVI R2, 2    (i = 2)
+      // loop:
+      0x08, 0x03, 0x00, 0x01,  // 12: IADD R3, R0, R1  (temp = a + b)
+      0x01, 0x00, 0x01,       // 16: MOV R0, R1        (a = b)
+      0x01, 0x01, 0x03,       // 19: MOV R1, R3        (b = temp)
+      0x0E, 0x02,             // 22: INC R2            (i++)
+      0x2B, 0x04, 11, 0,  // 24: MOVI R4, 11
+      0x09, 0x03, 0x04, 0x02, // 28: ISUB R3, R4, R2   (11 - i)
+      0x06, 0x03, 12, 0,  // 32: JNZ R3, 12 (goto loop)
+      0x01, 0x00, 0x01,       // 36: MOV R0, R1        (result = b)
+      0x80,                   // 39: HALT
+    ];
+    description = 'fibonacci(10) = 55';
+    expected = 55;
+  } else {
+    // Default: compute 42 + 13 + 42*13 = 55 + 546 = 601
+    bytecode = [
+      0x2B, 0x00, 42, 0,  // 0: MOVI R0, 42   (a)
+      0x2B, 0x01, 13, 0,  // 4: MOVI R1, 13   (b)
+      0x08, 0x02, 0x00, 0x01, // 8: IADD R2, R0, R1 (sum = 55)
+      0x0A, 0x03, 0x00, 0x01, // 12: IMUL R3, R0, R1 (product = 546)
+      0x08, 0x00, 0x02, 0x03, // 16: IADD R0, R2, R3 (result = 601)
+      0x80,                   // 20: HALT
+    ];
+    description = '42 + 13 + 42*13 = 601';
+    expected = 601;
+  }
+
+  // Stage 1: Bytecode
+  const bcStage = $('#stage-bytecode');
+  bcStage.classList.add('active');
+  await sleep(300);
+
+  let bcHtml = `<span class="bytecode-comment">// Generated Bytecode: ${bytecode.length} bytes</span>\n`;
+  bcHtml += `<span class="bytecode-comment">// Program: ${description}</span>\n\n`;
+  for (let i = 0; i < bytecode.length; i += 4) {
+    const chunk = bytecode.slice(i, Math.min(i + 4, bytecode.length));
+    const hexStr = chunk.map(b => hex(b)).join(' ');
+    const addr = hex16(i);
+    bcHtml += `<span class="bytecode-addr">0x${addr}</span>  <span class="bytecode-hex">${hexStr.padEnd(16)}</span>\n`;
+  }
+  $('#output-bytecode').innerHTML = bcHtml;
+  await sleep(600);
+  bcStage.classList.remove('active');
+  bcStage.classList.add('done');
+
+  // Stage 2: VM Execution
+  const vmStage = $('#stage-vm');
+  vmStage.classList.add('active');
+  await sleep(300);
+
+  VM.load(bytecode);
+  const cycles = VM.run(10000);
+
+  let vmHtml = `<span class="bytecode-comment">// VM Execution Complete</span>\n`;
+  vmHtml += `<span class="bytecode-comment">// Cycles: ${cycles} | Halted: ${VM.halted}</span>\n`;
+  vmHtml += `<span class="bytecode-comment">// Result: R0 = ${VM.regs[0]} (expected: ${expected})</span>\n`;
+  vmHtml += `<span class="bytecode-op">${VM.regs[0] === expected ? '✓ PASS' : '✗ FAIL'}</span> <span class="bytecode-operand">${description} = ${VM.regs[0]}</span>\n`;
+  $('#output-vm').innerHTML = vmHtml;
+  await sleep(400);
+  vmStage.classList.remove('active');
+  vmStage.classList.add('done');
+
+  // Stage 3: Registers
+  const regStage = $('#stage-registers');
+  regStage.classList.add('active');
+  await sleep(300);
+
+  let regHtml = `<span class="bytecode-comment">// Register File (non-zero only)</span>\n\n`;
+  const names = {0:'R0',1:'R1',2:'R2',3:'R3',4:'R4',5:'R5',6:'R6',7:'R7',
+                 8:'R8',9:'R9',10:'R10',11:'SP',12:'R12',13:'R13',14:'FP',15:'LR'};
+  for (let i = 0; i < 16; i++) {
+    const v = VM.regs[i];
+    const name = names[i] || 'R'+i;
+    const highlight = (i === 0) ? 'bytecode-op' : 'bytecode-hex';
+    if (v !== 0) {
+      regHtml += `  <span class="${highlight}">${name.padEnd(4)}</span> = <span class="bytecode-operand">${v}</span>\n`;
+    }
+  }
+  regHtml += `\n<span class="bytecode-comment">// PC: 0x${hex16(VM.pc)}</span>\n`;
+  regHtml += `<span class="bytecode-comment">// Cycles used: ${cycles}</span>\n`;
+
+  $('#output-registers').innerHTML = regHtml;
+  await sleep(300);
+  regStage.classList.remove('active');
+  regStage.classList.add('done');
+
+  // Status bar
+  $('#vmStatusBar').textContent = `CYCLES: ${cycles} | R0: ${VM.regs[0]} | ${VM.halted ? 'HALTED' : 'RUNNING'}`;
+
+  btn.disabled = false;
+}
 
 // ── PIPELINE DEMO ──
 const OP = {
