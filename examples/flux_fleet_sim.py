@@ -152,25 +152,27 @@ FISH_FINDER_BYTECODE = bytes([
 # Returns 1 if any supply < 25, else 0
 SUPPLY_MANAGER_BYTECODE = bytes([
     0x2B, 0x03, 0x19, 0x00,  # MOVI R3, 25 (low threshold)
-    0x19, 0x04, 0x00, 0x03,  # ILT R4, R0, R3 (1 if fuel < 25, else 0)
-    0x2B, 0x05, 0x00, 0x00,  # MOVI R5, 0
-    0x19, 0x06, 0x01, 0x03,  # ILT R6, R1, R3 (1 if bait < 25, else 0)
-    0x0B, 0x04, 0x04, 0x06,  # IOR R4, R4, R6 (OR the results)
-    0x19, 0x06, 0x02, 0x03,  # ILT R6, R2, R3 (1 if ice < 25, else 0)
-    0x0B, 0x00, 0x04, 0x06,  # IOR R0, R4, R6 (final urgency flag)
+    0x01, 0x04, 0x00,        # MOV R4, R0 (copy fuel to R4)
+    0x19, 0x04, 0x03,        # ILT R4, R3 (1 if fuel < 25)
+    0x01, 0x05, 0x01,        # MOV R5, R1 (copy bait to R5)
+    0x19, 0x05, 0x03,        # ILT R5, R3 (1 if bait < 25)
+    0x11, 0x04, 0x04, 0x05,  # IOR R4, R4, R5
+    0x01, 0x05, 0x02,        # MOV R5, R2 (copy ice to R5)
+    0x19, 0x05, 0x03,        # ILT R5, R3 (1 if ice < 25)
+    0x11, 0x00, 0x04, 0x05,  # IOR R0, R4, R5
     0x28, 0x00, 0x00,        # RET R0, R0
 ])
 
 # Fleet Captain: Simple decision logic bytecode
 # R0=fuel, R1=total_catch, R2=weather_score, R3=supply_urgency
-# Returns: 0=continue, 1=return_to_port, 2=change_heading
+# Returns: 0=continue, 1=return_to_port
 CAPTAIN_BYTECODE = bytes([
-    # Decision: 1 if (fuel < 20 OR supply_urgency == 1), 2 if (weather < 4), else 0
+    # Decision: 1 if (fuel < 20 OR supply_urgency == 1), else 0
     0x2B, 0x04, 0x14, 0x00,  # MOVI R4, 20 (fuel threshold)
-    0x19, 0x04, 0x00, 0x04,  # ILT R4, R0, R4 (R4 = 1 if fuel < 20)
-    0x0B, 0x04, 0x04, 0x03,  # IOR R4, R4, R3 (R4 = 1 if urgent)
+    0x19, 0x04, 0x00,        # ILT R4, R0 (R4 = 1 if R0 < R4=20)
+    0x11, 0x04, 0x04, 0x03,  # IOR R4, R4, R3 (R4 = 1 if urgent)
     0x01, 0x00, 0x04,        # MOV R0, R4 (R0 = 1 if urgent, else 0)
-    0x28, 0x00, 0x00,        # RET R0, R0 (return immediately)
+    0x28, 0x00, 0x00,        # RET R0, R0
 ])
 
 
