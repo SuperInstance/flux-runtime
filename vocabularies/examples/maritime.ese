@@ -1,0 +1,57 @@
+# Maritime Navigation Vocabulary (.ese format)
+# FLUX-ese: natural-but-precise, like legalese for code
+# Every word defined. Every operation precise.
+
+== For the purposes of this operation:
+**heading** := compass bearing in degrees (0-359, true north)
+**depth** := sonar reading in fathoms, corrected for tidal state
+**safe** := depth > vessel_draft + 5 fathoms
+**eta** := estimated time of arrival in hours, assuming current speed
+
+>> Navigation patterns
+>> Agents: scan for ## pattern lines, skip commentary
+
+## pattern: steer heading $deg
+## assembly: |
+##   MOVI R0, ${deg}
+##   MOVI R1, 360
+##   IDIV R1, R0, R1
+##   MOVI R0, R0
+##   HALT
+## description: Normalize and set heading. -- heading must be 0-359
+## result_reg: 0
+## tags: maritime, navigation, heading
+
+## pattern: check depth $meters
+## assembly: |
+##   MOVI R0, ${meters}
+##   MOVI R1, 5
+##   CMP R0, R1
+##   HALT
+## description: Check if depth is safe. -- 5 fathom minimum for safe passage
+## result_reg: 13
+## tags: maritime, safety, depth
+
+## pattern: eta $dist knots $speed
+## assembly: |
+##   MOVI R0, ${dist}
+##   MOVI R1, ${speed}
+##   IDIV R0, R0, R1
+##   HALT
+## description: Compute ETA. -- distance/speed in hours
+## result_reg: 0
+## tags: maritime, navigation, time
+
+## pattern: safe to proceed at depth $meters with draft $draft
+## assembly: |
+##   MOVI R0, ${meters}
+##   MOVI R1, ${draft}
+##   IADD R1, R1, 5
+##   CMP R0, R1
+##   HALT
+## description: Safety check. -- vessel draft + 5 fathom safety margin
+## result_reg: 13
+## tags: maritime, safety, go-no-go
+
+>> End navigation vocabulary
+>> **depth**, **safe**, **heading** are defined above for this operation's context

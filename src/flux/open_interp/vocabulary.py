@@ -84,7 +84,7 @@ class Vocabulary:
         self._loaded_paths: set = set()
     
     def load_folder(self, path: str):
-        """Load all .fluxvocab files from a folder."""
+        """Load all .fluxvocab/.ese files from a folder."""
         if path in self._loaded_paths:
             return
         self._loaded_paths.add(path)
@@ -94,13 +94,13 @@ class Vocabulary:
         
         for fname in sorted(os.listdir(path)):
             fpath = os.path.join(path, fname)
-            if fname.endswith('.fluxvocab'):
+            if fname.endswith('.fluxvocab') or fname.endswith('.ese'):
                 self._load_vocab_file(fpath)
             elif fname.endswith('.fluxtpl'):
                 self._load_template_file(fpath)
     
     def _load_vocab_file(self, path: str):
-        """Parse a .fluxvocab file into VocabEntry objects."""
+        """Parse a .fluxvocab/.ese file into VocabEntry objects."""
         with open(path) as f:
             content = f.read()
         
