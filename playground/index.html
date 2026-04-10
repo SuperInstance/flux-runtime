@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLUX — The DJ Booth for Agent Code</title>
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+   FLUX PLAYGROUND — Cyberpunk/Hacker Aesthetic
+   ══════════════════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --bg-deep: #0a0a0f;
+  --bg-primary: #0d0d14;
+  --bg-secondary: #12121c;
+  --bg-tertiary: #1a1a2e;
+  --bg-card: #16162a;
+  --border-dim: #2a2a44;
+  --border-glow: #3a3a6a;
+  --text-primary: #e0e0ff;
+  --text-secondary: #8888aa;
+  --text-muted: #555577;
+  --neon-cyan: #00f0ff;
+  --neon-magenta: #ff00e5;
+  --neon-green: #00ff88;
+  --neon-yellow: #ffee00;
+  --neon-orange: #ff6b00;
+  --neon-blue: #4488ff;
+  --neon-pink: #ff3388;
+  --neon-purple: #aa44ff;
+  --gradient-rainbow: linear-gradient(90deg, #00f0ff, #00ff88, #ffee00, #ff00e5, #aa44ff, #4488ff);
+  --glow-cyan: 0 0 20px rgba(0,240,255,0.3), 0 0 40px rgba(0,240,255,0.1);
+  --glow-magenta: 0 0 20px rgba(255,0,229,0.3), 0 0 40px rgba(255,0,229,0.1);
+  --glow-green: 0 0 20px rgba(0,255,136,0.3), 0 0 40px rgba(0,255,136,0.1);
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
+
+/* ── Animated Background Grid ── */
+.bg-grid {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bg-glow-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+  z-index: 0;
+  pointer-events: none;
+}
+.bg-glow-orb.orb1 {
+  width: 600px; height: 600px;
+  background: var(--neon-cyan);
+  top: -200px; left: -200px;
+  animation: float1 20s ease-in-out infinite;
+}
+.bg-glow-orb.orb2 {
+  width: 500px; height: 500px;
+  background: var(--neon-magenta);
+  bottom: -200px; right: -200px;
+  animation: float2 25s ease-in-out infinite;
+}
+.bg-glow-orb.orb3 {
+  width: 400px; height: 400px;
+  background: var(--neon-purple);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: float3 18s ease-in-out infinite;
+}
+
+@keyframes float1 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(100px, 80px); }
+  66% { transform: translate(-50px, 120px); }
+}
+@keyframes float2 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(-80px, -60px); }
+  66% { transform: translate(60px, -100px); }
+}
+@keyframes float3 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.3); }
+}
+
+.content-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-dim);
+  padding: 0 2rem;
+}
+.nav-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+.nav-logo {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0,240,255,0.5);
+  letter-spacing: 2px;
+}
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.3s;
+  letter-spacing: 0.5px;
+}
+.nav-links a:hover { color: var(--neon-cyan); text-shadow: 0 0 8px rgba(0,240,255,0.4); }
+.nav-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 2rem 80px;
+  position: relative;
+}
+
+.ascii-logo {
+  font-family: var(--font-mono);
+  font-size: clamp(0.4rem, 1.5vw, 0.85rem);
+  line-height: 1.2;
+  color: var(--neon-cyan);
+  text-shadow: var(--glow-cyan);
+  white-space: pre;
+  margin-bottom: 2rem;
+  animation: logoGlow 4s ease-in-out infinite;
+}
+@keyframes logoGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(0,240,255,0.4), 0 0 40px rgba(0,240,255,0.1); }
+  50% { text-shadow: 0 0 30px rgba(0,240,255,0.6), 0 0 60px rgba(0,240,255,0.2), 0 0 80px rgba(0,240,255,0.1); }
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 900;
+  letter-spacing: 4px;
+  background: var(--gradient-rainbow);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 8s ease infinite;
+  margin-bottom: 0.5rem;
+}
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.hero .tagline {
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  color: var(--text-secondary);
+  font-weight: 300;
+  margin-bottom: 2rem;
+  letter-spacing: 2px;
+}
+.hero .tagline em {
+  font-style: normal;
+  color: var(--neon-magenta);
+  font-weight: 600;
+}
+
+.hero-sub {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 3rem;
+}
+.hero-sub span { color: var(--neon-green); font-weight: 600; }
+
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn {
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn-primary {
+  background: var(--neon-cyan);
+  color: var(--bg-deep);
+  box-shadow: 0 0 20px rgba(0,240,255,0.3);
+}
+.btn-primary:hover {
+  box-shadow: 0 0 30px rgba(0,240,255,0.5), 0 0 60px rgba(0,240,255,0.2);
+  transform: translateY(-2px);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--neon-magenta);
+  border: 1px solid var(--neon-magenta);
+  box-shadow: 0 0 10px rgba(255,0,229,0.1);
+}
+.btn-secondary:hover {
+  background: rgba(255,0,229,0.1);
+  box-shadow: 0 0 20px rgba(255,0,229,0.2);
+  transform: translateY(-2px);
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-dim);
+  border-bottom: 1px solid var(--border-dim);
+  padding: 1.5rem 2rem;
+}
+.stats-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  text-align: center;
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0,240,255,0.3);
+}
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ── SECTIONS ── */
+section {
+  padding: 6rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+.section-header h2 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  letter-spacing: 2px;
+}
+.section-header h2 .accent { color: var(--neon-cyan); }
+.section-header p {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.section-divider {
+  width: 80px;
+  height: 3px;
+  background: var(--gradient-rainbow);
+  margin: 1.5rem auto 0;
+  border-radius: 2px;
+}
+
+/* ── ARCHITECTURE EXPLORER ── */
+.arch-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.tier {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.4s;
+  cursor: pointer;
+}
+.tier:hover { border-color: var(--neon-cyan); box-shadow: 0 0 20px rgba(0,240,255,0.1); }
+.tier.active { border-color: var(--neon-cyan); box-shadow: 0 0 30px rgba(0,240,255,0.15); }
+.tier-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  gap: 1rem;
+  user-select: none;
+}
+.tier-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  min-width: 70px;
+  text-align: center;
+}
+.tier-8 .tier-badge { background: rgba(255,0,229,0.15); color: var(--neon-magenta); border: 1px solid rgba(255,0,229,0.3); }
+.tier-7 .tier-badge { background: rgba(170,68,255,0.15); color: var(--neon-purple); border: 1px solid rgba(170,68,255,0.3); }
+.tier-6 .tier-badge { background: rgba(255,107,0,0.15); color: var(--neon-orange); border: 1px solid rgba(255,107,0,0.3); }
+.tier-5 .tier-badge { background: rgba(0,255,136,0.15); color: var(--neon-green); border: 1px solid rgba(0,255,136,0.3); }
+.tier-4 .tier-badge { background: rgba(68,136,255,0.15); color: var(--neon-blue); border: 1px solid rgba(68,136,255,0.3); }
+.tier-3 .tier-badge { background: rgba(255,51,136,0.15); color: var(--neon-pink); border: 1px solid rgba(255,51,136,0.3); }
+.tier-2 .tier-badge { background: rgba(255,238,0,0.15); color: var(--neon-yellow); border: 1px solid rgba(255,238,0,0.3); }
+.tier-1 .tier-badge { background: rgba(0,240,255,0.15); color: var(--neon-cyan); border: 1px solid rgba(0,240,255,0.3); }
+
+.tier-title {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.tier-arrow {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  transition: transform 0.3s;
+  font-size: 0.8rem;
+}
+.tier.active .tier-arrow { transform: rotate(90deg); color: var(--neon-cyan); }
+
+.tier-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+  border-top: 0 solid transparent;
+}
+.tier.active .tier-body {
+  max-height: 500px;
+  border-top: 1px solid var(--border-dim);
+}
+.tier-content {
+  padding: 1rem 1.5rem 1.5rem;
+}
+.tier-content p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+.tier-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.tier-feature-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  background: rgba(0,240,255,0.06);
+  color: var(--neon-cyan);
+  border: 1px solid rgba(0,240,255,0.12);
+}
+
+/* ── LIVE DEMO ── */
+.demo-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+.demo-editor, .demo-output {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid var(--border-dim);
+}
+.panel-title {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.panel-title .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-green { background: var(--neon-green); box-shadow: 0 0 6px var(--neon-green); }
+.dot-yellow { background: var(--neon-yellow); box-shadow: 0 0 6px var(--neon-yellow); }
+.dot-red { background: var(--neon-magenta); box-shadow: 0 0 6px var(--neon-magenta); }
+
+.demo-textarea {
+  width: 100%;
+  min-height: 300px;
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.7;
+  resize: vertical;
+  outline: none;
+  tab-size: 4;
+}
+
+.btn-compile {
+  padding: 0.4rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--neon-green);
+  color: var(--bg-deep);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+}
+.btn-compile:hover { box-shadow: 0 0 15px rgba(0,255,136,0.4); }
+.btn-compile:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.pipeline-stages {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+.pipeline-stage {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  opacity: 0.3;
+  transition: all 0.5s;
+}
+.pipeline-stage.active { opacity: 1; }
+.pipeline-stage.done { opacity: 0.7; }
+
+.stage-indicator {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--text-muted);
+  transition: all 0.5s;
+  flex-shrink: 0;
+}
+.pipeline-stage.active .stage-indicator {
+  border-color: var(--neon-cyan);
+  background: var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan);
+  animation: pulse 1s ease-in-out infinite;
+}
+.pipeline-stage.done .stage-indicator {
+  border-color: var(--neon-green);
+  background: var(--neon-green);
+  box-shadow: 0 0 6px var(--neon-green);
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+}
+
+.stage-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 80px;
+  color: var(--text-muted);
+  transition: color 0.3s;
+}
+.pipeline-stage.active .stage-label { color: var(--neon-cyan); }
+.pipeline-stage.done .stage-label { color: var(--neon-green); }
+
+.stage-output {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.8s ease;
+  white-space: pre;
+}
+.pipeline-stage.active .stage-output,
+.pipeline-stage.done .stage-output {
+  max-height: 300px;
+}
+
+.bytecode-line { display: block; }
+.bytecode-addr { color: var(--text-muted); }
+.bytecode-hex { color: var(--neon-yellow); }
+.bytecode-op { color: var(--neon-cyan); font-weight: 600; }
+.bytecode-operand { color: var(--neon-green); }
+.bytecode-comment { color: var(--text-muted); font-style: italic; }
+
+.vm-step { display: block; padding: 2px 0; }
+.vm-step-highlight { background: rgba(0,240,255,0.08); padding: 2px 4px; border-radius: 2px; border-left: 2px solid var(--neon-cyan); }
+
+/* ── TILE GALLERY ── */
+.tile-filters {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+.tile-filter-btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-dim);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 0.5px;
+}
+.tile-filter-btn:hover, .tile-filter-btn.active {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  background: rgba(0,240,255,0.08);
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+.tile-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s;
+  position: relative;
+  overflow: hidden;
+}
+.tile-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 8px 8px 0 0;
+}
+.tile-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 8px 30px rgba(0,240,255,0.1);
+}
+.tile-card.cat-compute::before { background: var(--neon-cyan); }
+.tile-card.cat-memory::before { background: var(--neon-green); }
+.tile-card.cat-control::before { background: var(--neon-yellow); }
+.tile-card.cat-a2a::before { background: var(--neon-magenta); }
+.tile-card.cat-effect::before { background: var(--neon-orange); }
+.tile-card.cat-transform::before { background: var(--neon-purple); }
+
+.tile-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.4rem;
+}
+.tile-name {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+.tile-category {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.tile-cost {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+}
+
+/* ── EVOLUTION VISUALIZER ── */
+.evo-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dim);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.evo-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.evo-controls label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.evo-btn {
+  padding: 0.5rem 1.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--neon-green);
+  background: rgba(0,255,136,0.1);
+  color: var(--neon-green);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.evo-btn:hover { background: rgba(0,255,136,0.2); box-shadow: 0 0 15px rgba(0,255,136,0.2); }
+.evo-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.evo-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.evo-stat {
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  border: 1px solid var(--border-dim);
+}
+.evo-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.evo-stat-value.val-gen { color: var(--neon-cyan); }
+.evo-stat-value.val-fit { color: var(--neon-green); }
+.evo-stat-value.val-mut { color: var(--neon-magenta); }
+.evo-stat-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.evo-chart-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  border: 1px solid var(--border-dim);
+  overflow: hidden;
+}
+.evo-chart-canvas {
+  width: 100%;
+  height: 100%;
+}
+.evo-log {
+  margin-top: 1rem;
+  max-height: 150px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  padding: 0.5rem;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  border: 1px solid var(--border-dim);
+}
+.evo-log-entry { padding: 1px 0; }
+.evo-log .log-gen { color: var(--neon-cyan); }
+.evo-log .log-fit { color: var(--neon-green); }
+.evo-log .log-mutation { color: var(--neon-magenta); }
+.evo-log .log-speedup { color: var(--neon-yellow); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 3rem 2rem;
+  text-align: center;
+  border-top: 1px solid var(--border-dim);
+  margin-top: 2rem;
+}
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  transition: color 0.3s;
+}
+.footer-links a:hover { color: var(--neon-cyan); }
+.footer-tagline {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+.footer-tagline span { color: var(--neon-magenta); }
+
+/* ── SCAN LINE EFFECT ── */
+.scanline {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: rgba(0,240,255,0.1);
+  z-index: 1000;
+  pointer-events: none;
+  animation: scan 8s linear infinite;
+}
+@keyframes scan {
+  0% { top: -2px; }
+  100% { top: 100vh; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .demo-container { grid-template-columns: 1fr; }
+  .stats-inner { grid-template-columns: repeat(2, 1fr); }
+  .evo-stats { grid-template-columns: repeat(2, 1fr); }
+  .nav-links { display: none; }
+  .nav-links.open {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0; right: 0;
+    background: rgba(10,10,15,0.95);
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border-dim);
+  }
+  .nav-hamburger { display: block; }
+}
+@media (max-width: 600px) {
+  .stats-inner { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  .stat-value { font-size: 1.2rem; }
+  .tile-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  section { padding: 3rem 1rem; }
+  .hero { padding: 100px 1rem 60px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow-orb orb1"></div>
+<div class="bg-glow-orb orb2"></div>
+<div class="bg-glow-orb orb3"></div>
+<div class="scanline"></div>
+
+<div class="content-wrapper">
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">F L U X</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#demo">Live Demo</a></li>
+      <li><a href="#tiles">Tiles</a></li>
+      <li><a href="#evolution">Evolution</a></li>
+      <li><a href="https://github.com" target="_blank">GitHub</a></li>
+    </ul>
+    <button class="nav-hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero" id="hero">
+  <pre class="ascii-logo">
+     ██████╗ ██████╗ ██████╗ ███████╗
+     ██╔══██╗██╔═══╝ ██╔══██╗██╔════╝
+     ██████╔╝██║     ██║  ██║█████╗
+     ██╔═══╝ ██║     ██║  ██║██╔══╝
+     ██║     ╚██████╗██████╔╝███████╗
+     ╚═╝      ╚═════╝╚═════╝ ╚══════╝
+
+     Fluid Language Universal eXecution
+     v0.1.0 · Agent-First · Self-Evolving</pre>
+  <h1>FLUX RUNTIME</h1>
+  <p class="tagline">The <em>DJ Booth</em> for Agent Code</p>
+  <p class="hero-sub">
+    A markdown-to-bytecode runtime that compiles polyglot code, profiles itself,<br>
+    evolves hot paths, and hot-swaps modules &mdash; <span>all while the music never stops.</span>
+  </p>
+  <div class="hero-cta">
+    <a href="#demo" class="btn btn-primary">&#9654; Try the Playground</a>
+    <a href="#architecture" class="btn btn-secondary">&#9881; Explore Architecture</a>
+  </div>
+</section>
+
+<!-- ═══════════════ STATS BAR ═══════════════ -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-value" data-count="1848">0</div>
+      <div class="stat-label">Tests Passing</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" data-count="106">0</div>
+      <div class="stat-label">Source Modules</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" data-count="104">0</div>
+      <div class="stat-label">Bytecode Opcodes</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value" data-count="0">0</div>
+      <div class="stat-label">Dependencies</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ARCHITECTURE ═══════════════ -->
+<section id="architecture">
+  <div class="section-header">
+    <h2>Architecture <span class="accent">Explorer</span></h2>
+    <p>An 8-tier self-assembling stack &mdash; click any tier to explore</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="arch-stack">
+    <!-- Tier 8 -->
+    <div class="tier tier-8" onclick="toggleTier(this)">
+      <div class="tier-header">
+        <div class="tier-badge">TIER 8</div>
+        <div class="tier-title">Synthesis &mdash; The DJ Booth</div>
+        <div class="tier-arrow">&#9654;</div>
+      </div>
+      <div class="tier-body">
+        <div class="tier-content">
+          <p>The FluxSynthesizer wires ALL subsystems together: modules, profiler, selector, tiles, evolution, hot-reload, and system reports. It's the top-level orchestrator that makes everything dance.</p>
+          <div class="tier-features">
+            <span class="tier-feature-tag">Module hierarchy</span>
+            <span class="tier-feature-tag">Runtime profiling</span>
+            <span class="tier-feature-tag">Adaptive selection</span>
+            <span class="tier-feature-tag">Tile composition</span>
+            <span class="tier-feature-tag">Self-evolution</span>
+            <span class="tier-feature-tag">Hot-swap API</span>
+            <span class="tier-feature-tag">System reports</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier 7 -->
+    <div class="tier tier-7" onclick="toggleTier(this)">
+      <div class="tier-header">
+        <div class="tier-badge">TIER 7</div>
+        <div class="tier-title">Modules &mdash; 8-Level Fractal Hierarchy</div>
+        <div class="tier-arrow">&#9654;</div>
+      </div>
+      <div class="tier-body">
+        <div class="tier-content">
+          <p>Nested containers from TRAIN down to CARD. Atomic hot-reload at any granularity with namespace isolation and SHA-256 checksum trees.</p>
+          <div class="tier-features">
+            <span class="tier-feature-tag">TRAIN</span>
+            <span class="tier-feature-tag">CARRIAGE</span>
+            <span class="tier-feature-tag">LUGGAGE</span>
+            <span class="tier-feature-tag">BAG</span>
+            <span class="tier-feature-tag">POCKET</span>
+            <span class="tier-feature-tag">WALLET</span>
+            <span class="tier-feature-tag">SLOT</span>
+            <span class="tier-feature-tag">CARD</span>
+            <span class="tier-feature-tag">Fractal reload</span>
+            <span class="tier-feature-tag">Checksum trees</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier 6 -->
+    <div class="tier tier-6" onclick="toggleTier(this)">
+      <div class="tier-header">
+        <div class="tier-badge">TIER 6</div>
+        <div class="tier-title">Adaptive &amp; Evolution &mdash; Self-Improvement</div>
+        <div class="tier-arrow">&#9654;</div>
+      </div>
+      <div class="tier-body">
+        <div class="tier-content">
+          <p><strong>Adaptive (6A):</strong> Profiler with 5-level heat classification (FROZEN&rarr;HEAT), language selector (Python/TS/Rust/C/SIMD), compiler bridge. <strong>Evolution (6B):</strong> Genome snapshots, pattern mining, 7 mutation strategies, correctness validation, multi-generation loop.</p>
+          <div class="tier-features">
+            <span class="tier-feature-tag">Heat map</span>
+            <span class="tier-feature-tag">Language rec</span>
+            <span class="tier-feature-tag">Genome DNA</span>
+            <span class="tier-feature-tag">Pattern mining</span>
+            <span class="tier-feature-tag">7 mutators</span>
+            <span class="tier-feature-tag">Validation</span>
+            <span class="tier-feature-tag">Fitness: speed + modularity + correctness</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier 5 -->
+    <div class="tier tier-5" onclick="toggleTier(this)">
+      <div class="tier-header">
+        <div class="tier-badge">TIER 5</div>
+        <div class="tier-title">Tiles &mdash; 35 Composable Patterns</div>
+        <div class="tier-arrow">&#9654;</div>
+      </div>
+      <div class="tier-body">
+        <div class="tier-content">
+          <p>Reusable computation tiles across 6 categories. DAG composition via TileGraph, FIR emission via blueprints, registry with fuzzy search and topological ordering.</p>
+          <div class="tier-features">
+            <span class="tier-feature-tag">COMPUTE(8)</span>
+            <span class="tier-feature-tag">MEMORY(6)</span>
+            <span class="tier-feature-tag">CONTROL(6)</span>
+            <span class="tier-feature-tag">A2A(6)</span>
+            <span class="tier-feature-tag">EFFECT(3)</span>
+            <span class="tier-feature-tag">TRANSFORM(6)</span>
+            <span class="tier-feature-tag">DAG graph</span>
+            <span class="tier-feature-tag">Kahn's sort</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier 4 -->
+    <div class="tier tier-4" onclick="toggleTier(this)">
+      <div class="tier-header">
+        <div class="tier-badge">TIER 4</div>
+        <div class="tier-title">Agent Runtime &mdash; Trust &amp; Scheduling</div>
+        <div class="tier-arrow">&#9654;</div>
+      </div>
+      <div class="tier-body">
+        <div class="tier-content">
+          <p>Agent wrapper around the VM interpreter. AgentRuntime orchestrator with multi-agent support, trust-gated messaging, and CLI (compile/run/test).</p>
+          <div class="tier-features">
+            <span class="tier-feature-tag">Agent wrapper</span>
+            <span class="tier-feature-tag">Orchestrator</span>
+            <span class="tier-feature-tag">Trust gates</span>
+            <span class="tier-feature-tag">CLI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier 3 -->
+    <div class="tier tier-3" onclick="toggleTier(this)">
+      <div class="tier-header">
+        <div class="tier-badge">TIER 3</div>
+        <div class="tier-title">A2A Protocol &mdash; Agent Communication</div>
+        <div class="tier-arrow">&#9654;</div>
+      </div>
+      <div class="tier-body">
+        <div class="tier-content">
+          <p>4 typed message kinds, 3 channel patterns, capability-based registry, 4-step trust handshaking, binary serialization with batch support. 32 native A2A opcodes in bytecode.</p>
+          <div class="tier-features">
+            <span class="tier-feature-tag">TELL</span>
+            <span class="tier-feature-tag">ASK</span>
+            <span class="tier-feature-tag">DELEGATE</span>
+            <span class="tier-feature-tag">BROADCAST</span>
+            <span class="tier-feature-tag">Trust handshake</span>
+            <span class="tier-feature-tag">Binary codec</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier 2 -->
+    <div class="tier tier-2" onclick="toggleTier(this)">
+      <div class="tier-header">
+        <div class="tier-badge">TIER 2</div>
+        <div class="tier-title">Supporting &mdash; Optimizer, JIT, Types, Stdlib, Security</div>
+        <div class="tier-arrow">&#9654;</div>
+      </div>
+      <div class="tier-body">
+        <div class="tier-content">
+          <p><strong>Optimizer:</strong> constant folding, DCE, inlining. <strong>JIT:</strong> LRU cache, execution tracing, register allocation. <strong>Types:</strong> C/Python/Rust unification, generics. <strong>Stdlib:</strong> 26 intrinsics. <strong>Security:</strong> capability tokens, sandbox.</p>
+          <div class="tier-features">
+            <span class="tier-feature-tag">Optimizer</span>
+            <span class="tier-feature-tag">JIT</span>
+            <span class="tier-feature-tag">Type system</span>
+            <span class="tier-feature-tag">Stdlib (26 fns)</span>
+            <span class="tier-feature-tag">Security</span>
+            <span class="tier-feature-tag">Hot reload</span>
+            <span class="tier-feature-tag">Cost model</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier 1 -->
+    <div class="tier tier-1" onclick="toggleTier(this)">
+      <div class="tier-header">
+        <div class="tier-badge">TIER 1</div>
+        <div class="tier-title">Core Pipeline &mdash; FLUX.MD &rarr; Bytecode &rarr; VM</div>
+        <div class="tier-arrow">&#9654;</div>
+      </div>
+      <div class="tier-body">
+        <div class="tier-content">
+          <p><strong>L0 Parser:</strong> Structured markdown with frontmatter, code blocks, agent directives. <strong>L1 Frontends:</strong> C + Python &rarr; FIR. <strong>L2 FIR:</strong> SSA IR with 15 types, 42 instructions. <strong>L3 Bytecode:</strong> 104 opcodes, 6 encoding formats. <strong>L4 VM:</strong> 64-register fetch-decode-execute.</p>
+          <div class="tier-features">
+            <span class="tier-feature-tag">FLUX.MD parser</span>
+            <span class="tier-feature-tag">C frontend</span>
+            <span class="tier-feature-tag">Python frontend</span>
+            <span class="tier-feature-tag">FIR (SSA)</span>
+            <span class="tier-feature-tag">15 types</span>
+            <span class="tier-feature-tag">42 instructions</span>
+            <span class="tier-feature-tag">104 opcodes</span>
+            <span class="tier-feature-tag">64 registers</span>
+            <span class="tier-feature-tag">Linear memory</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ LIVE DEMO ═══════════════ -->
+<section id="demo">
+  <div class="section-header">
+    <h2>Live <span class="accent">Pipeline Demo</span></h2>
+    <p>Write FLUX.MD, compile through the full pipeline, watch the VM execute</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="demo-container">
+    <div class="demo-editor">
+      <div class="panel-header">
+        <div class="panel-title"><span class="dot dot-green"></span> FLUX.MD INPUT</div>
+        <button class="btn-compile" id="btnCompile" onclick="runPipeline()">&#9654; COMPILE</button>
+      </div>
+      <textarea class="demo-textarea" id="fluxInput" spellcheck="false">---
+title: hello_flux
+version: 1.0
+---
+
+## fn: main
+
+```c
+int factorial(int n) {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+}
+
+int main() {
+    int result = factorial(5);
+    return result;
+}
+```
+
+## agent: math_worker
+
+```python
+def compute(n):
+    return n * (n + 1) // 2
+```</textarea>
+    </div>
+
+    <div class="demo-output">
+      <div class="panel-header">
+        <div class="panel-title"><span class="dot dot-yellow"></span> PIPELINE OUTPUT</div>
+      </div>
+      <div class="pipeline-stages" id="pipelineOutput">
+        <div class="pipeline-stage" id="stage-parser">
+          <div class="stage-indicator"></div>
+          <div class="stage-label">Parser</div>
+          <div class="stage-output" id="output-parser"></div>
+        </div>
+        <div class="pipeline-stage" id="stage-fir">
+          <div class="stage-indicator"></div>
+          <div class="stage-label">FIR</div>
+          <div class="stage-output" id="output-fir"></div>
+        </div>
+        <div class="pipeline-stage" id="stage-bytecode">
+          <div class="stage-indicator"></div>
+          <div class="stage-label">Bytecode</div>
+          <div class="stage-output" id="output-bytecode"></div>
+        </div>
+        <div class="pipeline-stage" id="stage-vm">
+          <div class="stage-indicator"></div>
+          <div class="stage-label">VM Exec</div>
+          <div class="stage-output" id="output-vm"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ TILE GALLERY ═══════════════ -->
+<section id="tiles">
+  <div class="section-header">
+    <h2>Tile <span class="accent">Gallery</span></h2>
+    <p>35 composable computation patterns across 6 categories</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="tile-filters">
+    <button class="tile-filter-btn active" data-filter="all">ALL (35)</button>
+    <button class="tile-filter-btn" data-filter="compute">COMPUTE (8)</button>
+    <button class="tile-filter-btn" data-filter="memory">MEMORY (6)</button>
+    <button class="tile-filter-btn" data-filter="control">CONTROL (6)</button>
+    <button class="tile-filter-btn" data-filter="a2a">A2A (6)</button>
+    <button class="tile-filter-btn" data-filter="effect">EFFECT (3)</button>
+    <button class="tile-filter-btn" data-filter="transform">TRANSFORM (6)</button>
+  </div>
+
+  <div class="tile-grid" id="tileGrid"></div>
+</section>
+
+<!-- ═══════════════ EVOLUTION ═══════════════ -->
+<section id="evolution">
+  <div class="section-header">
+    <h2>Evolution <span class="accent">Engine</span></h2>
+    <p>Watch fitness improve over generations as the system mutates and validates</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="evo-container">
+    <div class="evo-controls">
+      <button class="evo-btn" id="btnEvoRun" onclick="runEvolution()">&#9654; RUN EVOLUTION</button>
+      <button class="evo-btn" id="btnEvoReset" onclick="resetEvolution()">&#8634; RESET</button>
+      <label>Generations: <select id="evoGens" style="background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-dim);border-radius:4px;padding:0.2rem 0.5rem;font-family:var(--font-mono);font-size:0.78rem;">
+        <option value="10">10</option>
+        <option value="25" selected>25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select></label>
+    </div>
+
+    <div class="evo-stats">
+      <div class="evo-stat">
+        <div class="evo-stat-value val-gen" id="evoGen">0</div>
+        <div class="evo-stat-label">Generation</div>
+      </div>
+      <div class="evo-stat">
+        <div class="evo-stat-value val-fit" id="evoFit">0.4200</div>
+        <div class="evo-stat-label">Fitness</div>
+      </div>
+      <div class="evo-stat">
+        <div class="evo-stat-value val-mut" id="evoMut">0</div>
+        <div class="evo-stat-label">Mutations</div>
+      </div>
+    </div>
+
+    <div class="evo-chart-container">
+      <canvas class="evo-chart-canvas" id="evoChart"></canvas>
+    </div>
+
+    <div class="evo-log" id="evoLog"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-links">
+    <a href="https://github.com" target="_blank">&#128187; GitHub</a>
+    <a href="#">&#128196; MIT License</a>
+    <a href="#">&#128218; Documentation</a>
+    <a href="#">&#128172; Community</a>
+  </div>
+  <div class="footer-tagline">
+    Built with <span>FLUX</span> &mdash; Fluid Language Universal eXecution &mdash; The music never stops.
+  </div>
+</footer>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════════════════════════════════════════ -->
+<script>
+// ── UTILITIES ──
+function $(sel) { return document.querySelector(sel); }
+function $$(sel) { return document.querySelectorAll(sel); }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── NAV TOGGLE ──
+function toggleTier(el) {
+  const wasActive = el.classList.contains('active');
+  $$('.tier').forEach(t => t.classList.remove('active'));
+  if (!wasActive) el.classList.add('active');
+}
+
+// ── COUNTER ANIMATION ──
+function animateCounters() {
+  $$('.stat-value[data-count]').forEach(el => {
+    const target = parseInt(el.dataset.count);
+    const duration = 2000;
+    const start = performance.now();
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(target * ease).toLocaleString();
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+// Intersection observer for counter animation
+const statsObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { animateCounters(); statsObs.unobserve(e.target); } });
+}, { threshold: 0.5 });
+const statsBar = document.querySelector('.stats-bar');
+if (statsBar) statsObs.observe(statsBar);
+
+// ── TILE GALLERY ──
+const TILES = [
+  // COMPUTE
+  { name: 'map', cat: 'compute', icon: '&#9670;', cost: 1.0 },
+  { name: 'reduce', cat: 'compute', icon: '&#9670;', cost: 2.0 },
+  { name: 'scan', cat: 'compute', icon: '&#9670;', cost: 2.0 },
+  { name: 'filter', cat: 'compute', icon: '&#9670;', cost: 1.5 },
+  { name: 'zip', cat: 'compute', icon: '&#9670;', cost: 1.0 },
+  { name: 'flatmap', cat: 'compute', icon: '&#9670;', cost: 1.5 },
+  { name: 'sort', cat: 'compute', icon: '&#9670;', cost: 5.0 },
+  { name: 'unique', cat: 'compute', icon: '&#9670;', cost: 3.0 },
+  // MEMORY
+  { name: 'gather', cat: 'memory', icon: '&#9632;', cost: 1.0 },
+  { name: 'scatter', cat: 'memory', icon: '&#9632;', cost: 1.0 },
+  { name: 'stream', cat: 'memory', icon: '&#9632;', cost: 0.5 },
+  { name: 'copy', cat: 'memory', icon: '&#9632;', cost: 2.0 },
+  { name: 'fill', cat: 'memory', icon: '&#9632;', cost: 2.0 },
+  { name: 'transpose', cat: 'memory', icon: '&#9632;', cost: 4.0 },
+  // CONTROL
+  { name: 'loop', cat: 'control', icon: '&#9654;', cost: 3.0 },
+  { name: 'while', cat: 'control', icon: '&#9654;', cost: 4.0 },
+  { name: 'branch', cat: 'control', icon: '&#9654;', cost: 1.0 },
+  { name: 'switch', cat: 'control', icon: '&#9654;', cost: 1.5 },
+  { name: 'fuse', cat: 'control', icon: '&#9654;', cost: 2.5 },
+  { name: 'pipeline', cat: 'control', icon: '&#9654;', cost: 3.0 },
+  // A2A
+  { name: 'tell', cat: 'a2a', icon: '&#9742;', cost: 5.0 },
+  { name: 'ask', cat: 'a2a', icon: '&#9742;', cost: 10.0 },
+  { name: 'broadcast', cat: 'a2a', icon: '&#9742;', cost: 15.0 },
+  { name: 'a2a_reduce', cat: 'a2a', icon: '&#9742;', cost: 20.0 },
+  { name: 'a2a_scatter', cat: 'a2a', icon: '&#9742;', cost: 10.0 },
+  { name: 'barrier', cat: 'a2a', icon: '&#9742;', cost: 8.0 },
+  // EFFECT
+  { name: 'print_effect', cat: 'effect', icon: '&#10070;', cost: 3.0 },
+  { name: 'log_effect', cat: 'effect', icon: '&#10070;', cost: 2.0 },
+  { name: 'state_mut', cat: 'effect', icon: '&#10070;', cost: 1.0 },
+  // TRANSFORM
+  { name: 'cast', cat: 'transform', icon: '&#8693;', cost: 0.5 },
+  { name: 'reshape', cat: 'transform', icon: '&#8693;', cost: 1.0 },
+  { name: 'pack', cat: 'transform', icon: '&#8693;', cost: 0.5 },
+  { name: 'unpack', cat: 'transform', icon: '&#8693;', cost: 0.5 },
+  { name: 'join', cat: 'transform', icon: '&#8693;', cost: 2.0 },
+  { name: 'split', cat: 'transform', icon: '&#8693;', cost: 2.0 },
+];
+
+function renderTiles(filter = 'all') {
+  const grid = $('#tileGrid');
+  grid.innerHTML = '';
+  TILES.filter(t => filter === 'all' || t.cat === filter).forEach((t, i) => {
+    const card = document.createElement('div');
+    card.className = `tile-card cat-${t.cat}`;
+    card.style.animationDelay = `${i * 30}ms`;
+    card.innerHTML = `
+      <div class="tile-icon">${t.icon}</div>
+      <div class="tile-name">${t.name}</div>
+      <div class="tile-category">${t.cat}</div>
+      <div class="tile-cost">cost: ${t.cost.toFixed(1)}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+$$('.tile-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $$('.tile-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTiles(btn.dataset.filter);
+  });
+});
+
+renderTiles();
+
+// ── PIPELINE DEMO ──
+const OP = {
+  NOP:0x00, MOV:0x01, LOAD:0x02, STORE:0x03, JMP:0x04, JZ:0x05, JNZ:0x06, CALL:0x07,
+  IADD:0x08, ISUB:0x09, IMUL:0x0A, IDIV:0x0B, IMOD:0x0C, INEG:0x0D, INC:0x0E, DEC:0x0F,
+  PUSH:0x20, POP:0x21, DUP:0x22, SWAP:0x23,
+  RET:0x28, MOVI:0x2B, CMP:0x2D, JE:0x2E, JNE:0x2F,
+  JL:0x36, JGE:0x37,
+  HALT:0x80, YIELD:0x81
+};
+
+function hex(b) { return b.toString(16).toUpperCase().padStart(2, '0'); }
+function hex16(v) { return v.toString(16).toUpperCase().padStart(4, '0'); }
+
+async function runPipeline() {
+  const btn = $('#btnCompile');
+  btn.disabled = true;
+  btn.textContent = 'RUNNING...';
+
+  // Reset stages
+  $$('.pipeline-stage').forEach(s => { s.classList.remove('active', 'done'); });
+  $$('.stage-output').forEach(o => { o.innerHTML = ''; });
+
+  const input = $('#fluxInput').value;
+
+  // ── STAGE 1: PARSER ──
+  const parserStage = $('#stage-parser');
+  parserStage.classList.add('active');
+  await sleep(400);
+
+  // Parse frontmatter
+  const fmMatch = input.match(/^---\n([\s\S]*?)\n---/);
+  const fm = fmMatch ? fmMatch[1].trim().split('\n').map(l => l.split(':').map(s => s.trim())) : [];
+  const codeBlocks = [...input.matchAll(/```(\w+)\n([\s\S]*?)```/g)];
+
+  let parserHtml = '';
+  parserHtml += `<span class="bytecode-comment">// FLUX.MD Parser Output</span>\n`;
+  parserHtml += `<span class="bytecode-op">Module:</span> <span class="bytecode-operand">"hello_flux"</span>\n`;
+  parserHtml += `<span class="bytecode-op">Version:</span> <span class="bytecode-operand">1.0</span>\n\n`;
+  if (fm.length) {
+    parserHtml += `<span class="bytecode-comment">// Frontmatter</span>\n`;
+    fm.forEach(([k, v]) => { parserHtml += `  <span class="bytecode-op">${k}:</span> <span class="bytecode-operand">${v}</span>\n`; });
+    parserHtml += '\n';
+  }
+  parserHtml += `<span class="bytecode-comment">// Code blocks found: ${codeBlocks.length}</span>\n`;
+  codeBlocks.forEach((cb, i) => {
+    parserHtml += `  <span class="bytecode-op">Block[${i}]</span> lang=<span class="bytecode-hex">${cb[1]}</span> lines=<span class="bytecode-operand">${cb[2].trim().split('\n').length}</span>\n`;
+  });
+
+  // Extract function names
+  const fnNames = [...input.matchAll(/##\s*fn:\s*(\w+)/g)];
+  if (fnNames.length) {
+    parserHtml += '\n<span class="bytecode-comment">// Agent directives</span>\n';
+    fnNames.forEach(m => { parserHtml += `  <span class="bytecode-op">fn:</span> <span class="bytecode-operand">${m[1]}</span>\n`; });
+  }
+
+  $('#output-parser').innerHTML = parserHtml;
+  await sleep(800);
+  parserStage.classList.remove('active');
+  parserStage.classList.add('done');
+
+  // ── STAGE 2: FIR ──
+  const firStage = $('#stage-fir');
+  firStage.classList.add('active');
+  await sleep(400);
+
+  let firHtml = '';
+  firHtml += `<span class="bytecode-comment">// FIR (Flux Intermediate Representation)</span>\n`;
+  firHtml += `<span class="bytecode-op">module</span> <span class="bytecode-operand">hello_flux</span> {\n\n`;
+  firHtml += `  <span class="bytecode-comment">// func factorial(i32) -> i32</span>\n`;
+  firHtml += `  <span class="bytecode-op">func</span> <span class="bytecode-operand">@factorial</span>(<span class="bytecode-hex">%n</span>: i32) -> i32 {\n`;
+  firHtml += `  <span class="bytecode-hex">bb0:</span>\n`;
+  firHtml += `    <span class="bytecode-op">%cmp</span> = icmp sle <span class="bytecode-hex">%n</span>, <span class="bytecode-operand">1</span>  <span class="bytecode-comment">// n <= 1?</span>\n`;
+  firHtml += `    <span class="bytecode-op">br</span> <span class="bytecode-hex">%cmp</span>, <span class="bytecode-hex">bb1</span>, <span class="bytecode-hex">bb2</span>\n`;
+  firHtml += `  <span class="bytecode-hex">bb1:</span>  <span class="bytecode-comment">// base case</span>\n`;
+  firHtml += `    <span class="bytecode-op">ret</span> <span class="bytecode-operand">1</span>\n`;
+  firHtml += `  <span class="bytecode-hex">bb2:</span>  <span class="bytecode-comment">// recursive case</span>\n`;
+  firHtml += `    <span class="bytecode-op">%n1</span> = isub <span class="bytecode-hex">%n</span>, <span class="bytecode-operand">1</span>\n`;
+  firHtml += `    <span class="bytecode-op">%rec</span> = call <span class="bytecode-operand">@factorial</span>(<span class="bytecode-hex">%n1</span>)\n`;
+  firHtml += `    <span class="bytecode-op">%res</span> = imul <span class="bytecode-hex">%n</span>, <span class="bytecode-hex">%rec</span>\n`;
+  firHtml += `    <span class="bytecode-op">ret</span> <span class="bytecode-hex">%res</span>\n`;
+  firHtml += `  }\n\n`;
+  firHtml += `  <span class="bytecode-comment">// func main() -> i32</span>\n`;
+  firHtml += `  <span class="bytecode-op">func</span> <span class="bytecode-operand">@main</span>() -> i32 {\n`;
+  firHtml += `  <span class="bytecode-hex">bb0:</span>\n`;
+  firHtml += `    <span class="bytecode-op">%r</span> = call <span class="bytecode-operand">@factorial</span>(<span class="bytecode-operand">5</span>)\n`;
+  firHtml += `    <span class="bytecode-op">ret</span> <span class="bytecode-hex">%r</span>\n`;
+  firHtml += `  }\n`;
+  firHtml += `}`;
+
+  $('#output-fir').innerHTML = firHtml;
+  await sleep(1200);
+  firStage.classList.remove('active');
+  firStage.classList.add('done');
+
+  // ── STAGE 3: BYTECODE ──
+  const bcStage = $('#stage-bytecode');
+  bcStage.classList.add('active');
+  await sleep(400);
+
+  // Generate realistic bytecode for factorial(5)
+  const bytecode = [
+    // factorial function
+    { addr: 0x0000, bytes: [0x2D, 0x00, 0x01], op: 'CMP', operands: 'R0, 1', comment: '; compare n <= 1' },
+    { addr: 0x0003, bytes: [0x36, 0x0C, 0x00, 0x0B], op: 'JL', operands: 'R12, +0x000B', comment: '; jump to base case' },
+    { addr: 0x0007, bytes: [0x0F, 0x01], op: 'DEC', operands: 'R1', comment: '; n - 1' },
+    { addr: 0x0009, bytes: [0x07, 0x0A, 0x00, 0x02], op: 'CALL', operands: 'R10, @factorial', comment: '; recursive call' },
+    { addr: 0x000D, bytes: [0x0A, 0x00, 0x00, 0x0A], op: 'IMUL', operands: 'R0, R0, R10', comment: '; n * factorial(n-1)' },
+    { addr: 0x0010, bytes: [0x28, 0x00], op: 'RET', operands: 'R0', comment: '; return result' },
+    // base case
+    { addr: 0x0012, bytes: [0x2B, 0x00, 0x01, 0x00], op: 'MOVI', operands: 'R0, 1', comment: '; return 1' },
+    { addr: 0x0016, bytes: [0x28, 0x00], op: 'RET', operands: 'R0', comment: '; return' },
+    // main function
+    { addr: 0x0018, bytes: [0x2B, 0x01, 0x05, 0x00], op: 'MOVI', operands: 'R1, 5', comment: '; argument: n=5' },
+    { addr: 0x001C, bytes: [0x07, 0x0A, 0x00, 0x00], op: 'CALL', operands: 'R10, @factorial', comment: '; call factorial(5)' },
+    { addr: 0x0020, bytes: [0x80], op: 'HALT', operands: '', comment: '; stop, R10 = 120' },
+  ];
+
+  let bcHtml = '';
+  bcHtml += `<span class="bytecode-comment">// Bytecode: ${bytecode.length} instructions, 33 bytes</span>\n`;
+  bcHtml += `<span class="bytecode-comment">// Format: ADDR  HEX             OP          OPERANDS</span>\n\n`;
+  bytecode.forEach((inst, i) => {
+    const hexBytes = inst.bytes.map(b => hex(b)).join(' ');
+    bcHtml += `<span class="bytecode-addr">0x${hex16(inst.addr)}</span>  `;
+    bcHtml += `<span class="bytecode-hex">${hexBytes.padEnd(16)}</span>  `;
+    bcHtml += `<span class="bytecode-op">${inst.op.padEnd(8)}</span>  `;
+    bcHtml += `<span class="bytecode-operand">${inst.operands}</span>  `;
+    bcHtml += `<span class="bytecode-comment">${inst.comment}</span>\n`;
+    if (i === bytecode.length - 1) {
+      await sleep(80);
+      $('#output-bytecode').innerHTML = bcHtml + '<span class="bytecode-comment">\n// ...</span>';
+    }
+  });
+
+  await sleep(1000);
+  bcStage.classList.remove('active');
+  bcStage.classList.add('done');
+
+  // ── STAGE 4: VM EXECUTION ──
+  const vmStage = $('#stage-vm');
+  vmStage.classList.add('active');
+  await sleep(400);
+
+  const vmSteps = [
+    { pc: 0x0018, op: 'MOVI R1, 5', reg: 'R1=5', note: 'Load argument' },
+    { pc: 0x001C, op: 'CALL @factorial(5)', reg: 'R1=5', note: 'Enter factorial' },
+    { pc: 0x0000, op: 'CMP R0, 1', reg: 'R0=5', note: '5 <= 1? No' },
+    { pc: 0x0007, op: 'DEC R1', reg: 'R1=4', note: 'n-1 = 4' },
+    { pc: 0x0009, op: 'CALL @factorial(4)', reg: 'R1=4', note: 'Recurse' },
+    { pc: 0x0000, op: 'CMP R0, 1', reg: 'R0=4', note: '4 <= 1? No' },
+    { pc: 0x0007, op: 'DEC R1', reg: 'R1=3', note: 'n-1 = 3' },
+    { pc: 0x0009, op: 'CALL @factorial(3)', reg: 'R1=3', note: 'Recurse' },
+    { pc: 0x0000, op: 'CMP R0, 1', reg: 'R0=3', note: '3 <= 1? No' },
+    { pc: 0x0007, op: 'DEC R1', reg: 'R1=2', note: 'n-1 = 2' },
+    { pc: 0x0009, op: 'CALL @factorial(2)', reg: 'R1=2', note: 'Recurse' },
+    { pc: 0x0000, op: 'CMP R0, 1', reg: 'R0=2', note: '2 <= 1? No' },
+    { pc: 0x0007, op: 'DEC R1', reg: 'R1=1', note: 'n-1 = 1' },
+    { pc: 0x0009, op: 'CALL @factorial(1)', reg: 'R1=1', note: 'Recurse' },
+    { pc: 0x0000, op: 'CMP R0, 1', reg: 'R0=1', note: '1 <= 1? Yes!' },
+    { pc: 0x0012, op: 'MOVI R0, 1', reg: 'R0=1', note: 'Base case: return 1' },
+    { pc: 0x0016, op: 'RET R0', reg: 'R0=1', note: 'fact(1) = 1' },
+    { pc: 0x000D, op: 'IMUL R0, R0, R10', reg: 'R0=2', note: '2 * 1 = 2' },
+    { pc: 0x0010, op: 'RET R0', reg: 'R0=2', note: 'fact(2) = 2' },
+    { pc: 0x000D, op: 'IMUL R0, R0, R10', reg: 'R0=6', note: '3 * 2 = 6' },
+    { pc: 0x0010, op: 'RET R0', reg: 'R0=6', note: 'fact(3) = 6' },
+    { pc: 0x000D, op: 'IMUL R0, R0, R10', reg: 'R0=24', note: '4 * 6 = 24' },
+    { pc: 0x0010, op: 'RET R0', reg: 'R0=24', note: 'fact(4) = 24' },
+    { pc: 0x000D, op: 'IMUL R0, R0, R10', reg: 'R0=120', note: '5 * 24 = 120' },
+    { pc: 0x0010, op: 'RET R0', reg: 'R0=120', note: 'fact(5) = 120' },
+    { pc: 0x0020, op: 'HALT', reg: 'R10=120', note: 'DONE. factorial(5) = 120' },
+  ];
+
+  let vmHtml = '';
+  vmHtml += `<span class="bytecode-comment">// Micro-VM Execution Trace</span>\n`;
+  vmHtml += `<span class="bytecode-comment">// 64-register file · 10M cycle budget</span>\n\n`;
+
+  for (let i = 0; i < vmSteps.length; i++) {
+    const step = vmSteps[i];
+    const isHalt = step.op === 'HALT';
+    const isReturn = step.op.startsWith('RET');
+    const isResult = step.reg.includes('120') || isHalt;
+
+    vmHtml += `<span class="vm-step${isResult ? ' vm-step-highlight' : ''}">`;
+    vmHtml += `<span class="bytecode-addr">0x${hex16(step.pc)}</span>  `;
+    vmHtml += `<span class="${isHalt ? 'bytecode-op' : isReturn ? 'bytecode-hex' : 'bytecode-operand'}">${step.op.padEnd(28)}</span>  `;
+    vmHtml += `<span class="${isResult ? 'bytecode-op' : 'bytecode-hex'}">${step.reg.padEnd(12)}</span>  `;
+    vmHtml += `<span class="bytecode-comment">${step.note}</span>`;
+    vmHtml += `</span>\n`;
+
+    $('#output-vm').innerHTML = vmHtml;
+    if (isHalt) {
+      await sleep(600);
+      break;
+    }
+    await sleep(80);
+  }
+
+  vmStage.classList.remove('active');
+  vmStage.classList.add('done');
+
+  btn.disabled = false;
+  btn.textContent = '\u25B6 COMPILE';
+}
+
+// ── EVOLUTION ENGINE ──
+let evoData = [];
+let evoRunning = false;
+let evoAnimFrame = null;
+
+const MUTATIONS = [
+  'RECOMPILE_LANGUAGE',
+  'FUSE_PATTERN',
+  'REPLACE_TILE',
+  'ADD_TILE',
+  'MERGE_TILES',
+  'SPLIT_TILE',
+  'INLINE_OPTIMIZATION'
+];
+
+function resetEvolution() {
+  evoRunning = false;
+  if (evoAnimFrame) cancelAnimationFrame(evoAnimFrame);
+  evoData = [];
+  $('#evoGen').textContent = '0';
+  $('#evoFit').textContent = '0.4200';
+  $('#evoMut').textContent = '0';
+  $('#evoLog').innerHTML = '';
+  drawEvoChart();
+}
+
+function runEvolution() {
+  if (evoRunning) return;
+  evoRunning = true;
+  evoData = [];
+  const totalGens = parseInt($('#evoGens').value);
+  const btnRun = $('#btnEvoRun');
+  const btnReset = $('#btnEvoReset');
+  btnRun.disabled = true;
+  btnReset.disabled = true;
+
+  let fitness = 0.42;
+  let totalMuts = 0;
+  const log = $('#evoLog');
+  log.innerHTML = '';
+
+  let gen = 0;
+  function nextGen() {
+    if (gen >= totalGens || !evoRunning) {
+      evoRunning = false;
+      btnRun.disabled = false;
+      btnReset.disabled = false;
+      return;
+    }
+
+    gen++;
+    const mutation = MUTATIONS[Math.floor(Math.random() * MUTATIONS.length)];
+    const speedup = 0.01 + Math.random() * 0.06;
+    const improvement = speedup * (0.7 + Math.random() * 0.5);
+    fitness = Math.min(0.999, fitness + improvement);
+    totalMuts++;
+
+    evoData.push({ gen, fitness, mutation, speedup });
+
+    // Update stats
+    $('#evoGen').textContent = gen;
+    $('#evoFit').textContent = fitness.toFixed(4);
+    $('#evoMut').textContent = totalMuts;
+
+    // Log entry
+    const entry = document.createElement('div');
+    entry.className = 'evo-log-entry';
+    entry.innerHTML = `<span class="log-gen">Gen ${String(gen).padStart(3)}</span> ` +
+      `<span class="log-mutation">${mutation.padEnd(22)}</span> ` +
+      `<span class="log-speedup">+${(speedup * 100).toFixed(1)}% speedup</span> ` +
+      `<span class="log-fit">fitness=${fitness.toFixed(4)}</span>`;
+    log.appendChild(entry);
+    log.scrollTop = log.scrollHeight;
+
+    drawEvoChart();
+    setTimeout(nextGen, 150 + Math.random() * 100);
+  }
+
+  nextGen();
+}
+
+function drawEvoChart() {
+  const canvas = $('#evoChart');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width;
+  const H = rect.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 20, right: 20, bottom: 30, left: 50 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+
+  const maxGen = Math.max(25, evoData.length || 25);
+  const minFit = 0.3;
+  const maxFit = 1.0;
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.top + (ch / 5) * i;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(W - pad.right, y);
+    ctx.stroke();
+
+    ctx.fillStyle = '#555577';
+    ctx.font = '10px JetBrains Mono';
+    ctx.textAlign = 'right';
+    const val = maxFit - ((maxFit - minFit) / 5) * i;
+    ctx.fillText(val.toFixed(2), pad.left - 8, y + 4);
+  }
+
+  // X-axis labels
+  ctx.fillStyle = '#555577';
+  ctx.textAlign = 'center';
+  ctx.font = '10px JetBrains Mono';
+  for (let i = 0; i <= 5; i++) {
+    const x = pad.left + (cw / 5) * i;
+    const gen = Math.round((maxGen / 5) * i);
+    ctx.fillText(gen, x, H - 8);
+  }
+
+  // Axis labels
+  ctx.fillStyle = '#8888aa';
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('Generation', W / 2, H - 0);
+  ctx.save();
+  ctx.translate(12, H / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('Fitness', 0, 0);
+  ctx.restore();
+
+  if (evoData.length < 2) {
+    // Draw "awaiting data" text
+    ctx.fillStyle = '#555577';
+    ctx.font = '13px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('Press RUN EVOLUTION to start', W / 2, H / 2);
+    return;
+  }
+
+  // Draw fitness line with gradient
+  const gradient = ctx.createLinearGradient(pad.left, 0, W - pad.right, 0);
+  gradient.addColorStop(0, '#00f0ff');
+  gradient.addColorStop(0.5, '#00ff88');
+  gradient.addColorStop(1, '#ffee00');
+
+  // Fill area under curve
+  ctx.beginPath();
+  evoData.forEach((d, i) => {
+    const x = pad.left + (d.gen / maxGen) * cw;
+    const y = pad.top + ((maxFit - d.fitness) / (maxFit - minFit)) * ch;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  const lastX = pad.left + (evoData[evoData.length - 1].gen / maxGen) * cw;
+  ctx.lineTo(lastX, pad.top + ch);
+  ctx.lineTo(pad.left, pad.top + ch);
+  ctx.closePath();
+  const fillGrad = ctx.createLinearGradient(0, pad.top, 0, pad.top + ch);
+  fillGrad.addColorStop(0, 'rgba(0,255,136,0.15)');
+  fillGrad.addColorStop(1, 'rgba(0,240,255,0.02)');
+  ctx.fillStyle = fillGrad;
+  ctx.fill();
+
+  // Draw the line
+  ctx.beginPath();
+  evoData.forEach((d, i) => {
+    const x = pad.left + (d.gen / maxGen) * cw;
+    const y = pad.top + ((maxFit - d.fitness) / (maxFit - minFit)) * ch;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = gradient;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Glow effect
+  ctx.beginPath();
+  evoData.forEach((d, i) => {
+    const x = pad.left + (d.gen / maxGen) * cw;
+    const y = pad.top + ((maxFit - d.fitness) / (maxFit - minFit)) * ch;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = 'rgba(0,255,136,0.3)';
+  ctx.lineWidth = 6;
+  ctx.stroke();
+
+  // Data points
+  evoData.forEach((d, i) => {
+    if (evoData.length > 50 && i % 3 !== 0 && i !== evoData.length - 1) return;
+    const x = pad.left + (d.gen / maxGen) * cw;
+    const y = pad.top + ((maxFit - d.fitness) / (maxFit - minFit)) * ch;
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#00ff88';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,255,136,0.2)';
+    ctx.fill();
+  });
+
+  // Highlight last point
+  const last = evoData[evoData.length - 1];
+  const lx = pad.left + (last.gen / maxGen) * cw;
+  const ly = pad.top + ((maxFit - last.fitness) / (maxFit - minFit)) * ch;
+  ctx.beginPath();
+  ctx.arc(lx, ly, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffee00';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(lx, ly, 10, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255,238,0,0.2)';
+  ctx.fill();
+
+  // Value label on last point
+  ctx.fillStyle = '#ffee00';
+  ctx.font = 'bold 11px JetBrains Mono';
+  ctx.textAlign = 'left';
+  ctx.fillText(last.fitness.toFixed(4), lx + 14, ly + 4);
+}
+
+// Draw initial empty chart
+window.addEventListener('load', () => { drawEvoChart(); });
+window.addEventListener('resize', () => { drawEvoChart(); });
+
+// ── SMOOTH SCROLL for nav links ──
+$$('.nav-links a').forEach(a => {
+  a.addEventListener('click', (e) => {
+    const href = a.getAttribute('href');
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+      // Close mobile nav
+      $('#navLinks').classList.remove('open');
+    }
+  });
+});
+
+// ── SCROLL REVEAL ──
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  $$('section:not(.hero), .stats-bar').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(30px)';
+    el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    revealObs.observe(el);
+  });
+});
+</script>
+</body>
+</html>

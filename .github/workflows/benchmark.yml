@@ -1,0 +1,40 @@
+name: Benchmarks
+
+on:
+  schedule:
+    # Every Monday at 00:00 UTC
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && pip install -e .
+
+      - name: Run benchmark suite
+        id: benchmarks
+        run: |
+          echo "## FLUX Benchmark Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Run:** $(date -u '+%Y-%m-%d %H:%M:%S UTC') | **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          PYTHONPATH=src python -m benchmarks.benchmarks >> $GITHUB_STEP_SUMMARY 2>&1
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Post benchmark summary
+        if: always()
+        run: |
+          echo "Benchmarks completed. See the [Job Summary](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for results."
