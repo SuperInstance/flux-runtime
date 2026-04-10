@@ -1,5 +1,12 @@
 # FLUX: Fluid Language Universal eXecution
 
+[![CI](https://github.com/SuperInstance/flux-runtime/actions/workflows/ci.yml/badge.svg)](https://github.com/SuperInstance/flux-runtime/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests: 1848](https://img.shields.io/badge/tests-1848-brightgreen.svg)](https://github.com/SuperInstance/flux-runtime)
+[![Dependencies: 0](https://img.shields.io/badge/deps-0-success.svg)](https://github.com/SuperInstance/flux-runtime)
+[![Playground](https://img.shields.io/badge/try-playground-ff69b4.svg)](https://github.com/SuperInstance/flux-runtime/tree/main/playground)
+
 **A Self-Assembling, Self-Improving Runtime — The DJ Booth for Agent Code**
 
 ```
@@ -82,15 +89,25 @@ FLUX treats agents as first-class citizens. Agents write structured markdown con
 
 ## Quick Start
 
-### Prerequisites
+### Install
 
-- Python 3.10+ (stdlib only — no external dependencies)
+```bash
+# Clone and install (editable dev mode)
+git clone https://github.com/SuperInstance/flux-runtime.git
+cd flux-runtime
+pip install -e ".[dev]"
+
+# Or just install with zero setup
+pip install flux-runtime
+```
+
+> **Zero external dependencies** — FLUX runs on Python 3.10+ stdlib alone. The `[dev]` extras add testing/linting tools.
 
 ### The Self-Improving Demo (recommended)
 
 ```bash
-cd flux-repo
-PYTHONPATH=src python3 -m flux.synthesis.demo
+flux demo
+# or: python -m flux.synthesis.demo
 ```
 
 This demonstrates the entire system: loading nested modules, profiling execution, classifying heat levels, running the evolution engine, showing language upgrades, and hot-reloading a card mid-set.
@@ -98,8 +115,7 @@ This demonstrates the entire system: loading nested modules, profiling execution
 ### Run the Tests
 
 ```bash
-cd flux-repo
-PYTHONPATH=src python3 -m pytest tests/ -v
+pytest tests/ -v
 # 1848 passed in ~13s
 ```
 
@@ -417,7 +433,7 @@ FLUX integrates the best ideas from:
 
 1. Fork the repo
 2. Create a feature branch (`git checkout -b feature/my-feature`)
-3. Write code + tests (`PYTHONPATH=src python3 -m pytest tests/ -v`)
+3. Write code + tests (`pytest tests/ -v`)
 4. Ensure all 1848 tests pass
 5. Commit with descriptive message
 6. Open a pull request
@@ -429,6 +445,10 @@ FLUX integrates the best ideas from:
 - No external dependencies — stdlib only
 - The FIR is the universal pivot — all frontends produce it, all backends consume it
 - Hot-reload at any granularity must never drop in-flight requests
+
+### Try it Online
+
+Open [`playground/index.html`](playground/index.html) in your browser for an interactive tour of the architecture, live pipeline demo, tile gallery, and evolution visualizer.
 
 ## License
 
