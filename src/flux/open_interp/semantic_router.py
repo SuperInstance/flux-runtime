@@ -249,34 +249,38 @@ class SemanticRoutingTable:
         }
         table.register(babel)
         
-        # Quill — Architect-rank, protocol design & ISA convergence
-        quill = AgentKnowledge(
-            agent_name="Quill",
+        # Super Z — Cartographer/Scout
+        superz = AgentKnowledge(
+            agent_name="Super Z",
             role=AgentRole.VESSEL,
             repo="https://github.com/SuperInstance/superz-vessel",
             specializations=[
-                "protocol-design", "isa-convergence", "signal-language",
-                "a2a-unification", "technical-writing", "cross-agent-coordination",
-                "specification-authoring", "fleet-architecture",
+                "spec-writing", "fleet-auditing", "bytecode-programs",
+                "cross-specification-analysis", "a2a-integration",
+                "signal-language", "documentation", "vocabulary",
             ],
-            vocab_count=0,
-            test_count=0,
-            can_execute={"python", "javascript", "typescript", "go"},
+            vocab_count=15,  # 15+ new PRGFs proposed in viewpoint mapping
+            test_count=14,  # 14/14 FLUX program tests passing
+            can_execute={"python", "typescript", "javascript", "go"},
         )
-        quill.domains = {
-            "protocol-design": VocabularyDomain("protocol-design", 1, 0.95,
-                tags=["signal-language", "a2a", "32-core-ops", "6-primitives"]),
-            "isa-convergence": VocabularyDomain("isa-convergence", 1, 0.9,
-                tags=["4-competing-isas", "unified-isa", "3-phase-plan"]),
-            "a2a-unification": VocabularyDomain("a2a-unification", 1, 0.9,
-                tags=["5-phase-plan", "binary-runtime-json-protocol", "futs-fir-bridge"]),
-            "specification": VocabularyDomain("specification", 7, 0.95,
-                tags=["signal-md", "amendment-1", "isa-analysis", "greenhorn-analysis"]),
-            "fleet-coordination": VocabularyDomain("fleet-coordination", 5, 0.85,
-                tags=["bottle-protocol", "cross-agent-review", "peer-mapping"]),
-            "technical-writing": VocabularyDomain("technical-writing", 10, 0.9,
-                tags=["formal-specs", "audit-reports", "architecture-docs"]),
+        superz.domains = {
+            "spec-writing": VocabularyDomain("spec-writing", 8, 0.95,
+                tags=["isa", "fir", "a2a", "signal", "envelope", "viewpoint"]),
+            "fleet-auditing": VocabularyDomain("fleet-auditing", 12, 0.9,
+                tags=["conformance", "health", "cross-repo"]),
+            "bytecode": VocabularyDomain("bytecode", 4, 0.9,
+                tags=["programs", "conformance", "opcode-reference"]),
+            "a2a": VocabularyDomain("a2a", 6, 0.85,
+                tags=["primitives", "protocol", "integration"]),
+            "signal-language": VocabularyDomain("signal-language", 1, 0.9,
+                tags=["compiler", "formal-spec"]),
+            "viewpoint-opcodes": VocabularyDomain("viewpoint-opcodes", 16, 0.85,
+                tags=["metadata-plane", "prgf-mapping", "evidentiality"]),
+            "documentation": VocabularyDomain("documentation", 25, 0.9,
+                tags=["fleet-navigator", "census", "onboarding-guide"]),
+            "vocabulary": VocabularyDomain("vocabulary", 44, 0.8,
+                tags=["standalone-library", "prgf", "envelope"]),
         }
-        table.register(quill)
+        table.register(superz)
         
         return table
