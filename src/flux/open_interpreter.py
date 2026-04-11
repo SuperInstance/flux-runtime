@@ -187,8 +187,12 @@ class OpenFluxInterpreter:
             parsed = self._parse_natural_language(input_text.strip())
             bytecode.extend(parsed)
 
-        # Ensure HALT at the end if not present
-        if not bytecode or bytecode[-1] != Op.HALT:
+        # Ensure HALT at the end
+        # Always append HALT — the last byte might be data that coincidentally
+        # equals Op.HALT (e.g., MOVI R0, -32768 encodes as 0x2b 0x00 0x00 0x80)
+        if bytecode:
+            bytecode.append(Op.HALT)
+        else:
             bytecode.append(Op.HALT)
 
         return bytes(bytecode)
