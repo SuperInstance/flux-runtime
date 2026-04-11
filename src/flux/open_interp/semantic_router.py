@@ -249,4 +249,38 @@ class SemanticRoutingTable:
         }
         table.register(babel)
         
+        # Super Z — Cartographer/Scout
+        superz = AgentKnowledge(
+            agent_name="Super Z",
+            role=AgentRole.VESSEL,
+            repo="https://github.com/SuperInstance/superz-vessel",
+            specializations=[
+                "spec-writing", "fleet-auditing", "bytecode-programs",
+                "cross-specification-analysis", "a2a-integration",
+                "signal-language", "documentation", "vocabulary",
+            ],
+            vocab_count=15,  # 15+ new PRGFs proposed in viewpoint mapping
+            test_count=14,  # 14/14 FLUX program tests passing
+            can_execute={"python", "typescript", "javascript", "go"},
+        )
+        superz.domains = {
+            "spec-writing": VocabularyDomain("spec-writing", 8, 0.95,
+                tags=["isa", "fir", "a2a", "signal", "envelope", "viewpoint"]),
+            "fleet-auditing": VocabularyDomain("fleet-auditing", 12, 0.9,
+                tags=["conformance", "health", "cross-repo"]),
+            "bytecode": VocabularyDomain("bytecode", 4, 0.9,
+                tags=["programs", "conformance", "opcode-reference"]),
+            "a2a": VocabularyDomain("a2a", 6, 0.85,
+                tags=["primitives", "protocol", "integration"]),
+            "signal-language": VocabularyDomain("signal-language", 1, 0.9,
+                tags=["compiler", "formal-spec"]),
+            "viewpoint-opcodes": VocabularyDomain("viewpoint-opcodes", 16, 0.85,
+                tags=["metadata-plane", "prgf-mapping", "evidentiality"]),
+            "documentation": VocabularyDomain("documentation", 25, 0.9,
+                tags=["fleet-navigator", "census", "onboarding-guide"]),
+            "vocabulary": VocabularyDomain("vocabulary", 44, 0.8,
+                tags=["standalone-library", "prgf", "envelope"]),
+        }
+        table.register(superz)
+        
         return table
