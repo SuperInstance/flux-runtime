@@ -1344,8 +1344,15 @@ class Interpreter:
 
         # ── ISA v3: Evolution & Meta (0x7C-0x7F) ───────────────────────────
         if opcode_byte == Op.EVOLVE:
-            rd, imm = self._decode_operands_D()
-            self.regs.write_gp(rd, imm)
+            rd, fitness_raw = self._decode_operands_D()
+            # Scale fitness from signed i16 to [0.0, 1.0]
+            fitness = max(0.0, min(1.0, (fitness_raw + 32768) / 65535))
+            if not hasattr(self, '_evo_engine'):
+                from flux.vm.evolution import EvolutionEngine
+                self._evo_engine = EvolutionEngine()
+                self._evo_engine.add_behavior("default", 0.5)
+            gen = self._evo_engine.cycle(fitness)
+            self.regs.write_gp(rd, gen)
             return
         if opcode_byte == Op.INSTINCT:
             rd, imm = self._decode_operands_D()
