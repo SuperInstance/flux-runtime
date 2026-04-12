@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-04-12T05:43:50.670300+00:00",
-  "runtime": "python",
-  "runtime_label": "unified_interpreter.py (Python)",
+  "timestamp": "2026-04-12T05:43:50.691522+00:00",
+  "runtime": "c",
+  "runtime_label": "flux_vm_unified (C)",
   "isa": "unified (isa_unified.py)",
   "suite": "original",
   "summary": {

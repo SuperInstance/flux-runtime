@@ -1,0 +1,309 @@
+{
+  "runtimes": [
+    "python",
+    "c"
+  ],
+  "matrix": {
+    "ADD overflow (255 + 1 = 256)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "ADD two registers": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "ADD with all-three overlap (R0 = R0 + R0)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "ADD with rd=rs1 overlap (R1 = R1 + R2)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "ADD with rd=rs2 overlap (R2 = R0 + R2)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "ADDI add immediate": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "ADDI16 add 16-bit immediate": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "AND bitwise": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "ANDI and immediate": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "CMP_EQ sets result for equal values": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "CMP_EQ sets result for unequal values": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "CMP_GT equal values is false": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "CMP_GT greater than is true": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "CMP_LT equal values is false": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "CMP_LT less than is true": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "CMP_NE equal values is false": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "CMP_NE not equal is true": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "DEC decrements register": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "DEC from 0 to -1": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "DEC from 1 to 0": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "DIV integer division": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "Fibonacci(10) = 55": {
+      "python": "SKIP",
+      "c": "SKIP"
+    },
+    "GCD of 48 and 18 = 6 (Euclid's algorithm)": {
+      "python": "SKIP",
+      "c": "SKIP"
+    },
+    "HALT terminates execution": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "INC from -1 to 0": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "INC from 254 to 255": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "INC increments register": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "JAL saves return address (Format F)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "JMP forward skips instruction": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "JNZ not taken (falls through)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "JNZ taken (conditional branch)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "JZ taken (zero branch)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "LOOP counts down (3 iterations)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MAX of two values": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MIN of two values": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MOD by 1 (always 0)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MOD two registers": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MOV between registers": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MOVI loads immediate value": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MOVI loads negative value": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MOVI with 0": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MOVI with 255 (sign-extended to -1)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MOVI16 loads large immediate": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MUL by zero": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MUL identity (x * 1 = x)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MUL two registers": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "MUL with rd=rs1 overlap (R0 = R0 * R1)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "Multiple MOVs in sequence": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "Multiple PUSH and POP (LIFO order)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "Multiple memory locations (addr 0 and addr 4)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "NEG negates register": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "NOP does nothing": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "NOT bitwise (Format B)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "OR bitwise": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "ORI or immediate": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "PUSH and POP preserve value": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SHL shift left by register": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SHLI shift left by immediate (Format D)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SHR shift right by register": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SHRI shift right by immediate (Format D)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "STORE then LOAD at address 0": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "STORE then LOAD at non-zero address": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "STOREOFF then LOADOFF at offset 0 (Format G)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "STOREOFF then LOADOFF at offset 16 (Format G)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SUB self-zero (R0 = R0 - R0)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SUB two registers": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SUB underflow (0 - 1 = -1)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SUB with rd=rs1 overlap (R0 = R0 - R1)": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SUBI subtract immediate": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SUBI16 subtract 16-bit immediate": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "SWP swaps two registers": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "Sum of squares 1..5 = 55": {
+      "python": "SKIP",
+      "c": "SKIP"
+    },
+    "XOR bitwise": {
+      "python": "PASS",
+      "c": "PASS"
+    },
+    "XORI xor immediate": {
+      "python": "PASS",
+      "c": "PASS"
+    }
+  },
+  "summary": {
+    "total_tests": 74,
+    "agreements": 71,
+    "disagreements": 0
+  }
+}

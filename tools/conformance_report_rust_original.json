@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-04-12T05:43:50.692105+00:00",
+  "runtime": "rust",
+  "runtime_label": "flux-vm (Rust) \u2014 NOT AVAILABLE",
+  "isa": "unified (isa_unified.py)",
+  "suite": "original",
+  "summary": {
+    "total": 23,
+    "passed": 0,
+    "failed": 0,
+    "skipped": 23,
+    "errors": 0,
+    "total_cycles": 0,
+    "unavailable_reason": "Rust runtime not implemented yet. See flux-rust or flux-coop-runtime repos."
+  },
+  "results": []
+}
