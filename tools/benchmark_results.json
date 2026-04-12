@@ -1,0 +1,483 @@
+{
+  "timestamp": "2026-04-12 06:25:30 UTC",
+  "platform": "Linux x86_64",
+  "python_version": "3.12.13",
+  "micro": [
+    {
+      "category": "arithmetic",
+      "opcode": "ADD",
+      "fmt": "E",
+      "ops_per_sec": 1506295.6878667567,
+      "ns_per_op": 663.8802779925754,
+      "cycles": 500030
+    },
+    {
+      "category": "arithmetic",
+      "opcode": "SUB",
+      "fmt": "E",
+      "ops_per_sec": 1513833.69080543,
+      "ns_per_op": 660.5745440028841,
+      "cycles": 500030
+    },
+    {
+      "category": "arithmetic",
+      "opcode": "MUL",
+      "fmt": "E",
+      "ops_per_sec": 1450215.1774019247,
+      "ns_per_op": 689.5528440072667,
+      "cycles": 500030
+    },
+    {
+      "category": "arithmetic",
+      "opcode": "DIV",
+      "fmt": "E",
+      "ops_per_sec": 1356457.6297935464,
+      "ns_per_op": 737.2143279935699,
+      "cycles": 500030
+    },
+    {
+      "category": "arithmetic",
+      "opcode": "MOD",
+      "fmt": "E",
+      "ops_per_sec": 1329741.2589424157,
+      "ns_per_op": 752.0260000019334,
+      "cycles": 500030
+    },
+    {
+      "category": "arithmetic",
+      "opcode": "NEG",
+      "fmt": "B",
+      "ops_per_sec": 2157858.715376492,
+      "ns_per_op": 463.4223699977156,
+      "cycles": 500030
+    },
+    {
+      "category": "arithmetic",
+      "opcode": "INC",
+      "fmt": "B",
+      "ops_per_sec": 2311852.935182345,
+      "ns_per_op": 432.5534660019912,
+      "cycles": 500030
+    },
+    {
+      "category": "arithmetic",
+      "opcode": "DEC",
+      "fmt": "B",
+      "ops_per_sec": 2252287.558398223,
+      "ns_per_op": 443.99303999671247,
+      "cycles": 500030
+    },
+    {
+      "category": "memory",
+      "opcode": "LOAD",
+      "fmt": "E",
+      "ops_per_sec": 1037096.8377266316,
+      "ns_per_op": 964.230112003861,
+      "cycles": 500030
+    },
+    {
+      "category": "memory",
+      "opcode": "STORE",
+      "fmt": "E",
+      "ops_per_sec": 943924.927663092,
+      "ns_per_op": 1059.4062840100378,
+      "cycles": 500030
+    },
+    {
+      "category": "memory",
+      "opcode": "MOV",
+      "fmt": "E",
+      "ops_per_sec": 1220496.8353943885,
+      "ns_per_op": 819.3384620099096,
+      "cycles": 500030
+    },
+    {
+      "category": "memory",
+      "opcode": "PUSH",
+      "fmt": "B",
+      "ops_per_sec": 1173720.2441079218,
+      "ns_per_op": 851.9917800003896,
+      "cycles": 1000030
+    },
+    {
+      "category": "memory",
+      "opcode": "POP",
+      "fmt": "B",
+      "ops_per_sec": 1174812.7560568445,
+      "ns_per_op": 851.1994739965303,
+      "cycles": 1000030
+    },
+    {
+      "category": "control_flow",
+      "opcode": "JMP",
+      "fmt": "F",
+      "ops_per_sec": 6449917.366125869,
+      "ns_per_op": 155.04074598720763,
+      "cycles": 500030
+    },
+    {
+      "category": "control_flow",
+      "opcode": "JZ",
+      "fmt": "E",
+      "ops_per_sec": 6409596.468373801,
+      "ns_per_op": 156.016061999253,
+      "cycles": 500030
+    },
+    {
+      "category": "control_flow",
+      "opcode": "JNZ",
+      "fmt": "E",
+      "ops_per_sec": 6383065.207600319,
+      "ns_per_op": 156.66454398888163,
+      "cycles": 500030
+    },
+    {
+      "category": "control_flow",
+      "opcode": "JAL",
+      "fmt": "F",
+      "ops_per_sec": 6391512.235103543,
+      "ns_per_op": 156.45749600662384,
+      "cycles": 500030
+    },
+    {
+      "category": "control_flow",
+      "opcode": "RET",
+      "fmt": "A",
+      "ops_per_sec": 6421868.218387597,
+      "ns_per_op": 155.71792599803302,
+      "cycles": 500030
+    },
+    {
+      "category": "logic",
+      "opcode": "AND",
+      "fmt": "E",
+      "ops_per_sec": 1430648.6895762146,
+      "ns_per_op": 698.9836200082209,
+      "cycles": 500030
+    },
+    {
+      "category": "logic",
+      "opcode": "OR",
+      "fmt": "E",
+      "ops_per_sec": 1415433.8287483386,
+      "ns_per_op": 706.4971740037436,
+      "cycles": 500030
+    },
+    {
+      "category": "logic",
+      "opcode": "XOR",
+      "fmt": "E",
+      "ops_per_sec": 1399410.8569834277,
+      "ns_per_op": 714.5864240010269,
+      "cycles": 500030
+    },
+    {
+      "category": "logic",
+      "opcode": "NOT",
+      "fmt": "B",
+      "ops_per_sec": 2159953.732033151,
+      "ns_per_op": 462.97288000641856,
+      "cycles": 500030
+    },
+    {
+      "category": "logic",
+      "opcode": "SHL",
+      "fmt": "E",
+      "ops_per_sec": 1351870.2466476825,
+      "ns_per_op": 739.7159620013554,
+      "cycles": 500030
+    },
+    {
+      "category": "logic",
+      "opcode": "SHR",
+      "fmt": "E",
+      "ops_per_sec": 1355304.099428705,
+      "ns_per_op": 737.8417879954213,
+      "cycles": 500030
+    }
+  ],
+  "format_decode": [
+    {
+      "fmt": "A",
+      "bytes_total": 10001,
+      "ops_per_sec": 14664554.18427794,
+      "ns_per_decode": 68.1916400208138,
+      "exec_overhead_ns": -67.85282006603666
+    },
+    {
+      "fmt": "B",
+      "bytes_total": 20001,
+      "ops_per_sec": 13393676.320137527,
+      "ns_per_decode": 74.66209994163364,
+      "exec_overhead_ns": -74.03352006804198
+    },
+    {
+      "fmt": "C",
+      "bytes_total": 20001,
+      "ops_per_sec": 12595010.459244283,
+      "ns_per_decode": 79.39652001368813,
+      "exec_overhead_ns": 218.598820065381
+    },
+    {
+      "fmt": "D",
+      "bytes_total": 30001,
+      "ops_per_sec": 11811546.308946518,
+      "ns_per_decode": 84.66291998047382,
+      "exec_overhead_ns": 524.062460026471
+    },
+    {
+      "fmt": "E",
+      "bytes_total": 40001,
+      "ops_per_sec": 11260320.370056795,
+      "ns_per_decode": 88.80741996108554,
+      "exec_overhead_ns": 746.7898799222894
+    },
+    {
+      "fmt": "F",
+      "bytes_total": 40001,
+      "ops_per_sec": 10560473.918829327,
+      "ns_per_decode": 94.69272001297213,
+      "exec_overhead_ns": -94.30894002434798
+    },
+    {
+      "fmt": "G",
+      "bytes_total": 50001,
+      "ops_per_sec": 10125903.45934042,
+      "ns_per_decode": 98.75661999103613,
+      "exec_overhead_ns": 825.7821800361853
+    }
+  ],
+  "macro": [
+    {
+      "name": "fibonacci_30",
+      "description": "Fibonacci(30) iterative",
+      "elapsed_sec": 0.00014775399904465303,
+      "cycles": 214,
+      "ops_per_sec": 6768.006324470365
+    },
+    {
+      "name": "bubble_sort_100",
+      "description": "Bubble sort 100 elements (400 compare-swap iters)",
+      "elapsed_sec": 0.0023644721994060093,
+      "cycles": 2844,
+      "ops_per_sec": 422.927366306618
+    },
+    {
+      "name": "matmul_5x5",
+      "description": "5x5 matrix multiply (500 MAC ops)",
+      "elapsed_sec": 0.001308593401336111,
+      "cycles": 2006,
+      "ops_per_sec": 764.1793080868141
+    },
+    {
+      "name": "string_process",
+      "description": "String scan + compare (1000 iters)",
+      "elapsed_sec": 0.006565281598886941,
+      "cycles": 8005,
+      "ops_per_sec": 152.31639114604576
+    }
+  ],
+  "mem_alloc": [
+    {
+      "pattern": "sequential_store",
+      "ops": 10000,
+      "elapsed_sec": 0.050767104999977164,
+      "ops_per_sec": 984889.7233754513,
+      "peak_bytes": 0
+    },
+    {
+      "pattern": "random_store",
+      "ops": 10000,
+      "elapsed_sec": 0.05083531900163507,
+      "ops_per_sec": 983568.136916615,
+      "peak_bytes": 0
+    },
+    {
+      "pattern": "fragmented_store",
+      "ops": 10000,
+      "elapsed_sec": 0.05223396200017305,
+      "ops_per_sec": 957231.6187662416,
+      "peak_bytes": 67914.0
+    }
+  ],
+  "stack_depth": [
+    {
+      "max_depth": 100,
+      "push_ops": 200,
+      "elapsed_sec": 0.00046917100553400815,
+      "ops_per_sec": 2131419.0097101266
+    },
+    {
+      "max_depth": 1000,
+      "push_ops": 2000,
+      "elapsed_sec": 0.004338917999120895,
+      "ops_per_sec": 2304722.0532921096
+    },
+    {
+      "max_depth": 5000,
+      "push_ops": 10000,
+      "elapsed_sec": 0.02134706300421385,
+      "ops_per_sec": 2342242.5834472002
+    },
+    {
+      "max_depth": 10000,
+      "push_ops": 20000,
+      "elapsed_sec": 0.04341239499626681,
+      "ops_per_sec": 2303489.5911317347
+    }
+  ],
+  "reg_access": [
+    {
+      "access_type": "read_triple_reg",
+      "ops": 100000,
+      "elapsed_sec": 0.40811808099533664,
+      "ops_per_sec": 1225135.6244265817
+    },
+    {
+      "access_type": "write_inc",
+      "ops": 100000,
+      "elapsed_sec": 0.2154642329987837,
+      "ops_per_sec": 2320570.7649994167
+    }
+  ],
+  "bottlenecks": [
+    {
+      "opcode": "STORE",
+      "category": "memory",
+      "format": "E",
+      "ns_per_op": 1059.4,
+      "ops_per_sec": 943925.0,
+      "slowness_ratio": 1.54
+    },
+    {
+      "opcode": "LOAD",
+      "category": "memory",
+      "format": "E",
+      "ns_per_op": 964.2,
+      "ops_per_sec": 1037097.0,
+      "slowness_ratio": 1.4
+    },
+    {
+      "opcode": "PUSH",
+      "category": "memory",
+      "format": "B",
+      "ns_per_op": 852.0,
+      "ops_per_sec": 1173720.0,
+      "slowness_ratio": 1.24
+    },
+    {
+      "opcode": "POP",
+      "category": "memory",
+      "format": "B",
+      "ns_per_op": 851.2,
+      "ops_per_sec": 1174813.0,
+      "slowness_ratio": 1.23
+    },
+    {
+      "opcode": "MOV",
+      "category": "memory",
+      "format": "E",
+      "ns_per_op": 819.3,
+      "ops_per_sec": 1220497.0,
+      "slowness_ratio": 1.19
+    }
+  ],
+  "recommendations": [
+    "CRITICAL: memory ops are 5.8x slower than control_flow ops -- prioritize optimization of memory opcode handlers.",
+    "MEDIAN: 689.6 ns/op across all opcodes; top bottleneck 'STORE' is 1.5x median.",
+    "GENERAL: Consider computed-goto dispatch instead of if-elif chains for opcode decoding.",
+    "GENERAL: Direct array indexing for registers instead of _rd/_wr method calls in hot loop."
+  ],
+  "prev_comparison": [
+    {
+      "opcode": "ADD",
+      "prev_ops_sec": 1506869.0,
+      "curr_ops_sec": 1506296.0,
+      "change_pct": -0.0
+    },
+    {
+      "opcode": "AND",
+      "prev_ops_sec": 1408567.0,
+      "curr_ops_sec": 1430649.0,
+      "change_pct": 1.6
+    },
+    {
+      "opcode": "DEC",
+      "prev_ops_sec": 2217713.0,
+      "curr_ops_sec": 2252288.0,
+      "change_pct": 1.6
+    },
+    {
+      "opcode": "INC",
+      "prev_ops_sec": 2076932.0,
+      "curr_ops_sec": 2311853.0,
+      "change_pct": 11.3
+    },
+    {
+      "opcode": "JMP",
+      "prev_ops_sec": 6086327.0,
+      "curr_ops_sec": 6449917.0,
+      "change_pct": 6.0
+    },
+    {
+      "opcode": "JNZ",
+      "prev_ops_sec": 6260758.0,
+      "curr_ops_sec": 6383065.0,
+      "change_pct": 2.0
+    },
+    {
+      "opcode": "LOAD",
+      "prev_ops_sec": 990491.0,
+      "curr_ops_sec": 1037097.0,
+      "change_pct": 4.7
+    },
+    {
+      "opcode": "MOV",
+      "prev_ops_sec": 1158874.0,
+      "curr_ops_sec": 1220497.0,
+      "change_pct": 5.3
+    },
+    {
+      "opcode": "MUL",
+      "prev_ops_sec": 1443823.0,
+      "curr_ops_sec": 1450215.0,
+      "change_pct": 0.4
+    },
+    {
+      "opcode": "OR",
+      "prev_ops_sec": 1394843.0,
+      "curr_ops_sec": 1415434.0,
+      "change_pct": 1.5
+    },
+    {
+      "opcode": "POP",
+      "prev_ops_sec": 1170848.0,
+      "curr_ops_sec": 1174813.0,
+      "change_pct": 0.3
+    },
+    {
+      "opcode": "PUSH",
+      "prev_ops_sec": 1165166.0,
+      "curr_ops_sec": 1173720.0,
+      "change_pct": 0.7
+    },
+    {
+      "opcode": "STORE",
+      "prev_ops_sec": 866693.0,
+      "curr_ops_sec": 943925.0,
+      "change_pct": 8.9
+    },
+    {
+      "opcode": "SUB",
+      "prev_ops_sec": 1353914.0,
+      "curr_ops_sec": 1513834.0,
+      "change_pct": 11.8
+    },
+    {
+      "opcode": "XOR",
+      "prev_ops_sec": 1357079.0,
+      "curr_ops_sec": 1399411.0,
+      "change_pct": 3.1
+    }
+  ]
+}
