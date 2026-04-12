@@ -1,0 +1,869 @@
+{
+  "timestamp": "2026-04-12 06:01:19 UTC",
+  "python_version": "3.12.13",
+  "platform": "Linux x86_64",
+  "decode": [
+    {
+      "runtime": "python",
+      "instruction_count": 10000,
+      "total_bytes": 31696,
+      "elapsed_sec": 0.004296902996429708,
+      "ops_per_sec": 11636287.819749467,
+      "bytes_per_sec": 36882377.87347791
+    },
+    {
+      "runtime": "c",
+      "instruction_count": 10000,
+      "total_bytes": 10001,
+      "elapsed_sec": 0.004635142999177333,
+      "ops_per_sec": 10787153.71000943,
+      "bytes_per_sec": 10788232.42538043
+    }
+  ],
+  "exec_by_category": [
+    {
+      "runtime": "python",
+      "category": "arithmetic",
+      "opcode_count": 9,
+      "iterations": 10000,
+      "elapsed_sec": 0.03574253700207919,
+      "ops_per_sec": 1398893.424859333,
+      "ns_per_op": 714.8507400415838,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "category": "arithmetic",
+      "opcode_count": 9,
+      "iterations": 10000,
+      "elapsed_sec": 0.005014761998609174,
+      "ops_per_sec": 9970562.912829624,
+      "ns_per_op": 100.29523997218348,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "category": "logic",
+      "opcode_count": 7,
+      "iterations": 10000,
+      "elapsed_sec": 0.034443724995071534,
+      "ops_per_sec": 1451643.2240460163,
+      "ns_per_op": 688.8744999014307,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "category": "logic",
+      "opcode_count": 7,
+      "iterations": 10000,
+      "elapsed_sec": 0.004191544001514558,
+      "ops_per_sec": 11928778.507856097,
+      "ns_per_op": 83.83088003029115,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "category": "comparison",
+      "opcode_count": 4,
+      "iterations": 10000,
+      "elapsed_sec": 0.04039857700263383,
+      "ops_per_sec": 1237667.3563709978,
+      "ns_per_op": 807.9715400526766,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "category": "comparison",
+      "opcode_count": 4,
+      "iterations": 10000,
+      "elapsed_sec": 0.00467524000123376,
+      "ops_per_sec": 10694638.133401789,
+      "ns_per_op": 93.5048000246752,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "category": "control_flow",
+      "opcode_count": 8,
+      "iterations": 10000,
+      "elapsed_sec": 0.008264210002380423,
+      "ops_per_sec": 6050185.073418754,
+      "ns_per_op": 165.28420004760846,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "category": "control_flow",
+      "opcode_count": 8,
+      "iterations": 10000,
+      "elapsed_sec": 0.003937902001780458,
+      "ops_per_sec": 12697116.37755163,
+      "ns_per_op": 78.75804003560916,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "category": "stack",
+      "opcode_count": 2,
+      "iterations": 10000,
+      "elapsed_sec": 0.022255939999013208,
+      "ops_per_sec": 2246591.2472003843,
+      "ns_per_op": 445.11879998026416,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "category": "stack",
+      "opcode_count": 2,
+      "iterations": 10000,
+      "elapsed_sec": 0.0041905210018740036,
+      "ops_per_sec": 11931690.588745402,
+      "ns_per_op": 83.81042003748007,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "category": "memory",
+      "opcode_count": 4,
+      "iterations": 10000,
+      "elapsed_sec": 0.053131859000131954,
+      "ops_per_sec": 941054.9704251045,
+      "ns_per_op": 1062.637180002639,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "category": "memory",
+      "opcode_count": 4,
+      "iterations": 10000,
+      "elapsed_sec": 0.004520802998740692,
+      "ops_per_sec": 11059982.046094008,
+      "ns_per_op": 90.41605997481383,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "category": "data_movement",
+      "opcode_count": 6,
+      "iterations": 10000,
+      "elapsed_sec": 0.03464858499501133,
+      "ops_per_sec": 1443060.3733802966,
+      "ns_per_op": 692.9716999002267,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "category": "data_movement",
+      "opcode_count": 6,
+      "iterations": 10000,
+      "elapsed_sec": 0.004589090000081342,
+      "ops_per_sec": 10895406.27861161,
+      "ns_per_op": 91.78180000162683,
+      "total_cycles": 50080
+    }
+  ],
+  "opcode_micro": [
+    {
+      "runtime": "python",
+      "opcode_hex": "0x18",
+      "mnemonic": "MOVI",
+      "format": "D",
+      "operands": "rd, imm8",
+      "iterations": 10000,
+      "elapsed_sec": 0.023777695001626853,
+      "ops_per_sec": 2102811.0587077104,
+      "ns_per_op": 475.55390003253706,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x18",
+      "mnemonic": "MOVI",
+      "format": "D",
+      "operands": "rd, imm8",
+      "iterations": 10000,
+      "elapsed_sec": 0.004574022997985594,
+      "ops_per_sec": 10931296.152647259,
+      "ns_per_op": 91.48045995971188,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x20",
+      "mnemonic": "ADD",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.03318137800670229,
+      "ops_per_sec": 1506869.3045207625,
+      "ns_per_op": 663.6275601340458,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x20",
+      "mnemonic": "ADD",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.004143884994846303,
+      "ops_per_sec": 12065971.9230105,
+      "ns_per_op": 82.87769989692606,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x21",
+      "mnemonic": "SUB",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.03692996299650986,
+      "ops_per_sec": 1353914.1646235972,
+      "ns_per_op": 738.5992599301971,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x21",
+      "mnemonic": "SUB",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.004481894000491593,
+      "ops_per_sec": 11155997.887169084,
+      "ns_per_op": 89.63788000983186,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x22",
+      "mnemonic": "MUL",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.034630294001544826,
+      "ops_per_sec": 1443822.567540707,
+      "ns_per_op": 692.6058800308965,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x22",
+      "mnemonic": "MUL",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.0047004499938338995,
+      "ops_per_sec": 10637279.423372343,
+      "ns_per_op": 94.00899987667799,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x2C",
+      "mnemonic": "CMP_EQ",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.038637732999632135,
+      "ops_per_sec": 1294071.7821223114,
+      "ns_per_op": 772.7546599926427,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x2C",
+      "mnemonic": "CMP_EQ",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.004504126998654101,
+      "ops_per_sec": 11100930.327883901,
+      "ns_per_op": 90.08253997308202,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x43",
+      "mnemonic": "JMP",
+      "format": "F",
+      "operands": "rd, imm16",
+      "iterations": 10000,
+      "elapsed_sec": 0.008215135996579193,
+      "ops_per_sec": 6086326.510093096,
+      "ns_per_op": 164.30271993158385,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x43",
+      "mnemonic": "JMP",
+      "format": "F",
+      "operands": "rd, imm16",
+      "iterations": 10000,
+      "elapsed_sec": 0.0038470540021080524,
+      "ops_per_sec": 12996958.184782883,
+      "ns_per_op": 76.94108004216105,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x3D",
+      "mnemonic": "JNZ",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.007986253003764432,
+      "ops_per_sec": 6260758.327645242,
+      "ns_per_op": 159.72506007528864,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x3D",
+      "mnemonic": "JNZ",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.0034996550020878203,
+      "ops_per_sec": 14287122.579274544,
+      "ns_per_op": 69.9931000417564,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x0C",
+      "mnemonic": "PUSH",
+      "format": "B",
+      "operands": "rd",
+      "iterations": 10000,
+      "elapsed_sec": 0.042912322001939174,
+      "ops_per_sec": 1165166.499210659,
+      "ns_per_op": 858.2464400387835,
+      "total_cycles": 100080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x0C",
+      "mnemonic": "PUSH",
+      "format": "B",
+      "operands": "rd",
+      "iterations": 10000,
+      "elapsed_sec": 0.004405395993671846,
+      "ops_per_sec": 11349717.49913578,
+      "ns_per_op": 88.10791987343691,
+      "total_cycles": 100080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x0D",
+      "mnemonic": "POP",
+      "format": "B",
+      "operands": "rd",
+      "iterations": 10000,
+      "elapsed_sec": 0.04270408199954545,
+      "ops_per_sec": 1170848.257563111,
+      "ns_per_op": 854.081639990909,
+      "total_cycles": 100080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x0D",
+      "mnemonic": "POP",
+      "format": "B",
+      "operands": "rd",
+      "iterations": 10000,
+      "elapsed_sec": 0.00473057300405344,
+      "ops_per_sec": 10569544.103252817,
+      "ns_per_op": 94.6114600810688,
+      "total_cycles": 100080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x38",
+      "mnemonic": "LOAD",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.050480035999498796,
+      "ops_per_sec": 990490.577314494,
+      "ns_per_op": 1009.6007199899759,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x38",
+      "mnemonic": "LOAD",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.004379026999231428,
+      "ops_per_sec": 11418061.594225293,
+      "ns_per_op": 87.58053998462856,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x39",
+      "mnemonic": "STORE",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.05769053800031543,
+      "ops_per_sec": 866693.2521885412,
+      "ns_per_op": 1153.8107600063086,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x39",
+      "mnemonic": "STORE",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.004972553004336078,
+      "ops_per_sec": 10055196.989634879,
+      "ns_per_op": 99.45106008672155,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x3A",
+      "mnemonic": "MOV",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.04314533599972492,
+      "ops_per_sec": 1158873.8119994889,
+      "ns_per_op": 862.9067199944984,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x3A",
+      "mnemonic": "MOV",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.005392744998971466,
+      "ops_per_sec": 9271715.983147038,
+      "ns_per_op": 107.85489997942932,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x08",
+      "mnemonic": "INC",
+      "format": "B",
+      "operands": "rd",
+      "iterations": 10000,
+      "elapsed_sec": 0.024073968001175672,
+      "ops_per_sec": 2076932.2281045737,
+      "ns_per_op": 481.4793600235135,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x08",
+      "mnemonic": "INC",
+      "format": "B",
+      "operands": "rd",
+      "iterations": 10000,
+      "elapsed_sec": 0.004157340998062864,
+      "ops_per_sec": 12026918.17276903,
+      "ns_per_op": 83.14681996125728,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x09",
+      "mnemonic": "DEC",
+      "format": "B",
+      "operands": "rd",
+      "iterations": 10000,
+      "elapsed_sec": 0.022545745996467303,
+      "ops_per_sec": 2217713.266521964,
+      "ns_per_op": 450.91491992934607,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x09",
+      "mnemonic": "DEC",
+      "format": "B",
+      "operands": "rd",
+      "iterations": 10000,
+      "elapsed_sec": 0.003939957001421135,
+      "ops_per_sec": 12690493.825685177,
+      "ns_per_op": 78.7991400284227,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x25",
+      "mnemonic": "AND",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.03549707599449903,
+      "ops_per_sec": 1408566.7227280491,
+      "ns_per_op": 709.9415198899806,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x25",
+      "mnemonic": "AND",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.004368534006061964,
+      "ops_per_sec": 11445487.188749788,
+      "ns_per_op": 87.37068012123927,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x26",
+      "mnemonic": "OR",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.03584631899866508,
+      "ops_per_sec": 1394843.3590032493,
+      "ns_per_op": 716.9263799733017,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x26",
+      "mnemonic": "OR",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.004964341002050787,
+      "ops_per_sec": 10071830.275024382,
+      "ns_per_op": 99.28682004101574,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x27",
+      "mnemonic": "XOR",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.036843836001935415,
+      "ops_per_sec": 1357079.1053725646,
+      "ns_per_op": 736.8767200387083,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x27",
+      "mnemonic": "XOR",
+      "format": "E",
+      "operands": "rd, rs1, rs2",
+      "iterations": 10000,
+      "elapsed_sec": 0.00512758699915139,
+      "ops_per_sec": 9751175.359535575,
+      "ns_per_op": 102.5517399830278,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x01",
+      "mnemonic": "NOP",
+      "format": "A",
+      "operands": "-",
+      "iterations": 10000,
+      "elapsed_sec": 0.00823132000368787,
+      "ops_per_sec": 6074359.88123394,
+      "ns_per_op": 164.6264000737574,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x01",
+      "mnemonic": "NOP",
+      "format": "A",
+      "operands": "-",
+      "iterations": 10000,
+      "elapsed_sec": 0.004988991000573151,
+      "ops_per_sec": 10022066.58505815,
+      "ns_per_op": 99.77982001146302,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x00",
+      "mnemonic": "HALT",
+      "format": "A",
+      "operands": "-",
+      "iterations": 10000,
+      "elapsed_sec": 0.007931718006148003,
+      "ops_per_sec": 6303804.542880141,
+      "ns_per_op": 158.63436012296006,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x00",
+      "mnemonic": "HALT",
+      "format": "A",
+      "operands": "-",
+      "iterations": 10000,
+      "elapsed_sec": 0.004886520997388288,
+      "ops_per_sec": 10232228.619650591,
+      "ns_per_op": 97.73041994776577,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "python",
+      "opcode_hex": "0x40",
+      "mnemonic": "MOVI16",
+      "format": "F",
+      "operands": "rd, imm16",
+      "iterations": 10000,
+      "elapsed_sec": 0.02883358699909877,
+      "ops_per_sec": 1734088.7903250752,
+      "ns_per_op": 576.6717399819754,
+      "total_cycles": 50080
+    },
+    {
+      "runtime": "c",
+      "opcode_hex": "0x40",
+      "mnemonic": "MOVI16",
+      "format": "F",
+      "operands": "rd, imm16",
+      "iterations": 10000,
+      "elapsed_sec": 0.005164816000615247,
+      "ops_per_sec": 9680886.984946582,
+      "ns_per_op": 103.29632001230493,
+      "total_cycles": 50080
+    }
+  ],
+  "memory": [
+    {
+      "runtime": "python",
+      "phase": "empty_vm",
+      "memory_bytes": 66025.0
+    },
+    {
+      "runtime": "python",
+      "phase": "loaded_program_1000ops",
+      "memory_bytes": 66025.0
+    },
+    {
+      "runtime": "python",
+      "phase": "after_execution",
+      "memory_bytes": 67489.0
+    },
+    {
+      "runtime": "python",
+      "phase": "vm_object_size",
+      "memory_bytes": 48.0
+    },
+    {
+      "runtime": "python",
+      "phase": "memory_array_64kb",
+      "memory_bytes": 65593.0
+    },
+    {
+      "runtime": "c",
+      "phase": "vm_struct_static",
+      "memory_bytes": 98660.0
+    },
+    {
+      "runtime": "c",
+      "phase": "memory_array_64kb",
+      "memory_bytes": 65536.0
+    },
+    {
+      "runtime": "c",
+      "phase": "stack_array_32kb",
+      "memory_bytes": 32768.0
+    },
+    {
+      "runtime": "c",
+      "phase": "total_static",
+      "memory_bytes": 98660.0
+    },
+    {
+      "runtime": "c",
+      "phase": "process_rss_kb",
+      "memory_bytes": 25665536.0
+    }
+  ],
+  "cross_runtime_summary": [
+    {
+      "benchmark": "decode_throughput",
+      "python_ops_sec": 11636288.0,
+      "c_ops_sec": 10787154.0,
+      "speedup": 0.93
+    },
+    {
+      "benchmark": "exec_arithmetic",
+      "python_ops_sec": 1398893.0,
+      "c_ops_sec": 9970563.0,
+      "speedup": 7.13
+    },
+    {
+      "benchmark": "exec_comparison",
+      "python_ops_sec": 1237667.0,
+      "c_ops_sec": 10694638.0,
+      "speedup": 8.64
+    },
+    {
+      "benchmark": "exec_control_flow",
+      "python_ops_sec": 6050185.0,
+      "c_ops_sec": 12697116.0,
+      "speedup": 2.1
+    },
+    {
+      "benchmark": "exec_data_movement",
+      "python_ops_sec": 1443060.0,
+      "c_ops_sec": 10895406.0,
+      "speedup": 7.55
+    },
+    {
+      "benchmark": "exec_logic",
+      "python_ops_sec": 1451643.0,
+      "c_ops_sec": 11928779.0,
+      "speedup": 8.22
+    },
+    {
+      "benchmark": "exec_memory",
+      "python_ops_sec": 941055.0,
+      "c_ops_sec": 11059982.0,
+      "speedup": 11.75
+    },
+    {
+      "benchmark": "exec_stack",
+      "python_ops_sec": 2246591.0,
+      "c_ops_sec": 11931691.0,
+      "speedup": 5.31
+    },
+    {
+      "benchmark": "micro_MOVI",
+      "python_ops_sec": 2102811.0,
+      "c_ops_sec": 10931296.0,
+      "speedup": 5.2
+    },
+    {
+      "benchmark": "micro_ADD",
+      "python_ops_sec": 1506869.0,
+      "c_ops_sec": 12065972.0,
+      "speedup": 8.01
+    },
+    {
+      "benchmark": "micro_SUB",
+      "python_ops_sec": 1353914.0,
+      "c_ops_sec": 11155998.0,
+      "speedup": 8.24
+    },
+    {
+      "benchmark": "micro_MUL",
+      "python_ops_sec": 1443823.0,
+      "c_ops_sec": 10637279.0,
+      "speedup": 7.37
+    },
+    {
+      "benchmark": "micro_CMP_EQ",
+      "python_ops_sec": 1294072.0,
+      "c_ops_sec": 11100930.0,
+      "speedup": 8.58
+    },
+    {
+      "benchmark": "micro_JMP",
+      "python_ops_sec": 6086327.0,
+      "c_ops_sec": 12996958.0,
+      "speedup": 2.14
+    },
+    {
+      "benchmark": "micro_JNZ",
+      "python_ops_sec": 6260758.0,
+      "c_ops_sec": 14287123.0,
+      "speedup": 2.28
+    },
+    {
+      "benchmark": "micro_PUSH",
+      "python_ops_sec": 1165166.0,
+      "c_ops_sec": 11349717.0,
+      "speedup": 9.74
+    },
+    {
+      "benchmark": "micro_POP",
+      "python_ops_sec": 1170848.0,
+      "c_ops_sec": 10569544.0,
+      "speedup": 9.03
+    },
+    {
+      "benchmark": "micro_LOAD",
+      "python_ops_sec": 990491.0,
+      "c_ops_sec": 11418062.0,
+      "speedup": 11.53
+    },
+    {
+      "benchmark": "micro_STORE",
+      "python_ops_sec": 866693.0,
+      "c_ops_sec": 10055197.0,
+      "speedup": 11.6
+    },
+    {
+      "benchmark": "micro_MOV",
+      "python_ops_sec": 1158874.0,
+      "c_ops_sec": 9271716.0,
+      "speedup": 8.0
+    },
+    {
+      "benchmark": "micro_INC",
+      "python_ops_sec": 2076932.0,
+      "c_ops_sec": 12026918.0,
+      "speedup": 5.79
+    },
+    {
+      "benchmark": "micro_DEC",
+      "python_ops_sec": 2217713.0,
+      "c_ops_sec": 12690494.0,
+      "speedup": 5.72
+    },
+    {
+      "benchmark": "micro_AND",
+      "python_ops_sec": 1408567.0,
+      "c_ops_sec": 11445487.0,
+      "speedup": 8.13
+    },
+    {
+      "benchmark": "micro_OR",
+      "python_ops_sec": 1394843.0,
+      "c_ops_sec": 10071830.0,
+      "speedup": 7.22
+    },
+    {
+      "benchmark": "micro_XOR",
+      "python_ops_sec": 1357079.0,
+      "c_ops_sec": 9751175.0,
+      "speedup": 7.19
+    },
+    {
+      "benchmark": "micro_NOP",
+      "python_ops_sec": 6074360.0,
+      "c_ops_sec": 10022067.0,
+      "speedup": 1.65
+    },
+    {
+      "benchmark": "micro_HALT",
+      "python_ops_sec": 6303805.0,
+      "c_ops_sec": 10232229.0,
+      "speedup": 1.62
+    },
+    {
+      "benchmark": "micro_MOVI16",
+      "python_ops_sec": 1734089.0,
+      "c_ops_sec": 9680887.0,
+      "speedup": 5.58
+    }
+  ]
+}
