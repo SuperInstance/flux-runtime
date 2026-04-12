@@ -1,3 +1,5 @@
+> **Updated 2026-04-12: Aligned with converged FLUX ISA v2** — This module references the FIR intermediate representation, which feeds into the converged ISA encoder. See `docs/ISA_UNIFIED.md` for the canonical ISA reference.
+
 # Module 5: FIR Pipeline — From C to Bytecode
 
 **Learning Objectives:**
@@ -28,8 +30,8 @@ The FLUX compilation pipeline transforms high-level code into executable bytecod
 1. **Frontend** — Parse source code to AST
 2. **FIR Builder** — Convert AST to FIR (SSA form)
 3. **Optimizer** — Apply optimization passes
-4. **Encoder** — Encode FIR to binary bytecode
-5. **VM** — Execute bytecode
+4. **Encoder** — Encode FIR to binary bytecode (using converged ISA v2 from `isa_unified.py`)
+5. **VM** — Execute bytecode on the unified interpreter
 
 ## FIR Structure
 
@@ -96,7 +98,7 @@ result_val = Value.instruction(i32, 5, "add_result")
 ```python
 from flux.fir.instructions import *
 
-# Arithmetic instructions
+# Arithmetic instructions (FIR-level names)
 IAdd(retval, op1, op2)     # retval = op1 + op2
 ISub(retval, op1, op2)     # retval = op1 - op2
 IMul(retval, op1, op2)     # retval = op1 * op2
@@ -116,6 +118,8 @@ Branch(cond, true_bb, false_bb)  # if cond goto true_bb else false_bb
 Call(retval, func, args)   # retval = func(args)
 Return(values)             # return values
 ```
+
+> **Note:** FIR instruction names (IAdd, ISub, etc.) are at the IR level and are independent of the ISA opcode names (ADD, SUB, etc.). The encoder translates FIR names to converged ISA opcodes automatically.
 
 ## Building FIR Programs
 
@@ -160,7 +164,7 @@ builder.ret([result])
 from flux.fir.printer import print_fir
 print_fir(module)
 
-# Encode to bytecode
+# Encode to bytecode (encoder uses converged ISA v2)
 encoder = BytecodeEncoder()
 bytecode = encoder.encode(module)
 
@@ -344,11 +348,11 @@ class MyOptimizer(FIRVisitor):
     """Custom FIR optimization pass."""
 
     def visit_iadd(self, instr):
-        """Optimize IADD instructions."""
+        """Optimize ADD instructions."""
         # Example: x + 0 -> x
         if isinstance(instr.op2, Value) and instr.op2.is_constant:
             if instr.op2.constant_value == 0:
-                # Replace with MOV
+                # Replace with MOV (encoder maps to MOV opcode 0x3A)
                 return MOV(instr.retval, instr.op1)
         return instr
 

@@ -1,8 +1,10 @@
+> **Updated 2026-04-12: Aligned with converged FLUX ISA v2** — All opcode values and names now reference the unified ISA from `isa_unified.py`. A2A opcodes are now Format E (4-byte register triples) instead of Format G (variable-length). See `docs/ISA_UNIFIED.md` for the canonical reference.
+
 # Module 3: A2A (Agent-to-Agent) Protocol
 
 **Learning Objectives:**
 - Understand the A2A messaging system
-- Learn message types: TELL, ASK, DELEGATE, BROADCAST
+- Learn message types: TELL, ASK, DELEG, BCAST
 - Implement trust scoring between agents
 - Build multi-agent collaborative systems
 
@@ -20,25 +22,28 @@ The A2A (Agent-to-Agent) protocol is FLUX's native messaging system for agent co
 
 ### Core Message Types
 
-| Opcode | Name | Description | Use Case |
-|--------|------|-------------|----------|
-| TELL (0x60) | Fire-and-forget | One-way notification | Status updates, events |
-| ASK (0x61) | Request-response | Query with reply expected | Data queries, requests |
-| DELEGATE (0x62) | Task delegation | Assign work to another agent | Work distribution |
-| DELEGATE_RESULT (0x63) | Delegation response | Return delegated work result | Task completion |
-| BROADCAST (0x66) | One-to-many | Send to all agents | Announcements |
-| REDUCE (0x67) | Aggregation | Collect and combine results | Map-reduce patterns |
+All A2A opcodes use **Format E** (4 bytes: `[opcode][rd][rs1][rs2]`).
+
+| Opcode | Hex | Name | Description | Use Case |
+|--------|-----|------|-------------|----------|
+| 0x50 | TELL | Fire-and-forget | `rd, rs1, rs2` — Send rs2 to agent rs1, tag rd | Status updates, events |
+| 0x51 | ASK | Request-response | `rd, rs1, rs2` — Request rs2 from agent rs1, resp→rd | Data queries, requests |
+| 0x52 | DELEG | Task delegation | `rd, rs1, rs2` — Delegate task rs2 to agent rs1 | Work distribution |
+| 0x53 | BCAST | One-to-many | `rd, rs1, rs2` — Broadcast rs2 to fleet, tag rd | Announcements |
+| 0x54 | ACCEPT | Accept task | `rd, rs1, rs2` — Accept delegated task, ctx→rd | Task acceptance |
+| 0x55 | DECLINE | Decline task | `rd, rs1, rs2` — Decline task with reason rs2 | Task rejection |
+| 0x56 | REPORT | Report status | `rd, rs1, rs2` — Report task status rs2 to rd | Status updates |
+| 0x57 | MERGE | Merge results | `rd, rs1, rs2` — Merge results from rs1, rs2→rd | Map-reduce patterns |
+| 0x5C | TRUST | Trust level | `rd, rs1, rs2` — Set trust level rs2 for agent rs1 | Trust management |
 
 ### Trust & Capability Messages
 
-| Opcode | Name | Description |
-|--------|------|-------------|
-| TRUST_CHECK (0x70) | Check trust score |
-| TRUST_UPDATE (0x71) | Update trust score |
-| TRUST_QUERY (0x72) | Query trust score |
-| CAP_REQUIRE (0x74) | Require capability |
-| CAP_GRANT (0x76) | Grant capability |
-| CAP_REVOKE (0x77) | Revoke capability |
+| Opcode | Hex | Name | Description |
+|--------|-----|------|-------------|
+| TRUST | 0x5C | Set trust level | Unified trust operation (set/query/check) |
+| DISCOV | 0x5D | Discover agents | Query fleet for available agents |
+
+> **Note:** The converged ISA consolidates trust operations into a single TRUST opcode (0x5C). Old separate opcodes (TRUST_CHECK, TRUST_UPDATE, TRUST_QUERY) are unified. Capability enforcement (CAP_REQUIRE, CAP_GRANT, CAP_REVOKE) is now handled at the interpreter level, not as ISA opcodes. See `docs/security-primitives-spec.md` for details.
 
 ## A2A Message Format
 
@@ -52,7 +57,7 @@ The A2A (Agent-to-Agent) protocol is FLUX's native messaging system for agent co
 │  receiver_uuid:     16 bytes                                │
 │  conversation_id:   16 bytes                                │
 │  in_reply_to:       16 bytes (UUID or None)                 │
-│  message_type:      1 byte  (opcode)                        │
+│  message_type:      1 byte  (converged ISA opcode)          │
 │  priority:          1 byte  (0-15, 15=highest)              │
 │  trust_token:       4 bytes (uint32)                        │
 │  capability_token:  4 bytes (uint32)                        │
@@ -66,7 +71,10 @@ The A2A (Agent-to-Agent) protocol is FLUX's native messaging system for agent co
 ```python
 import uuid
 from flux.a2a.messages import A2AMessage
-from flux.bytecode.opcodes import Op
+
+# Converged ISA v2 A2A opcode values
+TELL = 0x50
+ASK  = 0x51
 
 # Create a TELL message
 msg = A2AMessage(
@@ -74,7 +82,7 @@ msg = A2AMessage(
     receiver=uuid.uuid4(),
     conversation_id=uuid.uuid4(),
     in_reply_to=None,
-    message_type=Op.TELL,
+    message_type=TELL,       # 0x50 in converged ISA (was 0x60)
     priority=5,
     trust_token=750,
     capability_token=100,
@@ -154,6 +162,10 @@ from dataclasses import dataclass, field
 from typing import List
 import uuid
 
+# Converged ISA v2 A2A opcode values
+TELL  = 0x50
+ASK   = 0x51
+
 @dataclass
 class Agent:
     name: str
@@ -164,7 +176,6 @@ class Agent:
     def send_tell(self, receiver: "Agent", payload: bytes, priority: int = 5):
         """Send a TELL message to another agent."""
         from flux.a2a.messages import A2AMessage
-        from flux.bytecode.opcodes import Op
 
         trust_token = self.trust_scores.get(receiver.agent_id, 500)
 
@@ -173,7 +184,7 @@ class Agent:
             receiver=receiver.agent_id,
             conversation_id=uuid.uuid4(),
             in_reply_to=None,
-            message_type=Op.TELL,
+            message_type=TELL,       # 0x50
             priority=priority,
             trust_token=trust_token,
             capability_token=100,
@@ -186,7 +197,6 @@ class Agent:
     def send_ask(self, receiver: "Agent", payload: bytes, priority: int = 8):
         """Send an ASK message (request-response)."""
         from flux.a2a.messages import A2AMessage
-        from flux.bytecode.opcodes import Op
 
         trust_token = self.trust_scores.get(receiver.agent_id, 500)
 
@@ -195,7 +205,7 @@ class Agent:
             receiver=receiver.agent_id,
             conversation_id=uuid.uuid4(),
             in_reply_to=None,
-            message_type=Op.ASK,
+            message_type=ASK,        # 0x51
             priority=priority,
             trust_token=trust_token,
             capability_token=200,
@@ -219,11 +229,9 @@ class Agent:
 
     def handle_message(self, msg):
         """Handle incoming message."""
-        from flux.bytecode.opcodes import Op
-
-        if msg.message_type == Op.TELL:
+        if msg.message_type == TELL:    # 0x50
             print(f"{self.name} received TELL: {msg.payload.decode()}")
-        elif msg.message_type == Op.ASK:
+        elif msg.message_type == ASK:   # 0x51
             print(f"{self.name} received ASK: {msg.payload.decode()}")
             # Would send reply here
 ```
@@ -231,12 +239,18 @@ class Agent:
 ### Pattern 2: Captain-Worker Fleet
 
 ```python
+# Converged ISA v2 A2A opcode values
+TELL   = 0x50
+DELEG  = 0x52
+BCAST  = 0x53
+ACCEPT = 0x54
+
 class CaptainAgent(Agent):
     """Coordinates worker agents."""
 
     def broadcast_task(self, workers: List[Agent], task: bytes):
         """Broadcast a task to all workers."""
-        from flux.bytecode.opcodes import Op
+        from flux.a2a.messages import A2AMessage
 
         for worker in workers:
             msg = A2AMessage(
@@ -244,7 +258,7 @@ class CaptainAgent(Agent):
                 receiver=worker.agent_id,
                 conversation_id=uuid.uuid4(),
                 in_reply_to=None,
-                message_type=Op.BROADCAST,
+                message_type=BCAST,     # 0x53
                 priority=7,
                 trust_token=self.trust_scores.get(worker.agent_id, 500),
                 capability_token=150,
@@ -257,7 +271,7 @@ class CaptainAgent(Agent):
         results = []
         for worker in workers:
             for msg in worker.inbox:
-                if msg.message_type == Op.DELEGATE_RESULT:
+                if msg.message_type == ACCEPT:  # 0x54
                     results.append(msg.payload)
         return results
 
@@ -267,19 +281,19 @@ class WorkerAgent(Agent):
 
     def handle_message(self, msg):
         """Handle incoming message."""
-        from flux.bytecode.opcodes import Op
+        from flux.a2a.messages import A2AMessage
 
-        if msg.message_type == Op.BROADCAST:
+        if msg.message_type == BCAST:   # 0x53
             # Execute task
             result = self.execute_task(msg.payload)
 
-            # Send result back
+            # Send result back using ACCEPT
             reply = A2AMessage(
                 sender=self.agent_id,
                 receiver=msg.sender,
                 conversation_id=msg.conversation_id,
                 in_reply_to=msg.sender,
-                message_type=Op.DELEGATE_RESULT,
+                message_type=ACCEPT,     # 0x54 (was DELEGATE_RESULT)
                 priority=msg.priority,
                 trust_token=msg.trust_token,
                 capability_token=msg.capability_token,
@@ -304,7 +318,11 @@ class WorkerAgent(Agent):
 
 import uuid
 from flux.a2a.messages import A2AMessage
-from flux.bytecode.opcodes import Op
+
+# Converged ISA v2 A2A opcode values
+TELL   = 0x50
+ASK    = 0x51
+ACCEPT = 0x54
 
 class SimpleAgent:
     def __init__(self, name: str):
@@ -351,15 +369,15 @@ consumer = SimpleAgent("Consumer")
 print("=== Agent Collaboration ===")
 
 # Producer -> Processor
-producer.send(processor, Op.TELL, b"DATA:[1,2,3,4,5]")
+producer.send(processor, TELL, b"DATA:[1,2,3,4,5]")   # TELL = 0x50
 processor.process()
 
 # Processor -> Consumer
-processor.send(consumer, Op.ASK, b"PROCESS:BATCH")
+processor.send(consumer, ASK, b"PROCESS:BATCH")       # ASK = 0x51
 consumer.process()
 
 # Consumer -> Producer (result)
-consumer.send(producer, Op.DELEGATE_RESULT, b"RESULT:sum=15")
+consumer.send(producer, ACCEPT, b"RESULT:sum=15")      # ACCEPT = 0x54
 producer.process()
 
 print("\n=== Trust Scores ===")
@@ -384,40 +402,38 @@ Consumer: {UUID('...'): 510}
 
 ### Using A2A Opcodes in FLUX Programs
 
-```python
-from flux.bytecode.opcodes import Op
-from flux.vm.interpreter import Interpreter
-import struct
+In the converged ISA, A2A opcodes are **Format E** (4 bytes: opcode + rd + rs1 + rs2), using register operands instead of variable-length data:
 
-def a2a_handler(opcode_name: str, data: bytes):
+```python
+import struct
+from flux.vm.unified_interpreter import Interpreter
+
+def a2a_handler(opcode_name: str, rd, rs1, rs2):
     """Handle A2A opcodes in bytecode."""
-    print(f"A2A: {opcode_name} <- {data.decode()}")
-    return 0  # Return value in R0
+    print(f"A2A: {opcode_name} — send R{rs2} to agent R{rs1}, tag R{rd}")
+    return 0
 
 # Create bytecode with A2A message
 bytecode = bytearray()
 
-# Setup: load some data
-bytecode.extend(struct.pack("<BBh", Op.MOVI, 0, 42))  # MOVI R0, 42
+# Setup: load values into registers
+bytecode.extend(struct.pack("<BBB", 0x18, 0, 0))     # MOVI R0, 0  (tag register)
+bytecode.extend(struct.pack("<BBB", 0x18, 1, 1))     # MOVI R1, 1  (target agent)
+bytecode.extend(struct.pack("<BBB", 0x18, 2, 42))    # MOVI R2, 42 (payload value)
 
-# Send TELL message (Format G)
-# Data format: [receiver_id_len][receiver_id][payload_len][payload]
-receiver_id = b"agent_1\0"
-payload = b"VALUE:42"
-data = bytes([len(receiver_id)]) + receiver_id + bytes([len(payload)]) + payload
-
-bytecode.extend(bytes([Op.TELL]))  # TELL opcode
-bytecode.extend(struct.pack("<H", len(data)))  # Length
-bytecode.extend(data)  # Data
+# TELL R0, R1, R2 — Send R2 to agent R1, tag R0 (Format E, 4 bytes)
+bytecode.extend(struct.pack("<BBBB", 0x50, 0, 1, 2))  # TELL (0x50)
 
 # HALT
-bytecode.extend(bytes([Op.HALT]))
+bytecode.extend(bytes([0x00]))
 
-# Execute with A2A handler
+# Execute
 vm = Interpreter(bytes(bytecode), memory_size=4096)
 vm.on_a2a(a2a_handler)
 vm.execute()
 ```
+
+> **Note:** In the converged ISA, A2A opcodes are Format E with register operands, making them much simpler than the old Format G variable-length encoding. The VM interpreter handles the actual message transport.
 
 ## Exercise: Three-Agent Task Pipeline
 
@@ -427,8 +443,8 @@ vm.execute()
 3. **Consumer** — Consumes and sums results
 
 **Requirements:**
-- Use TELL for data flow
-- Use BROADCAST for coordination
+- Use TELL (0x50) for data flow
+- Use BCAST (0x53) for coordination
 - Track trust scores between agents
 
 **Solution:**
@@ -439,7 +455,10 @@ vm.execute()
 
 import uuid
 from flux.a2a.messages import A2AMessage
-from flux.bytecode.opcodes import Op
+
+# Converged ISA v2 A2A opcode values
+TELL  = 0x50
+BCAST = 0x53
 
 class PipelineAgent:
     def __init__(self, name: str):
@@ -456,7 +475,7 @@ class PipelineAgent:
             receiver=receiver.agent_id,
             conversation_id=uuid.uuid4(),
             in_reply_to=None,
-            message_type=Op.TELL,
+            message_type=TELL,       # 0x50
             priority=5,
             trust_token=self.trust_scores.get(receiver.agent_id, 500),
             capability_token=100,
@@ -466,14 +485,14 @@ class PipelineAgent:
         self._update_trust(receiver.agent_id, +10)
 
     def send_broadcast(self, receivers, payload):
-        """Send BROADCAST to multiple receivers."""
+        """Send BCAST to multiple receivers."""
         for receiver in receivers:
             msg = A2AMessage(
                 sender=self.agent_id,
                 receiver=receiver.agent_id,
                 conversation_id=uuid.uuid4(),
                 in_reply_to=None,
-                message_type=Op.BROADCAST,
+                message_type=BCAST,     # 0x53
                 priority=6,
                 trust_token=self.trust_scores.get(receiver.agent_id, 500),
                 capability_token=150,
@@ -494,9 +513,9 @@ class PipelineAgent:
             print(f"{self.name} <- {payload}")
 
             # Handle different message types
-            if msg.message_type == Op.TELL:
+            if msg.message_type == TELL:    # 0x50
                 self._handle_tell(msg)
-            elif msg.message_type == Op.BROADCAST:
+            elif msg.message_type == BCAST:  # 0x53
                 self._handle_broadcast(msg)
 
         self.inbox.clear()
@@ -507,7 +526,7 @@ class PipelineAgent:
         self.data_store.append(msg.payload)
 
     def _handle_broadcast(self, msg):
-        """Handle BROADCAST message."""
+        """Handle BCAST message."""
         # Could trigger different behavior
         pass
 
@@ -592,10 +611,10 @@ Consumer: [('e5f6g7h8', 550)]
 At the end of Module 3, you should be able to:
 
 - ✅ Understand A2A message format and structure
-- ✅ Use TELL, ASK, DELEGATE, and BROADCAST message types
+- ✅ Use TELL (0x50), ASK (0x51), DELEG (0x52), and BCAST (0x53) message types
 - ✅ Implement trust scoring between agents
 - ✅ Build multi-agent systems with communication patterns
-- ✅ Handle A2A messages in both Python and bytecode
+- ✅ Handle A2A messages in both Python and bytecode (Format E encoding)
 
 ## Next Steps
 
@@ -603,4 +622,4 @@ At the end of Module 3, you should be able to:
 
 ---
 
-**Need Help?** See the [A2A Protocol Reference](../user-guide.md#a2a-protocol) for complete message format details.
+**Need Help?** See the [ISA Unified Reference](../ISA_UNIFIED.md) for complete opcode table or [Security Primitives Spec](../security-primitives-spec.md) for capability enforcement details.
