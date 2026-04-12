@@ -1,0 +1,609 @@
+{
+  "timestamp": "2026-04-12T05:43:54.332110+00:00",
+  "runtime": "c",
+  "runtime_label": "flux_vm_unified (C)",
+  "isa": "unified (isa_unified.py)",
+  "suite": "expanded",
+  "summary": {
+    "total": 74,
+    "passed": 71,
+    "failed": 0,
+    "skipped": 3,
+    "errors": 0,
+    "total_cycles": 269
+  },
+  "results": [
+    {
+      "name": "NOP does nothing",
+      "status": "PASS",
+      "category": "control",
+      "reason": null,
+      "expected": "no_crash",
+      "actual": "no_crash"
+    },
+    {
+      "name": "HALT terminates execution",
+      "status": "PASS",
+      "category": "control",
+      "reason": null,
+      "expected": "no_crash",
+      "actual": "no_crash"
+    },
+    {
+      "name": "MOVI loads immediate value",
+      "category": "data",
+      "status": "PASS",
+      "reason": null,
+      "expected": 42,
+      "actual": 42
+    },
+    {
+      "name": "MOVI loads negative value",
+      "category": "data",
+      "status": "PASS",
+      "reason": null,
+      "expected": -128,
+      "actual": -128
+    },
+    {
+      "name": "MOVI16 loads large immediate",
+      "category": "data",
+      "status": "PASS",
+      "reason": null,
+      "expected": 4096,
+      "actual": 4096
+    },
+    {
+      "name": "ADD two registers",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 30,
+      "actual": 30
+    },
+    {
+      "name": "SUB two registers",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 18,
+      "actual": 18
+    },
+    {
+      "name": "MUL two registers",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 42,
+      "actual": 42
+    },
+    {
+      "name": "MOD two registers",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 2,
+      "actual": 2
+    },
+    {
+      "name": "DIV integer division",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 5,
+      "actual": 5
+    },
+    {
+      "name": "MIN of two values",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 10,
+      "actual": 10
+    },
+    {
+      "name": "MAX of two values",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 20,
+      "actual": 20
+    },
+    {
+      "name": "CMP_EQ sets result for equal values",
+      "category": "comparison",
+      "status": "PASS",
+      "reason": null,
+      "expected": "nonzero",
+      "actual": 1
+    },
+    {
+      "name": "CMP_EQ sets result for unequal values",
+      "category": "comparison",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "CMP_LT less than is true",
+      "category": "comparison",
+      "status": "PASS",
+      "reason": null,
+      "expected": 1,
+      "actual": 1
+    },
+    {
+      "name": "CMP_GT greater than is true",
+      "category": "comparison",
+      "status": "PASS",
+      "reason": null,
+      "expected": 1,
+      "actual": 1
+    },
+    {
+      "name": "CMP_LT equal values is false",
+      "category": "comparison",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "CMP_GT equal values is false",
+      "category": "comparison",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "CMP_NE not equal is true",
+      "category": "comparison",
+      "status": "PASS",
+      "reason": null,
+      "expected": 1,
+      "actual": 1
+    },
+    {
+      "name": "CMP_NE equal values is false",
+      "category": "comparison",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "ADD with rd=rs1 overlap (R1 = R1 + R2)",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 8,
+      "actual": 8
+    },
+    {
+      "name": "ADD with rd=rs2 overlap (R2 = R0 + R2)",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 13,
+      "actual": 13
+    },
+    {
+      "name": "ADD with all-three overlap (R0 = R0 + R0)",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 14,
+      "actual": 14
+    },
+    {
+      "name": "SUB with rd=rs1 overlap (R0 = R0 - R1)",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 7,
+      "actual": 7
+    },
+    {
+      "name": "MUL with rd=rs1 overlap (R0 = R0 * R1)",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 15,
+      "actual": 15
+    },
+    {
+      "name": "SUB self-zero (R0 = R0 - R0)",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "PUSH and POP preserve value",
+      "category": "stack",
+      "status": "PASS",
+      "reason": null,
+      "expected": 99,
+      "actual": 99
+    },
+    {
+      "name": "Multiple PUSH and POP (LIFO order)",
+      "category": "stack",
+      "status": "PASS",
+      "reason": null,
+      "expected": 20,
+      "actual": 20
+    },
+    {
+      "name": "AND bitwise",
+      "category": "logic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 3,
+      "actual": 3
+    },
+    {
+      "name": "OR bitwise",
+      "category": "logic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 15,
+      "actual": 15
+    },
+    {
+      "name": "XOR bitwise",
+      "category": "logic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "NOT bitwise (Format B)",
+      "category": "logic",
+      "status": "PASS",
+      "reason": null,
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "name": "INC increments register",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 42,
+      "actual": 42
+    },
+    {
+      "name": "DEC decrements register",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 42,
+      "actual": 42
+    },
+    {
+      "name": "NEG negates register",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": -42,
+      "actual": -42
+    },
+    {
+      "name": "STORE then LOAD at address 0",
+      "category": "memory",
+      "status": "PASS",
+      "reason": null,
+      "expected": 100,
+      "actual": 100
+    },
+    {
+      "name": "STORE then LOAD at non-zero address",
+      "category": "memory",
+      "status": "PASS",
+      "reason": null,
+      "expected": 42,
+      "actual": 42
+    },
+    {
+      "name": "Multiple memory locations (addr 0 and addr 4)",
+      "category": "memory",
+      "status": "PASS",
+      "reason": null,
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "name": "STOREOFF then LOADOFF at offset 0 (Format G)",
+      "category": "memory",
+      "status": "PASS",
+      "reason": null,
+      "expected": 99,
+      "actual": 99
+    },
+    {
+      "name": "STOREOFF then LOADOFF at offset 16 (Format G)",
+      "category": "memory",
+      "status": "PASS",
+      "reason": null,
+      "expected": 77,
+      "actual": 77
+    },
+    {
+      "name": "JMP forward skips instruction",
+      "category": "control",
+      "status": "PASS",
+      "reason": null,
+      "expected": 42,
+      "actual": 42
+    },
+    {
+      "name": "JNZ taken (conditional branch)",
+      "category": "control",
+      "status": "PASS",
+      "reason": null,
+      "expected": 1,
+      "actual": 1
+    },
+    {
+      "name": "JNZ not taken (falls through)",
+      "category": "control",
+      "status": "PASS",
+      "reason": null,
+      "expected": 99,
+      "actual": 99
+    },
+    {
+      "name": "JZ taken (zero branch)",
+      "category": "control",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "JAL saves return address (Format F)",
+      "category": "control",
+      "status": "PASS",
+      "reason": null,
+      "expected": 4,
+      "actual": 4
+    },
+    {
+      "name": "LOOP counts down (3 iterations)",
+      "category": "control",
+      "status": "PASS",
+      "reason": null,
+      "expected": 3,
+      "actual": 3
+    },
+    {
+      "name": "SHL shift left by register",
+      "category": "shift",
+      "status": "PASS",
+      "reason": null,
+      "expected": 16,
+      "actual": 16
+    },
+    {
+      "name": "SHR shift right by register",
+      "category": "shift",
+      "status": "PASS",
+      "reason": null,
+      "expected": 8,
+      "actual": 8
+    },
+    {
+      "name": "SHLI shift left by immediate (Format D)",
+      "category": "shift",
+      "status": "PASS",
+      "reason": null,
+      "expected": 16,
+      "actual": 16
+    },
+    {
+      "name": "SHRI shift right by immediate (Format D)",
+      "category": "shift",
+      "status": "PASS",
+      "reason": null,
+      "expected": 8,
+      "actual": 8
+    },
+    {
+      "name": "ADDI add immediate",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 15,
+      "actual": 15
+    },
+    {
+      "name": "SUBI subtract immediate",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 7,
+      "actual": 7
+    },
+    {
+      "name": "ANDI and immediate",
+      "category": "logic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 15,
+      "actual": 15
+    },
+    {
+      "name": "ORI or immediate",
+      "category": "logic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 240,
+      "actual": 240
+    },
+    {
+      "name": "XORI xor immediate",
+      "category": "logic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 240,
+      "actual": 240
+    },
+    {
+      "name": "ADDI16 add 16-bit immediate",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 123,
+      "actual": 123
+    },
+    {
+      "name": "SUBI16 subtract 16-bit immediate",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 63,
+      "actual": 63
+    },
+    {
+      "name": "MOV between registers",
+      "category": "data",
+      "status": "PASS",
+      "reason": null,
+      "expected": 42,
+      "actual": 42
+    },
+    {
+      "name": "Multiple MOVs in sequence",
+      "category": "data",
+      "status": "PASS",
+      "reason": null,
+      "expected": 10,
+      "actual": 10
+    },
+    {
+      "name": "SWP swaps two registers",
+      "category": "data",
+      "status": "PASS",
+      "reason": null,
+      "expected": 20,
+      "actual": 20
+    },
+    {
+      "name": "MOVI with 0",
+      "category": "data",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "MOVI with 255 (sign-extended to -1)",
+      "category": "data",
+      "status": "PASS",
+      "reason": null,
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "name": "ADD overflow (255 + 1 = 256)",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 256,
+      "actual": 256
+    },
+    {
+      "name": "SUB underflow (0 - 1 = -1)",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "name": "MUL by zero",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "MUL identity (x * 1 = x)",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 42,
+      "actual": 42
+    },
+    {
+      "name": "MOD by 1 (always 0)",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "INC from 254 to 255",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 255,
+      "actual": 255
+    },
+    {
+      "name": "DEC from 1 to 0",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "INC from -1 to 0",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": 0,
+      "actual": 0
+    },
+    {
+      "name": "DEC from 0 to -1",
+      "category": "arithmetic",
+      "status": "PASS",
+      "reason": null,
+      "expected": -1,
+      "actual": -1
+    },
+    {
+      "name": "GCD of 48 and 18 = 6 (Euclid's algorithm)",
+      "status": "SKIP",
+      "category": "complex",
+      "reason": "Source description test \u2014 needs compiler",
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "Fibonacci(10) = 55",
+      "status": "SKIP",
+      "category": "complex",
+      "reason": "Source description test \u2014 needs compiler",
+      "expected": null,
+      "actual": null
+    },
+    {
+      "name": "Sum of squares 1..5 = 55",
+      "status": "SKIP",
+      "category": "complex",
+      "reason": "Source description test \u2014 needs compiler",
+      "expected": null,
+      "actual": null
+    }
+  ]
+}
