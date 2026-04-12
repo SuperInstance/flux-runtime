@@ -141,6 +141,19 @@ class Interpreter:
         # Call stack for ENTER/LEAVE frame tracking
         self._frame_stack: list[int] = []  # stack of saved SP values
 
+        # ── ISA v3 runtime state ──────────────────────────────────────────
+        # Per-register confidence in [0.0, 1.0]; defaults to 1.0 for regs not set
+        self._reg_confidence: dict[int, float] = {}
+        # ATP (energy) budget — arbitrary agent-specific unit
+        self._atp_budget: int = 1_000_000
+        # Sleep countdown (cycles remaining in low-power state)
+        self._sleep_remaining: int = 0
+        # Watchdog timer — if it reaches zero the VM halts
+        self._wdog_timeout: int = 1_000_000
+        self._wdog_remaining: int = self._wdog_timeout
+        # A2A message queue (FIFO of bytes payloads)
+        self._msg_inbox: list[bytes] = []
+
         # Create default memory regions
         self.memory.create_region("stack", memory_size, "system")
         self.memory.create_region("heap", memory_size, "system")
@@ -179,6 +192,11 @@ class Interpreter:
         self._box_counter = 0
         self._resources.clear()
         self._frame_stack.clear()
+        self._reg_confidence.clear()
+        self._atp_budget = 1_000_000
+        self._sleep_remaining = 0
+        self._wdog_remaining = self._wdog_timeout
+        self._msg_inbox.clear()
 
     def dump_state(self) -> dict:
         """Return a serializable snapshot of the full VM state."""
@@ -214,6 +232,28 @@ class Interpreter:
         an optional result placed in R0.
         """
         self._a2a_handler = handler
+
+    # ── ISA v3: runtime-state accessors ────────────────────────────────────
+
+    def set_confidence(self, reg: int, conf: float) -> None:
+        """Set the confidence value associated with a GP register."""
+        self._reg_confidence[reg] = max(0.0, min(1.0, float(conf)))
+
+    def get_confidence(self, reg: int) -> float:
+        """Return the confidence value for a GP register (default 1.0)."""
+        return self._reg_confidence.get(reg, 1.0)
+
+    def set_atp_budget(self, budget: int) -> None:
+        """Set the agent's ATP (energy) budget."""
+        self._atp_budget = int(budget)
+
+    def get_atp_budget(self) -> int:
+        """Return the remaining ATP (energy) budget."""
+        return self._atp_budget
+
+    def push_message(self, payload: bytes) -> None:
+        """Append a message payload to the A2A inbox (for MSG_RECV/MSG_POLL)."""
+        self._msg_inbox.append(bytes(payload))
 
     # ── Fetch helpers ──────────────────────────────────────────────────────
 
@@ -1433,6 +1473,154 @@ class Interpreter:
             # Format A: trigger debug callback if registered
             if self._io_write_cb is not None:
                 self._io_write_cb(f"DEBUG_BREAK at pc={start_pc}")
+            return
+
+        # ═══════════════════════════════════════════════════════════════════
+        # ISA v3 — Power states (0x85-0x87)
+        # ═══════════════════════════════════════════════════════════════════
+
+        # ── SLEEP ──────────────────────────────────────────────────────────
+        if opcode_byte == Op.SLEEP:
+            # Format D: [SLEEP][rd:u8][cycles:i16]
+            # Enter low-power sleep for `cycles` cycles.  rd receives the
+            # number of cycles scheduled to sleep.  The next tick runs at
+            # the same pc but simply decrements _sleep_remaining — in the
+            # single-stepped interpreter we fast-forward the counter here.
+            rd, cycles = self._decode_operands_D()
+            if cycles < 0:
+                cycles = 0
+            self._sleep_remaining = cycles
+            self.regs.write_gp(rd, cycles)
+            return
+
+        # ── WAKE ───────────────────────────────────────────────────────────
+        if opcode_byte == Op.WAKE:
+            # Format A: cancel any pending sleep.
+            self._sleep_remaining = 0
+            return
+
+        # ── WDOG_RESET ─────────────────────────────────────────────────────
+        if opcode_byte == Op.WDOG_RESET:
+            # Format A: reload the watchdog timer.
+            self._wdog_remaining = self._wdog_timeout
+            return
+
+        # ═══════════════════════════════════════════════════════════════════
+        # ISA v3 — ATP / energy management (0x88-0x89)
+        # ═══════════════════════════════════════════════════════════════════
+
+        # ── ATP_SPEND ──────────────────────────────────────────────────────
+        if opcode_byte == Op.ATP_SPEND:
+            # Format D: [ATP_SPEND][rd:u8][amount:i16]
+            # Deducts `amount` from the ATP budget and writes the new
+            # remaining budget to rd.  If insufficient ATP, rd gets -1.
+            rd, amount = self._decode_operands_D()
+            if amount < 0:
+                amount = 0
+            if self._atp_budget >= amount:
+                self._atp_budget -= amount
+                self.regs.write_gp(rd, self._atp_budget)
+            else:
+                self.regs.write_gp(rd, -1)
+            return
+
+        # ── ATP_QUERY ──────────────────────────────────────────────────────
+        if opcode_byte == Op.ATP_QUERY:
+            # Format B: [ATP_QUERY][rd:u8]
+            (rd,) = self._decode_operands_B()
+            self.regs.write_gp(rd, self._atp_budget)
+            return
+
+        # ═══════════════════════════════════════════════════════════════════
+        # ISA v3 — Confidence-fused arithmetic (0xA0-0xA3)
+        # ═══════════════════════════════════════════════════════════════════
+
+        # ── CAAD ───────────────────────────────────────────────────────────
+        if opcode_byte == Op.CAAD:
+            # Format E: [CAAD][rd][rs1][rs2]  — confidence-preserving add
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) + self.regs.read_gp(rs2)
+            c1 = self._reg_confidence.get(rs1, 1.0)
+            c2 = self._reg_confidence.get(rs2, 1.0)
+            self.regs.write_gp(rd, result)
+            self._reg_confidence[rd] = min(c1, c2)
+            self._set_flags(result)
+            return
+
+        # ── CSUB ───────────────────────────────────────────────────────────
+        if opcode_byte == Op.CSUB:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) - self.regs.read_gp(rs2)
+            c1 = self._reg_confidence.get(rs1, 1.0)
+            c2 = self._reg_confidence.get(rs2, 1.0)
+            self.regs.write_gp(rd, result)
+            self._reg_confidence[rd] = min(c1, c2)
+            self._set_flags(result)
+            return
+
+        # ── CMUL ───────────────────────────────────────────────────────────
+        if opcode_byte == Op.CMUL:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) * self.regs.read_gp(rs2)
+            c1 = self._reg_confidence.get(rs1, 1.0)
+            c2 = self._reg_confidence.get(rs2, 1.0)
+            self.regs.write_gp(rd, result)
+            # Product model: independent multiplicative confidence
+            self._reg_confidence[rd] = c1 * c2
+            self._set_flags(result)
+            return
+
+        # ── CDIV ───────────────────────────────────────────────────────────
+        if opcode_byte == Op.CDIV:
+            rd, rs1, rs2 = self._decode_operands_E()
+            divisor = self.regs.read_gp(rs2)
+            if divisor == 0:
+                raise VMDivisionByZeroError(
+                    "CDIV: division by zero",
+                    opcode=opcode_byte,
+                    pc=start_pc,
+                )
+            dividend = self.regs.read_gp(rs1)
+            result = int(dividend / divisor)
+            c1 = self._reg_confidence.get(rs1, 1.0)
+            c2 = self._reg_confidence.get(rs2, 1.0)
+            self.regs.write_gp(rd, result)
+            self._reg_confidence[rd] = c1 * c2
+            self._set_flags(result)
+            return
+
+        # ═══════════════════════════════════════════════════════════════════
+        # ISA v3 — A2A messaging (0xA4-0xA6)
+        # ═══════════════════════════════════════════════════════════════════
+
+        # ── MSG_SEND ───────────────────────────────────────────────────────
+        if opcode_byte == Op.MSG_SEND:
+            # Format G: [MSG_SEND][len:u16][payload]
+            data = self._fetch_var_data()
+            self._dispatch_a2a("MSG_SEND", data)
+            # Success count in R0
+            self.regs.write_gp(0, len(data))
+            return
+
+        # ── MSG_RECV ───────────────────────────────────────────────────────
+        if opcode_byte == Op.MSG_RECV:
+            # Format G: [MSG_RECV][len:u16][filter-bytes]
+            # Dequeue one pending message into R0 (length) and leave the
+            # payload accessible via the A2A handler callback.
+            _filter = self._fetch_var_data()
+            if self._msg_inbox:
+                payload = self._msg_inbox.pop(0)
+                self._dispatch_a2a("MSG_RECV", payload)
+                self.regs.write_gp(0, len(payload))
+            else:
+                self.regs.write_gp(0, 0)
+            return
+
+        # ── MSG_POLL ───────────────────────────────────────────────────────
+        if opcode_byte == Op.MSG_POLL:
+            # Format B: [MSG_POLL][rd:u8] — writes inbox depth to rd
+            (rd,) = self._decode_operands_B()
+            self.regs.write_gp(rd, len(self._msg_inbox))
             return
 
         # ── Unknown opcode ─────────────────────────────────────────────────

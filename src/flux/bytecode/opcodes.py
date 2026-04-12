@@ -158,6 +158,26 @@ class Op(IntEnum):
     RESOURCE_RELEASE = 0x83
     DEBUG_BREAK = 0x84
 
+    # ISA v3 — Power states (0x85-0x87)
+    SLEEP = 0x85          # Enter low-power sleep for imm16 cycles
+    WAKE = 0x86           # Wake from sleep (resets sleep counter)
+    WDOG_RESET = 0x87     # Reset the watchdog timer
+
+    # ISA v3 — Energy / ATP management (0x88-0x89)
+    ATP_SPEND = 0x88      # Spend imm16 ATP units (writes new budget to rd)
+    ATP_QUERY = 0x89      # Read remaining ATP budget into rd
+
+    # ISA v3 — Confidence-fused arithmetic (0xA0-0xA3)
+    CAAD = 0xA0           # rd = rs1 + rs2 with confidence = min(c(rs1), c(rs2))
+    CSUB = 0xA1           # rd = rs1 - rs2 with propagated confidence
+    CMUL = 0xA2           # rd = rs1 * rs2 with confidence = c(rs1) * c(rs2)
+    CDIV = 0xA3           # rd = rs1 / rs2 with propagated confidence
+
+    # ISA v3 — A2A messaging (0xA4-0xA6)
+    MSG_SEND = 0xA4       # Enqueue a message to another agent
+    MSG_RECV = 0xA5       # Dequeue the next pending message into R0
+    MSG_POLL = 0xA6       # Write pending message count into rd
+
 
 # ── Opcode classification ──────────────────────────────────────────────────
 # Matches the VM interpreter's actual fetch-decode patterns.
@@ -166,6 +186,8 @@ class Op(IntEnum):
 FORMAT_A = frozenset({
     Op.NOP, Op.HALT, Op.YIELD,
     Op.DUP, Op.SWAP, Op.DEBUG_BREAK, Op.EMERGENCY_STOP,
+    # ISA v3 power states with no operand
+    Op.WAKE, Op.WDOG_RESET,
 })
 
 # Format B: 2 bytes — opcode + reg:u8
@@ -173,6 +195,8 @@ FORMAT_B = frozenset({
     Op.INC, Op.DEC, Op.ENTER, Op.LEAVE,
     Op.PUSH, Op.POP,
     Op.INEG, Op.FNEG, Op.INOT,
+    # ISA v3 single-register ops
+    Op.ATP_QUERY, Op.MSG_POLL,
 })
 
 # Format C: 3 bytes — opcode + rd:u8 + rs1:u8
@@ -192,6 +216,8 @@ FORMAT_D = frozenset({
     Op.JMP, Op.JZ, Op.JNZ,
     Op.JE, Op.JNE, Op.JG, Op.JL, Op.JGE, Op.JLE,
     Op.MOVI, Op.CALL,
+    # ISA v3 immediate-operand ops
+    Op.SLEEP, Op.ATP_SPEND,
 })
 
 # Format E: 4 bytes — opcode + rd:u8 + rs1:u8 + rs2:u8 (ternary ops)
@@ -201,6 +227,8 @@ FORMAT_E = frozenset({
     Op.IADD, Op.ISUB, Op.IMUL, Op.IDIV, Op.IMOD, Op.IREM,
     Op.IAND, Op.IOR, Op.IXOR, Op.ISHL, Op.ISHR,
     Op.FADD, Op.FSUB, Op.FMUL, Op.FDIV,
+    # ISA v3 confidence-fused arithmetic
+    Op.CAAD, Op.CSUB, Op.CMUL, Op.CDIV,
 })
 
 # Format G: variable — opcode + len:u16 + data:len bytes
@@ -215,6 +243,8 @@ FORMAT_G = frozenset({
     Op.CAP_REQUIRE, Op.CAP_REQUEST, Op.CAP_GRANT, Op.CAP_REVOKE,
     Op.BARRIER, Op.SYNC_CLOCK, Op.FORMATION_UPDATE,
     Op.RESOURCE_ACQUIRE, Op.RESOURCE_RELEASE,
+    # ISA v3 variable-length messaging
+    Op.MSG_SEND, Op.MSG_RECV,
 })
 
 # Everything else defaults to Format C: 3 bytes
