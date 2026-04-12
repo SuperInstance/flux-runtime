@@ -1,0 +1,444 @@
+{
+  "$schema": "fleet-config-v1.0",
+  "version": "1.0.0",
+  "description": "FLUX Fleet agent capability profiles for semantic task routing (ROUTE-001)",
+  "last_updated": "2026-04-14",
+  "skill_taxonomy": {
+    "languages": {
+      "description": "Programming languages agents can work in",
+      "values": ["python", "c", "rust", "go", "typescript", "zig", "java", "cuda", "javascript"]
+    },
+    "domains": {
+      "description": "Broad technical domains of expertise",
+      "values": ["testing", "security", "design", "research", "infra", "docs", "math"]
+    },
+    "specializations": {
+      "description": "Narrow skill areas within domains",
+      "values": [
+        "conformance", "bytecode", "isa-design", "edge", "cloud", "a2a",
+        "vocabulary", "multilingual", "cuda-kernels", "fleet-coordination",
+        "auditing", "spec-writing", "runtime-architecture", "coordination",
+        "hardware", "think-tank", "grammatical-analysis", "babel-lattice",
+        "viewpoint-opcodes", "fleet-scanning", "auto-repair", "maintenance",
+        "signal-language", "cross-specification-analysis"
+      ]
+    }
+  },
+  "agents": [
+    {
+      "name": "Oracle1",
+      "vessel_repo": "SuperInstance/oracle1-vessel",
+      "role": "lighthouse",
+      "domains": ["python", "rust", "typescript", "go", "zig", "javascript"],
+      "specializations": [
+        "vocabulary", "runtime-architecture", "think-tank", "coordination",
+        "fleet-coordination", "testing", "design", "infra"
+      ],
+      "confidence_scores": {
+        "python": 0.95, "rust": 0.85, "typescript": 0.80, "go": 0.80,
+        "zig": 0.75, "javascript": 0.75, "testing": 0.90, "design": 0.95,
+        "infra": 0.85, "research": 0.90, "docs": 0.85, "math": 0.70
+      },
+      "recent_commits": [
+        {"message": "ISA v2 convergence — 247 opcodes, 2360 tests", "date": "2026-04-12", "repo": "oracle1-vessel"},
+        {"message": "88 conformance test vectors — 10 categories", "date": "2026-04-12", "repo": "flux-runtime"},
+        {"message": "Fleet-wide CI to 20+ repos", "date": "2026-04-11", "repo": "flux-runtime"},
+        {"message": "All 9 cognitive repos fixed — 139/139 tests", "date": "2026-04-11", "repo": "flux-runtime"}
+      ],
+      "task_history": [
+        {"task_id": "ISA-001", "status": "in_progress", "date": "2026-04-12"},
+        {"task_id": "CONF-001", "status": "completed", "date": "2026-04-12"},
+        {"task_id": "BOOT-001", "status": "completed", "date": "2026-04-11"}
+      ],
+      "stats": {
+        "vocab_count": 3035,
+        "test_count": 2258,
+        "active_tasks": 1,
+        "total_completed": 15
+      }
+    },
+    {
+      "name": "Super Z",
+      "vessel_repo": "SuperInstance/superz-vessel",
+      "role": "vessel",
+      "domains": ["python", "c", "typescript", "go", "javascript"],
+      "specializations": [
+        "spec-writing", "fleet-auditing", "bytecode", "isa-design",
+        "conformance", "a2a", "cross-specification-analysis", "signal-language",
+        "testing", "design", "research", "docs"
+      ],
+      "confidence_scores": {
+        "python": 0.95, "c": 0.90, "typescript": 0.75, "go": 0.65,
+        "javascript": 0.70, "testing": 0.90, "design": 0.90,
+        "infra": 0.60, "research": 0.90, "docs": 0.90, "math": 0.80
+      },
+      "recent_commits": [
+        {"message": "Security primitives spec — 6 opcodes, 18 test vectors", "date": "2026-04-13", "repo": "flux-runtime"},
+        {"message": "ISA v3 escape prefix spec + address map", "date": "2026-04-13", "repo": "flux-runtime"},
+        {"message": "Async/temporal primitives spec — 7 opcodes", "date": "2026-04-12", "repo": "flux-runtime"},
+        {"message": "Performance benchmarks — 6.7x C speedup measured", "date": "2026-04-12", "repo": "flux-runtime"},
+        {"message": "C unified VM — 60+ opcodes, 20/20 conformance", "date": "2026-04-12", "repo": "flux-runtime"},
+        {"message": "FLUX assembler — two-pass, label resolution", "date": "2026-04-12", "repo": "flux-runtime"}
+      ],
+      "task_history": [
+        {"task_id": "ISA-002", "status": "completed", "date": "2026-04-13"},
+        {"task_id": "SEC-001", "status": "completed", "date": "2026-04-13"},
+        {"task_id": "ASYNC-001", "status": "completed", "date": "2026-04-12"},
+        {"task_id": "TEMP-001", "status": "completed", "date": "2026-04-12"},
+        {"task_id": "PERF-001", "status": "completed", "date": "2026-04-12"},
+        {"task_id": "CONF-001", "status": "completed", "date": "2026-04-12"}
+      ],
+      "stats": {
+        "vocab_count": 59,
+        "test_count": 94,
+        "active_tasks": 0,
+        "total_completed": 20
+      }
+    },
+    {
+      "name": "JetsonClaw1",
+      "vessel_repo": "Lucineer/JetsonClaw1-vessel",
+      "role": "vessel",
+      "domains": ["c", "rust", "go", "cuda"],
+      "specializations": [
+        "cuda-kernels", "edge", "hardware", "isa-design",
+        "fleet-scanning", "design", "testing", "infra"
+      ],
+      "confidence_scores": {
+        "c": 0.95, "rust": 0.90, "go": 0.75, "cuda": 0.95,
+        "testing": 0.70, "design": 0.80, "infra": 0.75,
+        "research": 0.55, "docs": 0.50, "math": 0.65
+      },
+      "recent_commits": [
+        {"message": "Jetson context profile — aarch64 constraints", "date": "2026-04-10", "repo": "JetsonClaw1-vessel"},
+        {"message": "Edge profiling — 8GB shared GPU/CPU memory", "date": "2026-04-09", "repo": "JetsonClaw1-vessel"},
+        {"message": "HAV vocabulary compression — 1687 entries", "date": "2026-04-08", "repo": "JetsonClaw1-vessel"}
+      ],
+      "task_history": [
+        {"task_id": "CUDA-001", "status": "in_progress", "date": "2026-04-11"},
+        {"task_id": "TRUST-001", "status": "in_progress", "date": "2026-04-11"}
+      ],
+      "stats": {
+        "vocab_count": 1687,
+        "test_count": 65,
+        "active_tasks": 2,
+        "total_completed": 10
+      }
+    },
+    {
+      "name": "Quill",
+      "vessel_repo": "SuperInstance/quill-vessel",
+      "role": "scout",
+      "domains": ["python"],
+      "specializations": [
+        "vocabulary", "spec-writing", "design", "research",
+        "docs", "a2a", "coordination"
+      ],
+      "confidence_scores": {
+        "python": 0.85, "testing": 0.60, "design": 0.85,
+        "infra": 0.45, "research": 0.90, "docs": 0.95, "math": 0.60
+      },
+      "recent_commits": [
+        {"message": "flux-coop-runtime Phase 1 — 109 tests, Ask/Respond", "date": "2026-04-11", "repo": "quill-vessel"},
+        {"message": "RFC-0001 CANONICAL — ISA convergence proposal", "date": "2026-04-11", "repo": "flux-rfc"},
+        {"message": "SIGNAL-AMENDMENT-1 — 10 proposed opcodes", "date": "2026-04-10", "repo": "quill-vessel"}
+      ],
+      "task_history": [
+        {"task_id": "ABIL-002", "status": "in_progress", "date": "2026-04-11"},
+        {"task_id": "TOPO-001", "status": "pending", "date": "2026-04-10"}
+      ],
+      "stats": {
+        "vocab_count": 120,
+        "test_count": 109,
+        "active_tasks": 1,
+        "total_completed": 8
+      }
+    },
+    {
+      "name": "Babel",
+      "vessel_repo": "SuperInstance/babel-vessel",
+      "role": "scout",
+      "domains": ["python", "rust", "go"],
+      "specializations": [
+        "multilingual", "grammatical-analysis", "babel-lattice",
+        "viewpoint-opcodes", "vocabulary", "design", "research"
+      ],
+      "confidence_scores": {
+        "python": 0.85, "rust": 0.70, "go": 0.65, "testing": 0.50,
+        "design": 0.80, "infra": 0.40, "research": 0.85, "docs": 0.75, "math": 0.55
+      },
+      "recent_commits": [
+        {"message": "Vocabulary extraction — 120-opcode ISA", "date": "2026-04-10", "repo": "babel-vessel"},
+        {"message": "Format bridge — 0xD0-0xFD relocation proposal", "date": "2026-04-09", "repo": "babel-vessel"}
+      ],
+      "task_history": [
+        {"task_id": "ISA-003", "status": "pending", "date": "2026-04-10"}
+      ],
+      "stats": {
+        "vocab_count": 120,
+        "test_count": 0,
+        "active_tasks": 0,
+        "total_completed": 4
+      }
+    },
+    {
+      "name": "Fleet Mechanic",
+      "vessel_repo": "SuperInstance/fleet-mechanic",
+      "role": "barnacle",
+      "domains": ["python"],
+      "specializations": [
+        "fleet-scanning", "auto-repair", "maintenance",
+        "infra", "testing"
+      ],
+      "confidence_scores": {
+        "python": 0.85, "testing": 0.75, "design": 0.40,
+        "infra": 0.90, "research": 0.30, "docs": 0.50, "math": 0.30
+      },
+      "recent_commits": [
+        {"message": "Fleet-wide scanner — 15 repos auto-fixed", "date": "2026-04-11", "repo": "fleet-mechanic"},
+        {"message": "CI workflow fixes across fleet", "date": "2026-04-11", "repo": "fleet-mechanic"}
+      ],
+      "task_history": [
+        {"task_id": "MECH-001", "status": "in_progress", "date": "2026-04-11"}
+      ],
+      "stats": {
+        "vocab_count": 0,
+        "test_count": 35,
+        "active_tasks": 1,
+        "total_completed": 6
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "task_id": "ISA-001",
+      "title": "ISA v3 Design",
+      "description": "Draft ISA v3 incorporating round-table critique (escape prefix 0xFF, compressed shorts, temporal ops, security primitives)",
+      "required_skills": ["design", "research", "math"],
+      "priority": "critical",
+      "estimated_effort": "large",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "ISA-002",
+      "title": "ISA v3 Escape Prefix Spec",
+      "description": "Design the 0xFF escape prefix extension mechanism with runtime discovery and A2A opcode negotiation",
+      "required_skills": ["design", "research"],
+      "priority": "critical",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "CONF-001",
+      "title": "Conformance Vector Runner",
+      "description": "Build a runner that executes 88 conformance test vectors against all 3 FLUX runtimes (Python, C, Rust)",
+      "required_skills": ["python", "c", "rust", "testing"],
+      "priority": "critical",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "MAINT-001",
+      "title": "Fix beachcomb.py Deprecation Warning",
+      "description": "Fix invalid escape sequence in beachcomb.py regex",
+      "required_skills": ["python"],
+      "priority": "critical",
+      "estimated_effort": "small",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "FLEET-001",
+      "title": "Wire Third Z Agent Into Fleet",
+      "description": "Third Z agent needs a name, vessel repo, and bottle",
+      "required_skills": ["infra"],
+      "priority": "high",
+      "estimated_effort": "small",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "CUDA-001",
+      "title": "CUDA Kernel for Batch FLUX Execution",
+      "description": "Design a CUDA kernel that executes FLUX bytecode in parallel batches on JetsonClaw1's 1024 CUDA cores",
+      "required_skills": ["cuda", "design", "c"],
+      "priority": "high",
+      "estimated_effort": "large",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "TRUST-001",
+      "title": "cuda-trust to I2I Protocol Integration",
+      "description": "Wire cuda-trust module into I2I protocol for behavioral trust scoring",
+      "required_skills": ["rust", "python", "design"],
+      "priority": "high",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "MECH-001",
+      "title": "Mechanic Cron — Periodic Fleet Scanning",
+      "description": "Set up cron job that runs fleet-mechanic scan every 6 hours with auto-issue creation",
+      "required_skills": ["infra", "python"],
+      "priority": "high",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "INFRA-001",
+      "title": "GitHub Projects v2 Fleet Kanban",
+      "description": "Set up GitHub Projects v2 board at SuperInstance org level with auto-population from issues",
+      "required_skills": ["infra"],
+      "priority": "high",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "ROUTE-001",
+      "title": "Semantic Router for Fleet Task Routing",
+      "description": "Build semantic router that reads agent capabilities and routes fleet tasks to best-suited agent",
+      "required_skills": ["python", "design"],
+      "priority": "high",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "ASYNC-001",
+      "title": "Async Primitives Design",
+      "description": "Design SUSPEND/RESUME opcodes with continuation handles for the FLUX ISA",
+      "required_skills": ["design", "research"],
+      "priority": "medium",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "TEMP-001",
+      "title": "Temporal Primitives Design",
+      "description": "Design DEADLINE_BEFORE, YIELD_IF_CONTENTION, PERSIST_CRITICAL_STATE opcodes",
+      "required_skills": ["design"],
+      "priority": "medium",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "SEC-001",
+      "title": "Security Primitives Design",
+      "description": "Design CAP_INVOKE, MEM_TAG, sandbox region opcodes for multi-agent isolation",
+      "required_skills": ["security", "design"],
+      "priority": "medium",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "ISA-003",
+      "title": "Compressed Instruction Format",
+      "description": "Design a 2-byte compressed format for top 32 most-used opcodes (like RISC-V C-extension)",
+      "required_skills": ["design", "math"],
+      "priority": "medium",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "PERF-001",
+      "title": "FLUX Runtime Performance Benchmarks",
+      "description": "Build benchmarking harness measuring decode speed, execution throughput, memory usage per opcode category",
+      "required_skills": ["python", "c", "rust", "testing"],
+      "priority": "medium",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "GO-001",
+      "title": "FLUX Runtime Go Implementation Tests",
+      "description": "Write comprehensive tests for Go FLUX runtime matching conformance vectors",
+      "required_skills": ["go", "testing"],
+      "priority": "medium",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "ZIG-001",
+      "title": "FLUX Runtime Zig Implementation Tests",
+      "description": "Write comprehensive tests for Zig FLUX runtime matching conformance vectors",
+      "required_skills": ["zig", "testing"],
+      "priority": "medium",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "KEEP-001",
+      "title": "Lighthouse Keeper Architecture",
+      "description": "Design per-region health monitor: Brothers Keeper -> Lighthouse Keeper -> Tender",
+      "required_skills": ["design", "python"],
+      "priority": "medium",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "WASM-001",
+      "title": "FLUX WASM Compilation Target",
+      "description": "Design FLUX->WASM compilation path so bytecode runs in browsers",
+      "required_skills": ["design", "research"],
+      "priority": "low",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "BOOT-001",
+      "title": "What Makes a Good Agent Bootcamp?",
+      "description": "Research what makes bootcamps effective for humans, apply to agents",
+      "required_skills": ["research", "design"],
+      "priority": "low",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "GIT-001",
+      "title": "Git-Native A2A Protocol Survey",
+      "description": "Survey 30+ GitHub features exploitable for agent cooperation",
+      "required_skills": ["research"],
+      "priority": "low",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "JAVA-001",
+      "title": "FLUX Java Runtime Tests",
+      "description": "Write tests for flux-java; CI can run them if Java CI runner is set up",
+      "required_skills": ["java", "testing"],
+      "priority": "low",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    },
+    {
+      "task_id": "DEBUG-001",
+      "title": "Multi-Agent Debugging Patterns",
+      "description": "When 5 agents collaborate through git, what goes wrong? Collect failure modes, design debugging tools",
+      "required_skills": ["research", "design"],
+      "priority": "low",
+      "estimated_effort": "medium",
+      "depends_on": [],
+      "source": "TASK-BOARD"
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+> **Updated 2026-04-12: Aligned with converged FLUX ISA v2** — All opcode values and names now reference the unified ISA from `isa_unified.py`. A2A opcodes updated: TELL=0x50, ASK=0x51, DELEG=0x52, BCAST=0x53, ACCEPT=0x54. See `docs/ISA_UNIFIED.md` for the canonical reference.
+
 # Module 6: Multi-Agent Fleet Patterns
 
 **Learning Objectives:**
@@ -43,8 +45,11 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Any
 import uuid
 from flux.a2a.messages import A2AMessage
-from flux.bytecode.opcodes import Op
-from flux.vm.interpreter import Interpreter
+from flux.vm.unified_interpreter import Interpreter
+
+# Converged ISA v2 A2A opcode values
+DELEG  = 0x52
+ACCEPT = 0x54
 
 @dataclass
 class WorkerAgent:
@@ -64,32 +69,31 @@ class WorkerAgent:
         self.interpreter.reset()
 
         # Load task data into R0
-        # (In real implementation, parse task_data)
         import struct
         task_id = struct.unpack("<I", task_data[:4])[0]
 
         # Execute
-        self.interpreter.regs.write_gp(0, task_id)
+        self.interpreter.regs[0] = task_id
         self.interpreter.execute()
 
         # Return result
-        result = self.interpreter.regs.read_gp(0)
+        result = self.interpreter.regs[0]
         return struct.pack("<I", result)
 
     def process_messages(self):
         """Process incoming messages."""
         for msg in self.inbox:
-            if msg.message_type == Op.DELEGATE:
+            if msg.message_type == DELEG:   # 0x52
                 # Execute task
                 result = self.execute_task(msg.payload)
 
-                # Send result back
+                # Send result back using ACCEPT
                 reply = A2AMessage(
                     sender=self.agent_id,
                     receiver=msg.sender,
                     conversation_id=msg.conversation_id,
                     in_reply_to=msg.sender,
-                    message_type=Op.DELEGATE_RESULT,
+                    message_type=ACCEPT,     # 0x54
                     priority=msg.priority,
                     trust_token=msg.trust_token,
                     capability_token=msg.capability_token,
@@ -127,7 +131,7 @@ class CaptainAgent:
             receiver=worker.agent_id,
             conversation_id=uuid.uuid4(),
             in_reply_to=None,
-            message_type=Op.DELEGATE,
+            message_type=DELEG,     # 0x52
             priority=7,
             trust_token=750,
             capability_token=200,
@@ -158,10 +162,11 @@ class CaptainAgent:
 ```python
 import struct
 
-# Worker bytecode: square the input value
+# Worker bytecode: double the input value
+# ADD R0, R0, R0 (0x20 = ADD in converged ISA)
 worker_bytecode = bytearray()
-worker_bytecode.extend(struct.pack("<BBBB", 0x08, 0, 0, 0))  # IADD R0, R0, R0 (square by adding to itself)
-worker_bytecode.extend(bytes([0x80]))  # HALT
+worker_bytecode.extend(struct.pack("<BBBB", 0x20, 0, 0, 0))  # ADD R0, R0, R0
+worker_bytecode.extend(bytes([0x00]))                          # HALT (0x00)
 
 # Create fleet
 captain = CaptainAgent("MainCaptain")
@@ -228,14 +233,13 @@ class ScoutAgent:
 
     def send_report(self, receiver, report_data: bytes):
         """Send a report to the receiver."""
-        from flux.bytecode.opcodes import Op
-
+        # TELL = 0x50 in converged ISA
         msg = A2AMessage(
             sender=self.agent_id,
             receiver=receiver,
             conversation_id=uuid.uuid4(),
             in_reply_to=None,
-            message_type=Op.TELL,  # Report is one-way
+            message_type=0x50,        # TELL (0x50)
             priority=6,
             trust_token=500,
             capability_token=100,
@@ -353,16 +357,15 @@ class ConsensusAgent:
 
     def cast_vote(self, coordinator, proposal_id: int, vote: Vote):
         """Cast vote for a proposal."""
-        from flux.bytecode.opcodes import Op
-
+        # ASK = 0x51 in converged ISA
         vote_data = struct.pack("<Ii", proposal_id, vote.value)
         msg = A2AMessage(
             sender=self.agent_id,
             receiver=coordinator,
             conversation_id=uuid.uuid4(),
             in_reply_to=None,
-            message_type=Op.ASK,  # Vote is a request
-            priority=8,  # High priority for voting
+            message_type=0x51,        # ASK (0x51)
+            priority=8,              # High priority for voting
             trust_token=700,
             capability_token=200,
             payload=vote_data,
@@ -499,37 +502,37 @@ class FleetSimulator:
     def __post_init__(self):
         # Navigator agent: handles direction
         navigator_bytecode = bytes([
-            0x08, 0x00, 0x00, 0x01,  # IADD R0, R0, R1
+            0x20, 0x00, 0x00, 0x01,  # ADD R0, R0, R1 (converged ISA)
             # ... navigation logic ...
-            0x28, 0x00, 0x00,        # RET
+            0x02,                     # RET (0x02, Format A)
         ])
         self.agents["navigator"] = Agent("Navigator", navigator_bytecode)
 
         # Weather scout: monitors conditions
         weather_bytecode = bytes([
             # ... weather monitoring logic ...
-            0x28, 0x00, 0x00,        # RET
+            0x02,                     # RET (0x02)
         ])
         self.agents["weather_scout"] = Agent("WeatherScout", weather_bytecode)
 
         # Fish finder: locates targets
         finder_bytecode = bytes([
             # ... fish finding logic ...
-            0x28, 0x00, 0x00,        # RET
+            0x02,                     # RET (0x02)
         ])
         self.agents["fish_finder"] = Agent("FishFinder", finder_bytecode)
 
         # Supply manager: tracks resources
         supply_bytecode = bytes([
             # ... supply tracking logic ...
-            0x28, 0x00, 0x00,        # RET
+            0x02,                     # RET (0x02)
         ])
         self.agents["supply_manager"] = Agent("SupplyManager", supply_bytecode)
 
         # Captain: makes decisions
         captain_bytecode = bytes([
             # ... decision logic ...
-            0x28, 0x00, 0x00,        # RET
+            0x02,                     # RET (0x02)
         ])
         self.agents["captain"] = Agent("Captain", captain_bytecode)
 
@@ -583,8 +586,8 @@ class FleetSimulator:
 5. **Reporter** — Reports findings
 
 **Requirements:**
-- Use BROADCAST for coordination
-- Use DELEGATE for task distribution
+- Use BCAST (0x53) for coordination
+- Use DELEG (0x52) for task distribution
 - Implement trust scoring
 - Show fleet execution for 3 timesteps
 
@@ -623,7 +626,7 @@ At the end of Module 6, you should be able to:
 🎉 **Congratulations!** You've completed the FLUX Agent Bootcamp!
 
 You are now equipped to:
-- Write FLUX bytecode programs
+- Write FLUX bytecode programs using the converged ISA v2
 - Implement control flow and functions
 - Build multi-agent systems with A2A messaging
 - Manage memory regions and stack operations
@@ -632,6 +635,7 @@ You are now equipped to:
 
 ### Next Steps
 
+- **[ISA Unified Reference](../ISA_UNIFIED.md)** — Complete converged ISA v2 opcode table
 - **[User Guide](../user-guide.md)** — Complete API reference
 - **[Developer Guide](../developer-guide.md)** — Architecture and contribution
 - **[Agent Training Guide](../agent-training/README.md)** — Specialized guide for AI agents
