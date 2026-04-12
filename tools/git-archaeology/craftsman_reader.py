@@ -562,7 +562,7 @@ def _detect_anti_marks(record: CommitRecord, raw: dict) -> None:
     if is_typo_fix and total_lines > 20:
         record.is_anti_mark = True
         record.anti_mark_reasons.append(
-            "'fix typo' but changes {total_lines} lines — possibly misleading"
+            f"'fix typo' but changes {total_lines} lines — possibly misleading"
         )
 
     # Force-push detection: reset/rewrite indicators in message

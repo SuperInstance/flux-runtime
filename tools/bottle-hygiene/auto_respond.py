@@ -582,8 +582,9 @@ class AutoResponder:
             )
             conn.commit()
             conn.close()
-        except Exception:
-            pass  # Tracker update is best-effort
+        except Exception as e:
+            import sys
+            print(f"Warning: tracker update failed: {e}", file=sys.stderr)
 
 
 # ---------------------------------------------------------------------------

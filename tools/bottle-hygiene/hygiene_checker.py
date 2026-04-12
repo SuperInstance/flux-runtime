@@ -702,7 +702,7 @@ class HygieneChecker:
     def _calculate_vessel_metrics(self, summary: VesselHygieneSummary) -> None:
         """Calculate derived metrics for a vessel summary."""
         total_incoming = summary.bottles_received
-        total_outgoing = summary.bottles_orphan
+        total_outgoing = summary.bottles_sent
 
         if total_incoming > 0:
             ack_rate = summary.bottles_acknowledged / (total_incoming + total_outgoing)
