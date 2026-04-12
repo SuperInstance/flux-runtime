@@ -1,0 +1,786 @@
+[
+  {
+    "name": "FABS takes absolute value",
+    "description": "FABS F0, F1: |-3.14| \u2192 3.14",
+    "category": "float",
+    "opcode": "FABS",
+    "opcode_hex": "0x45",
+    "bytecode": [
+      69,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": -3.14,
+      "F1": -3.14
+    },
+    "expected_fp": {
+      "F0": 3.14
+    },
+    "tags": [
+      "generated",
+      "fabs"
+    ]
+  },
+  {
+    "name": "FADD 1.5 + 2.5 = 4.0",
+    "description": "Float FADD: 1.5 + 2.5 = 4.0",
+    "category": "float",
+    "opcode": "FADD",
+    "opcode_hex": "0x40",
+    "bytecode": [
+      64,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 1.5,
+      "F2": 2.5
+    },
+    "expected_fp": {
+      "F0": 4.0
+    },
+    "tags": [
+      "generated",
+      "fadd"
+    ]
+  },
+  {
+    "name": "FADD 0.0 + 3.14 = 3.14",
+    "description": "Float FADD: 0.0 + 3.14 = 3.14",
+    "category": "float",
+    "opcode": "FADD",
+    "opcode_hex": "0x40",
+    "bytecode": [
+      64,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 0.0,
+      "F2": 3.14
+    },
+    "expected_fp": {
+      "F0": 3.14
+    },
+    "tags": [
+      "generated",
+      "fadd"
+    ]
+  },
+  {
+    "name": "FADD -1.0 + 1.0 = 0.0",
+    "description": "Float FADD: -1.0 + 1.0 = 0.0",
+    "category": "float",
+    "opcode": "FADD",
+    "opcode_hex": "0x40",
+    "bytecode": [
+      64,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": -1.0,
+      "F2": 1.0
+    },
+    "expected_fp": {
+      "F0": 0.0
+    },
+    "tags": [
+      "generated",
+      "fadd"
+    ]
+  },
+  {
+    "name": "FDIV 10.0 / 2.0 = 5.0",
+    "description": "Float division: 10.0 / 2.0",
+    "category": "float",
+    "opcode": "FDIV",
+    "opcode_hex": "0x43",
+    "bytecode": [
+      67,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 10.0,
+      "F2": 2.0
+    },
+    "expected_fp": {
+      "F0": 5.0
+    },
+    "tags": [
+      "generated",
+      "fdiv"
+    ]
+  },
+  {
+    "name": "FDIV 3.14 / 1.0 = 3.14",
+    "description": "Float division: 3.14 / 1.0",
+    "category": "float",
+    "opcode": "FDIV",
+    "opcode_hex": "0x43",
+    "bytecode": [
+      67,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 3.14,
+      "F2": 1.0
+    },
+    "expected_fp": {
+      "F0": 3.14
+    },
+    "tags": [
+      "generated",
+      "fdiv"
+    ]
+  },
+  {
+    "name": "FDIV divide by zero raises error",
+    "description": "Float division by zero should raise error",
+    "category": "float",
+    "opcode": "FDIV",
+    "opcode_hex": "0x43",
+    "bytecode": [
+      67,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": false,
+    "initial_fp": {
+      "F1": 1.0,
+      "F2": 0.0
+    },
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "FEQ 3.14 vs 3.14 = 1",
+    "description": "Float comparison: FEQ",
+    "category": "float",
+    "opcode": "FEQ",
+    "opcode_hex": "0x48",
+    "bytecode": [
+      72,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 3.14
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "feq"
+    ]
+  },
+  {
+    "name": "FEQ 1.0 vs 2.0 = 0",
+    "description": "Float comparison: FEQ",
+    "category": "float",
+    "opcode": "FEQ",
+    "opcode_hex": "0x48",
+    "bytecode": [
+      72,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 1.0,
+      "F1": 2.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "feq"
+    ]
+  },
+  {
+    "name": "FEQ 2.0 vs 1.0 = 0",
+    "description": "Float comparison: FEQ",
+    "category": "float",
+    "opcode": "FEQ",
+    "opcode_hex": "0x48",
+    "bytecode": [
+      72,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.0,
+      "F1": 1.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "feq"
+    ]
+  },
+  {
+    "name": "FGE 3.14 vs 3.14 = 1",
+    "description": "Float comparison: FGE",
+    "category": "float",
+    "opcode": "FGE",
+    "opcode_hex": "0x4C",
+    "bytecode": [
+      76,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 3.14
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "fge"
+    ]
+  },
+  {
+    "name": "FGE 1.0 vs 2.0 = 0",
+    "description": "Float comparison: FGE",
+    "category": "float",
+    "opcode": "FGE",
+    "opcode_hex": "0x4C",
+    "bytecode": [
+      76,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 1.0,
+      "F1": 2.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "fge"
+    ]
+  },
+  {
+    "name": "FGE 2.0 vs 1.0 = 1",
+    "description": "Float comparison: FGE",
+    "category": "float",
+    "opcode": "FGE",
+    "opcode_hex": "0x4C",
+    "bytecode": [
+      76,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.0,
+      "F1": 1.0
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "fge"
+    ]
+  },
+  {
+    "name": "FGT 3.14 vs 3.14 = 0",
+    "description": "Float comparison: FGT",
+    "category": "float",
+    "opcode": "FGT",
+    "opcode_hex": "0x4B",
+    "bytecode": [
+      75,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 3.14
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "fgt"
+    ]
+  },
+  {
+    "name": "FGT 1.0 vs 2.0 = 0",
+    "description": "Float comparison: FGT",
+    "category": "float",
+    "opcode": "FGT",
+    "opcode_hex": "0x4B",
+    "bytecode": [
+      75,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 1.0,
+      "F1": 2.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "fgt"
+    ]
+  },
+  {
+    "name": "FGT 2.0 vs 1.0 = 1",
+    "description": "Float comparison: FGT",
+    "category": "float",
+    "opcode": "FGT",
+    "opcode_hex": "0x4B",
+    "bytecode": [
+      75,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.0,
+      "F1": 1.0
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "fgt"
+    ]
+  },
+  {
+    "name": "FLE 3.14 vs 3.14 = 1",
+    "description": "Float comparison: FLE",
+    "category": "float",
+    "opcode": "FLE",
+    "opcode_hex": "0x4A",
+    "bytecode": [
+      74,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 3.14
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "fle"
+    ]
+  },
+  {
+    "name": "FLE 1.0 vs 2.0 = 1",
+    "description": "Float comparison: FLE",
+    "category": "float",
+    "opcode": "FLE",
+    "opcode_hex": "0x4A",
+    "bytecode": [
+      74,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 1.0,
+      "F1": 2.0
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "fle"
+    ]
+  },
+  {
+    "name": "FLE 2.0 vs 1.0 = 0",
+    "description": "Float comparison: FLE",
+    "category": "float",
+    "opcode": "FLE",
+    "opcode_hex": "0x4A",
+    "bytecode": [
+      74,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.0,
+      "F1": 1.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "fle"
+    ]
+  },
+  {
+    "name": "FLT 3.14 vs 3.14 = 0",
+    "description": "Float comparison: FLT",
+    "category": "float",
+    "opcode": "FLT",
+    "opcode_hex": "0x49",
+    "bytecode": [
+      73,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 3.14
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "flt"
+    ]
+  },
+  {
+    "name": "FLT 1.0 vs 2.0 = 1",
+    "description": "Float comparison: FLT",
+    "category": "float",
+    "opcode": "FLT",
+    "opcode_hex": "0x49",
+    "bytecode": [
+      73,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 1.0,
+      "F1": 2.0
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "flt"
+    ]
+  },
+  {
+    "name": "FLT 2.0 vs 1.0 = 0",
+    "description": "Float comparison: FLT",
+    "category": "float",
+    "opcode": "FLT",
+    "opcode_hex": "0x49",
+    "bytecode": [
+      73,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.0,
+      "F1": 1.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "flt"
+    ]
+  },
+  {
+    "name": "FMAX takes maximum",
+    "description": "FMAX F0, F1: max(2.71, 3.14) \u2192 3.14",
+    "category": "float",
+    "opcode": "FMAX",
+    "opcode_hex": "0x47",
+    "bytecode": [
+      71,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.71,
+      "F1": 3.14
+    },
+    "expected_fp": {
+      "F0": 3.14
+    },
+    "tags": [
+      "generated",
+      "fmax"
+    ]
+  },
+  {
+    "name": "FMIN takes minimum",
+    "description": "FMIN F0, F1: min(3.14, 2.71) \u2192 2.71",
+    "category": "float",
+    "opcode": "FMIN",
+    "opcode_hex": "0x46",
+    "bytecode": [
+      70,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 2.71
+    },
+    "expected_fp": {
+      "F0": 2.71
+    },
+    "tags": [
+      "generated",
+      "fmin"
+    ]
+  },
+  {
+    "name": "FMUL 1.5 * 2.5 = 3.75",
+    "description": "Float FMUL: 1.5 * 2.5 = 3.75",
+    "category": "float",
+    "opcode": "FMUL",
+    "opcode_hex": "0x42",
+    "bytecode": [
+      66,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 1.5,
+      "F2": 2.5
+    },
+    "expected_fp": {
+      "F0": 3.75
+    },
+    "tags": [
+      "generated",
+      "fmul"
+    ]
+  },
+  {
+    "name": "FMUL 0.0 * 3.14 = 0.0",
+    "description": "Float FMUL: 0.0 * 3.14 = 0.0",
+    "category": "float",
+    "opcode": "FMUL",
+    "opcode_hex": "0x42",
+    "bytecode": [
+      66,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 0.0,
+      "F2": 3.14
+    },
+    "expected_fp": {
+      "F0": 0.0
+    },
+    "tags": [
+      "generated",
+      "fmul"
+    ]
+  },
+  {
+    "name": "FMUL -1.0 * 1.0 = -1.0",
+    "description": "Float FMUL: -1.0 * 1.0 = -1.0",
+    "category": "float",
+    "opcode": "FMUL",
+    "opcode_hex": "0x42",
+    "bytecode": [
+      66,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": -1.0,
+      "F2": 1.0
+    },
+    "expected_fp": {
+      "F0": -1.0
+    },
+    "tags": [
+      "generated",
+      "fmul"
+    ]
+  },
+  {
+    "name": "FNEG negates float",
+    "description": "FNEG F0, F1: -3.14 \u2192 3.14",
+    "category": "float",
+    "opcode": "FNEG",
+    "opcode_hex": "0x44",
+    "bytecode": [
+      68,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 3.14
+    },
+    "expected_fp": {
+      "F0": -3.14
+    },
+    "tags": [
+      "generated",
+      "fneg"
+    ]
+  },
+  {
+    "name": "FSUB 1.5 - 2.5 = -1.0",
+    "description": "Float FSUB: 1.5 - 2.5 = -1.0",
+    "category": "float",
+    "opcode": "FSUB",
+    "opcode_hex": "0x41",
+    "bytecode": [
+      65,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 1.5,
+      "F2": 2.5
+    },
+    "expected_fp": {
+      "F0": -1.0
+    },
+    "tags": [
+      "generated",
+      "fsub"
+    ]
+  },
+  {
+    "name": "FSUB 0.0 - 3.14 = -3.14",
+    "description": "Float FSUB: 0.0 - 3.14 = -3.14",
+    "category": "float",
+    "opcode": "FSUB",
+    "opcode_hex": "0x41",
+    "bytecode": [
+      65,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 0.0,
+      "F2": 3.14
+    },
+    "expected_fp": {
+      "F0": -3.14
+    },
+    "tags": [
+      "generated",
+      "fsub"
+    ]
+  },
+  {
+    "name": "FSUB -1.0 - 1.0 = -2.0",
+    "description": "Float FSUB: -1.0 - 1.0 = -2.0",
+    "category": "float",
+    "opcode": "FSUB",
+    "opcode_hex": "0x41",
+    "bytecode": [
+      65,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": -1.0,
+      "F2": 1.0
+    },
+    "expected_fp": {
+      "F0": -2.0
+    },
+    "tags": [
+      "generated",
+      "fsub"
+    ]
+  }
+]

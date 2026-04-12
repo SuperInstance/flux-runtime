@@ -1,0 +1,150 @@
+[
+  {
+    "name": "STORE then LOAD roundtrip",
+    "description": "Store 12345 at addr 32000, load back",
+    "category": "memory",
+    "opcode": "LOAD",
+    "opcode_hex": "0x02",
+    "bytecode": [
+      43,
+      0,
+      57,
+      48,
+      43,
+      1,
+      0,
+      125,
+      3,
+      0,
+      1,
+      43,
+      2,
+      0,
+      0,
+      2,
+      2,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 12345,
+      "R2": 12345
+    },
+    "tags": [
+      "generated",
+      "store_load"
+    ]
+  },
+  {
+    "name": "STORE8 then LOAD8 roundtrip",
+    "description": "Store byte 0x42, load back",
+    "category": "memory",
+    "opcode": "LOAD8",
+    "opcode_hex": "0x4F",
+    "bytecode": [
+      43,
+      0,
+      66,
+      0,
+      43,
+      1,
+      0,
+      125,
+      87,
+      0,
+      1,
+      43,
+      2,
+      0,
+      0,
+      79,
+      2,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 66,
+      "R2": 66
+    },
+    "tags": [
+      "generated",
+      "store8_load8"
+    ]
+  },
+  {
+    "name": "STORE then LOAD roundtrip",
+    "description": "Store 12345 at addr 32000, load back",
+    "category": "memory",
+    "opcode": "STORE",
+    "opcode_hex": "0x03",
+    "bytecode": [
+      43,
+      0,
+      57,
+      48,
+      43,
+      1,
+      0,
+      125,
+      3,
+      0,
+      1,
+      43,
+      2,
+      0,
+      0,
+      2,
+      2,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 12345,
+      "R2": 12345
+    },
+    "tags": [
+      "generated",
+      "store_load"
+    ]
+  },
+  {
+    "name": "STORE8 then LOAD8 roundtrip",
+    "description": "Store byte 0x42, load back",
+    "category": "memory",
+    "opcode": "STORE8",
+    "opcode_hex": "0x57",
+    "bytecode": [
+      43,
+      0,
+      66,
+      0,
+      43,
+      1,
+      0,
+      125,
+      87,
+      0,
+      1,
+      43,
+      2,
+      0,
+      0,
+      79,
+      2,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 66,
+      "R2": 66
+    },
+    "tags": [
+      "generated",
+      "store8_load8"
+    ]
+  }
+]

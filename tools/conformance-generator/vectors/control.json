@@ -1,0 +1,609 @@
+[
+  {
+    "name": "CALL pushes return address and jumps",
+    "description": "CALL pushes PC then jumps to target",
+    "category": "control",
+    "opcode": "CALL",
+    "opcode_hex": "0x07",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      7,
+      0,
+      1,
+      0,
+      128,
+      43,
+      2,
+      77,
+      0,
+      40
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R2": 77
+    },
+    "notes": "RET halts because interpreter treats single-element stack as empty",
+    "tags": [
+      "generated",
+      "call_return"
+    ]
+  },
+  {
+    "name": "HALT terminates execution immediately",
+    "description": "HALT should stop the VM",
+    "category": "control",
+    "opcode": "HALT",
+    "opcode_hex": "0x80",
+    "bytecode": [
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "HALT preserves register state",
+    "description": "HALT should not modify registers",
+    "category": "control",
+    "opcode": "HALT",
+    "opcode_hex": "0x80",
+    "bytecode": [
+      43,
+      0,
+      99,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 99
+    },
+    "tags": [
+      "generated",
+      "register_safety"
+    ]
+  },
+  {
+    "name": "JE jumps when values are equal",
+    "description": "CMP sets zero flag when R0==R1, JE should jump",
+    "category": "control",
+    "opcode": "JE",
+    "opcode_hex": "0x2E",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      46,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": 10,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JG jumps when greater (no zero, no sign)",
+    "description": "CMP R0(30),R1(10): zero=F,sign=F \u2192 JG takes",
+    "category": "control",
+    "opcode": "JG",
+    "opcode_hex": "0x4D",
+    "bytecode": [
+      43,
+      0,
+      30,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      77,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 30,
+      "R1": 10,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JGE jumps when greater-or-equal",
+    "description": "CMP R0(30),R1(10): sign=F \u2192 JGE takes",
+    "category": "control",
+    "opcode": "JGE",
+    "opcode_hex": "0x37",
+    "bytecode": [
+      43,
+      0,
+      30,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      55,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 30,
+      "R1": 10,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JL jumps when less (sign flag set)",
+    "description": "CMP R0(10),R1(30): sign=T \u2192 JL takes",
+    "category": "control",
+    "opcode": "JL",
+    "opcode_hex": "0x36",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      30,
+      0,
+      45,
+      0,
+      1,
+      54,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": 30,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JLE jumps when less-or-equal (zero flag set)",
+    "description": "CMP R0(10),R1(10): zero=T \u2192 JLE takes",
+    "category": "control",
+    "opcode": "JLE",
+    "opcode_hex": "0x4E",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      78,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": 10,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JMP forward skips instruction",
+    "description": "JMP should skip the MOVI R1,999 and reach HALT",
+    "category": "control",
+    "opcode": "JMP",
+    "opcode_hex": "0x04",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      4,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": 0
+    },
+    "notes": "JMP offset is relative to PC after fetch (4 bytes for Format D)",
+    "tags": [
+      "generated",
+      "forward_jump"
+    ]
+  },
+  {
+    "name": "JMP backward creates loop",
+    "description": "JMP backward loops \u2014 VM stops via cycle budget",
+    "category": "control",
+    "opcode": "JMP",
+    "opcode_hex": "0x04",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      4,
+      0,
+      248,
+      255,
+      128
+    ],
+    "expected_halted": false,
+    "notes": "Backward jump exceeds cycle budget",
+    "tags": [
+      "generated",
+      "backward_jump",
+      "loop"
+    ]
+  },
+  {
+    "name": "JNE jumps when values are not equal",
+    "description": "CMP clears zero flag when R0!=R1, JNE should jump",
+    "category": "control",
+    "opcode": "JNE",
+    "opcode_hex": "0x2F",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      20,
+      0,
+      45,
+      0,
+      1,
+      47,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": 20,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JNZ jumps when register is non-zero",
+    "description": "JNZ R0 should jump when R0==42",
+    "category": "control",
+    "opcode": "JNZ",
+    "opcode_hex": "0x06",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      6,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 0
+    },
+    "tags": [
+      "generated",
+      "conditional_jump"
+    ]
+  },
+  {
+    "name": "JNZ falls through when register is zero",
+    "description": "JNZ R0 should not jump when R0==0",
+    "category": "control",
+    "opcode": "JNZ",
+    "opcode_hex": "0x06",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      6,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 999
+    },
+    "tags": [
+      "generated",
+      "conditional_jump"
+    ]
+  },
+  {
+    "name": "JZ jumps when register is zero",
+    "description": "JZ R0 should jump when R0==0, skipping MOVI R1,999",
+    "category": "control",
+    "opcode": "JZ",
+    "opcode_hex": "0x05",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      5,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0
+    },
+    "tags": [
+      "generated",
+      "conditional_jump"
+    ]
+  },
+  {
+    "name": "JZ falls through when register is non-zero",
+    "description": "JZ R0 should not jump when R0==42",
+    "category": "control",
+    "opcode": "JZ",
+    "opcode_hex": "0x05",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      5,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 999
+    },
+    "tags": [
+      "generated",
+      "conditional_jump"
+    ]
+  },
+  {
+    "name": "NOP does nothing",
+    "description": "NOP should execute without modifying any state",
+    "category": "control",
+    "opcode": "NOP",
+    "opcode_hex": "0x00",
+    "bytecode": [
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "NOP preserves register state",
+    "description": "NOP should not alter any register values",
+    "category": "control",
+    "opcode": "NOP",
+    "opcode_hex": "0x00",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "tags": [
+      "generated",
+      "register_safety"
+    ]
+  },
+  {
+    "name": "RET from empty stack halts VM",
+    "description": "RET when stack is empty should halt",
+    "category": "control",
+    "opcode": "RET",
+    "opcode_hex": "0x28",
+    "bytecode": [
+      40
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "edge_case"
+    ]
+  },
+  {
+    "name": "TAILCALL jumps without pushing return address",
+    "description": "TAILCALL should jump without pushing return, so R1 stays 0",
+    "category": "control",
+    "opcode": "TAILCALL",
+    "opcode_hex": "0x2A",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      42,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      43,
+      0,
+      20,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 20,
+      "R1": 0
+    },
+    "tags": [
+      "generated",
+      "tail_call"
+    ]
+  }
+]

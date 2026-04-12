@@ -1,0 +1,134 @@
+[
+  {
+    "name": "MOVI R0, 0 (zero)",
+    "description": "Load immediate 0 into R0",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "movi_zero"
+    ]
+  },
+  {
+    "name": "MOVI R0, 42 (positive)",
+    "description": "Load immediate 42 into R0",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "tags": [
+      "generated",
+      "movi_positive"
+    ]
+  },
+  {
+    "name": "MOVI R0, -128 (negative_byte)",
+    "description": "Load immediate -128 into R0",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      0,
+      128,
+      255,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -128
+    },
+    "tags": [
+      "generated",
+      "movi_negative_byte"
+    ]
+  },
+  {
+    "name": "MOVI R0, 32767 (max_i16)",
+    "description": "Load immediate 32767 into R0",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      0,
+      255,
+      127,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 32767
+    },
+    "tags": [
+      "generated",
+      "movi_max_i16"
+    ]
+  },
+  {
+    "name": "MOVI R0, -32768 (min_i16)",
+    "description": "Load immediate -32768 into R0",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      0,
+      0,
+      128,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -32768
+    },
+    "tags": [
+      "generated",
+      "movi_min_i16"
+    ]
+  },
+  {
+    "name": "MOVI R5, 100 (register_5)",
+    "description": "Load immediate 100 into R5",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      5,
+      100,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R5": 100
+    },
+    "tags": [
+      "generated",
+      "movi_register_5"
+    ]
+  }
+]

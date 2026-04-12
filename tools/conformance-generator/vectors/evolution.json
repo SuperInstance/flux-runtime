@@ -1,0 +1,84 @@
+[
+  {
+    "name": "EVOLVE does not crash",
+    "description": "EVOLVE should execute without error",
+    "category": "evolution",
+    "opcode": "EVOLVE",
+    "opcode_hex": "0x7C",
+    "bytecode": [
+      124,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "INSTINCT loads immediate into register",
+    "description": "INSTINCT R0, 42: R0 = 42",
+    "category": "evolution",
+    "opcode": "INSTINCT",
+    "opcode_hex": "0x7D",
+    "bytecode": [
+      125,
+      0,
+      42,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "tags": [
+      "generated",
+      "instinct"
+    ]
+  },
+  {
+    "name": "SNAPSHOT does not crash",
+    "description": "SNAPSHOT should execute without error",
+    "category": "evolution",
+    "opcode": "SNAPSHOT",
+    "opcode_hex": "0x7F",
+    "bytecode": [
+      127,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "WITNESS writes witness mark",
+    "description": "WITNESS should write a log entry and return count",
+    "category": "evolution",
+    "opcode": "WITNESS",
+    "opcode_hex": "0x7E",
+    "bytecode": [
+      126,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "witness"
+    ]
+  }
+]

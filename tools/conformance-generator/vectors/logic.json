@@ -1,0 +1,597 @@
+[
+  {
+    "name": "IAND 0xF & 0x3 = 0x3",
+    "description": "Bitwise AND: 15 & 3 = 3",
+    "category": "logic",
+    "opcode": "IAND",
+    "opcode_hex": "0x10",
+    "bytecode": [
+      43,
+      1,
+      15,
+      0,
+      43,
+      2,
+      3,
+      0,
+      16,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 3
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "and"
+    ]
+  },
+  {
+    "name": "IAND 0xFF & 0x0 = 0x0",
+    "description": "Bitwise AND: 255 & 0 = 0",
+    "category": "logic",
+    "opcode": "IAND",
+    "opcode_hex": "0x10",
+    "bytecode": [
+      43,
+      1,
+      255,
+      0,
+      43,
+      2,
+      0,
+      0,
+      16,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "and"
+    ]
+  },
+  {
+    "name": "IAND 0xFF & 0xFF = 0xFF",
+    "description": "Bitwise AND: 255 & 255 = 255",
+    "category": "logic",
+    "opcode": "IAND",
+    "opcode_hex": "0x10",
+    "bytecode": [
+      43,
+      1,
+      255,
+      0,
+      43,
+      2,
+      255,
+      0,
+      16,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 255
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "and"
+    ]
+  },
+  {
+    "name": "INOT of zero is -1",
+    "description": "INOT R0, R1: ~0 = -1",
+    "category": "logic",
+    "opcode": "INOT",
+    "opcode_hex": "0x13",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      19,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -1,
+      "R1": 0
+    },
+    "expected_flags": {
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "not"
+    ]
+  },
+  {
+    "name": "INOT of -1 is zero",
+    "description": "INOT R0, R1: ~(-1) = 0",
+    "category": "logic",
+    "opcode": "INOT",
+    "opcode_hex": "0x13",
+    "bytecode": [
+      43,
+      1,
+      255,
+      255,
+      19,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": -1
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "not"
+    ]
+  },
+  {
+    "name": "IOR 0xA | 0x5 = 0xF",
+    "description": "Bitwise OR: 10 | 5 = 15",
+    "category": "logic",
+    "opcode": "IOR",
+    "opcode_hex": "0x11",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      5,
+      0,
+      17,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 15
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "or"
+    ]
+  },
+  {
+    "name": "IOR 0x0 | 0xFF = 0xFF",
+    "description": "Bitwise OR: 0 | 255 = 255",
+    "category": "logic",
+    "opcode": "IOR",
+    "opcode_hex": "0x11",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      255,
+      0,
+      17,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 255
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "or"
+    ]
+  },
+  {
+    "name": "IOR 0xF0 | 0xF = 0xFF",
+    "description": "Bitwise OR: 240 | 15 = 255",
+    "category": "logic",
+    "opcode": "IOR",
+    "opcode_hex": "0x11",
+    "bytecode": [
+      43,
+      1,
+      240,
+      0,
+      43,
+      2,
+      15,
+      0,
+      17,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 255
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "or"
+    ]
+  },
+  {
+    "name": "ISHL 1 << 4 = 16",
+    "description": "Shift left: 1 << 4 = 16",
+    "category": "logic",
+    "opcode": "ISHL",
+    "opcode_hex": "0x14",
+    "bytecode": [
+      43,
+      1,
+      1,
+      0,
+      43,
+      2,
+      4,
+      0,
+      20,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 16
+    },
+    "tags": [
+      "generated",
+      "shl"
+    ]
+  },
+  {
+    "name": "ISHL 1 << 0 = 1",
+    "description": "Shift left: 1 << 0 = 1",
+    "category": "logic",
+    "opcode": "ISHL",
+    "opcode_hex": "0x14",
+    "bytecode": [
+      43,
+      1,
+      1,
+      0,
+      43,
+      2,
+      0,
+      0,
+      20,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "shl"
+    ]
+  },
+  {
+    "name": "ISHL 255 << 8 = 65280",
+    "description": "Shift left: 255 << 8 = 65280",
+    "category": "logic",
+    "opcode": "ISHL",
+    "opcode_hex": "0x14",
+    "bytecode": [
+      43,
+      1,
+      255,
+      0,
+      43,
+      2,
+      8,
+      0,
+      20,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 65280
+    },
+    "tags": [
+      "generated",
+      "shl"
+    ]
+  },
+  {
+    "name": "ISHR 16 >> 2 = 4",
+    "description": "Arithmetic shift right: 16 >> 2 = 4",
+    "category": "logic",
+    "opcode": "ISHR",
+    "opcode_hex": "0x15",
+    "bytecode": [
+      43,
+      1,
+      16,
+      0,
+      43,
+      2,
+      2,
+      0,
+      21,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 4
+    },
+    "tags": [
+      "generated",
+      "shr"
+    ]
+  },
+  {
+    "name": "ISHR 1 >> 0 = 1",
+    "description": "Arithmetic shift right: 1 >> 0 = 1",
+    "category": "logic",
+    "opcode": "ISHR",
+    "opcode_hex": "0x15",
+    "bytecode": [
+      43,
+      1,
+      1,
+      0,
+      43,
+      2,
+      0,
+      0,
+      21,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "shr"
+    ]
+  },
+  {
+    "name": "ISHR -16 >> 2 = -4",
+    "description": "Arithmetic shift right: -16 >> 2 = -4",
+    "category": "logic",
+    "opcode": "ISHR",
+    "opcode_hex": "0x15",
+    "bytecode": [
+      43,
+      1,
+      240,
+      255,
+      43,
+      2,
+      2,
+      0,
+      21,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -4
+    },
+    "tags": [
+      "generated",
+      "shr"
+    ]
+  },
+  {
+    "name": "IXOR 0xF ^ 0xF = 0x0",
+    "description": "Bitwise XOR: 15 ^ 15 = 0",
+    "category": "logic",
+    "opcode": "IXOR",
+    "opcode_hex": "0x12",
+    "bytecode": [
+      43,
+      1,
+      15,
+      0,
+      43,
+      2,
+      15,
+      0,
+      18,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "xor"
+    ]
+  },
+  {
+    "name": "IXOR 0xFF ^ 0x0 = 0xFF",
+    "description": "Bitwise XOR: 255 ^ 0 = 255",
+    "category": "logic",
+    "opcode": "IXOR",
+    "opcode_hex": "0x12",
+    "bytecode": [
+      43,
+      1,
+      255,
+      0,
+      43,
+      2,
+      0,
+      0,
+      18,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 255
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "xor"
+    ]
+  },
+  {
+    "name": "IXOR 0xAA ^ 0x55 = 0xFF",
+    "description": "Bitwise XOR: 170 ^ 85 = 255",
+    "category": "logic",
+    "opcode": "IXOR",
+    "opcode_hex": "0x12",
+    "bytecode": [
+      43,
+      1,
+      170,
+      0,
+      43,
+      2,
+      85,
+      0,
+      18,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 255
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "xor"
+    ]
+  },
+  {
+    "name": "ROTL 1 << 1 = 2",
+    "description": "Rotate left 32-bit: 1 rotated left 1 = 2",
+    "category": "logic",
+    "opcode": "ROTL",
+    "opcode_hex": "0x16",
+    "bytecode": [
+      43,
+      1,
+      1,
+      0,
+      43,
+      2,
+      1,
+      0,
+      22,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 2
+    },
+    "tags": [
+      "generated",
+      "rotl"
+    ]
+  },
+  {
+    "name": "ROTR 2 >> 1 = 1",
+    "description": "Rotate right 32-bit: 2 rotated right 1 = 1",
+    "category": "logic",
+    "opcode": "ROTR",
+    "opcode_hex": "0x17",
+    "bytecode": [
+      43,
+      1,
+      2,
+      0,
+      43,
+      2,
+      1,
+      0,
+      23,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "rotr"
+    ]
+  }
+]

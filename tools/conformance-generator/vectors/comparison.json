@@ -1,0 +1,1356 @@
+[
+  {
+    "name": "CMP 10 vs 10: zero=True, sign=False",
+    "description": "CMP sets flags from comparison 10 vs 10",
+    "category": "comparison",
+    "opcode": "CMP",
+    "opcode_hex": "0x2D",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      31,
+      2,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R2": 1
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "cmp"
+    ]
+  },
+  {
+    "name": "CMP 10 vs 20: zero=False, sign=True",
+    "description": "CMP sets flags from comparison 10 vs 20",
+    "category": "comparison",
+    "opcode": "CMP",
+    "opcode_hex": "0x2D",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      20,
+      0,
+      45,
+      0,
+      1,
+      31,
+      2,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "cmp"
+    ]
+  },
+  {
+    "name": "CMP 20 vs 10: zero=False, sign=False",
+    "description": "CMP sets flags from comparison 20 vs 10",
+    "category": "comparison",
+    "opcode": "CMP",
+    "opcode_hex": "0x2D",
+    "bytecode": [
+      43,
+      0,
+      20,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      31,
+      2,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "cmp"
+    ]
+  },
+  {
+    "name": "ICMP cond=EQ(0): 10 vs 10 = 1",
+    "description": "ICMP with condition code 0 (EQ)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_eq"
+    ]
+  },
+  {
+    "name": "ICMP cond=EQ(0): 10 vs 20 = 0",
+    "description": "ICMP with condition code 0 (EQ)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      24,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_eq"
+    ]
+  },
+  {
+    "name": "ICMP cond=NE(1): 10 vs 20 = 1",
+    "description": "ICMP with condition code 1 (NE)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      24,
+      1,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_ne"
+    ]
+  },
+  {
+    "name": "ICMP cond=NE(1): 10 vs 10 = 0",
+    "description": "ICMP with condition code 1 (NE)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      1,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_ne"
+    ]
+  },
+  {
+    "name": "ICMP cond=LT(2): 10 vs 20 = 1",
+    "description": "ICMP with condition code 2 (LT)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      24,
+      2,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_lt"
+    ]
+  },
+  {
+    "name": "ICMP cond=LT(2): 20 vs 10 = 0",
+    "description": "ICMP with condition code 2 (LT)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      2,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_lt"
+    ]
+  },
+  {
+    "name": "ICMP cond=GT(4): 20 vs 10 = 1",
+    "description": "ICMP with condition code 4 (GT)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      4,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_gt"
+    ]
+  },
+  {
+    "name": "ICMP cond=GT(4): 10 vs 20 = 0",
+    "description": "ICMP with condition code 4 (GT)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      24,
+      4,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_gt"
+    ]
+  },
+  {
+    "name": "ICMP cond=GE(5): 10 vs 10 = 1",
+    "description": "ICMP with condition code 5 (GE)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      5,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_ge"
+    ]
+  },
+  {
+    "name": "ICMP cond=GE(5): 20 vs 10 = 1",
+    "description": "ICMP with condition code 5 (GE)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      5,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_ge"
+    ]
+  },
+  {
+    "name": "ICMP cond=GE(5): 10 vs 20 = 0",
+    "description": "ICMP with condition code 5 (GE)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      24,
+      5,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_ge"
+    ]
+  },
+  {
+    "name": "IEQ 5 vs 5 = 1",
+    "description": "IEQ R0, R1: 5 vs 5",
+    "category": "comparison",
+    "opcode": "IEQ",
+    "opcode_hex": "0x19",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      5,
+      0,
+      25,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ieq"
+    ]
+  },
+  {
+    "name": "IEQ 5 vs 10 = 0",
+    "description": "IEQ R0, R1: 5 vs 10",
+    "category": "comparison",
+    "opcode": "IEQ",
+    "opcode_hex": "0x19",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      10,
+      0,
+      25,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ieq"
+    ]
+  },
+  {
+    "name": "IEQ 10 vs 5 = 0",
+    "description": "IEQ R0, R1: 10 vs 5",
+    "category": "comparison",
+    "opcode": "IEQ",
+    "opcode_hex": "0x19",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      5,
+      0,
+      25,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ieq"
+    ]
+  },
+  {
+    "name": "IEQ 0 vs 0 = 1",
+    "description": "IEQ R0, R1: 0 vs 0",
+    "category": "comparison",
+    "opcode": "IEQ",
+    "opcode_hex": "0x19",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      25,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ieq"
+    ]
+  },
+  {
+    "name": "IEQ -1 vs 1 = 0",
+    "description": "IEQ R0, R1: -1 vs 1",
+    "category": "comparison",
+    "opcode": "IEQ",
+    "opcode_hex": "0x19",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      1,
+      0,
+      25,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ieq"
+    ]
+  },
+  {
+    "name": "IGE 5 vs 5 = 1",
+    "description": "IGE R0, R1: 5 vs 5",
+    "category": "comparison",
+    "opcode": "IGE",
+    "opcode_hex": "0x1D",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      5,
+      0,
+      29,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ige"
+    ]
+  },
+  {
+    "name": "IGE 5 vs 10 = 0",
+    "description": "IGE R0, R1: 5 vs 10",
+    "category": "comparison",
+    "opcode": "IGE",
+    "opcode_hex": "0x1D",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      10,
+      0,
+      29,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ige"
+    ]
+  },
+  {
+    "name": "IGE 10 vs 5 = 1",
+    "description": "IGE R0, R1: 10 vs 5",
+    "category": "comparison",
+    "opcode": "IGE",
+    "opcode_hex": "0x1D",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      5,
+      0,
+      29,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ige"
+    ]
+  },
+  {
+    "name": "IGE 0 vs 0 = 1",
+    "description": "IGE R0, R1: 0 vs 0",
+    "category": "comparison",
+    "opcode": "IGE",
+    "opcode_hex": "0x1D",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      29,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ige"
+    ]
+  },
+  {
+    "name": "IGE -1 vs 1 = 0",
+    "description": "IGE R0, R1: -1 vs 1",
+    "category": "comparison",
+    "opcode": "IGE",
+    "opcode_hex": "0x1D",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      1,
+      0,
+      29,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ige"
+    ]
+  },
+  {
+    "name": "IGT 5 vs 5 = 0",
+    "description": "IGT R0, R1: 5 vs 5",
+    "category": "comparison",
+    "opcode": "IGT",
+    "opcode_hex": "0x1C",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      5,
+      0,
+      28,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "igt"
+    ]
+  },
+  {
+    "name": "IGT 5 vs 10 = 0",
+    "description": "IGT R0, R1: 5 vs 10",
+    "category": "comparison",
+    "opcode": "IGT",
+    "opcode_hex": "0x1C",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      10,
+      0,
+      28,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "igt"
+    ]
+  },
+  {
+    "name": "IGT 10 vs 5 = 1",
+    "description": "IGT R0, R1: 10 vs 5",
+    "category": "comparison",
+    "opcode": "IGT",
+    "opcode_hex": "0x1C",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      5,
+      0,
+      28,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "igt"
+    ]
+  },
+  {
+    "name": "IGT 0 vs 0 = 0",
+    "description": "IGT R0, R1: 0 vs 0",
+    "category": "comparison",
+    "opcode": "IGT",
+    "opcode_hex": "0x1C",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      28,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "igt"
+    ]
+  },
+  {
+    "name": "IGT -1 vs 1 = 0",
+    "description": "IGT R0, R1: -1 vs 1",
+    "category": "comparison",
+    "opcode": "IGT",
+    "opcode_hex": "0x1C",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      1,
+      0,
+      28,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "igt"
+    ]
+  },
+  {
+    "name": "ILE 5 vs 5 = 1",
+    "description": "ILE R0, R1: 5 vs 5",
+    "category": "comparison",
+    "opcode": "ILE",
+    "opcode_hex": "0x1B",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      5,
+      0,
+      27,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ile"
+    ]
+  },
+  {
+    "name": "ILE 5 vs 10 = 1",
+    "description": "ILE R0, R1: 5 vs 10",
+    "category": "comparison",
+    "opcode": "ILE",
+    "opcode_hex": "0x1B",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      10,
+      0,
+      27,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ile"
+    ]
+  },
+  {
+    "name": "ILE 10 vs 5 = 0",
+    "description": "ILE R0, R1: 10 vs 5",
+    "category": "comparison",
+    "opcode": "ILE",
+    "opcode_hex": "0x1B",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      5,
+      0,
+      27,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ile"
+    ]
+  },
+  {
+    "name": "ILE 0 vs 0 = 1",
+    "description": "ILE R0, R1: 0 vs 0",
+    "category": "comparison",
+    "opcode": "ILE",
+    "opcode_hex": "0x1B",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      27,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ile"
+    ]
+  },
+  {
+    "name": "ILE -1 vs 1 = 1",
+    "description": "ILE R0, R1: -1 vs 1",
+    "category": "comparison",
+    "opcode": "ILE",
+    "opcode_hex": "0x1B",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      1,
+      0,
+      27,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ile"
+    ]
+  },
+  {
+    "name": "ILT 5 vs 5 = 0",
+    "description": "ILT R0, R1: 5 vs 5",
+    "category": "comparison",
+    "opcode": "ILT",
+    "opcode_hex": "0x1A",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      5,
+      0,
+      26,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ilt"
+    ]
+  },
+  {
+    "name": "ILT 5 vs 10 = 1",
+    "description": "ILT R0, R1: 5 vs 10",
+    "category": "comparison",
+    "opcode": "ILT",
+    "opcode_hex": "0x1A",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      10,
+      0,
+      26,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ilt"
+    ]
+  },
+  {
+    "name": "ILT 10 vs 5 = 0",
+    "description": "ILT R0, R1: 10 vs 5",
+    "category": "comparison",
+    "opcode": "ILT",
+    "opcode_hex": "0x1A",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      5,
+      0,
+      26,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ilt"
+    ]
+  },
+  {
+    "name": "ILT 0 vs 0 = 0",
+    "description": "ILT R0, R1: 0 vs 0",
+    "category": "comparison",
+    "opcode": "ILT",
+    "opcode_hex": "0x1A",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      26,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ilt"
+    ]
+  },
+  {
+    "name": "ILT -1 vs 1 = 1",
+    "description": "ILT R0, R1: -1 vs 1",
+    "category": "comparison",
+    "opcode": "ILT",
+    "opcode_hex": "0x1A",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      1,
+      0,
+      26,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ilt"
+    ]
+  },
+  {
+    "name": "SETCC reads flags from prior operation",
+    "description": "After INC (result=1, not zero): NE=1, EQ=0",
+    "category": "comparison",
+    "opcode": "SETCC",
+    "opcode_hex": "0x1F",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      14,
+      0,
+      31,
+      1,
+      1,
+      31,
+      2,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1,
+      "R1": 1,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "setcc"
+    ]
+  },
+  {
+    "name": "TEST sets flags from AND without storing",
+    "description": "TEST R0, R1: flags from 0x0F & 0x03 = 3 (nonzero)",
+    "category": "comparison",
+    "opcode": "TEST",
+    "opcode_hex": "0x1E",
+    "bytecode": [
+      43,
+      0,
+      15,
+      0,
+      43,
+      1,
+      3,
+      0,
+      30,
+      0,
+      1,
+      31,
+      2,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 15,
+      "R1": 3,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "test"
+    ]
+  }
+]

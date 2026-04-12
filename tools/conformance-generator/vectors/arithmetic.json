@@ -1,0 +1,1231 @@
+[
+  {
+    "name": "DEC 1 -> 0",
+    "description": "DEC R0 where R0=1",
+    "category": "arithmetic",
+    "opcode": "DEC",
+    "opcode_hex": "0x0F",
+    "bytecode": [
+      43,
+      0,
+      1,
+      0,
+      15,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "dec"
+    ]
+  },
+  {
+    "name": "DEC 43 -> 42",
+    "description": "DEC R0 where R0=43",
+    "category": "arithmetic",
+    "opcode": "DEC",
+    "opcode_hex": "0x0F",
+    "bytecode": [
+      43,
+      0,
+      43,
+      0,
+      15,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "dec"
+    ]
+  },
+  {
+    "name": "DEC 0 -> -1",
+    "description": "DEC R0 where R0=0",
+    "category": "arithmetic",
+    "opcode": "DEC",
+    "opcode_hex": "0x0F",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      15,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "dec"
+    ]
+  },
+  {
+    "name": "IADD Basic addition: 10 + 20 = 30",
+    "description": "Basic addition",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 30,
+      "R1": 10,
+      "R2": 20
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "add_basic"
+    ]
+  },
+  {
+    "name": "IADD Adding zero: 0 + 0 = 0",
+    "description": "Adding zero",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      0,
+      0,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "add_zero"
+    ]
+  },
+  {
+    "name": "IADD Adding zero to nonzero: 0 + 42 = 42",
+    "description": "Adding zero to nonzero",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      42,
+      0,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 0,
+      "R2": 42
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "add_zero_operand"
+    ]
+  },
+  {
+    "name": "IADD Negative addition: -10 + -20 = -30",
+    "description": "Negative addition",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      246,
+      255,
+      43,
+      2,
+      236,
+      255,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -30,
+      "R1": -10,
+      "R2": -20
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "add_negative"
+    ]
+  },
+  {
+    "name": "IADD Mixed sign addition: -10 + 20 = 10",
+    "description": "Mixed sign addition",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      246,
+      255,
+      43,
+      2,
+      20,
+      0,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": -10,
+      "R2": 20
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "add_mixed_sign"
+    ]
+  },
+  {
+    "name": "IADD Zero identity: 0 + 0 = 0",
+    "description": "Zero identity",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      0,
+      0,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "add_identity_zero"
+    ]
+  },
+  {
+    "name": "IADD rd=rs1 overlap safety: R1=R1+R2",
+    "description": "IADD must read R1 before writing when rd=rs1",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      5,
+      0,
+      43,
+      2,
+      3,
+      0,
+      8,
+      1,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 8,
+      "R2": 3
+    },
+    "tags": [
+      "generated",
+      "overlap_safety"
+    ]
+  },
+  {
+    "name": "IDIV basic: 17 / 5 = 3",
+    "description": "IDIV: 17 div 5 = 3",
+    "category": "arithmetic",
+    "opcode": "IDIV",
+    "opcode_hex": "0x0B",
+    "bytecode": [
+      43,
+      1,
+      17,
+      0,
+      43,
+      2,
+      5,
+      0,
+      11,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 3,
+      "R1": 17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "idiv_basic"
+    ]
+  },
+  {
+    "name": "IDIV exact: 20 / 4 = 5",
+    "description": "IDIV: 20 div 4 = 5",
+    "category": "arithmetic",
+    "opcode": "IDIV",
+    "opcode_hex": "0x0B",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      4,
+      0,
+      11,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 5,
+      "R1": 20,
+      "R2": 4
+    },
+    "tags": [
+      "generated",
+      "idiv_exact"
+    ]
+  },
+  {
+    "name": "IDIV negative_dividend: -17 / 5 = -3",
+    "description": "IDIV: -17 div 5 = -3",
+    "category": "arithmetic",
+    "opcode": "IDIV",
+    "opcode_hex": "0x0B",
+    "bytecode": [
+      43,
+      1,
+      239,
+      255,
+      43,
+      2,
+      5,
+      0,
+      11,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -3,
+      "R1": -17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "idiv_negative_dividend"
+    ]
+  },
+  {
+    "name": "IDIV negative_both: -17 / -5 = 3",
+    "description": "IDIV: -17 div -5 = 3",
+    "category": "arithmetic",
+    "opcode": "IDIV",
+    "opcode_hex": "0x0B",
+    "bytecode": [
+      43,
+      1,
+      239,
+      255,
+      43,
+      2,
+      251,
+      255,
+      11,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 3,
+      "R1": -17,
+      "R2": -5
+    },
+    "tags": [
+      "generated",
+      "idiv_negative_both"
+    ]
+  },
+  {
+    "name": "IDIV divide by zero raises error",
+    "description": "IDIV by zero should raise VMDivisionByZeroError",
+    "category": "arithmetic",
+    "opcode": "IDIV",
+    "opcode_hex": "0x0B",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      43,
+      2,
+      0,
+      0,
+      11,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "IMOD basic: 17 % 5 = 2",
+    "description": "IMOD: 17 mod 5 = 2",
+    "category": "arithmetic",
+    "opcode": "IMOD",
+    "opcode_hex": "0x0C",
+    "bytecode": [
+      43,
+      1,
+      17,
+      0,
+      43,
+      2,
+      5,
+      0,
+      12,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 2,
+      "R1": 17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "imod_basic"
+    ]
+  },
+  {
+    "name": "IMOD exact: 20 % 4 = 0",
+    "description": "IMOD: 20 mod 4 = 0",
+    "category": "arithmetic",
+    "opcode": "IMOD",
+    "opcode_hex": "0x0C",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      4,
+      0,
+      12,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 20,
+      "R2": 4
+    },
+    "tags": [
+      "generated",
+      "imod_exact"
+    ]
+  },
+  {
+    "name": "IMOD negative: -17 % 5 = -2",
+    "description": "IMOD: -17 mod 5 = -2",
+    "category": "arithmetic",
+    "opcode": "IMOD",
+    "opcode_hex": "0x0C",
+    "bytecode": [
+      43,
+      1,
+      239,
+      255,
+      43,
+      2,
+      5,
+      0,
+      12,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -2,
+      "R1": -17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "imod_negative"
+    ]
+  },
+  {
+    "name": "IMOD divide by zero raises error",
+    "description": "IMOD by zero should raise VMDivisionByZeroError",
+    "category": "arithmetic",
+    "opcode": "IMOD",
+    "opcode_hex": "0x0C",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      43,
+      2,
+      0,
+      0,
+      12,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "IMUL basic: 7 * 6 = 42",
+    "description": "Integer multiply: 7 * 6 = 42",
+    "category": "arithmetic",
+    "opcode": "IMUL",
+    "opcode_hex": "0x0A",
+    "bytecode": [
+      43,
+      1,
+      7,
+      0,
+      43,
+      2,
+      6,
+      0,
+      10,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 7,
+      "R2": 6
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "mul_basic"
+    ]
+  },
+  {
+    "name": "IMUL zero: 0 * 999 = 0",
+    "description": "Integer multiply: 0 * 999 = 0",
+    "category": "arithmetic",
+    "opcode": "IMUL",
+    "opcode_hex": "0x0A",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      231,
+      3,
+      10,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0,
+      "R2": 999
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "mul_zero"
+    ]
+  },
+  {
+    "name": "IMUL one: 42 * 1 = 42",
+    "description": "Integer multiply: 42 * 1 = 42",
+    "category": "arithmetic",
+    "opcode": "IMUL",
+    "opcode_hex": "0x0A",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      43,
+      2,
+      1,
+      0,
+      10,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 42,
+      "R2": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "mul_one"
+    ]
+  },
+  {
+    "name": "IMUL negative: -3 * 7 = -21",
+    "description": "Integer multiply: -3 * 7 = -21",
+    "category": "arithmetic",
+    "opcode": "IMUL",
+    "opcode_hex": "0x0A",
+    "bytecode": [
+      43,
+      1,
+      253,
+      255,
+      43,
+      2,
+      7,
+      0,
+      10,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -21,
+      "R1": -3,
+      "R2": 7
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "mul_negative"
+    ]
+  },
+  {
+    "name": "IMUL both_negative: -4 * -5 = 20",
+    "description": "Integer multiply: -4 * -5 = 20",
+    "category": "arithmetic",
+    "opcode": "IMUL",
+    "opcode_hex": "0x0A",
+    "bytecode": [
+      43,
+      1,
+      252,
+      255,
+      43,
+      2,
+      251,
+      255,
+      10,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 20,
+      "R1": -4,
+      "R2": -5
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "mul_both_negative"
+    ]
+  },
+  {
+    "name": "INC 0 -> 1",
+    "description": "INC R0 where R0=0",
+    "category": "arithmetic",
+    "opcode": "INC",
+    "opcode_hex": "0x0E",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      14,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "inc"
+    ]
+  },
+  {
+    "name": "INC 41 -> 42",
+    "description": "INC R0 where R0=41",
+    "category": "arithmetic",
+    "opcode": "INC",
+    "opcode_hex": "0x0E",
+    "bytecode": [
+      43,
+      0,
+      41,
+      0,
+      14,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "inc"
+    ]
+  },
+  {
+    "name": "INC -1 -> 0",
+    "description": "INC R0 where R0=-1",
+    "category": "arithmetic",
+    "opcode": "INC",
+    "opcode_hex": "0x0E",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      14,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "inc"
+    ]
+  },
+  {
+    "name": "INEG negates positive value",
+    "description": "INEG R0, R1: R0 = -42",
+    "category": "arithmetic",
+    "opcode": "INEG",
+    "opcode_hex": "0x0D",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      13,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -42,
+      "R1": 42
+    },
+    "expected_flags": {
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "INEG of zero is zero",
+    "description": "INEG R0, R1 where R1=0: R0 = 0",
+    "category": "arithmetic",
+    "opcode": "INEG",
+    "opcode_hex": "0x0D",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      13,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "edge_case"
+    ]
+  },
+  {
+    "name": "INEG double negation",
+    "description": "INEG of -100 = 100",
+    "category": "arithmetic",
+    "opcode": "INEG",
+    "opcode_hex": "0x0D",
+    "bytecode": [
+      43,
+      1,
+      156,
+      255,
+      13,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 100,
+      "R1": -100
+    },
+    "tags": [
+      "generated",
+      "edge_case"
+    ]
+  },
+  {
+    "name": "IREM basic: 17 % 5 = 2",
+    "description": "IREM: 17 mod 5 = 2",
+    "category": "arithmetic",
+    "opcode": "IREM",
+    "opcode_hex": "0x2C",
+    "bytecode": [
+      43,
+      1,
+      17,
+      0,
+      43,
+      2,
+      5,
+      0,
+      44,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 2,
+      "R1": 17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "irem_basic"
+    ]
+  },
+  {
+    "name": "IREM exact: 20 % 4 = 0",
+    "description": "IREM: 20 mod 4 = 0",
+    "category": "arithmetic",
+    "opcode": "IREM",
+    "opcode_hex": "0x2C",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      4,
+      0,
+      44,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 20,
+      "R2": 4
+    },
+    "tags": [
+      "generated",
+      "irem_exact"
+    ]
+  },
+  {
+    "name": "IREM negative: -17 % 5 = -2",
+    "description": "IREM: -17 mod 5 = -2",
+    "category": "arithmetic",
+    "opcode": "IREM",
+    "opcode_hex": "0x2C",
+    "bytecode": [
+      43,
+      1,
+      239,
+      255,
+      43,
+      2,
+      5,
+      0,
+      44,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -2,
+      "R1": -17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "irem_negative"
+    ]
+  },
+  {
+    "name": "IREM divide by zero raises error",
+    "description": "IREM by zero should raise VMDivisionByZeroError",
+    "category": "arithmetic",
+    "opcode": "IREM",
+    "opcode_hex": "0x2C",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      43,
+      2,
+      0,
+      0,
+      44,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "ISUB basic: 30 - 12 = 18",
+    "description": "Integer subtraction: 30 - 12 = 18",
+    "category": "arithmetic",
+    "opcode": "ISUB",
+    "opcode_hex": "0x09",
+    "bytecode": [
+      43,
+      1,
+      30,
+      0,
+      43,
+      2,
+      12,
+      0,
+      9,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 18,
+      "R1": 30,
+      "R2": 12
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "sub_basic"
+    ]
+  },
+  {
+    "name": "ISUB zero_result: 42 - 42 = 0",
+    "description": "Integer subtraction: 42 - 42 = 0",
+    "category": "arithmetic",
+    "opcode": "ISUB",
+    "opcode_hex": "0x09",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      43,
+      2,
+      42,
+      0,
+      9,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 42,
+      "R2": 42
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "sub_zero_result"
+    ]
+  },
+  {
+    "name": "ISUB negative: 10 - 30 = -20",
+    "description": "Integer subtraction: 10 - 30 = -20",
+    "category": "arithmetic",
+    "opcode": "ISUB",
+    "opcode_hex": "0x09",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      30,
+      0,
+      9,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -20,
+      "R1": 10,
+      "R2": 30
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "sub_negative"
+    ]
+  },
+  {
+    "name": "ISUB from_zero: 0 - 10 = -10",
+    "description": "Integer subtraction: 0 - 10 = -10",
+    "category": "arithmetic",
+    "opcode": "ISUB",
+    "opcode_hex": "0x09",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      10,
+      0,
+      9,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -10,
+      "R1": 0,
+      "R2": 10
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "sub_from_zero"
+    ]
+  }
+]

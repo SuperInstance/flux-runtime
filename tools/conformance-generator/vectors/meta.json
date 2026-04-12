@@ -1,0 +1,72 @@
+[
+  {
+    "name": "CONF does not crash",
+    "description": "CONF should execute without error",
+    "category": "meta",
+    "opcode": "CONF",
+    "opcode_hex": "0x3D",
+    "bytecode": [
+      61,
+      0,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "MERGE averages two registers",
+    "description": "MERGE R0, R1, R2: avg(10, 30) = 20",
+    "category": "meta",
+    "opcode": "MERGE",
+    "opcode_hex": "0x3E",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      30,
+      0,
+      62,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 20
+    },
+    "tags": [
+      "generated",
+      "merge"
+    ]
+  },
+  {
+    "name": "RESTORE does not crash",
+    "description": "RESTORE should execute without error",
+    "category": "meta",
+    "opcode": "RESTORE",
+    "opcode_hex": "0x3F",
+    "bytecode": [
+      63,
+      0,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  }
+]

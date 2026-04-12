@@ -1,0 +1,84 @@
+[
+  {
+    "name": "DEBUG_BREAK does not crash",
+    "description": "DEBUG_BREAK should execute without error",
+    "category": "system",
+    "opcode": "DEBUG_BREAK",
+    "opcode_hex": "0x84",
+    "bytecode": [
+      132,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "RESOURCE_ACQUIRE succeeds",
+    "description": "RESOURCE_ACQUIRE with resource_id=42",
+    "category": "system",
+    "opcode": "RESOURCE_ACQUIRE",
+    "opcode_hex": "0x82",
+    "bytecode": [
+      130,
+      4,
+      0,
+      42,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "resource"
+    ]
+  },
+  {
+    "name": "RESOURCE_RELEASE succeeds",
+    "description": "RESOURCE_RELEASE with resource_id=42",
+    "category": "system",
+    "opcode": "RESOURCE_RELEASE",
+    "opcode_hex": "0x83",
+    "bytecode": [
+      130,
+      4,
+      0,
+      42,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "resource"
+    ]
+  },
+  {
+    "name": "YIELD is a no-op in single-threaded mode",
+    "description": "YIELD should not crash or modify state",
+    "category": "system",
+    "opcode": "YIELD",
+    "opcode_hex": "0x81",
+    "bytecode": [
+      129,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  }
+]

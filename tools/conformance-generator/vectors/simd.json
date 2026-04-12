@@ -1,0 +1,164 @@
+[
+  {
+    "name": "VADD byte-wise operation",
+    "description": "Byte-wise vector VADD",
+    "category": "simd",
+    "opcode": "VADD",
+    "opcode_hex": "0x52",
+    "bytecode": [
+      82,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "vadd"
+    ]
+  },
+  {
+    "name": "VDIV byte-wise division",
+    "description": "Byte-wise vector division (no-op with zero-initialized vectors)",
+    "category": "simd",
+    "opcode": "VDIV",
+    "opcode_hex": "0x55",
+    "bytecode": [
+      85,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "vdiv"
+    ]
+  },
+  {
+    "name": "VDIV by zero raises error",
+    "description": "VDIV with zero element should raise error",
+    "category": "simd",
+    "opcode": "VDIV",
+    "opcode_hex": "0x55",
+    "bytecode": [
+      85,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "VFMA fused multiply-add",
+    "description": "VFMA V0, V1, V2: V0 = V0 + V1*V2",
+    "category": "simd",
+    "opcode": "VFMA",
+    "opcode_hex": "0x56",
+    "bytecode": [
+      86,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "vfma"
+    ]
+  },
+  {
+    "name": "VLOAD loads 16 bytes from memory",
+    "description": "Store 17, VLOAD 16 bytes from that address",
+    "category": "simd",
+    "opcode": "VLOAD",
+    "opcode_hex": "0x50",
+    "bytecode": [
+      43,
+      0,
+      17,
+      0,
+      43,
+      1,
+      0,
+      125,
+      3,
+      0,
+      1,
+      80,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "notes": "V0 should contain the stored data (first 4 bytes = 17 in LE)",
+    "tags": [
+      "generated",
+      "vload"
+    ]
+  },
+  {
+    "name": "VMUL byte-wise operation",
+    "description": "Byte-wise vector VMUL",
+    "category": "simd",
+    "opcode": "VMUL",
+    "opcode_hex": "0x54",
+    "bytecode": [
+      84,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "vmul"
+    ]
+  },
+  {
+    "name": "VSTORE stores 16 bytes to memory",
+    "description": "VSTORE V0 to address in R1",
+    "category": "simd",
+    "opcode": "VSTORE",
+    "opcode_hex": "0x51",
+    "bytecode": [
+      81,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_gp": {
+      "R1": 32000
+    },
+    "tags": [
+      "generated",
+      "vstore"
+    ]
+  },
+  {
+    "name": "VSUB byte-wise operation",
+    "description": "Byte-wise vector VSUB",
+    "category": "simd",
+    "opcode": "VSUB",
+    "opcode_hex": "0x53",
+    "bytecode": [
+      83,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "vsub"
+    ]
+  }
+]

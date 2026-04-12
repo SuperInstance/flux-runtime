@@ -1,0 +1,264 @@
+[
+  {
+    "name": "BOX allocates box with integer value",
+    "description": "BOX R0, type=0(INT), value=42 \u2192 R0 = box_id(0)",
+    "category": "type",
+    "opcode": "BOX",
+    "opcode_hex": "0x39",
+    "bytecode": [
+      57,
+      0,
+      0,
+      42,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "box"
+    ]
+  },
+  {
+    "name": "CAST i32 to bool (nonzero \u2192 1)",
+    "description": "CAST R0, R1 with type_tag=2: nonzero \u2192 1",
+    "category": "type",
+    "opcode": "CAST",
+    "opcode_hex": "0x38",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      56,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1,
+      "R1": 42
+    },
+    "tags": [
+      "generated",
+      "cast"
+    ]
+  },
+  {
+    "name": "CAST i32 to bool (zero \u2192 0)",
+    "description": "CAST R0, R1 with type_tag=2: zero \u2192 0",
+    "category": "type",
+    "opcode": "CAST",
+    "opcode_hex": "0x38",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      56,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0
+    },
+    "tags": [
+      "generated",
+      "cast"
+    ]
+  },
+  {
+    "name": "CHECK_BOUNDS passes when in range",
+    "description": "Index 2 in range [0, 10) \u2192 passes",
+    "category": "type",
+    "opcode": "CHECK_BOUNDS",
+    "opcode_hex": "0x3C",
+    "bytecode": [
+      43,
+      0,
+      2,
+      0,
+      43,
+      1,
+      10,
+      0,
+      60,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "check_bounds"
+    ]
+  },
+  {
+    "name": "CHECK_BOUNDS fails when out of range",
+    "description": "Index 10 not in range [0, 10) \u2192 VMTypeError",
+    "category": "type",
+    "opcode": "CHECK_BOUNDS",
+    "opcode_hex": "0x3C",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      10,
+      0,
+      60,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMTypeError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "CHECK_BOUNDS fails for negative index",
+    "description": "Index -1 \u2192 VMTypeError",
+    "category": "type",
+    "opcode": "CHECK_BOUNDS",
+    "opcode_hex": "0x3C",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      10,
+      0,
+      60,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMTypeError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "CHECK_TYPE passes when types match",
+    "description": "Box with type=0, check type=0 \u2192 passes",
+    "category": "type",
+    "opcode": "CHECK_TYPE",
+    "opcode_hex": "0x3B",
+    "bytecode": [
+      57,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      59,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "check_type"
+    ]
+  },
+  {
+    "name": "CHECK_TYPE fails when types mismatch",
+    "description": "Box with type=0, check type=1 \u2192 VMTypeError",
+    "category": "type",
+    "opcode": "CHECK_TYPE",
+    "opcode_hex": "0x3B",
+    "bytecode": [
+      57,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      59,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMTypeError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "BOX then UNBOX retrieves value",
+    "description": "Box 99, unbox \u2192 R0 = 99",
+    "category": "type",
+    "opcode": "UNBOX",
+    "opcode_hex": "0x3A",
+    "bytecode": [
+      57,
+      1,
+      0,
+      99,
+      0,
+      0,
+      0,
+      58,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 99,
+      "R1": 0
+    },
+    "tags": [
+      "generated",
+      "unbox"
+    ]
+  },
+  {
+    "name": "UNBOX invalid box id raises error",
+    "description": "UNBOX with invalid box_id=999 should raise VMTypeError",
+    "category": "type",
+    "opcode": "UNBOX",
+    "opcode_hex": "0x3A",
+    "bytecode": [
+      43,
+      1,
+      231,
+      3,
+      58,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMTypeError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  }
+]

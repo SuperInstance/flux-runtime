@@ -1,0 +1,6250 @@
+[
+  {
+    "name": "ASK no-op without handler",
+    "description": "ASK should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "ASK",
+    "opcode_hex": "0x61",
+    "bytecode": [
+      97,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "ASSERT_GOAL no-op without handler",
+    "description": "ASSERT_GOAL should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "ASSERT_GOAL",
+    "opcode_hex": "0x69",
+    "bytecode": [
+      105,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "BARRIER no-op without handler",
+    "description": "BARRIER should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "BARRIER",
+    "opcode_hex": "0x78",
+    "bytecode": [
+      120,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "BOX allocates box with integer value",
+    "description": "BOX R0, type=0(INT), value=42 \u2192 R0 = box_id(0)",
+    "category": "type",
+    "opcode": "BOX",
+    "opcode_hex": "0x39",
+    "bytecode": [
+      57,
+      0,
+      0,
+      42,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "box"
+    ]
+  },
+  {
+    "name": "BROADCAST no-op without handler",
+    "description": "BROADCAST should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "BROADCAST",
+    "opcode_hex": "0x66",
+    "bytecode": [
+      102,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "CALL pushes return address and jumps",
+    "description": "CALL pushes PC then jumps to target",
+    "category": "control",
+    "opcode": "CALL",
+    "opcode_hex": "0x07",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      7,
+      0,
+      1,
+      0,
+      128,
+      43,
+      2,
+      77,
+      0,
+      40
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R2": 77
+    },
+    "notes": "RET halts because interpreter treats single-element stack as empty",
+    "tags": [
+      "generated",
+      "call_return"
+    ]
+  },
+  {
+    "name": "CAP_GRANT no-op without handler",
+    "description": "CAP_GRANT should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "CAP_GRANT",
+    "opcode_hex": "0x76",
+    "bytecode": [
+      118,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "CAP_REQUEST no-op without handler",
+    "description": "CAP_REQUEST should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "CAP_REQUEST",
+    "opcode_hex": "0x75",
+    "bytecode": [
+      117,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "CAP_REQUIRE no-op without handler",
+    "description": "CAP_REQUIRE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "CAP_REQUIRE",
+    "opcode_hex": "0x74",
+    "bytecode": [
+      116,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "CAP_REVOKE no-op without handler",
+    "description": "CAP_REVOKE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "CAP_REVOKE",
+    "opcode_hex": "0x77",
+    "bytecode": [
+      119,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "CAST i32 to bool (nonzero \u2192 1)",
+    "description": "CAST R0, R1 with type_tag=2: nonzero \u2192 1",
+    "category": "type",
+    "opcode": "CAST",
+    "opcode_hex": "0x38",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      56,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1,
+      "R1": 42
+    },
+    "tags": [
+      "generated",
+      "cast"
+    ]
+  },
+  {
+    "name": "CAST i32 to bool (zero \u2192 0)",
+    "description": "CAST R0, R1 with type_tag=2: zero \u2192 0",
+    "category": "type",
+    "opcode": "CAST",
+    "opcode_hex": "0x38",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      56,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0
+    },
+    "tags": [
+      "generated",
+      "cast"
+    ]
+  },
+  {
+    "name": "CHECK_BOUNDS passes when in range",
+    "description": "Index 2 in range [0, 10) \u2192 passes",
+    "category": "type",
+    "opcode": "CHECK_BOUNDS",
+    "opcode_hex": "0x3C",
+    "bytecode": [
+      43,
+      0,
+      2,
+      0,
+      43,
+      1,
+      10,
+      0,
+      60,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "check_bounds"
+    ]
+  },
+  {
+    "name": "CHECK_BOUNDS fails when out of range",
+    "description": "Index 10 not in range [0, 10) \u2192 VMTypeError",
+    "category": "type",
+    "opcode": "CHECK_BOUNDS",
+    "opcode_hex": "0x3C",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      10,
+      0,
+      60,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMTypeError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "CHECK_BOUNDS fails for negative index",
+    "description": "Index -1 \u2192 VMTypeError",
+    "category": "type",
+    "opcode": "CHECK_BOUNDS",
+    "opcode_hex": "0x3C",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      10,
+      0,
+      60,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMTypeError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "CHECK_TYPE passes when types match",
+    "description": "Box with type=0, check type=0 \u2192 passes",
+    "category": "type",
+    "opcode": "CHECK_TYPE",
+    "opcode_hex": "0x3B",
+    "bytecode": [
+      57,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      59,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "check_type"
+    ]
+  },
+  {
+    "name": "CHECK_TYPE fails when types mismatch",
+    "description": "Box with type=0, check type=1 \u2192 VMTypeError",
+    "category": "type",
+    "opcode": "CHECK_TYPE",
+    "opcode_hex": "0x3B",
+    "bytecode": [
+      57,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      59,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMTypeError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "CMP 10 vs 10: zero=True, sign=False",
+    "description": "CMP sets flags from comparison 10 vs 10",
+    "category": "comparison",
+    "opcode": "CMP",
+    "opcode_hex": "0x2D",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      31,
+      2,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R2": 1
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "cmp"
+    ]
+  },
+  {
+    "name": "CMP 10 vs 20: zero=False, sign=True",
+    "description": "CMP sets flags from comparison 10 vs 20",
+    "category": "comparison",
+    "opcode": "CMP",
+    "opcode_hex": "0x2D",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      20,
+      0,
+      45,
+      0,
+      1,
+      31,
+      2,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "cmp"
+    ]
+  },
+  {
+    "name": "CMP 20 vs 10: zero=False, sign=False",
+    "description": "CMP sets flags from comparison 20 vs 10",
+    "category": "comparison",
+    "opcode": "CMP",
+    "opcode_hex": "0x2D",
+    "bytecode": [
+      43,
+      0,
+      20,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      31,
+      2,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "cmp"
+    ]
+  },
+  {
+    "name": "CONF does not crash",
+    "description": "CONF should execute without error",
+    "category": "meta",
+    "opcode": "CONF",
+    "opcode_hex": "0x3D",
+    "bytecode": [
+      61,
+      0,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "DEBUG_BREAK does not crash",
+    "description": "DEBUG_BREAK should execute without error",
+    "category": "system",
+    "opcode": "DEBUG_BREAK",
+    "opcode_hex": "0x84",
+    "bytecode": [
+      132,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "DEC 1 -> 0",
+    "description": "DEC R0 where R0=1",
+    "category": "arithmetic",
+    "opcode": "DEC",
+    "opcode_hex": "0x0F",
+    "bytecode": [
+      43,
+      0,
+      1,
+      0,
+      15,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "dec"
+    ]
+  },
+  {
+    "name": "DEC 43 -> 42",
+    "description": "DEC R0 where R0=43",
+    "category": "arithmetic",
+    "opcode": "DEC",
+    "opcode_hex": "0x0F",
+    "bytecode": [
+      43,
+      0,
+      43,
+      0,
+      15,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "dec"
+    ]
+  },
+  {
+    "name": "DEC 0 -> -1",
+    "description": "DEC R0 where R0=0",
+    "category": "arithmetic",
+    "opcode": "DEC",
+    "opcode_hex": "0x0F",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      15,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "dec"
+    ]
+  },
+  {
+    "name": "DECLARE_INTENT no-op without handler",
+    "description": "DECLARE_INTENT should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "DECLARE_INTENT",
+    "opcode_hex": "0x68",
+    "bytecode": [
+      104,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "DELEGATE no-op without handler",
+    "description": "DELEGATE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "DELEGATE",
+    "opcode_hex": "0x62",
+    "bytecode": [
+      98,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "DELEGATE_RESULT no-op without handler",
+    "description": "DELEGATE_RESULT should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "DELEGATE_RESULT",
+    "opcode_hex": "0x63",
+    "bytecode": [
+      99,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "DUP duplicates top of stack",
+    "description": "Push 42, DUP, Pop\u00d72 \u2192 R1=42, R2=42",
+    "category": "stack",
+    "opcode": "DUP",
+    "opcode_hex": "0x22",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      32,
+      0,
+      34,
+      33,
+      1,
+      33,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 42,
+      "R2": 42
+    },
+    "tags": [
+      "generated",
+      "dup"
+    ]
+  },
+  {
+    "name": "EMERGENCY_STOP halts VM",
+    "description": "EMERGENCY_STOP should immediately halt",
+    "category": "a2a",
+    "opcode": "EMERGENCY_STOP",
+    "opcode_hex": "0x7B",
+    "bytecode": [
+      123
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "ENTER/LEAVE roundtrip preserves state",
+    "description": "ENTER allocates frame, LEAVE deallocates",
+    "category": "stack",
+    "opcode": "ENTER",
+    "opcode_hex": "0x25",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      37,
+      4,
+      38,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "tags": [
+      "generated",
+      "enter_leave"
+    ]
+  },
+  {
+    "name": "EVOLVE does not crash",
+    "description": "EVOLVE should execute without error",
+    "category": "evolution",
+    "opcode": "EVOLVE",
+    "opcode_hex": "0x7C",
+    "bytecode": [
+      124,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "EXPLAIN_FAILURE no-op without handler",
+    "description": "EXPLAIN_FAILURE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "EXPLAIN_FAILURE",
+    "opcode_hex": "0x6B",
+    "bytecode": [
+      107,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "FABS takes absolute value",
+    "description": "FABS F0, F1: |-3.14| \u2192 3.14",
+    "category": "float",
+    "opcode": "FABS",
+    "opcode_hex": "0x45",
+    "bytecode": [
+      69,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": -3.14,
+      "F1": -3.14
+    },
+    "expected_fp": {
+      "F0": 3.14
+    },
+    "tags": [
+      "generated",
+      "fabs"
+    ]
+  },
+  {
+    "name": "FADD 1.5 + 2.5 = 4.0",
+    "description": "Float FADD: 1.5 + 2.5 = 4.0",
+    "category": "float",
+    "opcode": "FADD",
+    "opcode_hex": "0x40",
+    "bytecode": [
+      64,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 1.5,
+      "F2": 2.5
+    },
+    "expected_fp": {
+      "F0": 4.0
+    },
+    "tags": [
+      "generated",
+      "fadd"
+    ]
+  },
+  {
+    "name": "FADD 0.0 + 3.14 = 3.14",
+    "description": "Float FADD: 0.0 + 3.14 = 3.14",
+    "category": "float",
+    "opcode": "FADD",
+    "opcode_hex": "0x40",
+    "bytecode": [
+      64,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 0.0,
+      "F2": 3.14
+    },
+    "expected_fp": {
+      "F0": 3.14
+    },
+    "tags": [
+      "generated",
+      "fadd"
+    ]
+  },
+  {
+    "name": "FADD -1.0 + 1.0 = 0.0",
+    "description": "Float FADD: -1.0 + 1.0 = 0.0",
+    "category": "float",
+    "opcode": "FADD",
+    "opcode_hex": "0x40",
+    "bytecode": [
+      64,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": -1.0,
+      "F2": 1.0
+    },
+    "expected_fp": {
+      "F0": 0.0
+    },
+    "tags": [
+      "generated",
+      "fadd"
+    ]
+  },
+  {
+    "name": "FDIV 10.0 / 2.0 = 5.0",
+    "description": "Float division: 10.0 / 2.0",
+    "category": "float",
+    "opcode": "FDIV",
+    "opcode_hex": "0x43",
+    "bytecode": [
+      67,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 10.0,
+      "F2": 2.0
+    },
+    "expected_fp": {
+      "F0": 5.0
+    },
+    "tags": [
+      "generated",
+      "fdiv"
+    ]
+  },
+  {
+    "name": "FDIV 3.14 / 1.0 = 3.14",
+    "description": "Float division: 3.14 / 1.0",
+    "category": "float",
+    "opcode": "FDIV",
+    "opcode_hex": "0x43",
+    "bytecode": [
+      67,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 3.14,
+      "F2": 1.0
+    },
+    "expected_fp": {
+      "F0": 3.14
+    },
+    "tags": [
+      "generated",
+      "fdiv"
+    ]
+  },
+  {
+    "name": "FDIV divide by zero raises error",
+    "description": "Float division by zero should raise error",
+    "category": "float",
+    "opcode": "FDIV",
+    "opcode_hex": "0x43",
+    "bytecode": [
+      67,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": false,
+    "initial_fp": {
+      "F1": 1.0,
+      "F2": 0.0
+    },
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "FEQ 3.14 vs 3.14 = 1",
+    "description": "Float comparison: FEQ",
+    "category": "float",
+    "opcode": "FEQ",
+    "opcode_hex": "0x48",
+    "bytecode": [
+      72,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 3.14
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "feq"
+    ]
+  },
+  {
+    "name": "FEQ 1.0 vs 2.0 = 0",
+    "description": "Float comparison: FEQ",
+    "category": "float",
+    "opcode": "FEQ",
+    "opcode_hex": "0x48",
+    "bytecode": [
+      72,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 1.0,
+      "F1": 2.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "feq"
+    ]
+  },
+  {
+    "name": "FEQ 2.0 vs 1.0 = 0",
+    "description": "Float comparison: FEQ",
+    "category": "float",
+    "opcode": "FEQ",
+    "opcode_hex": "0x48",
+    "bytecode": [
+      72,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.0,
+      "F1": 1.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "feq"
+    ]
+  },
+  {
+    "name": "FGE 3.14 vs 3.14 = 1",
+    "description": "Float comparison: FGE",
+    "category": "float",
+    "opcode": "FGE",
+    "opcode_hex": "0x4C",
+    "bytecode": [
+      76,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 3.14
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "fge"
+    ]
+  },
+  {
+    "name": "FGE 1.0 vs 2.0 = 0",
+    "description": "Float comparison: FGE",
+    "category": "float",
+    "opcode": "FGE",
+    "opcode_hex": "0x4C",
+    "bytecode": [
+      76,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 1.0,
+      "F1": 2.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "fge"
+    ]
+  },
+  {
+    "name": "FGE 2.0 vs 1.0 = 1",
+    "description": "Float comparison: FGE",
+    "category": "float",
+    "opcode": "FGE",
+    "opcode_hex": "0x4C",
+    "bytecode": [
+      76,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.0,
+      "F1": 1.0
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "fge"
+    ]
+  },
+  {
+    "name": "FGT 3.14 vs 3.14 = 0",
+    "description": "Float comparison: FGT",
+    "category": "float",
+    "opcode": "FGT",
+    "opcode_hex": "0x4B",
+    "bytecode": [
+      75,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 3.14
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "fgt"
+    ]
+  },
+  {
+    "name": "FGT 1.0 vs 2.0 = 0",
+    "description": "Float comparison: FGT",
+    "category": "float",
+    "opcode": "FGT",
+    "opcode_hex": "0x4B",
+    "bytecode": [
+      75,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 1.0,
+      "F1": 2.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "fgt"
+    ]
+  },
+  {
+    "name": "FGT 2.0 vs 1.0 = 1",
+    "description": "Float comparison: FGT",
+    "category": "float",
+    "opcode": "FGT",
+    "opcode_hex": "0x4B",
+    "bytecode": [
+      75,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.0,
+      "F1": 1.0
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "fgt"
+    ]
+  },
+  {
+    "name": "FLE 3.14 vs 3.14 = 1",
+    "description": "Float comparison: FLE",
+    "category": "float",
+    "opcode": "FLE",
+    "opcode_hex": "0x4A",
+    "bytecode": [
+      74,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 3.14
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "fle"
+    ]
+  },
+  {
+    "name": "FLE 1.0 vs 2.0 = 1",
+    "description": "Float comparison: FLE",
+    "category": "float",
+    "opcode": "FLE",
+    "opcode_hex": "0x4A",
+    "bytecode": [
+      74,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 1.0,
+      "F1": 2.0
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "fle"
+    ]
+  },
+  {
+    "name": "FLE 2.0 vs 1.0 = 0",
+    "description": "Float comparison: FLE",
+    "category": "float",
+    "opcode": "FLE",
+    "opcode_hex": "0x4A",
+    "bytecode": [
+      74,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.0,
+      "F1": 1.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "fle"
+    ]
+  },
+  {
+    "name": "FLT 3.14 vs 3.14 = 0",
+    "description": "Float comparison: FLT",
+    "category": "float",
+    "opcode": "FLT",
+    "opcode_hex": "0x49",
+    "bytecode": [
+      73,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 3.14
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "flt"
+    ]
+  },
+  {
+    "name": "FLT 1.0 vs 2.0 = 1",
+    "description": "Float comparison: FLT",
+    "category": "float",
+    "opcode": "FLT",
+    "opcode_hex": "0x49",
+    "bytecode": [
+      73,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 1.0,
+      "F1": 2.0
+    },
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "flt"
+    ]
+  },
+  {
+    "name": "FLT 2.0 vs 1.0 = 0",
+    "description": "Float comparison: FLT",
+    "category": "float",
+    "opcode": "FLT",
+    "opcode_hex": "0x49",
+    "bytecode": [
+      73,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.0,
+      "F1": 1.0
+    },
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "flt"
+    ]
+  },
+  {
+    "name": "FMAX takes maximum",
+    "description": "FMAX F0, F1: max(2.71, 3.14) \u2192 3.14",
+    "category": "float",
+    "opcode": "FMAX",
+    "opcode_hex": "0x47",
+    "bytecode": [
+      71,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 2.71,
+      "F1": 3.14
+    },
+    "expected_fp": {
+      "F0": 3.14
+    },
+    "tags": [
+      "generated",
+      "fmax"
+    ]
+  },
+  {
+    "name": "FMIN takes minimum",
+    "description": "FMIN F0, F1: min(3.14, 2.71) \u2192 2.71",
+    "category": "float",
+    "opcode": "FMIN",
+    "opcode_hex": "0x46",
+    "bytecode": [
+      70,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F0": 3.14,
+      "F1": 2.71
+    },
+    "expected_fp": {
+      "F0": 2.71
+    },
+    "tags": [
+      "generated",
+      "fmin"
+    ]
+  },
+  {
+    "name": "FMUL 1.5 * 2.5 = 3.75",
+    "description": "Float FMUL: 1.5 * 2.5 = 3.75",
+    "category": "float",
+    "opcode": "FMUL",
+    "opcode_hex": "0x42",
+    "bytecode": [
+      66,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 1.5,
+      "F2": 2.5
+    },
+    "expected_fp": {
+      "F0": 3.75
+    },
+    "tags": [
+      "generated",
+      "fmul"
+    ]
+  },
+  {
+    "name": "FMUL 0.0 * 3.14 = 0.0",
+    "description": "Float FMUL: 0.0 * 3.14 = 0.0",
+    "category": "float",
+    "opcode": "FMUL",
+    "opcode_hex": "0x42",
+    "bytecode": [
+      66,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 0.0,
+      "F2": 3.14
+    },
+    "expected_fp": {
+      "F0": 0.0
+    },
+    "tags": [
+      "generated",
+      "fmul"
+    ]
+  },
+  {
+    "name": "FMUL -1.0 * 1.0 = -1.0",
+    "description": "Float FMUL: -1.0 * 1.0 = -1.0",
+    "category": "float",
+    "opcode": "FMUL",
+    "opcode_hex": "0x42",
+    "bytecode": [
+      66,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": -1.0,
+      "F2": 1.0
+    },
+    "expected_fp": {
+      "F0": -1.0
+    },
+    "tags": [
+      "generated",
+      "fmul"
+    ]
+  },
+  {
+    "name": "FNEG negates float",
+    "description": "FNEG F0, F1: -3.14 \u2192 3.14",
+    "category": "float",
+    "opcode": "FNEG",
+    "opcode_hex": "0x44",
+    "bytecode": [
+      68,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 3.14
+    },
+    "expected_fp": {
+      "F0": -3.14
+    },
+    "tags": [
+      "generated",
+      "fneg"
+    ]
+  },
+  {
+    "name": "FORMATION_UPDATE no-op without handler",
+    "description": "FORMATION_UPDATE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "FORMATION_UPDATE",
+    "opcode_hex": "0x7A",
+    "bytecode": [
+      122,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "FSUB 1.5 - 2.5 = -1.0",
+    "description": "Float FSUB: 1.5 - 2.5 = -1.0",
+    "category": "float",
+    "opcode": "FSUB",
+    "opcode_hex": "0x41",
+    "bytecode": [
+      65,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 1.5,
+      "F2": 2.5
+    },
+    "expected_fp": {
+      "F0": -1.0
+    },
+    "tags": [
+      "generated",
+      "fsub"
+    ]
+  },
+  {
+    "name": "FSUB 0.0 - 3.14 = -3.14",
+    "description": "Float FSUB: 0.0 - 3.14 = -3.14",
+    "category": "float",
+    "opcode": "FSUB",
+    "opcode_hex": "0x41",
+    "bytecode": [
+      65,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": 0.0,
+      "F2": 3.14
+    },
+    "expected_fp": {
+      "F0": -3.14
+    },
+    "tags": [
+      "generated",
+      "fsub"
+    ]
+  },
+  {
+    "name": "FSUB -1.0 - 1.0 = -2.0",
+    "description": "Float FSUB: -1.0 - 1.0 = -2.0",
+    "category": "float",
+    "opcode": "FSUB",
+    "opcode_hex": "0x41",
+    "bytecode": [
+      65,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "initial_fp": {
+      "F1": -1.0,
+      "F2": 1.0
+    },
+    "expected_fp": {
+      "F0": -2.0
+    },
+    "tags": [
+      "generated",
+      "fsub"
+    ]
+  },
+  {
+    "name": "HALT terminates execution immediately",
+    "description": "HALT should stop the VM",
+    "category": "control",
+    "opcode": "HALT",
+    "opcode_hex": "0x80",
+    "bytecode": [
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "HALT preserves register state",
+    "description": "HALT should not modify registers",
+    "category": "control",
+    "opcode": "HALT",
+    "opcode_hex": "0x80",
+    "bytecode": [
+      43,
+      0,
+      99,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 99
+    },
+    "tags": [
+      "generated",
+      "register_safety"
+    ]
+  },
+  {
+    "name": "IADD Basic addition: 10 + 20 = 30",
+    "description": "Basic addition",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 30,
+      "R1": 10,
+      "R2": 20
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "add_basic"
+    ]
+  },
+  {
+    "name": "IADD Adding zero: 0 + 0 = 0",
+    "description": "Adding zero",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      0,
+      0,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "add_zero"
+    ]
+  },
+  {
+    "name": "IADD Adding zero to nonzero: 0 + 42 = 42",
+    "description": "Adding zero to nonzero",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      42,
+      0,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 0,
+      "R2": 42
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "add_zero_operand"
+    ]
+  },
+  {
+    "name": "IADD Negative addition: -10 + -20 = -30",
+    "description": "Negative addition",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      246,
+      255,
+      43,
+      2,
+      236,
+      255,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -30,
+      "R1": -10,
+      "R2": -20
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "add_negative"
+    ]
+  },
+  {
+    "name": "IADD Mixed sign addition: -10 + 20 = 10",
+    "description": "Mixed sign addition",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      246,
+      255,
+      43,
+      2,
+      20,
+      0,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": -10,
+      "R2": 20
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "add_mixed_sign"
+    ]
+  },
+  {
+    "name": "IADD Zero identity: 0 + 0 = 0",
+    "description": "Zero identity",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      0,
+      0,
+      8,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "add_identity_zero"
+    ]
+  },
+  {
+    "name": "IADD rd=rs1 overlap safety: R1=R1+R2",
+    "description": "IADD must read R1 before writing when rd=rs1",
+    "category": "arithmetic",
+    "opcode": "IADD",
+    "opcode_hex": "0x08",
+    "bytecode": [
+      43,
+      1,
+      5,
+      0,
+      43,
+      2,
+      3,
+      0,
+      8,
+      1,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 8,
+      "R2": 3
+    },
+    "tags": [
+      "generated",
+      "overlap_safety"
+    ]
+  },
+  {
+    "name": "IAND 0xF & 0x3 = 0x3",
+    "description": "Bitwise AND: 15 & 3 = 3",
+    "category": "logic",
+    "opcode": "IAND",
+    "opcode_hex": "0x10",
+    "bytecode": [
+      43,
+      1,
+      15,
+      0,
+      43,
+      2,
+      3,
+      0,
+      16,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 3
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "and"
+    ]
+  },
+  {
+    "name": "IAND 0xFF & 0x0 = 0x0",
+    "description": "Bitwise AND: 255 & 0 = 0",
+    "category": "logic",
+    "opcode": "IAND",
+    "opcode_hex": "0x10",
+    "bytecode": [
+      43,
+      1,
+      255,
+      0,
+      43,
+      2,
+      0,
+      0,
+      16,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "and"
+    ]
+  },
+  {
+    "name": "IAND 0xFF & 0xFF = 0xFF",
+    "description": "Bitwise AND: 255 & 255 = 255",
+    "category": "logic",
+    "opcode": "IAND",
+    "opcode_hex": "0x10",
+    "bytecode": [
+      43,
+      1,
+      255,
+      0,
+      43,
+      2,
+      255,
+      0,
+      16,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 255
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "and"
+    ]
+  },
+  {
+    "name": "ICMP cond=EQ(0): 10 vs 10 = 1",
+    "description": "ICMP with condition code 0 (EQ)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_eq"
+    ]
+  },
+  {
+    "name": "ICMP cond=EQ(0): 10 vs 20 = 0",
+    "description": "ICMP with condition code 0 (EQ)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      24,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_eq"
+    ]
+  },
+  {
+    "name": "ICMP cond=NE(1): 10 vs 20 = 1",
+    "description": "ICMP with condition code 1 (NE)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      24,
+      1,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_ne"
+    ]
+  },
+  {
+    "name": "ICMP cond=NE(1): 10 vs 10 = 0",
+    "description": "ICMP with condition code 1 (NE)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      1,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_ne"
+    ]
+  },
+  {
+    "name": "ICMP cond=LT(2): 10 vs 20 = 1",
+    "description": "ICMP with condition code 2 (LT)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      24,
+      2,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_lt"
+    ]
+  },
+  {
+    "name": "ICMP cond=LT(2): 20 vs 10 = 0",
+    "description": "ICMP with condition code 2 (LT)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      2,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_lt"
+    ]
+  },
+  {
+    "name": "ICMP cond=GT(4): 20 vs 10 = 1",
+    "description": "ICMP with condition code 4 (GT)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      4,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_gt"
+    ]
+  },
+  {
+    "name": "ICMP cond=GT(4): 10 vs 20 = 0",
+    "description": "ICMP with condition code 4 (GT)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      24,
+      4,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_gt"
+    ]
+  },
+  {
+    "name": "ICMP cond=GE(5): 10 vs 10 = 1",
+    "description": "ICMP with condition code 5 (GE)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      5,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_ge"
+    ]
+  },
+  {
+    "name": "ICMP cond=GE(5): 20 vs 10 = 1",
+    "description": "ICMP with condition code 5 (GE)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      10,
+      0,
+      24,
+      5,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_ge"
+    ]
+  },
+  {
+    "name": "ICMP cond=GE(5): 10 vs 20 = 0",
+    "description": "ICMP with condition code 5 (GE)",
+    "category": "comparison",
+    "opcode": "ICMP",
+    "opcode_hex": "0x18",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      20,
+      0,
+      24,
+      5,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "icmp_ge"
+    ]
+  },
+  {
+    "name": "IDIV basic: 17 / 5 = 3",
+    "description": "IDIV: 17 div 5 = 3",
+    "category": "arithmetic",
+    "opcode": "IDIV",
+    "opcode_hex": "0x0B",
+    "bytecode": [
+      43,
+      1,
+      17,
+      0,
+      43,
+      2,
+      5,
+      0,
+      11,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 3,
+      "R1": 17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "idiv_basic"
+    ]
+  },
+  {
+    "name": "IDIV exact: 20 / 4 = 5",
+    "description": "IDIV: 20 div 4 = 5",
+    "category": "arithmetic",
+    "opcode": "IDIV",
+    "opcode_hex": "0x0B",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      4,
+      0,
+      11,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 5,
+      "R1": 20,
+      "R2": 4
+    },
+    "tags": [
+      "generated",
+      "idiv_exact"
+    ]
+  },
+  {
+    "name": "IDIV negative_dividend: -17 / 5 = -3",
+    "description": "IDIV: -17 div 5 = -3",
+    "category": "arithmetic",
+    "opcode": "IDIV",
+    "opcode_hex": "0x0B",
+    "bytecode": [
+      43,
+      1,
+      239,
+      255,
+      43,
+      2,
+      5,
+      0,
+      11,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -3,
+      "R1": -17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "idiv_negative_dividend"
+    ]
+  },
+  {
+    "name": "IDIV negative_both: -17 / -5 = 3",
+    "description": "IDIV: -17 div -5 = 3",
+    "category": "arithmetic",
+    "opcode": "IDIV",
+    "opcode_hex": "0x0B",
+    "bytecode": [
+      43,
+      1,
+      239,
+      255,
+      43,
+      2,
+      251,
+      255,
+      11,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 3,
+      "R1": -17,
+      "R2": -5
+    },
+    "tags": [
+      "generated",
+      "idiv_negative_both"
+    ]
+  },
+  {
+    "name": "IDIV divide by zero raises error",
+    "description": "IDIV by zero should raise VMDivisionByZeroError",
+    "category": "arithmetic",
+    "opcode": "IDIV",
+    "opcode_hex": "0x0B",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      43,
+      2,
+      0,
+      0,
+      11,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "IEQ 5 vs 5 = 1",
+    "description": "IEQ R0, R1: 5 vs 5",
+    "category": "comparison",
+    "opcode": "IEQ",
+    "opcode_hex": "0x19",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      5,
+      0,
+      25,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ieq"
+    ]
+  },
+  {
+    "name": "IEQ 5 vs 10 = 0",
+    "description": "IEQ R0, R1: 5 vs 10",
+    "category": "comparison",
+    "opcode": "IEQ",
+    "opcode_hex": "0x19",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      10,
+      0,
+      25,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ieq"
+    ]
+  },
+  {
+    "name": "IEQ 10 vs 5 = 0",
+    "description": "IEQ R0, R1: 10 vs 5",
+    "category": "comparison",
+    "opcode": "IEQ",
+    "opcode_hex": "0x19",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      5,
+      0,
+      25,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ieq"
+    ]
+  },
+  {
+    "name": "IEQ 0 vs 0 = 1",
+    "description": "IEQ R0, R1: 0 vs 0",
+    "category": "comparison",
+    "opcode": "IEQ",
+    "opcode_hex": "0x19",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      25,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ieq"
+    ]
+  },
+  {
+    "name": "IEQ -1 vs 1 = 0",
+    "description": "IEQ R0, R1: -1 vs 1",
+    "category": "comparison",
+    "opcode": "IEQ",
+    "opcode_hex": "0x19",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      1,
+      0,
+      25,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ieq"
+    ]
+  },
+  {
+    "name": "IGE 5 vs 5 = 1",
+    "description": "IGE R0, R1: 5 vs 5",
+    "category": "comparison",
+    "opcode": "IGE",
+    "opcode_hex": "0x1D",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      5,
+      0,
+      29,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ige"
+    ]
+  },
+  {
+    "name": "IGE 5 vs 10 = 0",
+    "description": "IGE R0, R1: 5 vs 10",
+    "category": "comparison",
+    "opcode": "IGE",
+    "opcode_hex": "0x1D",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      10,
+      0,
+      29,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ige"
+    ]
+  },
+  {
+    "name": "IGE 10 vs 5 = 1",
+    "description": "IGE R0, R1: 10 vs 5",
+    "category": "comparison",
+    "opcode": "IGE",
+    "opcode_hex": "0x1D",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      5,
+      0,
+      29,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ige"
+    ]
+  },
+  {
+    "name": "IGE 0 vs 0 = 1",
+    "description": "IGE R0, R1: 0 vs 0",
+    "category": "comparison",
+    "opcode": "IGE",
+    "opcode_hex": "0x1D",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      29,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ige"
+    ]
+  },
+  {
+    "name": "IGE -1 vs 1 = 0",
+    "description": "IGE R0, R1: -1 vs 1",
+    "category": "comparison",
+    "opcode": "IGE",
+    "opcode_hex": "0x1D",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      1,
+      0,
+      29,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ige"
+    ]
+  },
+  {
+    "name": "IGT 5 vs 5 = 0",
+    "description": "IGT R0, R1: 5 vs 5",
+    "category": "comparison",
+    "opcode": "IGT",
+    "opcode_hex": "0x1C",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      5,
+      0,
+      28,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "igt"
+    ]
+  },
+  {
+    "name": "IGT 5 vs 10 = 0",
+    "description": "IGT R0, R1: 5 vs 10",
+    "category": "comparison",
+    "opcode": "IGT",
+    "opcode_hex": "0x1C",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      10,
+      0,
+      28,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "igt"
+    ]
+  },
+  {
+    "name": "IGT 10 vs 5 = 1",
+    "description": "IGT R0, R1: 10 vs 5",
+    "category": "comparison",
+    "opcode": "IGT",
+    "opcode_hex": "0x1C",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      5,
+      0,
+      28,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "igt"
+    ]
+  },
+  {
+    "name": "IGT 0 vs 0 = 0",
+    "description": "IGT R0, R1: 0 vs 0",
+    "category": "comparison",
+    "opcode": "IGT",
+    "opcode_hex": "0x1C",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      28,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "igt"
+    ]
+  },
+  {
+    "name": "IGT -1 vs 1 = 0",
+    "description": "IGT R0, R1: -1 vs 1",
+    "category": "comparison",
+    "opcode": "IGT",
+    "opcode_hex": "0x1C",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      1,
+      0,
+      28,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "igt"
+    ]
+  },
+  {
+    "name": "ILE 5 vs 5 = 1",
+    "description": "ILE R0, R1: 5 vs 5",
+    "category": "comparison",
+    "opcode": "ILE",
+    "opcode_hex": "0x1B",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      5,
+      0,
+      27,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ile"
+    ]
+  },
+  {
+    "name": "ILE 5 vs 10 = 1",
+    "description": "ILE R0, R1: 5 vs 10",
+    "category": "comparison",
+    "opcode": "ILE",
+    "opcode_hex": "0x1B",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      10,
+      0,
+      27,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ile"
+    ]
+  },
+  {
+    "name": "ILE 10 vs 5 = 0",
+    "description": "ILE R0, R1: 10 vs 5",
+    "category": "comparison",
+    "opcode": "ILE",
+    "opcode_hex": "0x1B",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      5,
+      0,
+      27,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ile"
+    ]
+  },
+  {
+    "name": "ILE 0 vs 0 = 1",
+    "description": "ILE R0, R1: 0 vs 0",
+    "category": "comparison",
+    "opcode": "ILE",
+    "opcode_hex": "0x1B",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      27,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ile"
+    ]
+  },
+  {
+    "name": "ILE -1 vs 1 = 1",
+    "description": "ILE R0, R1: -1 vs 1",
+    "category": "comparison",
+    "opcode": "ILE",
+    "opcode_hex": "0x1B",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      1,
+      0,
+      27,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ile"
+    ]
+  },
+  {
+    "name": "ILT 5 vs 5 = 0",
+    "description": "ILT R0, R1: 5 vs 5",
+    "category": "comparison",
+    "opcode": "ILT",
+    "opcode_hex": "0x1A",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      5,
+      0,
+      26,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ilt"
+    ]
+  },
+  {
+    "name": "ILT 5 vs 10 = 1",
+    "description": "ILT R0, R1: 5 vs 10",
+    "category": "comparison",
+    "opcode": "ILT",
+    "opcode_hex": "0x1A",
+    "bytecode": [
+      43,
+      0,
+      5,
+      0,
+      43,
+      1,
+      10,
+      0,
+      26,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ilt"
+    ]
+  },
+  {
+    "name": "ILT 10 vs 5 = 0",
+    "description": "ILT R0, R1: 10 vs 5",
+    "category": "comparison",
+    "opcode": "ILT",
+    "opcode_hex": "0x1A",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      5,
+      0,
+      26,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ilt"
+    ]
+  },
+  {
+    "name": "ILT 0 vs 0 = 0",
+    "description": "ILT R0, R1: 0 vs 0",
+    "category": "comparison",
+    "opcode": "ILT",
+    "opcode_hex": "0x1A",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      26,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "ilt"
+    ]
+  },
+  {
+    "name": "ILT -1 vs 1 = 1",
+    "description": "ILT R0, R1: -1 vs 1",
+    "category": "comparison",
+    "opcode": "ILT",
+    "opcode_hex": "0x1A",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      43,
+      1,
+      1,
+      0,
+      26,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "ilt"
+    ]
+  },
+  {
+    "name": "IMOD basic: 17 % 5 = 2",
+    "description": "IMOD: 17 mod 5 = 2",
+    "category": "arithmetic",
+    "opcode": "IMOD",
+    "opcode_hex": "0x0C",
+    "bytecode": [
+      43,
+      1,
+      17,
+      0,
+      43,
+      2,
+      5,
+      0,
+      12,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 2,
+      "R1": 17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "imod_basic"
+    ]
+  },
+  {
+    "name": "IMOD exact: 20 % 4 = 0",
+    "description": "IMOD: 20 mod 4 = 0",
+    "category": "arithmetic",
+    "opcode": "IMOD",
+    "opcode_hex": "0x0C",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      4,
+      0,
+      12,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 20,
+      "R2": 4
+    },
+    "tags": [
+      "generated",
+      "imod_exact"
+    ]
+  },
+  {
+    "name": "IMOD negative: -17 % 5 = -2",
+    "description": "IMOD: -17 mod 5 = -2",
+    "category": "arithmetic",
+    "opcode": "IMOD",
+    "opcode_hex": "0x0C",
+    "bytecode": [
+      43,
+      1,
+      239,
+      255,
+      43,
+      2,
+      5,
+      0,
+      12,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -2,
+      "R1": -17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "imod_negative"
+    ]
+  },
+  {
+    "name": "IMOD divide by zero raises error",
+    "description": "IMOD by zero should raise VMDivisionByZeroError",
+    "category": "arithmetic",
+    "opcode": "IMOD",
+    "opcode_hex": "0x0C",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      43,
+      2,
+      0,
+      0,
+      12,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "IMUL basic: 7 * 6 = 42",
+    "description": "Integer multiply: 7 * 6 = 42",
+    "category": "arithmetic",
+    "opcode": "IMUL",
+    "opcode_hex": "0x0A",
+    "bytecode": [
+      43,
+      1,
+      7,
+      0,
+      43,
+      2,
+      6,
+      0,
+      10,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 7,
+      "R2": 6
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "mul_basic"
+    ]
+  },
+  {
+    "name": "IMUL zero: 0 * 999 = 0",
+    "description": "Integer multiply: 0 * 999 = 0",
+    "category": "arithmetic",
+    "opcode": "IMUL",
+    "opcode_hex": "0x0A",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      231,
+      3,
+      10,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0,
+      "R2": 999
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "mul_zero"
+    ]
+  },
+  {
+    "name": "IMUL one: 42 * 1 = 42",
+    "description": "Integer multiply: 42 * 1 = 42",
+    "category": "arithmetic",
+    "opcode": "IMUL",
+    "opcode_hex": "0x0A",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      43,
+      2,
+      1,
+      0,
+      10,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 42,
+      "R2": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "mul_one"
+    ]
+  },
+  {
+    "name": "IMUL negative: -3 * 7 = -21",
+    "description": "Integer multiply: -3 * 7 = -21",
+    "category": "arithmetic",
+    "opcode": "IMUL",
+    "opcode_hex": "0x0A",
+    "bytecode": [
+      43,
+      1,
+      253,
+      255,
+      43,
+      2,
+      7,
+      0,
+      10,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -21,
+      "R1": -3,
+      "R2": 7
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "mul_negative"
+    ]
+  },
+  {
+    "name": "IMUL both_negative: -4 * -5 = 20",
+    "description": "Integer multiply: -4 * -5 = 20",
+    "category": "arithmetic",
+    "opcode": "IMUL",
+    "opcode_hex": "0x0A",
+    "bytecode": [
+      43,
+      1,
+      252,
+      255,
+      43,
+      2,
+      251,
+      255,
+      10,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 20,
+      "R1": -4,
+      "R2": -5
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "mul_both_negative"
+    ]
+  },
+  {
+    "name": "INC 0 -> 1",
+    "description": "INC R0 where R0=0",
+    "category": "arithmetic",
+    "opcode": "INC",
+    "opcode_hex": "0x0E",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      14,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "inc"
+    ]
+  },
+  {
+    "name": "INC 41 -> 42",
+    "description": "INC R0 where R0=41",
+    "category": "arithmetic",
+    "opcode": "INC",
+    "opcode_hex": "0x0E",
+    "bytecode": [
+      43,
+      0,
+      41,
+      0,
+      14,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "inc"
+    ]
+  },
+  {
+    "name": "INC -1 -> 0",
+    "description": "INC R0 where R0=-1",
+    "category": "arithmetic",
+    "opcode": "INC",
+    "opcode_hex": "0x0E",
+    "bytecode": [
+      43,
+      0,
+      255,
+      255,
+      14,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "inc"
+    ]
+  },
+  {
+    "name": "INEG negates positive value",
+    "description": "INEG R0, R1: R0 = -42",
+    "category": "arithmetic",
+    "opcode": "INEG",
+    "opcode_hex": "0x0D",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      13,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -42,
+      "R1": 42
+    },
+    "expected_flags": {
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "INEG of zero is zero",
+    "description": "INEG R0, R1 where R1=0: R0 = 0",
+    "category": "arithmetic",
+    "opcode": "INEG",
+    "opcode_hex": "0x0D",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      13,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "edge_case"
+    ]
+  },
+  {
+    "name": "INEG double negation",
+    "description": "INEG of -100 = 100",
+    "category": "arithmetic",
+    "opcode": "INEG",
+    "opcode_hex": "0x0D",
+    "bytecode": [
+      43,
+      1,
+      156,
+      255,
+      13,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 100,
+      "R1": -100
+    },
+    "tags": [
+      "generated",
+      "edge_case"
+    ]
+  },
+  {
+    "name": "INOT of zero is -1",
+    "description": "INOT R0, R1: ~0 = -1",
+    "category": "logic",
+    "opcode": "INOT",
+    "opcode_hex": "0x13",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      19,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -1,
+      "R1": 0
+    },
+    "expected_flags": {
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "not"
+    ]
+  },
+  {
+    "name": "INOT of -1 is zero",
+    "description": "INOT R0, R1: ~(-1) = 0",
+    "category": "logic",
+    "opcode": "INOT",
+    "opcode_hex": "0x13",
+    "bytecode": [
+      43,
+      1,
+      255,
+      255,
+      19,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": -1
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "not"
+    ]
+  },
+  {
+    "name": "INSTINCT loads immediate into register",
+    "description": "INSTINCT R0, 42: R0 = 42",
+    "category": "evolution",
+    "opcode": "INSTINCT",
+    "opcode_hex": "0x7D",
+    "bytecode": [
+      125,
+      0,
+      42,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "tags": [
+      "generated",
+      "instinct"
+    ]
+  },
+  {
+    "name": "IOR 0xA | 0x5 = 0xF",
+    "description": "Bitwise OR: 10 | 5 = 15",
+    "category": "logic",
+    "opcode": "IOR",
+    "opcode_hex": "0x11",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      5,
+      0,
+      17,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 15
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "or"
+    ]
+  },
+  {
+    "name": "IOR 0x0 | 0xFF = 0xFF",
+    "description": "Bitwise OR: 0 | 255 = 255",
+    "category": "logic",
+    "opcode": "IOR",
+    "opcode_hex": "0x11",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      255,
+      0,
+      17,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 255
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "or"
+    ]
+  },
+  {
+    "name": "IOR 0xF0 | 0xF = 0xFF",
+    "description": "Bitwise OR: 240 | 15 = 255",
+    "category": "logic",
+    "opcode": "IOR",
+    "opcode_hex": "0x11",
+    "bytecode": [
+      43,
+      1,
+      240,
+      0,
+      43,
+      2,
+      15,
+      0,
+      17,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 255
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "or"
+    ]
+  },
+  {
+    "name": "IREM basic: 17 % 5 = 2",
+    "description": "IREM: 17 mod 5 = 2",
+    "category": "arithmetic",
+    "opcode": "IREM",
+    "opcode_hex": "0x2C",
+    "bytecode": [
+      43,
+      1,
+      17,
+      0,
+      43,
+      2,
+      5,
+      0,
+      44,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 2,
+      "R1": 17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "irem_basic"
+    ]
+  },
+  {
+    "name": "IREM exact: 20 % 4 = 0",
+    "description": "IREM: 20 mod 4 = 0",
+    "category": "arithmetic",
+    "opcode": "IREM",
+    "opcode_hex": "0x2C",
+    "bytecode": [
+      43,
+      1,
+      20,
+      0,
+      43,
+      2,
+      4,
+      0,
+      44,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 20,
+      "R2": 4
+    },
+    "tags": [
+      "generated",
+      "irem_exact"
+    ]
+  },
+  {
+    "name": "IREM negative: -17 % 5 = -2",
+    "description": "IREM: -17 mod 5 = -2",
+    "category": "arithmetic",
+    "opcode": "IREM",
+    "opcode_hex": "0x2C",
+    "bytecode": [
+      43,
+      1,
+      239,
+      255,
+      43,
+      2,
+      5,
+      0,
+      44,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -2,
+      "R1": -17,
+      "R2": 5
+    },
+    "tags": [
+      "generated",
+      "irem_negative"
+    ]
+  },
+  {
+    "name": "IREM divide by zero raises error",
+    "description": "IREM by zero should raise VMDivisionByZeroError",
+    "category": "arithmetic",
+    "opcode": "IREM",
+    "opcode_hex": "0x2C",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      43,
+      2,
+      0,
+      0,
+      44,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "ISHL 1 << 4 = 16",
+    "description": "Shift left: 1 << 4 = 16",
+    "category": "logic",
+    "opcode": "ISHL",
+    "opcode_hex": "0x14",
+    "bytecode": [
+      43,
+      1,
+      1,
+      0,
+      43,
+      2,
+      4,
+      0,
+      20,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 16
+    },
+    "tags": [
+      "generated",
+      "shl"
+    ]
+  },
+  {
+    "name": "ISHL 1 << 0 = 1",
+    "description": "Shift left: 1 << 0 = 1",
+    "category": "logic",
+    "opcode": "ISHL",
+    "opcode_hex": "0x14",
+    "bytecode": [
+      43,
+      1,
+      1,
+      0,
+      43,
+      2,
+      0,
+      0,
+      20,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "shl"
+    ]
+  },
+  {
+    "name": "ISHL 255 << 8 = 65280",
+    "description": "Shift left: 255 << 8 = 65280",
+    "category": "logic",
+    "opcode": "ISHL",
+    "opcode_hex": "0x14",
+    "bytecode": [
+      43,
+      1,
+      255,
+      0,
+      43,
+      2,
+      8,
+      0,
+      20,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 65280
+    },
+    "tags": [
+      "generated",
+      "shl"
+    ]
+  },
+  {
+    "name": "ISHR 16 >> 2 = 4",
+    "description": "Arithmetic shift right: 16 >> 2 = 4",
+    "category": "logic",
+    "opcode": "ISHR",
+    "opcode_hex": "0x15",
+    "bytecode": [
+      43,
+      1,
+      16,
+      0,
+      43,
+      2,
+      2,
+      0,
+      21,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 4
+    },
+    "tags": [
+      "generated",
+      "shr"
+    ]
+  },
+  {
+    "name": "ISHR 1 >> 0 = 1",
+    "description": "Arithmetic shift right: 1 >> 0 = 1",
+    "category": "logic",
+    "opcode": "ISHR",
+    "opcode_hex": "0x15",
+    "bytecode": [
+      43,
+      1,
+      1,
+      0,
+      43,
+      2,
+      0,
+      0,
+      21,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "shr"
+    ]
+  },
+  {
+    "name": "ISHR -16 >> 2 = -4",
+    "description": "Arithmetic shift right: -16 >> 2 = -4",
+    "category": "logic",
+    "opcode": "ISHR",
+    "opcode_hex": "0x15",
+    "bytecode": [
+      43,
+      1,
+      240,
+      255,
+      43,
+      2,
+      2,
+      0,
+      21,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -4
+    },
+    "tags": [
+      "generated",
+      "shr"
+    ]
+  },
+  {
+    "name": "ISUB basic: 30 - 12 = 18",
+    "description": "Integer subtraction: 30 - 12 = 18",
+    "category": "arithmetic",
+    "opcode": "ISUB",
+    "opcode_hex": "0x09",
+    "bytecode": [
+      43,
+      1,
+      30,
+      0,
+      43,
+      2,
+      12,
+      0,
+      9,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 18,
+      "R1": 30,
+      "R2": 12
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "sub_basic"
+    ]
+  },
+  {
+    "name": "ISUB zero_result: 42 - 42 = 0",
+    "description": "Integer subtraction: 42 - 42 = 0",
+    "category": "arithmetic",
+    "opcode": "ISUB",
+    "opcode_hex": "0x09",
+    "bytecode": [
+      43,
+      1,
+      42,
+      0,
+      43,
+      2,
+      42,
+      0,
+      9,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 42,
+      "R2": 42
+    },
+    "expected_flags": {
+      "flag_zero": true,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "sub_zero_result"
+    ]
+  },
+  {
+    "name": "ISUB negative: 10 - 30 = -20",
+    "description": "Integer subtraction: 10 - 30 = -20",
+    "category": "arithmetic",
+    "opcode": "ISUB",
+    "opcode_hex": "0x09",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      30,
+      0,
+      9,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -20,
+      "R1": 10,
+      "R2": 30
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "sub_negative"
+    ]
+  },
+  {
+    "name": "ISUB from_zero: 0 - 10 = -10",
+    "description": "Integer subtraction: 0 - 10 = -10",
+    "category": "arithmetic",
+    "opcode": "ISUB",
+    "opcode_hex": "0x09",
+    "bytecode": [
+      43,
+      1,
+      0,
+      0,
+      43,
+      2,
+      10,
+      0,
+      9,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -10,
+      "R1": 0,
+      "R2": 10
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "sub_from_zero"
+    ]
+  },
+  {
+    "name": "IXOR 0xF ^ 0xF = 0x0",
+    "description": "Bitwise XOR: 15 ^ 15 = 0",
+    "category": "logic",
+    "opcode": "IXOR",
+    "opcode_hex": "0x12",
+    "bytecode": [
+      43,
+      1,
+      15,
+      0,
+      43,
+      2,
+      15,
+      0,
+      18,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "xor"
+    ]
+  },
+  {
+    "name": "IXOR 0xFF ^ 0x0 = 0xFF",
+    "description": "Bitwise XOR: 255 ^ 0 = 255",
+    "category": "logic",
+    "opcode": "IXOR",
+    "opcode_hex": "0x12",
+    "bytecode": [
+      43,
+      1,
+      255,
+      0,
+      43,
+      2,
+      0,
+      0,
+      18,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 255
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "xor"
+    ]
+  },
+  {
+    "name": "IXOR 0xAA ^ 0x55 = 0xFF",
+    "description": "Bitwise XOR: 170 ^ 85 = 255",
+    "category": "logic",
+    "opcode": "IXOR",
+    "opcode_hex": "0x12",
+    "bytecode": [
+      43,
+      1,
+      170,
+      0,
+      43,
+      2,
+      85,
+      0,
+      18,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 255
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "xor"
+    ]
+  },
+  {
+    "name": "JE jumps when values are equal",
+    "description": "CMP sets zero flag when R0==R1, JE should jump",
+    "category": "control",
+    "opcode": "JE",
+    "opcode_hex": "0x2E",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      46,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": 10,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JG jumps when greater (no zero, no sign)",
+    "description": "CMP R0(30),R1(10): zero=F,sign=F \u2192 JG takes",
+    "category": "control",
+    "opcode": "JG",
+    "opcode_hex": "0x4D",
+    "bytecode": [
+      43,
+      0,
+      30,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      77,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 30,
+      "R1": 10,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JGE jumps when greater-or-equal",
+    "description": "CMP R0(30),R1(10): sign=F \u2192 JGE takes",
+    "category": "control",
+    "opcode": "JGE",
+    "opcode_hex": "0x37",
+    "bytecode": [
+      43,
+      0,
+      30,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      55,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 30,
+      "R1": 10,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": false
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JL jumps when less (sign flag set)",
+    "description": "CMP R0(10),R1(30): sign=T \u2192 JL takes",
+    "category": "control",
+    "opcode": "JL",
+    "opcode_hex": "0x36",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      30,
+      0,
+      45,
+      0,
+      1,
+      54,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": 30,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JLE jumps when less-or-equal (zero flag set)",
+    "description": "CMP R0(10),R1(10): zero=T \u2192 JLE takes",
+    "category": "control",
+    "opcode": "JLE",
+    "opcode_hex": "0x4E",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      10,
+      0,
+      45,
+      0,
+      1,
+      78,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": 10,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": true
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JMP forward skips instruction",
+    "description": "JMP should skip the MOVI R1,999 and reach HALT",
+    "category": "control",
+    "opcode": "JMP",
+    "opcode_hex": "0x04",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      4,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": 0
+    },
+    "notes": "JMP offset is relative to PC after fetch (4 bytes for Format D)",
+    "tags": [
+      "generated",
+      "forward_jump"
+    ]
+  },
+  {
+    "name": "JMP backward creates loop",
+    "description": "JMP backward loops \u2014 VM stops via cycle budget",
+    "category": "control",
+    "opcode": "JMP",
+    "opcode_hex": "0x04",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      43,
+      0,
+      0,
+      0,
+      43,
+      1,
+      0,
+      0,
+      4,
+      0,
+      248,
+      255,
+      128
+    ],
+    "expected_halted": false,
+    "notes": "Backward jump exceeds cycle budget",
+    "tags": [
+      "generated",
+      "backward_jump",
+      "loop"
+    ]
+  },
+  {
+    "name": "JNE jumps when values are not equal",
+    "description": "CMP clears zero flag when R0!=R1, JNE should jump",
+    "category": "control",
+    "opcode": "JNE",
+    "opcode_hex": "0x2F",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      43,
+      1,
+      20,
+      0,
+      45,
+      0,
+      1,
+      47,
+      0,
+      4,
+      0,
+      43,
+      2,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 10,
+      "R1": 20,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false,
+      "flag_sign": true
+    },
+    "tags": [
+      "generated",
+      "flag_jump"
+    ]
+  },
+  {
+    "name": "JNZ jumps when register is non-zero",
+    "description": "JNZ R0 should jump when R0==42",
+    "category": "control",
+    "opcode": "JNZ",
+    "opcode_hex": "0x06",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      6,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 0
+    },
+    "tags": [
+      "generated",
+      "conditional_jump"
+    ]
+  },
+  {
+    "name": "JNZ falls through when register is zero",
+    "description": "JNZ R0 should not jump when R0==0",
+    "category": "control",
+    "opcode": "JNZ",
+    "opcode_hex": "0x06",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      6,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 999
+    },
+    "tags": [
+      "generated",
+      "conditional_jump"
+    ]
+  },
+  {
+    "name": "JZ jumps when register is zero",
+    "description": "JZ R0 should jump when R0==0, skipping MOVI R1,999",
+    "category": "control",
+    "opcode": "JZ",
+    "opcode_hex": "0x05",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      5,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0,
+      "R1": 0
+    },
+    "tags": [
+      "generated",
+      "conditional_jump"
+    ]
+  },
+  {
+    "name": "JZ falls through when register is non-zero",
+    "description": "JZ R0 should not jump when R0==42",
+    "category": "control",
+    "opcode": "JZ",
+    "opcode_hex": "0x05",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      5,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 999
+    },
+    "tags": [
+      "generated",
+      "conditional_jump"
+    ]
+  },
+  {
+    "name": "STORE then LOAD roundtrip",
+    "description": "Store 12345 at addr 32000, load back",
+    "category": "memory",
+    "opcode": "LOAD",
+    "opcode_hex": "0x02",
+    "bytecode": [
+      43,
+      0,
+      57,
+      48,
+      43,
+      1,
+      0,
+      125,
+      3,
+      0,
+      1,
+      43,
+      2,
+      0,
+      0,
+      2,
+      2,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 12345,
+      "R2": 12345
+    },
+    "tags": [
+      "generated",
+      "store_load"
+    ]
+  },
+  {
+    "name": "STORE8 then LOAD8 roundtrip",
+    "description": "Store byte 0x42, load back",
+    "category": "memory",
+    "opcode": "LOAD8",
+    "opcode_hex": "0x4F",
+    "bytecode": [
+      43,
+      0,
+      66,
+      0,
+      43,
+      1,
+      0,
+      125,
+      87,
+      0,
+      1,
+      43,
+      2,
+      0,
+      0,
+      79,
+      2,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 66,
+      "R2": 66
+    },
+    "tags": [
+      "generated",
+      "store8_load8"
+    ]
+  },
+  {
+    "name": "MERGE averages two registers",
+    "description": "MERGE R0, R1, R2: avg(10, 30) = 20",
+    "category": "meta",
+    "opcode": "MERGE",
+    "opcode_hex": "0x3E",
+    "bytecode": [
+      43,
+      1,
+      10,
+      0,
+      43,
+      2,
+      30,
+      0,
+      62,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 20
+    },
+    "tags": [
+      "generated",
+      "merge"
+    ]
+  },
+  {
+    "name": "MOVI R0, 0 (zero)",
+    "description": "Load immediate 0 into R0",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "movi_zero"
+    ]
+  },
+  {
+    "name": "MOVI R0, 42 (positive)",
+    "description": "Load immediate 42 into R0",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "tags": [
+      "generated",
+      "movi_positive"
+    ]
+  },
+  {
+    "name": "MOVI R0, -128 (negative_byte)",
+    "description": "Load immediate -128 into R0",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      0,
+      128,
+      255,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -128
+    },
+    "tags": [
+      "generated",
+      "movi_negative_byte"
+    ]
+  },
+  {
+    "name": "MOVI R0, 32767 (max_i16)",
+    "description": "Load immediate 32767 into R0",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      0,
+      255,
+      127,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 32767
+    },
+    "tags": [
+      "generated",
+      "movi_max_i16"
+    ]
+  },
+  {
+    "name": "MOVI R0, -32768 (min_i16)",
+    "description": "Load immediate -32768 into R0",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      0,
+      0,
+      128,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -32768
+    },
+    "tags": [
+      "generated",
+      "movi_min_i16"
+    ]
+  },
+  {
+    "name": "MOVI R5, 100 (register_5)",
+    "description": "Load immediate 100 into R5",
+    "category": "data",
+    "opcode": "MOVI",
+    "opcode_hex": "0x2B",
+    "bytecode": [
+      43,
+      5,
+      100,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R5": 100
+    },
+    "tags": [
+      "generated",
+      "movi_register_5"
+    ]
+  },
+  {
+    "name": "NOP does nothing",
+    "description": "NOP should execute without modifying any state",
+    "category": "control",
+    "opcode": "NOP",
+    "opcode_hex": "0x00",
+    "bytecode": [
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "NOP preserves register state",
+    "description": "NOP should not alter any register values",
+    "category": "control",
+    "opcode": "NOP",
+    "opcode_hex": "0x00",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "tags": [
+      "generated",
+      "register_safety"
+    ]
+  },
+  {
+    "name": "PUSH/POP preserve value",
+    "description": "Push R0(99), Pop into R1 \u2192 R1 = 99",
+    "category": "stack",
+    "opcode": "POP",
+    "opcode_hex": "0x21",
+    "bytecode": [
+      43,
+      0,
+      99,
+      0,
+      32,
+      0,
+      33,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 99,
+      "R1": 99
+    },
+    "tags": [
+      "generated",
+      "push_pop"
+    ]
+  },
+  {
+    "name": "PUSH/POP preserve negative value",
+    "description": "Push R0(-42), Pop into R1 \u2192 R1 = -42",
+    "category": "stack",
+    "opcode": "POP",
+    "opcode_hex": "0x21",
+    "bytecode": [
+      43,
+      0,
+      214,
+      255,
+      32,
+      0,
+      33,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -42,
+      "R1": -42
+    },
+    "tags": [
+      "generated",
+      "push_pop_negative"
+    ]
+  },
+  {
+    "name": "PUSH/POP preserve value",
+    "description": "Push R0(99), Pop into R1 \u2192 R1 = 99",
+    "category": "stack",
+    "opcode": "PUSH",
+    "opcode_hex": "0x20",
+    "bytecode": [
+      43,
+      0,
+      99,
+      0,
+      32,
+      0,
+      33,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 99,
+      "R1": 99
+    },
+    "tags": [
+      "generated",
+      "push_pop"
+    ]
+  },
+  {
+    "name": "PUSH/POP preserve negative value",
+    "description": "Push R0(-42), Pop into R1 \u2192 R1 = -42",
+    "category": "stack",
+    "opcode": "PUSH",
+    "opcode_hex": "0x20",
+    "bytecode": [
+      43,
+      0,
+      214,
+      255,
+      32,
+      0,
+      33,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -42,
+      "R1": -42
+    },
+    "tags": [
+      "generated",
+      "push_pop_negative"
+    ]
+  },
+  {
+    "name": "REDUCE no-op without handler",
+    "description": "REDUCE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "REDUCE",
+    "opcode_hex": "0x67",
+    "bytecode": [
+      103,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "REGION_CREATE creates a named region",
+    "description": "Create region 'test' with size 1024",
+    "category": "memory_mgmt",
+    "opcode": "REGION_CREATE",
+    "opcode_hex": "0x30",
+    "bytecode": [
+      48,
+      13,
+      0,
+      4,
+      116,
+      101,
+      115,
+      116,
+      0,
+      4,
+      0,
+      0,
+      3,
+      103,
+      101,
+      110,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "region_create"
+    ]
+  },
+  {
+    "name": "REGION_DESTROY destroys a created region",
+    "description": "Create 'tmp', then destroy it",
+    "category": "memory_mgmt",
+    "opcode": "REGION_DESTROY",
+    "opcode_hex": "0x31",
+    "bytecode": [
+      48,
+      12,
+      0,
+      3,
+      116,
+      109,
+      112,
+      0,
+      1,
+      0,
+      0,
+      3,
+      103,
+      101,
+      110,
+      49,
+      4,
+      0,
+      116,
+      109,
+      112,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "region_destroy"
+    ]
+  },
+  {
+    "name": "REPORT_STATUS no-op without handler",
+    "description": "REPORT_STATUS should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "REPORT_STATUS",
+    "opcode_hex": "0x64",
+    "bytecode": [
+      100,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "REQUEST_OVERRIDE no-op without handler",
+    "description": "REQUEST_OVERRIDE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "REQUEST_OVERRIDE",
+    "opcode_hex": "0x65",
+    "bytecode": [
+      101,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "RESOURCE_ACQUIRE succeeds",
+    "description": "RESOURCE_ACQUIRE with resource_id=42",
+    "category": "system",
+    "opcode": "RESOURCE_ACQUIRE",
+    "opcode_hex": "0x82",
+    "bytecode": [
+      130,
+      4,
+      0,
+      42,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "resource"
+    ]
+  },
+  {
+    "name": "RESOURCE_RELEASE succeeds",
+    "description": "RESOURCE_RELEASE with resource_id=42",
+    "category": "system",
+    "opcode": "RESOURCE_RELEASE",
+    "opcode_hex": "0x83",
+    "bytecode": [
+      130,
+      4,
+      0,
+      42,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 0
+    },
+    "tags": [
+      "generated",
+      "resource"
+    ]
+  },
+  {
+    "name": "RESTORE does not crash",
+    "description": "RESTORE should execute without error",
+    "category": "meta",
+    "opcode": "RESTORE",
+    "opcode_hex": "0x3F",
+    "bytecode": [
+      63,
+      0,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "RET from empty stack halts VM",
+    "description": "RET when stack is empty should halt",
+    "category": "control",
+    "opcode": "RET",
+    "opcode_hex": "0x28",
+    "bytecode": [
+      40
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "edge_case"
+    ]
+  },
+  {
+    "name": "REVOKE_TRUST no-op without handler",
+    "description": "REVOKE_TRUST should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "REVOKE_TRUST",
+    "opcode_hex": "0x73",
+    "bytecode": [
+      115,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "ROTL 1 << 1 = 2",
+    "description": "Rotate left 32-bit: 1 rotated left 1 = 2",
+    "category": "logic",
+    "opcode": "ROTL",
+    "opcode_hex": "0x16",
+    "bytecode": [
+      43,
+      1,
+      1,
+      0,
+      43,
+      2,
+      1,
+      0,
+      22,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 2
+    },
+    "tags": [
+      "generated",
+      "rotl"
+    ]
+  },
+  {
+    "name": "ROTR 2 >> 1 = 1",
+    "description": "Rotate right 32-bit: 2 rotated right 1 = 1",
+    "category": "logic",
+    "opcode": "ROTR",
+    "opcode_hex": "0x17",
+    "bytecode": [
+      43,
+      1,
+      2,
+      0,
+      43,
+      2,
+      1,
+      0,
+      23,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "rotr"
+    ]
+  },
+  {
+    "name": "SETCC reads flags from prior operation",
+    "description": "After INC (result=1, not zero): NE=1, EQ=0",
+    "category": "comparison",
+    "opcode": "SETCC",
+    "opcode_hex": "0x1F",
+    "bytecode": [
+      43,
+      0,
+      0,
+      0,
+      14,
+      0,
+      31,
+      1,
+      1,
+      31,
+      2,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1,
+      "R1": 1,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "setcc"
+    ]
+  },
+  {
+    "name": "SET_PRIORITY no-op without handler",
+    "description": "SET_PRIORITY should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "SET_PRIORITY",
+    "opcode_hex": "0x6C",
+    "bytecode": [
+      108,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "SNAPSHOT does not crash",
+    "description": "SNAPSHOT should execute without error",
+    "category": "evolution",
+    "opcode": "SNAPSHOT",
+    "opcode_hex": "0x7F",
+    "bytecode": [
+      127,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "STORE then LOAD roundtrip",
+    "description": "Store 12345 at addr 32000, load back",
+    "category": "memory",
+    "opcode": "STORE",
+    "opcode_hex": "0x03",
+    "bytecode": [
+      43,
+      0,
+      57,
+      48,
+      43,
+      1,
+      0,
+      125,
+      3,
+      0,
+      1,
+      43,
+      2,
+      0,
+      0,
+      2,
+      2,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 12345,
+      "R2": 12345
+    },
+    "tags": [
+      "generated",
+      "store_load"
+    ]
+  },
+  {
+    "name": "STORE8 then LOAD8 roundtrip",
+    "description": "Store byte 0x42, load back",
+    "category": "memory",
+    "opcode": "STORE8",
+    "opcode_hex": "0x57",
+    "bytecode": [
+      43,
+      0,
+      66,
+      0,
+      43,
+      1,
+      0,
+      125,
+      87,
+      0,
+      1,
+      43,
+      2,
+      0,
+      0,
+      79,
+      2,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 66,
+      "R2": 66
+    },
+    "tags": [
+      "generated",
+      "store8_load8"
+    ]
+  },
+  {
+    "name": "SWAP swaps top two stack values",
+    "description": "Push 10, Push 20, SWAP, Pop\u2192R1=10, Pop\u2192R2=20",
+    "category": "stack",
+    "opcode": "SWAP",
+    "opcode_hex": "0x23",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      32,
+      0,
+      43,
+      0,
+      20,
+      0,
+      32,
+      0,
+      35,
+      33,
+      1,
+      33,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 20,
+      "R1": 10,
+      "R2": 20
+    },
+    "tags": [
+      "generated",
+      "swap"
+    ]
+  },
+  {
+    "name": "SYNC_CLOCK no-op without handler",
+    "description": "SYNC_CLOCK should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "SYNC_CLOCK",
+    "opcode_hex": "0x79",
+    "bytecode": [
+      121,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "TAILCALL jumps without pushing return address",
+    "description": "TAILCALL should jump without pushing return, so R1 stays 0",
+    "category": "control",
+    "opcode": "TAILCALL",
+    "opcode_hex": "0x2A",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      42,
+      0,
+      4,
+      0,
+      43,
+      1,
+      231,
+      3,
+      43,
+      0,
+      20,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 20,
+      "R1": 0
+    },
+    "tags": [
+      "generated",
+      "tail_call"
+    ]
+  },
+  {
+    "name": "TELL no-op without handler",
+    "description": "TELL should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "TELL",
+    "opcode_hex": "0x60",
+    "bytecode": [
+      96,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "TEST sets flags from AND without storing",
+    "description": "TEST R0, R1: flags from 0x0F & 0x03 = 3 (nonzero)",
+    "category": "comparison",
+    "opcode": "TEST",
+    "opcode_hex": "0x1E",
+    "bytecode": [
+      43,
+      0,
+      15,
+      0,
+      43,
+      1,
+      3,
+      0,
+      30,
+      0,
+      1,
+      31,
+      2,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 15,
+      "R1": 3,
+      "R2": 0
+    },
+    "expected_flags": {
+      "flag_zero": false
+    },
+    "tags": [
+      "generated",
+      "test"
+    ]
+  },
+  {
+    "name": "TRUST_CHECK no-op without handler",
+    "description": "TRUST_CHECK should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "TRUST_CHECK",
+    "opcode_hex": "0x70",
+    "bytecode": [
+      112,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "TRUST_QUERY no-op without handler",
+    "description": "TRUST_QUERY should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "TRUST_QUERY",
+    "opcode_hex": "0x72",
+    "bytecode": [
+      114,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "TRUST_UPDATE no-op without handler",
+    "description": "TRUST_UPDATE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "TRUST_UPDATE",
+    "opcode_hex": "0x71",
+    "bytecode": [
+      113,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "BOX then UNBOX retrieves value",
+    "description": "Box 99, unbox \u2192 R0 = 99",
+    "category": "type",
+    "opcode": "UNBOX",
+    "opcode_hex": "0x3A",
+    "bytecode": [
+      57,
+      1,
+      0,
+      99,
+      0,
+      0,
+      0,
+      58,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 99,
+      "R1": 0
+    },
+    "tags": [
+      "generated",
+      "unbox"
+    ]
+  },
+  {
+    "name": "UNBOX invalid box id raises error",
+    "description": "UNBOX with invalid box_id=999 should raise VMTypeError",
+    "category": "type",
+    "opcode": "UNBOX",
+    "opcode_hex": "0x3A",
+    "bytecode": [
+      43,
+      1,
+      231,
+      3,
+      58,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMTypeError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "VADD byte-wise operation",
+    "description": "Byte-wise vector VADD",
+    "category": "simd",
+    "opcode": "VADD",
+    "opcode_hex": "0x52",
+    "bytecode": [
+      82,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "vadd"
+    ]
+  },
+  {
+    "name": "VDIV byte-wise division",
+    "description": "Byte-wise vector division (no-op with zero-initialized vectors)",
+    "category": "simd",
+    "opcode": "VDIV",
+    "opcode_hex": "0x55",
+    "bytecode": [
+      85,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "vdiv"
+    ]
+  },
+  {
+    "name": "VDIV by zero raises error",
+    "description": "VDIV with zero element should raise error",
+    "category": "simd",
+    "opcode": "VDIV",
+    "opcode_hex": "0x55",
+    "bytecode": [
+      85,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": false,
+    "expected_error": "VMDivisionByZeroError",
+    "tags": [
+      "generated",
+      "error_handling"
+    ]
+  },
+  {
+    "name": "VERIFY_OUTCOME no-op without handler",
+    "description": "VERIFY_OUTCOME should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "VERIFY_OUTCOME",
+    "opcode_hex": "0x6A",
+    "bytecode": [
+      106,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "VFMA fused multiply-add",
+    "description": "VFMA V0, V1, V2: V0 = V0 + V1*V2",
+    "category": "simd",
+    "opcode": "VFMA",
+    "opcode_hex": "0x56",
+    "bytecode": [
+      86,
+      0,
+      1,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "vfma"
+    ]
+  },
+  {
+    "name": "VLOAD loads 16 bytes from memory",
+    "description": "Store 17, VLOAD 16 bytes from that address",
+    "category": "simd",
+    "opcode": "VLOAD",
+    "opcode_hex": "0x50",
+    "bytecode": [
+      43,
+      0,
+      17,
+      0,
+      43,
+      1,
+      0,
+      125,
+      3,
+      0,
+      1,
+      80,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "notes": "V0 should contain the stored data (first 4 bytes = 17 in LE)",
+    "tags": [
+      "generated",
+      "vload"
+    ]
+  },
+  {
+    "name": "VMUL byte-wise operation",
+    "description": "Byte-wise vector VMUL",
+    "category": "simd",
+    "opcode": "VMUL",
+    "opcode_hex": "0x54",
+    "bytecode": [
+      84,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "vmul"
+    ]
+  },
+  {
+    "name": "VSTORE stores 16 bytes to memory",
+    "description": "VSTORE V0 to address in R1",
+    "category": "simd",
+    "opcode": "VSTORE",
+    "opcode_hex": "0x51",
+    "bytecode": [
+      81,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "initial_gp": {
+      "R1": 32000
+    },
+    "tags": [
+      "generated",
+      "vstore"
+    ]
+  },
+  {
+    "name": "VSUB byte-wise operation",
+    "description": "Byte-wise vector VSUB",
+    "category": "simd",
+    "opcode": "VSUB",
+    "opcode_hex": "0x53",
+    "bytecode": [
+      83,
+      0,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "vsub"
+    ]
+  },
+  {
+    "name": "WITNESS writes witness mark",
+    "description": "WITNESS should write a log entry and return count",
+    "category": "evolution",
+    "opcode": "WITNESS",
+    "opcode_hex": "0x7E",
+    "bytecode": [
+      126,
+      0,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 1
+    },
+    "tags": [
+      "generated",
+      "witness"
+    ]
+  },
+  {
+    "name": "YIELD is a no-op in single-threaded mode",
+    "description": "YIELD should not crash or modify state",
+    "category": "system",
+    "opcode": "YIELD",
+    "opcode_hex": "0x81",
+    "bytecode": [
+      129,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  }
+]

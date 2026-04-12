@@ -1,0 +1,70 @@
+[
+  {
+    "name": "REGION_CREATE creates a named region",
+    "description": "Create region 'test' with size 1024",
+    "category": "memory_mgmt",
+    "opcode": "REGION_CREATE",
+    "opcode_hex": "0x30",
+    "bytecode": [
+      48,
+      13,
+      0,
+      4,
+      116,
+      101,
+      115,
+      116,
+      0,
+      4,
+      0,
+      0,
+      3,
+      103,
+      101,
+      110,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "region_create"
+    ]
+  },
+  {
+    "name": "REGION_DESTROY destroys a created region",
+    "description": "Create 'tmp', then destroy it",
+    "category": "memory_mgmt",
+    "opcode": "REGION_DESTROY",
+    "opcode_hex": "0x31",
+    "bytecode": [
+      48,
+      12,
+      0,
+      3,
+      116,
+      109,
+      112,
+      0,
+      1,
+      0,
+      0,
+      3,
+      103,
+      101,
+      110,
+      49,
+      4,
+      0,
+      116,
+      109,
+      112,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "region_destroy"
+    ]
+  }
+]

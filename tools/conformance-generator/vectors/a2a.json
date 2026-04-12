@@ -1,0 +1,473 @@
+[
+  {
+    "name": "ASK no-op without handler",
+    "description": "ASK should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "ASK",
+    "opcode_hex": "0x61",
+    "bytecode": [
+      97,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "ASSERT_GOAL no-op without handler",
+    "description": "ASSERT_GOAL should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "ASSERT_GOAL",
+    "opcode_hex": "0x69",
+    "bytecode": [
+      105,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "BARRIER no-op without handler",
+    "description": "BARRIER should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "BARRIER",
+    "opcode_hex": "0x78",
+    "bytecode": [
+      120,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "BROADCAST no-op without handler",
+    "description": "BROADCAST should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "BROADCAST",
+    "opcode_hex": "0x66",
+    "bytecode": [
+      102,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "CAP_GRANT no-op without handler",
+    "description": "CAP_GRANT should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "CAP_GRANT",
+    "opcode_hex": "0x76",
+    "bytecode": [
+      118,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "CAP_REQUEST no-op without handler",
+    "description": "CAP_REQUEST should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "CAP_REQUEST",
+    "opcode_hex": "0x75",
+    "bytecode": [
+      117,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "CAP_REQUIRE no-op without handler",
+    "description": "CAP_REQUIRE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "CAP_REQUIRE",
+    "opcode_hex": "0x74",
+    "bytecode": [
+      116,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "CAP_REVOKE no-op without handler",
+    "description": "CAP_REVOKE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "CAP_REVOKE",
+    "opcode_hex": "0x77",
+    "bytecode": [
+      119,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "DECLARE_INTENT no-op without handler",
+    "description": "DECLARE_INTENT should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "DECLARE_INTENT",
+    "opcode_hex": "0x68",
+    "bytecode": [
+      104,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "DELEGATE no-op without handler",
+    "description": "DELEGATE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "DELEGATE",
+    "opcode_hex": "0x62",
+    "bytecode": [
+      98,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "DELEGATE_RESULT no-op without handler",
+    "description": "DELEGATE_RESULT should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "DELEGATE_RESULT",
+    "opcode_hex": "0x63",
+    "bytecode": [
+      99,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "EMERGENCY_STOP halts VM",
+    "description": "EMERGENCY_STOP should immediately halt",
+    "category": "a2a",
+    "opcode": "EMERGENCY_STOP",
+    "opcode_hex": "0x7B",
+    "bytecode": [
+      123
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "smoke"
+    ]
+  },
+  {
+    "name": "EXPLAIN_FAILURE no-op without handler",
+    "description": "EXPLAIN_FAILURE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "EXPLAIN_FAILURE",
+    "opcode_hex": "0x6B",
+    "bytecode": [
+      107,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "FORMATION_UPDATE no-op without handler",
+    "description": "FORMATION_UPDATE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "FORMATION_UPDATE",
+    "opcode_hex": "0x7A",
+    "bytecode": [
+      122,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "REDUCE no-op without handler",
+    "description": "REDUCE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "REDUCE",
+    "opcode_hex": "0x67",
+    "bytecode": [
+      103,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "REPORT_STATUS no-op without handler",
+    "description": "REPORT_STATUS should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "REPORT_STATUS",
+    "opcode_hex": "0x64",
+    "bytecode": [
+      100,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "REQUEST_OVERRIDE no-op without handler",
+    "description": "REQUEST_OVERRIDE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "REQUEST_OVERRIDE",
+    "opcode_hex": "0x65",
+    "bytecode": [
+      101,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "REVOKE_TRUST no-op without handler",
+    "description": "REVOKE_TRUST should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "REVOKE_TRUST",
+    "opcode_hex": "0x73",
+    "bytecode": [
+      115,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "SET_PRIORITY no-op without handler",
+    "description": "SET_PRIORITY should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "SET_PRIORITY",
+    "opcode_hex": "0x6C",
+    "bytecode": [
+      108,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "SYNC_CLOCK no-op without handler",
+    "description": "SYNC_CLOCK should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "SYNC_CLOCK",
+    "opcode_hex": "0x79",
+    "bytecode": [
+      121,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "TELL no-op without handler",
+    "description": "TELL should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "TELL",
+    "opcode_hex": "0x60",
+    "bytecode": [
+      96,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "TRUST_CHECK no-op without handler",
+    "description": "TRUST_CHECK should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "TRUST_CHECK",
+    "opcode_hex": "0x70",
+    "bytecode": [
+      112,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "TRUST_QUERY no-op without handler",
+    "description": "TRUST_QUERY should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "TRUST_QUERY",
+    "opcode_hex": "0x72",
+    "bytecode": [
+      114,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "TRUST_UPDATE no-op without handler",
+    "description": "TRUST_UPDATE should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "TRUST_UPDATE",
+    "opcode_hex": "0x71",
+    "bytecode": [
+      113,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  },
+  {
+    "name": "VERIFY_OUTCOME no-op without handler",
+    "description": "VERIFY_OUTCOME should execute as no-op without A2A handler",
+    "category": "a2a",
+    "opcode": "VERIFY_OUTCOME",
+    "opcode_hex": "0x6A",
+    "bytecode": [
+      106,
+      1,
+      0,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "tags": [
+      "generated",
+      "a2a_noop"
+    ]
+  }
+]

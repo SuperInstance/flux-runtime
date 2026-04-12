@@ -1,0 +1,204 @@
+[
+  {
+    "name": "DUP duplicates top of stack",
+    "description": "Push 42, DUP, Pop\u00d72 \u2192 R1=42, R2=42",
+    "category": "stack",
+    "opcode": "DUP",
+    "opcode_hex": "0x22",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      32,
+      0,
+      34,
+      33,
+      1,
+      33,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42,
+      "R1": 42,
+      "R2": 42
+    },
+    "tags": [
+      "generated",
+      "dup"
+    ]
+  },
+  {
+    "name": "ENTER/LEAVE roundtrip preserves state",
+    "description": "ENTER allocates frame, LEAVE deallocates",
+    "category": "stack",
+    "opcode": "ENTER",
+    "opcode_hex": "0x25",
+    "bytecode": [
+      43,
+      0,
+      42,
+      0,
+      37,
+      4,
+      38,
+      0,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 42
+    },
+    "tags": [
+      "generated",
+      "enter_leave"
+    ]
+  },
+  {
+    "name": "PUSH/POP preserve value",
+    "description": "Push R0(99), Pop into R1 \u2192 R1 = 99",
+    "category": "stack",
+    "opcode": "POP",
+    "opcode_hex": "0x21",
+    "bytecode": [
+      43,
+      0,
+      99,
+      0,
+      32,
+      0,
+      33,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 99,
+      "R1": 99
+    },
+    "tags": [
+      "generated",
+      "push_pop"
+    ]
+  },
+  {
+    "name": "PUSH/POP preserve negative value",
+    "description": "Push R0(-42), Pop into R1 \u2192 R1 = -42",
+    "category": "stack",
+    "opcode": "POP",
+    "opcode_hex": "0x21",
+    "bytecode": [
+      43,
+      0,
+      214,
+      255,
+      32,
+      0,
+      33,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -42,
+      "R1": -42
+    },
+    "tags": [
+      "generated",
+      "push_pop_negative"
+    ]
+  },
+  {
+    "name": "PUSH/POP preserve value",
+    "description": "Push R0(99), Pop into R1 \u2192 R1 = 99",
+    "category": "stack",
+    "opcode": "PUSH",
+    "opcode_hex": "0x20",
+    "bytecode": [
+      43,
+      0,
+      99,
+      0,
+      32,
+      0,
+      33,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 99,
+      "R1": 99
+    },
+    "tags": [
+      "generated",
+      "push_pop"
+    ]
+  },
+  {
+    "name": "PUSH/POP preserve negative value",
+    "description": "Push R0(-42), Pop into R1 \u2192 R1 = -42",
+    "category": "stack",
+    "opcode": "PUSH",
+    "opcode_hex": "0x20",
+    "bytecode": [
+      43,
+      0,
+      214,
+      255,
+      32,
+      0,
+      33,
+      1,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": -42,
+      "R1": -42
+    },
+    "tags": [
+      "generated",
+      "push_pop_negative"
+    ]
+  },
+  {
+    "name": "SWAP swaps top two stack values",
+    "description": "Push 10, Push 20, SWAP, Pop\u2192R1=10, Pop\u2192R2=20",
+    "category": "stack",
+    "opcode": "SWAP",
+    "opcode_hex": "0x23",
+    "bytecode": [
+      43,
+      0,
+      10,
+      0,
+      32,
+      0,
+      43,
+      0,
+      20,
+      0,
+      32,
+      0,
+      35,
+      33,
+      1,
+      33,
+      2,
+      128
+    ],
+    "expected_halted": true,
+    "expected_gp": {
+      "R0": 20,
+      "R1": 10,
+      "R2": 20
+    },
+    "tags": [
+      "generated",
+      "swap"
+    ]
+  }
+]
