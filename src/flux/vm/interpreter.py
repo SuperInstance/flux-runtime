@@ -558,14 +558,14 @@ class Interpreter:
         # ── Comparison: ICMP (generic compare with condition) ──────────────
         if opcode_byte == Op.ICMP:
             # Format: [ICMP][cond:u8][rd:u8][rs:u8]
-            # cond = condition code (0=EQ, 1=NE, 2=LT, 3=LE, 4=GT, 5=GE, 6=ULT, 7=ULE, 8=UGT, 9=UGE)
-            # rd  = destination register (also the first comparison operand)
-            # rs  = second comparison operand register
+            # cond = condition code (0=EQ..9=UGE)
+            # rd = destination register AND first operand
+            # rs = second operand register
             cond = self._fetch_u8()
             rd = self._fetch_u8()
-            rs = self._fetch_u8()
+            rs2 = self._fetch_u8()
             a = self.regs.read_gp(rd)
-            b_val = self.regs.read_gp(rs)
+            b_val = self.regs.read_gp(rs2)
             conditions = {
                 0: a == b_val,   # EQ
                 1: a != b_val,   # NE
