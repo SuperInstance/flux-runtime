@@ -1,4 +1,4 @@
-"""
+r"""
 Beachcomb — scheduled scavenging across repos, APIs, and data sources.
 
 An agent dynamically sets what to check, how often, and what to do
