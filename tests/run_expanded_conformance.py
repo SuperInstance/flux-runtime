@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-"""FLUX Conformance Runner — Cross-runtime ISA conformance test executor.
+"""FLUX Expanded Conformance Runner — Executes all 68 test vectors.
 
-Runs each test vector from the conformance suite through the unified
-interpreter and reports PASS/FAIL/SKIP for each. Outputs a JSON report
-and a human-readable summary.
+Runs each test vector from test_conformance_expanded.py through the
+unified interpreter and reports PASS/FAIL/SKIP with details.
 
 Usage:
-    python tools/conformance_runner.py
-    python tools/conformance_runner.py --expanded
-    python tools/conformance_runner.py --trace
-    python tools/conformance_runner.py --json-only
+    python tests/run_expanded_conformance.py
+    python tests/run_expanded_conformance.py --trace
+    python tests/run_expanded_conformance.py --json-only
 
 Author: Super Z (Cartographer)
 Date: 2026-04-12
@@ -25,19 +23,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
-# Ensure the project root is on sys.path so we can import flux packages
+# Ensure the project root is on sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
+sys.path.insert(0, str(PROJECT_ROOT / "tests"))
 
 from flux.vm.unified_interpreter import run_bytecode, opcode_name
-
-# Import the test vectors from the conformance test suite
-sys.path.insert(0, str(PROJECT_ROOT / "tests"))
-from test_conformance import TEST_VECTORS
-
-# Expanded suite available via --expanded flag
-EXPANDED_VECTORS = None
-
+from test_conformance_expanded import TEST_VECTORS
 
 # ── Result Types ─────────────────────────────────────────────────────────────
 
@@ -50,6 +42,12 @@ ERROR = "ERROR"
 def check_test(test: dict, state: dict) -> dict:
     """Check a single test vector against the VM state.
 
+    Supports:
+    - "no_crash": VM must not crash
+    - {"register": N, "value": V}: specific register must equal V
+    - {"register": N, "value_neq_zero": True}: register must be non-zero
+    - {"registers": {N: V, ...}}: multiple registers must match
+
     Returns a result dict with status, expected, actual, and reason.
     """
     name = test["name"]
@@ -58,22 +56,46 @@ def check_test(test: dict, state: dict) -> dict:
     if expected == "no_crash":
         if state.get("crashed", False):
             return {
-                "name": name,
-                "status": FAIL,
+                "name": name, "status": FAIL,
                 "category": test.get("category", "unknown"),
                 "reason": "VM crashed",
-                "expected": "no_crash",
-                "actual": "crashed",
+                "expected": "no_crash", "actual": "crashed",
             }
         return {
-            "name": name,
-            "status": PASS,
+            "name": name, "status": PASS,
             "category": test.get("category", "unknown"),
-            "reason": None,
-            "expected": "no_crash",
-            "actual": "no_crash",
+            "reason": None, "expected": "no_crash", "actual": "no_crash",
         }
 
+    # Multi-register check
+    if isinstance(expected, dict) and "registers" in expected:
+        regs_expected = expected["registers"]
+        all_match = True
+        mismatches = []
+        for reg, exp_val in regs_expected.items():
+            actual_val = state.get("registers", {}).get(reg, None)
+            if actual_val != exp_val:
+                all_match = False
+                mismatches.append(f"R{reg}={actual_val}, expected {exp_val}")
+
+        if all_match:
+            return {
+                "name": name, "status": PASS,
+                "category": test.get("category", "unknown"),
+                "reason": None,
+                "expected": {f"R{k}": v for k, v in regs_expected.items()},
+                "actual": {f"R{k}": state.get("registers", {}).get(k) for k in regs_expected},
+            }
+        else:
+            return {
+                "name": name, "status": FAIL,
+                "category": test.get("category", "unknown"),
+                "reason": "; ".join(mismatches),
+                "expected": {f"R{k}": v for k, v in regs_expected.items()},
+                "actual": {f"R{k}": state.get("registers", {}).get(k) for k in regs_expected},
+            }
+
+    # Single-register check (backward compatible)
     if isinstance(expected, dict) and "register" in expected:
         reg = expected["register"]
         actual_val = state.get("registers", {}).get(reg, None)
@@ -106,35 +128,17 @@ def check_test(test: dict, state: dict) -> dict:
 
     # Unknown expected format
     return {
-        "name": name,
-        "status": SKIP,
+        "name": name, "status": SKIP,
         "category": test.get("category", "unknown"),
         "reason": f"Unknown expected format: {type(expected)}",
-        "expected": str(expected),
-        "actual": None,
+        "expected": str(expected), "actual": None,
     }
 
 
 # ── Main runner ─────────────────────────────────────────────────────────────
 
-def run_conformance(trace: bool = False, expanded: bool = False) -> dict:
-    """Run all conformance tests and return the full report.
-
-    Args:
-        trace: Print instruction trace for each test.
-        expanded: Use the expanded 74-vector suite instead of the original 22-vector suite.
-    """
-    global EXPANDED_VECTORS
-    vectors = TEST_VECTORS
-    suite_name = "original"
-
-    if expanded:
-        if EXPANDED_VECTORS is None:
-            from test_conformance_expanded import TEST_VECTORS as _ev
-            EXPANDED_VECTORS = _ev
-        vectors = EXPANDED_VECTORS
-        suite_name = "expanded"
-
+def run_expanded_conformance(trace: bool = False) -> dict:
+    """Run all expanded conformance tests and return the full report."""
     results: List[dict] = []
     passed = 0
     failed = 0
@@ -142,21 +146,25 @@ def run_conformance(trace: bool = False, expanded: bool = False) -> dict:
     errors = 0
     total_cycles = 0
 
-    for test in vectors:
+    # Category tracking
+    categories: Dict[str, Dict[str, int]] = {}
+
+    for test in TEST_VECTORS:
         name = test["name"]
         category = test.get("category", "unknown")
 
-        # Skip tests with no bytecode (source-description only)
+        if category not in categories:
+            categories[category] = {"passed": 0, "failed": 0, "skipped": 0}
+
+        # Skip tests with no bytecode
         if test.get("bytecode") is None:
             results.append({
-                "name": name,
-                "status": SKIP,
-                "category": category,
+                "name": name, "status": SKIP, "category": category,
                 "reason": "Source description test — needs compiler",
-                "expected": None,
-                "actual": None,
+                "expected": None, "actual": None,
             })
             skipped += 1
+            categories[category]["skipped"] += 1
             continue
 
         try:
@@ -167,17 +175,16 @@ def run_conformance(trace: bool = False, expanded: bool = False) -> dict:
 
             if result["status"] == PASS:
                 passed += 1
+                categories[category]["passed"] += 1
             elif result["status"] == FAIL:
                 failed += 1
+                categories[category]["failed"] += 1
 
         except Exception as e:
             results.append({
-                "name": name,
-                "status": ERROR,
-                "category": category,
+                "name": name, "status": ERROR, "category": category,
                 "reason": str(e),
-                "expected": str(test.get("expected")),
-                "actual": None,
+                "expected": str(test.get("expected")), "actual": None,
             })
             errors += 1
 
@@ -185,15 +192,16 @@ def run_conformance(trace: bool = False, expanded: bool = False) -> dict:
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "runtime": "unified_interpreter.py (Python)",
         "isa": "unified (isa_unified.py)",
-        "suite": suite_name,
+        "suite": "expanded",
         "summary": {
-            "total": len(vectors),
+            "total": len(TEST_VECTORS),
             "passed": passed,
             "failed": failed,
             "skipped": skipped,
             "errors": errors,
             "total_cycles": total_cycles,
         },
+        "categories": categories,
         "results": results,
     }
 
@@ -212,7 +220,8 @@ def print_report(report: dict, json_only: bool = False) -> None:
     total = summary["total"]
 
     print("=" * 72)
-    print("  FLUX Unified ISA Conformance Test Report")
+    print("  FLUX Expanded Conformance Test Report")
+    print(f"  Suite:   {report['suite']}")
     print(f"  Runtime: {report['runtime']}")
     print(f"  ISA:     {report['isa']}")
     print(f"  Date:    {report['timestamp']}")
@@ -220,26 +229,34 @@ def print_report(report: dict, json_only: bool = False) -> None:
 
     # Summary bar
     bar_len = 40
-    pass_len = int(bar_len * summary["passed"] / max(total, 1))
-    fail_len = int(bar_len * summary["failed"] / max(total, 1))
+    runnable = total - summary["skipped"]
+    pass_len = int(bar_len * summary["passed"] / max(runnable, 1)) if runnable > 0 else 0
+    fail_len = int(bar_len * summary["failed"] / max(runnable, 1)) if runnable > 0 else 0
     skip_len = bar_len - pass_len - fail_len
 
     bar = ""
-    bar += "\u001b[32m" + "#" * pass_len  # green
-    bar += "\u001b[31m" + "#" * fail_len  # red
-    bar += "\u001b[33m" + "-" * skip_len  # yellow
+    bar += "\u001b[32m" + "#" * pass_len
+    bar += "\u001b[31m" + "#" * fail_len
+    bar += "\u001b[33m" + "-" * skip_len
     bar += "\u001b[0m"
 
     print(f"\n  {bar}")
-    suite_label = f" [{report.get('suite', 'original')} suite]"
-    print(f"  Result: {summary['passed']}/{total - summary['skipped']} passed "
-          f"({summary['skipped']} skipped){suite_label}")
+    print(f"  Result: {summary['passed']}/{runnable} passed "
+          f"({summary['skipped']} source-only skipped)")
     if summary["errors"] > 0:
         print(f"  Errors: {summary['errors']}")
     print(f"  Cycles: {summary['total_cycles']:,}")
-    print()
+
+    # Category breakdown
+    print("\n  Category Breakdown:")
+    print(f"  {'Category':<15} {'PASS':>5} {'FAIL':>5} {'SKIP':>5}")
+    print(f"  {'-'*15} {'-'*5} {'-'*5} {'-'*5}")
+    for cat, counts in sorted(report["categories"].items()):
+        row_total = counts["passed"] + counts["failed"] + counts["skipped"]
+        print(f"  {cat:<15} {counts['passed']:>5} {counts['failed']:>5} {counts['skipped']:>5}")
 
     # Per-test results
+    print()
     for r in report["results"]:
         status = r["status"]
         name = r["name"]
@@ -266,15 +283,13 @@ def print_report(report: dict, json_only: bool = False) -> None:
     # Final verdict
     print("=" * 72)
     if summary["failed"] == 0 and summary["errors"] == 0:
-        print("  VERDICT: ALL TESTS PASSED")
+        print(f"  VERDICT: ALL {runnable} RUNNABLE TESTS PASSED")
     else:
         print(f"  VERDICT: {summary['failed']} FAILURE(S), {summary['errors']} ERROR(S)")
     print("=" * 72)
 
     # Write JSON report
-    suite_tag = report.get("suite", "original")
-    report_filename = f"conformance_report_{suite_tag}.json" if suite_tag != "original" else "conformance_report.json"
-    report_path = PROJECT_ROOT / "tools" / report_filename
+    report_path = PROJECT_ROOT / "tools" / "conformance_report_expanded.json"
     with open(report_path, "w") as f:
         json.dump(report, f, indent=2)
     print(f"\n  JSON report written to: {report_path}")
@@ -283,17 +298,14 @@ def print_report(report: dict, json_only: bool = False) -> None:
 # ── Entry point ─────────────────────────────────────────────────────────────
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="FLUX Conformance Runner")
+    parser = argparse.ArgumentParser(description="FLUX Expanded Conformance Runner")
     parser.add_argument("--trace", action="store_true", help="Print instruction trace")
     parser.add_argument("--json-only", action="store_true", help="Output only JSON")
-    parser.add_argument("--expanded", action="store_true",
-                        help="Run the expanded 74-vector suite instead of the original 22-vector suite")
     args = parser.parse_args()
 
-    report = run_conformance(trace=args.trace, expanded=args.expanded)
+    report = run_expanded_conformance(trace=args.trace)
     print_report(report, json_only=args.json_only)
 
-    # Exit code: 0 if all non-skipped pass, 1 otherwise
     if report["summary"]["failed"] > 0 or report["summary"]["errors"] > 0:
         sys.exit(1)
 

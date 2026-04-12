@@ -231,35 +231,103 @@ TEST_VECTORS = [
     # =========================================================================
     {
         "name": "GCD of 48 and 18 = 6 (Euclid's algorithm)",
-        "bytecode": None,  # Too complex for inline bytecode; use source description
+        "bytecode": [
+            # MOVI R0, 48
+            0x18, 0x00, 0x30,
+            # MOVI R1, 18
+            0x18, 0x01, 0x12,
+            # loop: CMP_EQ R2, R0, R1
+            0x2C, 0x02, 0x00, 0x01,
+            # JNZ R2, done  (expanded: MOVI R15, 57; JNZ R2, R15, 0)
+            0x18, 0x0F, 0x39,
+            0x3D, 0x02, 0x0F, 0x00,
+            # MOV R2, R0  (for zero-check)
+            0x3A, 0x02, 0x00, 0x00,
+            # JZ R2, copy_b  (expanded: MOVI R15, 42; JZ R2, R15, 0)
+            0x18, 0x0F, 0x2A,
+            0x3C, 0x02, 0x0F, 0x00,
+            # JZ R1, done  (expanded: MOVI R15, 39; JZ R1, R15, 0)
+            0x18, 0x0F, 0x27,
+            0x3C, 0x01, 0x0F, 0x00,
+            # CMP_GT R2, R0, R1
+            0x2E, 0x02, 0x00, 0x01,
+            # JNZ R2, a_sub  (expanded: MOVI R15, 12; JNZ R2, R15, 0)
+            0x18, 0x0F, 0x0C,
+            0x3D, 0x02, 0x0F, 0x00,
+            # MOD R2, R1, R0
+            0x24, 0x02, 0x01, 0x00,
+            # MOV R1, R2
+            0x3A, 0x01, 0x02, 0x00,
+            # JMP loop  (Format F: offset = -52)
+            0x43, 0x00, 0xFF, 0xCC,
+            # a_sub: MOD R2, R0, R1
+            0x24, 0x02, 0x00, 0x01,
+            # MOV R0, R2
+            0x3A, 0x00, 0x02, 0x00,
+            # JMP loop  (Format F: offset = -64)
+            0x43, 0x00, 0xFF, 0xC0,
+            # copy_b: MOV R0, R1
+            0x3A, 0x00, 0x01, 0x00,
+            # done: HALT
+            0x00,
+        ],
         "expected": {"register": 0, "value": 6},
         "category": "complex",
-        "notes": "Classic GCD algorithm from Oracle1's dojo exercise. Tests: LOOP, CMP, conditional jump, modulo. This is the 'hello world' of FLUX conformance.",
+        "notes": "GCD(48,18)=6 via Euclid's algorithm with modulo. Includes zero-checks to avoid division-by-zero. Tests: CMP_EQ, CMP_GT, MOD, MOV, JNZ, JZ, JMP.",
         "source_description": """
         MOVI R0, 48      ; a = 48
         MOVI R1, 18      ; b = 18
         loop:
         CMP_EQ R2, R0, R1  ; if a == b, goto done
         JNZ R2, done
+        MOV R2, R0        ; zero-check: if a == 0
+        JZ R2, copy_b
+        JZ R1, done       ; zero-check: if b == 0
         CMP_GT R2, R0, R1  ; if a > b, goto a_sub
         JNZ R2, a_sub
         MOD R2, R1, R0     ; b = b mod a
-        MOV R1, R2          ; (or assign to R1)
+        MOV R1, R2
         JMP loop
         a_sub:
         MOD R2, R0, R1     ; a = a mod b
         MOV R0, R2
         JMP loop
+        copy_b:
+        MOV R0, R1        ; result = b (when a was 0)
         done:
         HALT
         """,
     },
     {
         "name": "Fibonacci(10) = 55",
-        "bytecode": None,
-        "expected": {"register": 0, "value": 55},
+        "bytecode": [
+            # MOVI R0, 0
+            0x18, 0x00, 0x00,
+            # MOVI R1, 1
+            0x18, 0x01, 0x01,
+            # MOVI R2, 10
+            0x18, 0x02, 0x0A,
+            # MOVI R3, 1
+            0x18, 0x03, 0x01,
+            # loop: ADD R4, R0, R1
+            0x20, 0x04, 0x00, 0x01,
+            # MOV R0, R1
+            0x3A, 0x00, 0x01, 0x00,
+            # MOV R1, R4
+            0x3A, 0x01, 0x04, 0x00,
+            # INC R3
+            0x08, 0x03,
+            # CMP_LT R4, R3, R2
+            0x2D, 0x04, 0x03, 0x02,
+            # JNZ R4, loop  (expanded: MOVI R15, -25; JNZ R4, R15, 0)
+            0x18, 0x0F, 0xE7,
+            0x3D, 0x04, 0x0F, 0x00,
+            # HALT
+            0x00,
+        ],
+        "expected": {"register": 1, "value": 55},
         "category": "complex",
-        "notes": "Computes the 10th Fibonacci number. Tests: loop, MOV, ADD, decrement, conditional jump.",
+        "notes": "Computes the 10th Fibonacci number. Result is in R1. Tests: loop, MOV, ADD, INC, CMP_LT, JNZ.",
         "source_description": """
         MOVI R0, 0       ; a = 0 (fib(0))
         MOVI R1, 1       ; b = 1 (fib(1))
@@ -277,19 +345,39 @@ TEST_VECTORS = [
     },
     {
         "name": "Sum of squares 1..5 = 55",
-        "bytecode": None,
+        "bytecode": [
+            # MOVI R0, 0
+            0x18, 0x00, 0x00,
+            # MOVI R1, 1
+            0x18, 0x01, 0x01,
+            # MOVI R2, 6  (n+1 to include i=5 via CMP_LT)
+            0x18, 0x02, 0x06,
+            # loop: MUL R3, R1, R1
+            0x22, 0x03, 0x01, 0x01,
+            # ADD R0, R0, R3
+            0x20, 0x00, 0x00, 0x03,
+            # INC R1
+            0x08, 0x01,
+            # CMP_LT R3, R1, R2
+            0x2D, 0x03, 0x01, 0x02,
+            # JNZ R3, loop  (expanded: MOVI R15, -21; JNZ R3, R15, 0)
+            0x18, 0x0F, 0xEB,
+            0x3D, 0x03, 0x0F, 0x00,
+            # HALT
+            0x00,
+        ],
         "expected": {"register": 0, "value": 55},
         "category": "complex",
-        "notes": "Computes 1^2 + 2^2 + 3^2 + 4^2 + 5^2 = 1+4+9+16+25 = 55. Tests: loop, MUL, ADD.",
+        "notes": "Computes 1^2 + 2^2 + 3^2 + 4^2 + 5^2 = 1+4+9+16+25 = 55. Loop bound is 6 (n+1) so CMP_LT includes i=5. Tests: loop, MUL, ADD, INC, CMP_LT, JNZ.",
         "source_description": """
         MOVI R0, 0       ; sum = 0
         MOVI R1, 1       ; i = 1
-        MOVI R2, 5       ; n = 5
+        MOVI R2, 6       ; n+1 = 6 (loop while i < 6, i.e., i <= 5)
         loop:
         MUL R3, R1, R1   ; temp = i * i
         ADD R0, R0, R3   ; sum += temp
         INC R1            ; i++
-        CMP_LT R3, R1, R2  ; if i <= n (i.e., i < n+1)
+        CMP_LT R3, R1, R2  ; if i < n+1
         JNZ R3, loop
         HALT              ; R0 = 55
         """,

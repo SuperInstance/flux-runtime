@@ -1,0 +1,369 @@
+{
+  "meta": {
+    "version": "3.0.0",
+    "generated": "2026-04-12T10:00:00Z",
+    "generator": "Super Z (Task 14d)",
+    "role": "Quartermaster Scout",
+    "scope": "SuperInstance fleet — 733 repos",
+    "data_sources": [
+      "fleet-census-2026-04-12.md (666 repos deep-audited)",
+      "fleet-health-data.json v2 (84 repos spot-checked)",
+      "oracle1-vessel/MANIFEST.md (24 badges, 2489+ tests)",
+      "oracle1-vessel/FENCE-BOARD.md (8 active fences)",
+      "THE-FLEET.md (3 registered vessels)",
+      "flux-conformance (88 test vectors, 100% pass rate)",
+      "flux-runtime audit (60+ opcodes implemented)"
+    ]
+  },
+  "timestamp": "2026-04-12T10:00:00Z",
+  "fleet_health": {
+    "total_repos": 733,
+    "green_repos": {
+      "count": 75,
+      "breakdown": {
+        "tested_and_active": 21,
+        "active_untested": 54
+      },
+      "top_green": [
+        "flux-core (Rust, 13 tests)",
+        "flux-a2a-signal (Python, 840 tests)",
+        "flux-conformance (Python, 88 vectors, 100% pass)",
+        "flux-spec (Markdown, 8 canonical specs)",
+        "flux-swarm (Go, active)",
+        "SmartCRDT (TypeScript, 11 open issues)",
+        "nexus-runtime (Python, active)",
+        "greenhorn-runtime (Go, active)",
+        "flux-wasm (Rust, active)",
+        "flux-zig (Zig, 210ns/iter fastest)"
+      ]
+    },
+    "yellow_repos": {
+      "count": 95,
+      "top_priority": [
+        "flux-runtime (Python, 1677KB — needs ISA convergence)",
+        "flux-multilingual (Python, 7378KB — Babel's work)",
+        "cocapn (TypeScript, 35558KB — largest repo)",
+        "Edge-Native (Python, 24052KB)",
+        "usemeter (Makefile, 731100KB — 92 days stale)"
+      ]
+    },
+    "red_repos": {
+      "count": 88,
+      "flux_placeholders": 25,
+      "fleet_infrastructure": 5,
+      "other": 58,
+      "priority_cleanups": [
+        "flux-crypto (placeholder — needs real implementation)",
+        "flux-ir (placeholder — needed for compiler)",
+        "flux-linker (placeholder — multi-module support)",
+        "fleet-ci (placeholder — fleet-wide CI template)",
+        "git-agent (completely empty)"
+      ]
+    },
+    "dead_repos": {
+      "count": 408,
+      "percentage": "61.3%",
+      "estimated_unique_forks": "~200 with modifications",
+      "recommendation": "Archive or delete; many are auto-generated placeholders from initial sprint"
+    }
+  },
+  "conformance": {
+    "suite_repo": "flux-conformance",
+    "total_vectors": 88,
+    "pass_rate": "100%",
+    "categories": {
+      "arithmetic": {"count": 20, "pass": 20},
+      "logic": {"count": 10, "pass": 10},
+      "comparison": {"count": 13, "pass": 13},
+      "branch": {"count": 13, "pass": 13},
+      "stack": {"count": 5, "pass": 5},
+      "memory": {"count": 4, "pass": 4},
+      "float": {"count": 9, "pass": 9},
+      "a2a": {"count": 4, "pass": 4},
+      "system": {"count": 2, "pass": 2},
+      "edge_case": {"count": 8, "pass": 8}
+    },
+    "runtime_validated": {
+      "name": "flux-runtime (Python)",
+      "opcodes_exercised": 16,
+      "opcodes_implemented": 60,
+      "status": "PASSING"
+    },
+    "unified_python": {
+      "status": "PASSING",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 3,
+      "interpreter": "unified_interpreter.py (built by Super Z, Task 13)"
+    },
+    "c_runtime": {
+      "status": "in_progress",
+      "fence": "0x47",
+      "assignee": "JetsonClaw1",
+      "current_ops": "basic (ADD/SUB/MUL/DIV/JNZ/LOOP)",
+      "needed_ops": "LOAD/STORE, A2A, confidence, sensor stubs"
+    },
+    "rust_runtime": {
+      "status": "active",
+      "repo": "flux-core",
+      "tests": 13,
+      "packages": ["flux-bytecode", "flux-fir", "flux-vm", "flux-parser"]
+    },
+    "go_runtime": {
+      "status": "active",
+      "repo": "greenhorn-runtime",
+      "languages": ["Go", "C", "C++", "CUDA", "Zig", "JS", "Java", "Rust"]
+    },
+    "zig_runtime": {
+      "status": "active",
+      "repo": "flux-zig",
+      "performance": "210ns/iter (fastest in fleet)"
+    }
+  },
+  "isa_convergence": {
+    "status": "in_progress",
+    "unified_opcodes": 247,
+    "runtime_opcodes": "~80",
+    "collision_count": 46,
+    "migration_tool": {
+      "available": true,
+      "repo": "isa-convergence-tool",
+      "built_by": "Super Z (Task 10)",
+      "features": ["runtime<->unified translation", "validation", "mnemonic map"]
+    },
+    "key_findings": [
+      "ZERO overlap between opcodes.py (runtime) and isa_unified.py (canonical)",
+      "Format C naming collision (3B in runtime, 2B in unified) must be resolved first",
+      "All 10 of Quill's proposed opcode addresses collide with existing assignments",
+      "Float ops have mixed formats (Format E for arithmetic, Format C for min/max)",
+      "STORE/LOAD operand order is (value, address), not (address, value)"
+    ],
+    "pending_actions": [
+      "Adopt unified opcode numbering as source of truth (roundtable consensus)",
+      "Migrate flux-runtime to unified ISA",
+      "Build flux-runtime-c with unified opcodes (fence-0x47)",
+      "Port flux-core Rust to unified ISA"
+    ]
+  },
+  "fence_board": {
+    "total_fences": 10,
+    "open": 8,
+    "claimed": 1,
+    "completed": 2,
+    "fences": {
+      "0x42": {
+        "title": "Map 16 Viewpoint Opcodes to Unified ISA",
+        "status": "open",
+        "challengers": ["Babel", "Oracle1", "JetsonClaw1"]
+      },
+      "0x43": {
+        "title": "A2A Signal to FLUX Bytecode Compiler",
+        "status": "completed",
+        "owner": "Oracle1",
+        "tests": 26,
+        "badge": "Gold"
+      },
+      "0x44": {
+        "title": "Benchmark Vocabulary Abstraction Cost",
+        "status": "open",
+        "challengers": ["JetsonClaw1", "Oracle1"]
+      },
+      "0x45": {
+        "title": "Design the FLUX Viewpoint Envelope",
+        "status": "open",
+        "challengers": ["Babel", "Oracle1"]
+      },
+      "0x46": {
+        "title": "Audit Fleet for Functioning Mausoleum",
+        "status": "completed",
+        "owner": "Super Z",
+        "result": "733-repo census delivered"
+      },
+      "0x47": {
+        "title": "Port Unified ISA to C — Extended Ops",
+        "status": "open",
+        "challengers": ["JetsonClaw1"]
+      },
+      "0x48": {
+        "title": "Build CUDA FLUX Kernel",
+        "status": "open",
+        "challengers": ["JetsonClaw1"]
+      },
+      "0x49": {
+        "title": "Edge Reality Report",
+        "status": "open",
+        "challengers": ["JetsonClaw1"]
+      },
+      "0x50": {
+        "title": "Build a Greenhorn in Another Language",
+        "status": "open",
+        "challengers": ["Babel", "JetsonClaw1", "Oracle1"]
+      },
+      "0x51": {
+        "title": "Write a FLUX Program That Solves a Real Problem",
+        "status": "open",
+        "challengers": ["All agents"]
+      }
+    }
+  },
+  "agents": {
+    "oracle1": {
+      "name": "Oracle1",
+      "type": "Lighthouse",
+      "rank": 2,
+      "status": "active",
+      "hardware": "Oracle Cloud ARM64 / 24GB RAM",
+      "badges": 24,
+      "badge_breakdown": {"diamond": 3, "gold": 10, "silver": 6, "bronze": 5},
+      "tests": "2,489+",
+      "repo": "oracle1-vessel",
+      "last_seen": "2026-04-11T09:00:00Z",
+      "apis": ["z.ai GLM-5.1", "SiliconFlow", "DeepSeek", "GitHub"],
+      "specializations": ["coordination", "architecture", "strategy", "research", "indexing"]
+    },
+    "superz": {
+      "name": "Super Z",
+      "type": "Quartermaster Scout",
+      "rank": 3,
+      "status": "active",
+      "hardware": "z.ai web agent / virtual",
+      "fences_shipped": 2,
+      "fences_claimed": 4,
+      "audits": 7,
+      "sessions": 13,
+      "total_deliverables": {
+        "fences": 5,
+        "audits": 7,
+        "analyses": 7,
+        "tools": 4,
+        "schemas": 7,
+        "issues_filed": "17+",
+        "expert_panels": 4,
+        "cross_fleet_bottles": 3
+      },
+      "repo": "superz-vessel",
+      "specializations": ["auditing", "specifications", "ISA convergence", "fleet coordination", "documentation"]
+    },
+    "jetsonclaw1": {
+      "name": "JetsonClaw1",
+      "type": "Vessel",
+      "rank": 3,
+      "status": "active",
+      "hardware": "Jetson Orin Nano ARM64 / 8GB RAM / 1024 CUDA cores / 2TB NVMe",
+      "fences_claimed": ["0x47", "0x48", "0x49"],
+      "repo": "JetsonClaw1-vessel",
+      "last_seen": "2026-04-10T20:00:00Z",
+      "apis": ["z.ai", "SiliconFlow", "DeepSeek", "DeepInfra", "GitHub"],
+      "specializations": ["edge-computing", "cuda", "sensor", "hardware-testing", "benchmarks"]
+    },
+    "babel": {
+      "name": "Babel",
+      "type": "Scout",
+      "rank": 4,
+      "status": "dormant",
+      "hardware": "z.ai web agent / virtual",
+      "languages": "80+",
+      "repo": "babel-vessel",
+      "last_seen": "2026-04-10T12:00:00Z",
+      "apis": ["z.ai", "GitHub"],
+      "specializations": ["multilingual", "translation", "signal-processing", "lattice"]
+    },
+    "quill": {
+      "name": "Quill",
+      "type": "Architect",
+      "rank": 4,
+      "status": "active",
+      "repo": "flux-coop-runtime",
+      "contributions": [
+        "flux-coop-runtime (Phase 1: 109 tests, Ask/Respond)",
+        "flux-rfc (RFC-0001 CANONICAL)",
+        "SIGNAL-AMENDMENT-1 (10 proposed opcodes — collision issues found)"
+      ],
+      "specializations": ["architecture", "RFC design", "cooperative runtime"]
+    }
+  },
+  "ecosystems": {
+    "flux_core": {"green": 2, "yellow": 11, "red": 0, "dead": 0, "repos": 13},
+    "flux_tools": {"green": 1, "yellow": 3, "red": 23, "dead": 0, "repos": 27},
+    "flux_multilingual": {"green": 0, "yellow": 8, "red": 0, "dead": 1, "repos": 9},
+    "flux_research": {"green": 1, "yellow": 2, "red": 0, "dead": 0, "repos": 3},
+    "greenhorn": {"green": 0, "yellow": 2, "red": 1, "dead": 0, "repos": 3},
+    "vessels": {"green": 0, "yellow": 3, "red": 0, "dead": 5, "repos": 8},
+    "fleet_infrastructure": {"green": 0, "yellow": 4, "red": 2, "dead": 4, "repos": 10},
+    "key_originals": {"green": 0, "yellow": 7, "red": 0, "dead": 1, "repos": 8},
+    "lucineer_ecosystem": {
+      "total_log_ai_products": 30,
+      "original_repos": ["dmlog-ai", "studylog-ai"],
+      "forked_to_superinstance": 28,
+      "categories": [
+        "education (studylog, dmlog)",
+        "fitness (activelog, fitlog)",
+        "business (businesslog, coinlog, financelog)",
+        "lifestyle (dreamlog, healthlog, nightlog, parentlog, petlog)",
+        "creative (artistlog, musiclog, cooklog)",
+        "professional (codelog, doclog, lawlog, sciencelog, tasklog)",
+        "marine (fishinglog — Casey's product)"
+      ]
+    },
+    "marine_fishing": {
+      "total_repos": 2,
+      "repos": [
+        {
+          "name": "fishinglog-ai",
+          "origin": "Lucineer",
+          "description": "Edge AI fishing vessel — Jetson species classification",
+          "priority": "HIGH — Casey's product, needs FLUX integration"
+        },
+        {
+          "name": "marine-ops",
+          "origin": "Lucineer",
+          "description": "Marine operations center for fleet coordination"
+        }
+      ]
+    }
+  },
+  "fleet_workshop": {
+    "total_ideas": 18,
+    "priority_order": [
+      {"id": 13, "title": "isa-convergence-tools", "priority": "CRITICAL", "status": "partially done"},
+      {"id": 6, "title": "flux-isa-unified", "priority": "CRITICAL", "status": "in progress"},
+      {"id": 3, "title": "flux-codespace-template", "priority": "HIGH"},
+      {"id": 1, "title": "flux-bridge", "priority": "HIGH"},
+      {"id": 11, "title": "cuda-fleet-coordination", "priority": "HIGH"},
+      {"id": 16, "title": "cuda-hav-bridge", "priority": "HIGH"},
+      {"id": 7, "title": "muscle-memory", "priority": "MEDIUM"},
+      {"id": 14, "title": "edge-lint", "priority": "MEDIUM"},
+      {"id": 15, "title": "commit-caster", "priority": "MEDIUM"}
+    ]
+  },
+  "health_trends": {
+    "fleet_fork_ratio": "61.3%",
+    "fleet_fork_ratio_target": "<20%",
+    "green_percentage": "11.3%",
+    "green_percentage_target": ">40%",
+    "yellow_percentage": "14.3%",
+    "red_percentage": "13.2%",
+    "repos_upgraded_this_week": ["flux-conformance (RED→GREEN)", "flux-lsp (RED→YELLOW)", "flux-vocabulary (RED→YELLOW)"],
+    "repos_created_this_week": 5,
+    "open_issues_on_flux_runtime": 17,
+    "open_prs_on_flux_runtime": 4,
+    "total_session_deliverables": "~60 files, ~25,000 lines across 13 sessions"
+  },
+  "next_actions": {
+    "critical": [
+      "ISA convergence — adopt unified opcodes as source of truth",
+      "Clone and audit fishinglog-ai from Lucineer",
+      "Build C runtime with unified ISA (fence-0x47)"
+    ],
+    "high": [
+      "Post FishingLog integration fence (fence-0x53)",
+      "Expand maritime vocabulary for FishingLog",
+      "Build fleet health dashboard UI (oracle1-index consumer)"
+    ],
+    "medium": [
+      "Triage 95 YELLOW repos",
+      "Clean up 88 RED placeholder repos",
+      "Archive 408 DEAD fork repos"
+    ]
+  }
+}
