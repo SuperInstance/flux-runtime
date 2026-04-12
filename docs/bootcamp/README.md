@@ -1,3 +1,5 @@
+> **Updated 2026-04-12: All modules now use the converged FLUX ISA v2** — Opcode values and names aligned with `isa_unified.py`. See `ISA_UNIFIED.md` for the canonical reference.
+
 # FLUX Agent Bootcamp
 
 Welcome to the FLUX Agent Bootcamp — your comprehensive guide to mastering the FLUX runtime from first principles to advanced multi-agent systems.
@@ -50,16 +52,16 @@ python3 -m flux --help
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Module 1: Bytecode Basics                │
-│  • Instruction formats (A/B/C/D/E/G)                        │
+│  • Instruction formats (A through G)                           │
 │  • Register file (R0-R15, F0-F15, V0-V15)                  │
-│  • First program: MOVI + IADD + HALT                       │
+│  • First program: MOVI + ADD + HALT                         │
 └─────────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                    Module 2: Control Flow                   │
-│  • Jumps and branches                                       │
-│  • Loop patterns                                            │
-│  • Conditional execution                                   │
+│  • Jumps (JMP Format F) and branches (JZ/JNZ Format E)     │
+│  • Loop patterns with pseudo-instructions                    │
+│  • CMP_EQ/CMP_LT/CMP_GT comparisons                       │
 └─────────────────────────────────────────────────────────────┘
                             ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -72,7 +74,7 @@ python3 -m flux --help
 ┌─────────────────────────────────────────────────────────────┐
 │                    Module 4: Memory Regions                  │
 │  • Linear memory with ownership                             │
-│  • Stack operations (PUSH/POP)                              │
+│  • Stack operations (PUSH 0x0C / POP 0x0D)                  │
 │  • Heap management                                          │
 └─────────────────────────────────────────────────────────────┘
                             ↓
@@ -96,22 +98,21 @@ python3 -m flux --help
 Here's your first FLUX program — compute 3 + 4:
 
 ```python
-from flux.bytecode.opcodes import Op
-from flux.vm.interpreter import Interpreter
+from flux.vm.unified_interpreter import Interpreter
 import struct
 
-# Build bytecode: 3 + 4 = 7
+# Build bytecode: 3 + 4 = 7 (converged ISA v2)
 bytecode = (
-    struct.pack("<BBh", Op.MOVI, 0, 3) +    # MOVI R0, 3
-    struct.pack("<BBh", Op.MOVI, 1, 4) +    # MOVI R1, 4
-    struct.pack("<BBBB", Op.IADD, 0, 0, 1) + # IADD R0, R0, R1
-    bytes([Op.HALT])                        # HALT
+    struct.pack("<BBB", 0x18, 0, 3) +    # MOVI R0, 3   (Format D)
+    struct.pack("<BBB", 0x18, 1, 4) +    # MOVI R1, 4   (Format D)
+    struct.pack("<BBBB", 0x20, 0, 0, 1) + # ADD R0, R0, R1 (Format E)
+    bytes([0x00])                        # HALT          (Format A)
 )
 
 # Execute
 vm = Interpreter(bytecode, memory_size=4096)
 vm.execute()
-print(f"Result: R0 = {vm.regs.read_gp(0)}")  # Result: R0 = 7
+print(f"Result: R0 = {vm.regs[0]}")  # Result: R0 = 7
 ```
 
 ## Progress Tracking
