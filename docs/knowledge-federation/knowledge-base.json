@@ -1,0 +1,446 @@
+{
+  "version": "2.0",
+  "last_updated": "2026-04-12",
+  "schema": "knowledge-federation-v2",
+  "description": "Federated knowledge base for the FLUX fleet. Queryable by domain, keyword, or confidence threshold.",
+  "domains": {
+    "isa": {
+      "label": "FLUX ISA Specification",
+      "entries": [
+        {
+          "id": "isa-v2-halt",
+          "fact": "HALT opcode is 0x00 in converged ISA (was 0x80 in old runtime opcodes.py)",
+          "confidence": 1.0,
+          "source": "conformance-runner",
+          "date": "2026-04-12",
+          "tags": ["opcode", "system-control", "format-a"]
+        },
+        {
+          "id": "isa-v3-escape",
+          "fact": "0xFF is the escape prefix for ISA v3 extensions, not ILLEGAL. Enables 65,536 extension opcodes (256 extensions x 256 sub-opcodes).",
+          "confidence": 1.0,
+          "source": "isa-v3-full-draft",
+          "date": "2026-04-12",
+          "tags": ["opcode", "v3", "extension", "format-h"]
+        },
+        {
+          "id": "isa-v3-backward-compat",
+          "fact": "ISA v3 is 100% backward compatible with v2. All 247 v2 opcode addresses unchanged. No v2 program contains 0xFF.",
+          "confidence": 1.0,
+          "source": "isa-v3-full-draft",
+          "date": "2026-04-12",
+          "tags": ["migration", "v3", "compatibility"]
+        },
+        {
+          "id": "isa-format-h",
+          "fact": "Format H is new in v3: [0xFF][ext_id][sub_opcode][operands...], 3-8 bytes. Extensions declare which base format (A-G) applies to operands.",
+          "confidence": 1.0,
+          "source": "isa-v3-full-draft",
+          "date": "2026-04-12",
+          "tags": ["encoding", "v3", "format-h", "extension"]
+        },
+        {
+          "id": "isa-v3-ver-returns-3",
+          "fact": "VER opcode (0xF5) returns R0=3 on v3 runtimes (was R0=2 on v2). Code checking VER should accept VER >= 2.",
+          "confidence": 1.0,
+          "source": "isa-v3-full-draft",
+          "date": "2026-04-12",
+          "tags": ["opcode", "v3", "system", "migration"]
+        },
+        {
+          "id": "isa-registers",
+          "fact": "FLUX has 16 general-purpose registers (R0-R15, 64-bit), 16 confidence registers (C0-C15, f64), plus implicit FP, SP, PC. R15 reserved for assembler pseudo-instruction scratch.",
+          "confidence": 1.0,
+          "source": "isa-v3-full-draft",
+          "date": "2026-04-12",
+          "tags": ["register-model", "architecture"]
+        },
+        {
+          "id": "isa-ext-id-allocation",
+          "fact": "Extension ID allocation: 0x00=NULL (NOP passthrough), 0x01-0x7F=fleet-standard (Oracle1 allocates), 0x80-0xEF=experimental (self-assigned), 0xF0-0xFF=meta-extensions.",
+          "confidence": 1.0,
+          "source": "isa-v3-full-draft",
+          "date": "2026-04-12",
+          "tags": ["extension", "allocation", "v3"]
+        },
+        {
+          "id": "isa-6-fleet-extensions",
+          "fact": "Six fleet-standard extensions proposed: EXT_BABEL(0x01) 12 opcodes, EXT_EDGE(0x02) 12, EXT_CONFIDENCE(0x03) 10, EXT_TENSOR(0x04) 16, EXT_SECURITY(0x05) 13, EXT_TEMPORAL(0x06) 11.",
+          "confidence": 0.95,
+          "source": "isa-v3-full-draft",
+          "date": "2026-04-12",
+          "tags": ["extension", "babel", "edge", "tensor", "security", "temporal"]
+        },
+        {
+          "id": "isa-jnz-uses-register-offset",
+          "fact": "JNZ (0x3D) in unified ISA uses register-based offset (Format E: JNZ rd, rs1), not immediate. Assembler expands to MOVI R15, offset + JNZ R2, R15 (7 bytes using R15 scratch).",
+          "confidence": 1.0,
+          "source": "conformance-runner",
+          "date": "2026-04-12",
+          "tags": ["opcode", "control-flow", "assembler", "format-e"]
+        },
+        {
+          "id": "isa-bifurcation",
+          "fact": "Complete ISA bifurcation: opcodes.py (runtime, ~80 opcodes) and isa_unified.py (converged, ~200 opcodes) have ZERO overlapping opcode assignments. Migration tool available.",
+          "confidence": 1.0,
+          "source": "worklog-session-10",
+          "date": "2026-04-12",
+          "tags": ["migration", "runtime", "conflict"]
+        },
+        {
+          "id": "isa-46-collisions",
+          "fact": "46 opcode address collisions exist between runtime (opcodes.py) and converged (isa_unified.py) ISA. All resolved in favor of converged spec as source of truth.",
+          "confidence": 1.0,
+          "source": "isa-authority-document",
+          "date": "2026-04-12",
+          "tags": ["migration", "collision", "conflict-resolution"]
+        }
+      ]
+    },
+    "conformance": {
+      "label": "Conformance Testing Results",
+      "entries": [
+        {
+          "id": "conf-23-23-original",
+          "fact": "Original conformance suite: 23/23 tests PASS, 0 FAIL, 0 SKIP on both Python and C unified runtimes. 222 total cycles across all tests.",
+          "confidence": 1.0,
+          "source": "conformance_report.json",
+          "date": "2026-04-12",
+          "tags": ["test-results", "python", "c-runtime"]
+        },
+        {
+          "id": "conf-71-71-expanded",
+          "fact": "Expanded conformance suite: 71/71 runnable tests PASS, 3 source-only SKIP, 0 FAIL. Covers 35 unique opcodes across Formats A-G.",
+          "confidence": 1.0,
+          "source": "conformance-runner",
+          "date": "2026-04-12",
+          "tags": ["test-results", "expanded", "coverage"]
+        },
+        {
+          "id": "conf-cross-runtime-agreement",
+          "fact": "Python and C runtimes produce identical results across ALL 71 runnable test vectors. Zero disagreements in cross-runtime comparison.",
+          "confidence": 1.0,
+          "source": "conformance-cross-runtime-report",
+          "date": "2026-04-12",
+          "tags": ["cross-runtime", "validation", "python", "c-runtime"]
+        },
+        {
+          "id": "conf-3-algo-bugs-fixed",
+          "fact": "Three algorithm bugs fixed in source-description tests: GCD zero-check (division by zero), Fibonacci expected register (R0->R1), Sum of Squares loop bound (n=5->n=6 for CMP_LT inclusion).",
+          "confidence": 1.0,
+          "source": "assembler-session",
+          "date": "2026-04-12",
+          "tags": ["bugfix", "algorithm", "test-correction"]
+        },
+        {
+          "id": "conf-assembler-built",
+          "fact": "Two-pass FLUX assembler built (~430 lines): label resolution, pseudo-instruction expansion (JNZ/JZ to 7-byte MOVI+Jcc using R15 scratch), disassembler included.",
+          "confidence": 1.0,
+          "source": "worklog-session-14a",
+          "date": "2026-04-12",
+          "tags": ["tooling", "assembler", "two-pass"]
+        },
+        {
+          "id": "conf-coverage-gaps",
+          "fact": "Opcode coverage gaps: float ops (FADD-FDIV) not tested, tensor ops (C0-CF) not tested, sensor ops (80-8F) not tested, viewpoint ops (70-7F) not tested, extension ops untestable until v3 runtime.",
+          "confidence": 0.9,
+          "source": "conformance-analysis",
+          "date": "2026-04-12",
+          "tags": ["coverage", "gaps", "testing"]
+        },
+        {
+          "id": "conf-rust-unavailable",
+          "fact": "Rust runtime (flux_vm_unified.rs) is not yet implemented. conformance_runner returns UNAVAILABLE status. This is the third planned runtime after Python and C.",
+          "confidence": 1.0,
+          "source": "conformance-runner",
+          "date": "2026-04-12",
+          "tags": ["rust", "runtime", "gap"]
+        },
+        {
+          "id": "conf-9-categories",
+          "fact": "Expanded conformance suite covers 9 categories: arithmetic(29), comparison(8), control(8), data(8), logic(7), memory(5), shift(4), stack(2), complex(3 skipped).",
+          "confidence": 1.0,
+          "source": "test_conformance_expanded.py",
+          "date": "2026-04-12",
+          "tags": ["categories", "coverage", "expanded"]
+        }
+      ]
+    },
+    "security": {
+      "label": "Security Primitives & Threat Model",
+      "entries": [
+        {
+          "id": "sec-3-critical-issues",
+          "fact": "Three critical security issues filed: #15 (zero bytecode verification - CRITICAL), #16 (unenforced CAP opcodes - HIGH), #17 (NaN trust poisoning - HIGH). All addressed in security-primitives-spec.md.",
+          "confidence": 1.0,
+          "source": "security-primitives-spec.md",
+          "date": "2026-04-12",
+          "tags": ["issues", "vulnerabilities", "critical"]
+        },
+        {
+          "id": "sec-6-new-opcodes",
+          "fact": "6 new security opcodes at reserved slots: SANDBOX_ALLOC(0xDF/G), SANDBOX_FREE(0xED/G), TAG_ALLOC(0xEE/F), TAG_TRANSFER(0xEF/F), CONF_CLAMP(0xFA/A), TAG_CHECK(0xFB/A).",
+          "confidence": 1.0,
+          "source": "security-primitives-spec.md",
+          "date": "2026-04-12",
+          "tags": ["opcodes", "sandbox", "tagging", "confidence"]
+        },
+        {
+          "id": "sec-4-stage-verification",
+          "fact": "4-stage bytecode verification pipeline: Stage 1 structural (format completeness), Stage 2 register (valid indices), Stage 3 control-flow (jump targets), Stage 4 security (capability check). Mandatory for A2A-received bytecode.",
+          "confidence": 1.0,
+          "source": "security-primitives-spec.md",
+          "date": "2026-04-12",
+          "tags": ["verification", "bytecode", "pipeline"]
+        },
+        {
+          "id": "sec-cap-invoke",
+          "fact": "CAP_INVOKE is interpreter-level dispatch check (not an ISA opcode). Runs before every privileged opcode execution. Capability tokens are 128-bit unforgeable hashes. Revocation is immediate.",
+          "confidence": 1.0,
+          "source": "security-primitives-spec.md",
+          "date": "2026-04-12",
+          "tags": ["capability", "interpreter", "dispatch"]
+        },
+        {
+          "id": "sec-trust-poisoning-fix",
+          "fact": "Trust poisoning prevention: sanitize_confidence() clamps NaN/Inf to 0.0, values to [0.0, 1.0]. Applied at every confidence register write (CONF_ST, C_* ops, CONF_LD, TRUST). math.isnan/isinf are single CPU instructions.",
+          "confidence": 1.0,
+          "source": "security-primitives-spec.md",
+          "date": "2026-04-12",
+          "tags": ["confidence", "nan", "sanitization"]
+        },
+        {
+          "id": "sec-18-vectors",
+          "fact": "18 security conformance test vectors defined across 5 categories: sandbox(4), capability(4), tag(3), trust(4), verification(3). Plus 7 escape prefix vectors and 15 async/temporal vectors.",
+          "confidence": 1.0,
+          "source": "security-primitives-spec.md",
+          "date": "2026-04-12",
+          "tags": ["test-vectors", "security", "conformance"]
+        },
+        {
+          "id": "sec-sandbox-perms",
+          "fact": "Sandbox permission flags: PERM_READ(0x0001), PERM_WRITE(0x0002), PERM_EXEC(0x0004), PERM_NOACCESS(0x0008). W^X enforced: code regions default to 0x0005 (read-execute).",
+          "confidence": 1.0,
+          "source": "security-primitives-spec.md",
+          "date": "2026-04-12",
+          "tags": ["sandbox", "permissions", "w^x"]
+        },
+        {
+          "id": "sec-5-tag-types",
+          "fact": "Memory tag types: TAG_PRIVATE(0x0000), TAG_READONLY(0x0001), TAG_SHARED(0x0002), TAG_REVOCABLE(0x0003), TAG_TRANSFER(0x0004). Tags are 128-bit (owner+handle+type+group+nonce). Implicit enforcement on every LOAD/STORE.",
+          "confidence": 1.0,
+          "source": "security-primitives-spec.md",
+          "date": "2026-04-12",
+          "tags": ["tagging", "memory", "ownership"]
+        },
+        {
+          "id": "sec-fail-closed",
+          "fact": "Design principle: fail-closed. All security violations trap to HALT_ERR (0xF0). No soft security failure modes. 6 security flag bits (FLAG_SEC_VIOLATION, FLAG_CAP_MISSING, FLAG_SANDBOX_PERM, FLAG_TAG_VIOLATION, FLAG_TRUST_POISON, FLAG_VERIFY_FAILED).",
+          "confidence": 1.0,
+          "source": "security-primitives-spec.md",
+          "date": "2026-04-12",
+          "tags": ["design", "fail-closed", "flags"]
+        },
+        {
+          "id": "sec-fork-capability-halving",
+          "fact": "When FORK spawns child agent, child gets copy of parent capabilities with halved TTL (minimum 60 seconds). No privilege escalation possible. DELEG supports derived tokens with subset permissions.",
+          "confidence": 1.0,
+          "source": "security-primitives-spec.md",
+          "date": "2026-04-12",
+          "tags": ["capability", "fork", "delegation", "inheritance"]
+        }
+      ]
+    },
+    "performance": {
+      "label": "Runtime Performance Benchmarks",
+      "entries": [
+        {
+          "id": "perf-fastest-opcodes",
+          "fact": "Fastest opcodes: JMP/RET/JZ/JNZ/JAL ~6.4M ops/sec (Format A/F control flow, ~156ns/op). Control flow is 6.8x faster than memory operations.",
+          "confidence": 1.0,
+          "source": "benchmark_results.json",
+          "date": "2026-04-12",
+          "tags": ["throughput", "control-flow", "fastest"]
+        },
+        {
+          "id": "perf-slowest-opcodes",
+          "fact": "Slowest opcode: STORE at 944K ops/sec (1,059ns/op). Memory ops are the bottleneck: STORE, LOAD(964ns), PUSH(852ns), POP(851ns) are all 1.2-1.5x slower than median.",
+          "confidence": 1.0,
+          "source": "benchmark_results.json",
+          "date": "2026-04-12",
+          "tags": ["throughput", "memory", "bottleneck"]
+        },
+        {
+          "id": "perf-memory-5.8x-slower",
+          "fact": "Memory operations are 5.8x slower than control flow operations. CRITICAL recommendation: prioritize memory opcode handler optimization. Consider computed-goto dispatch and direct array indexing.",
+          "confidence": 1.0,
+          "source": "benchmark_results.json",
+          "date": "2026-04-12",
+          "tags": ["bottleneck", "memory", "recommendation"]
+        },
+        {
+          "id": "perf-format-decode",
+          "fact": "Format decode throughput: Format A fastest at 14.7M ops/sec (68ns), Format G slowest at 10.1M ops/sec (99ns). Larger formats have linear decode overhead.",
+          "confidence": 1.0,
+          "source": "benchmark_results.json",
+          "date": "2026-04-12",
+          "tags": ["format", "decode", "overhead"]
+        },
+        {
+          "id": "perf-macro-benchmarks",
+          "fact": "Macro benchmarks: fib(30)=6,768 ops/sec (214 cycles), bubble_sort_100=423 ops/sec (2,844 cycles), matmul_5x5=764 ops/sec (2,006 cycles), string_process=152 ops/sec (8,005 cycles).",
+          "confidence": 1.0,
+          "source": "benchmark_results.json",
+          "date": "2026-04-12",
+          "tags": ["macro", "fibonacci", "sort", "matrix"]
+        },
+        {
+          "id": "perf-inc-11pct-improvement",
+          "fact": "INC improved 11.3% (2.07M->2.31M ops/sec) and SUB improved 11.8% (1.35M->1.51M ops/sec) compared to previous benchmark run. STORE improved 8.9%.",
+          "confidence": 1.0,
+          "source": "benchmark_results.json",
+          "date": "2026-04-12",
+          "tags": ["improvement", "regression-test"]
+        },
+        {
+          "id": "perf-stack-scaling",
+          "fact": "Stack operations scale linearly with depth: 100 depth=2.13M ops/sec, 1000 depth=2.30M, 5000 depth=2.34M, 10000 depth=2.30M. No degradation at large depths.",
+          "confidence": 1.0,
+          "source": "benchmark_results.json",
+          "date": "2026-04-12",
+          "tags": ["stack", "scaling"]
+        },
+        {
+          "id": "perf-memory-patterns",
+          "fact": "Memory allocation patterns: sequential_store=985K ops/sec, random_store=984K, fragmented_store=957K (67914 peak bytes). All within 3% of each other.",
+          "confidence": 1.0,
+          "source": "benchmark_results.json",
+          "date": "2026-04-12",
+          "tags": ["memory", "allocation", "patterns"]
+        }
+      ]
+    },
+    "fleet": {
+      "label": "Fleet Organization & Agents",
+      "entries": [
+        {
+          "id": "fleet-733-repos",
+          "fact": "Fleet has 733 repositories: 75 green (active), 95 yellow (needs attention), 88 red (broken), 408 dead (abandoned). 20+ agents and 666 repos in fleet census.",
+          "confidence": 0.9,
+          "source": "fleet-health-dashboard.json",
+          "date": "2026-04-12",
+          "tags": ["repos", "health", "census"]
+        },
+        {
+          "id": "fleet-6-known-agents",
+          "fact": "Known fleet agents: Oracle1 (24 badges, coordinator), Super Z (13 sessions, cartographer), Quill (linguistics, flux-coop-runtime), JetsonClaw1 (CUDA, edge, 167 commits), Babel (85K+ lines, 120-opcode ISA), Fleet Mechanic (infra, auto-fix).",
+          "confidence": 1.0,
+          "source": "fleet_config.json",
+          "date": "2026-04-12",
+          "tags": ["agents", "roles", "specializations"]
+        },
+        {
+          "id": "fleet-semantic-router",
+          "fact": "Semantic router built with 7-factor weighted scoring: skill overlap (0.35), specialization match (0.15), confidence weighting (0.20), availability (0.10), priority matching (0.10), recency bonus (0.05), effort calibration (0.05).",
+          "confidence": 1.0,
+          "source": "semantic_router.py",
+          "date": "2026-04-12",
+          "tags": ["routing", "task-assignment", "algorithm"]
+        },
+        {
+          "id": "fleet-5-shipped-fences",
+          "fact": "Super Z shipped 5 fences: fence-0x42 (viewpoint opcodes, 783 lines), fence-0x45, fence-0x46, fence-0x51. All completed. 8 open fences remain on board.",
+          "confidence": 1.0,
+          "source": "worklog-session-7",
+          "date": "2026-04-12",
+          "tags": ["fences", "completed", "deliverables"]
+        },
+        {
+          "id": "fleet-captain",
+          "fact": "Casey Digennaro is the fleet captain and a commercial fisherman. Built the fleet as a fishing metaphor. FishingLog AI is his real-world product: edge AI for fishing vessels on Jetson Orin Nano (YOLOv8 + Whisper).",
+          "confidence": 0.95,
+          "source": "fishinglog-integration-proposal.md",
+          "date": "2026-04-12",
+          "tags": ["captain", "fishinglog", "origin"]
+        },
+        {
+          "id": "fleet-quill-rfc",
+          "fact": "Quill's RFC-0001 (CANONICAL) proposes ISA convergence. 10 proposed opcode addresses in SIGNAL-AMENDMENT-1 all collide with both runtime and converged ISA. Reviewed: 3 APPROVE, 3 DEFER with alternative placements.",
+          "confidence": 0.95,
+          "source": "worklog-session-10",
+          "date": "2026-04-12",
+          "tags": ["quill", "rfc", "isa-convergence"]
+        },
+        {
+          "id": "fleet-babel-relocation",
+          "fact": "Babel proposed relocating 0xD0-0xFD opcode range. Audit support: CONDITIONAL APPROVE with Option A strategy. Babel has 85K+ lines of code across fleet repos.",
+          "confidence": 0.9,
+          "source": "worklog-session-12",
+          "date": "2026-04-12",
+          "tags": ["babel", "relocation", "audit"]
+        },
+        {
+          "id": "fleet-lucineer-ecosystem",
+          "fact": "Lucineer ecosystem has 30+ *-log-ai products (dmlog-ai, studylog-ai, activelog-ai, fishinglog-ai, etc.). FishingLog integration creates template for all. maritime.fluxvocab already exists.",
+          "confidence": 0.9,
+          "source": "fishinglog-integration-proposal.md",
+          "date": "2026-04-12",
+          "tags": ["lucineer", "ecosystem", "products"]
+        }
+      ]
+    },
+    "bootcamp": {
+      "label": "Onboarding & Career Development",
+      "entries": [
+        {
+          "id": "boot-vessel-structure",
+          "fact": "Fleet vessel structure: each agent has a vessel repo (username-vessel), diary (username-diary), and task repo. Bottles are inter-vessel communication. Beachcomb scans for new fleet activity.",
+          "confidence": 1.0,
+          "source": "greenhorn-onboarding",
+          "date": "2026-04-12",
+          "tags": ["structure", "vessel", "communication"]
+        },
+        {
+          "id": "boot-i2i-protocol",
+          "fact": "I2I (Inter-Instance) protocol: agents communicate via message-in-a-bottle system. Messages dropped to other vessels' /bottles/for-{agent}/ directories. 33 message types across 6 layers in v3 spec.",
+          "confidence": 1.0,
+          "source": "i2i-enhancements-v3",
+          "date": "2026-04-12",
+          "tags": ["i2i", "protocol", "communication"]
+        },
+        {
+          "id": "boot-fence-system",
+          "fact": "Fence system: work units identified by hex IDs (fence-0x42, etc.) with lifecycle DRAFT -> CLAIMED -> IN_PROGRESS -> REVIEW -> SHIPPED. Tracked on FENCE-BOARD.md. 5-10 fences open at any time.",
+          "confidence": 1.0,
+          "source": "greenhorn-onboarding",
+          "date": "2026-04-12",
+          "tags": ["fences", "lifecycle", "workflow"]
+        },
+        {
+          "id": "boot-career-path",
+          "fact": "Career domains with ranks: Apprentice -> Crafter -> Architect. Super Z promoted to Architect in auditing. Fleet coordination and documentation at Crafter level.",
+          "confidence": 1.0,
+          "source": "CAREER.md",
+          "date": "2026-04-12",
+          "tags": ["career", "ranks", "domains"]
+        },
+        {
+          "id": "boot-fleet-json",
+          "fact": "fleet.json standard: all repos should include fleet.json with metadata, capabilities, test commands, and conformance status. CI workflow templates available for 4 languages (Python, C, Rust, TypeScript).",
+          "confidence": 0.95,
+          "source": "fleet-ci-templates",
+          "date": "2026-04-12",
+          "tags": ["standards", "ci", "fleet-json"]
+        },
+        {
+          "id": "boot-task-board",
+          "fact": "TASK-BOARD.md tracks 30+ open tasks with skill tags, priority levels, and dependency chains. Tasks are routed via semantic router. ISA-002 is marked CRITICAL PATH.",
+          "confidence": 1.0,
+          "source": "TASK-BOARD.md",
+          "date": "2026-04-12",
+          "tags": ["tasks", "routing", "priorities"]
+        }
+      ]
+    }
+  }
+}
