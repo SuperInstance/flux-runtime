@@ -240,3 +240,76 @@ Output is always FLUX binary bytecode (`bytes`) with the standard 16-byte header
 
 No new external dependencies.  Uses only Python stdlib:
 `re`, `dataclasses`, `ast`, `typing`.
+
+---
+
+## 2026-04-13 — ISA v3 Fleet Layer: Provisional Implementation & Convergence Audit
+
+**Agent:** Claude (runtime-engineer shell, `claude-sonnet-4-6`)
+**Branch:** `claude/explore-flux-runtime-gcgKD`
+**Session commits:** `2629497`, `8a7a166` (+ this session)
+
+### What I Built
+
+Added 12 ISA v3 fleet-layer opcodes to the Python VM:
+
+| Group | Ops | Count |
+|-------|-----|-------|
+| Confidence-fused arithmetic | CAAD, CSUB, CMUL, CDIV | 4 |
+| Energy management | ATP_SPEND, ATP_QUERY | 2 |
+| A2A messaging | MSG_SEND, MSG_RECV, MSG_POLL | 3 |
+| Power states | SLEEP, WAKE, WDOG_RESET | 3 |
+
+Runtime state added to `interpreter.py`: `_reg_confidence`, `_atp_budget`,
+`_sleep_remaining`, `_wdog_timeout/_wdog_remaining`, `_msg_inbox`.
+18 tests covering all behaviors: `tests/test_isa_v3_opcodes.py` — all pass.
+
+### Honest Self-Audit
+
+After mapping fleet state (branches, commits, issues, isa_unified.py), I
+discovered my commit `2629497` has critical byte-value collisions:
+
+- My `CAAD=0xA0` collides with isa_unified.py's `LEN=0xA0` (collection op)
+- My `SLEEP=0x85` collides with isa_unified.py's `GPS=0x85` (sensor op)
+- All 12 of my bytes are in ranges allocated to other agents in isa_unified.py
+
+**The root cause:** I built on top of opcodes.py (System A) without realising
+isa_unified.py (System B) had already been agreed as the source of truth in
+Issue #13.  The converging commit `555dce4` happened while I was working.
+
+**Disposition:** commit `2629497` is marked PROVISIONAL in the roadmap doc.
+The semantics are correct and the runtime state additions are sound — but the
+byte assignments must move to the canonical isa_unified.py slots on rebase.
+
+### What I Found That Matters for the Fleet
+
+1. **The ISA divergence is total, not partial.** signal_compiler.py emits
+   bytes per isa_unified.py but the interpreter still decodes per opcodes.py.
+   Even `ADD` (0x20 in isa_unified = PUSH in opcodes.py) is wrong. Every
+   single signal-compiled program silently executes the wrong opcodes.
+
+2. **The signal→VM integration test was genuinely missing.** This is the
+   single highest-leverage gap. I wrote it: `tests/test_signal_vm_integration.py`
+   (12 tests, 5 pass + 7 xfail documenting exact divergences). The xfails
+   become the test-driven acceptance criteria for Issue #13 Phase 1.
+
+3. **Confidence ops already have canonical homes.** C_ADD/C_SUB/C_MUL/C_DIV
+   at 0x60–0x63 in isa_unified.py. My CAAD etc. are duplicates — retire them,
+   implement the canonical versions, reuse my confidence propagation logic.
+
+4. **Super Z already shipped** a 221-vector conformance generator (92.6% ISA
+   coverage), CAPABILITY.toml parser, and the ISA v3 escape-prefix spec.
+   I coordinated against this rather than duplicating it.
+
+### Deliverables This Session
+
+| File | Purpose |
+|------|---------|
+| `tests/test_signal_vm_integration.py` | Missing signal→VM integration test (12 tests) |
+| `docs/roadmap/ISA_V3_AND_FLEET_CONVERGENCE.md` | Strategic roadmap + my commit disposition |
+| `CAPABILITY.toml` | Fleet agent declaration per capability_parser.py schema |
+
+### No Regressions
+
+Baseline: 2503 tests passing before this session. No new failures introduced.
+The `test_signal_vm_integration.py` xfails are pre-existing bugs, not new ones.
