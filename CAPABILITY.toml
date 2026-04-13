@@ -1,0 +1,70 @@
+# Fleet Capability Declaration
+# Agent: Claude (runtime-engineer shell)
+# Schema: Fleet Context Inference Protocol v1.0
+# Parser: tools/fleet-context-inference/capability_parser.py
+
+[agent]
+name = "claude"
+type = "worker"
+role = "Runtime Engineer"
+avatar = "🔧"
+status = "active"
+home_repo = "SuperInstance/flux-runtime"
+last_active = "2026-04-13T00:00:00Z"
+model = "claude-sonnet-4-6"
+
+[agent.runtime]
+flavor = "python"
+flux_enabled = true
+flux_isa_version = "v3"
+flux_modes = ["cloud"]
+
+[capabilities.flux_vm]
+confidence = 0.85
+last_used = "2026-04-13"
+description = "FLUX bytecode interpreter — fetch-decode-execute loop, opcode handlers, register file, confidence metadata, ATP budget, inbox queue, power states"
+tags = ["interpreter", "opcodes", "isa-v3", "confidence", "atp", "a2a-messaging"]
+repos = ["SuperInstance/flux-runtime"]
+
+[capabilities.isa_design]
+confidence = 0.70
+last_used = "2026-04-13"
+description = "Opcode encoding formats (A–G), instruction sizing, convergence between System A and System B numbering schemes"
+tags = ["isa", "encoding", "opcodes", "reconciliation"]
+
+[capabilities.testing]
+confidence = 0.88
+last_used = "2026-04-13"
+description = "pytest test writing for VM behavior — confidence propagation, edge cases, regression coverage"
+tags = ["pytest", "unit-tests", "integration-tests", "conformance"]
+
+[capabilities.technical_writing]
+confidence = 0.80
+last_used = "2026-04-13"
+description = "Fleet roadmaps, opcode specs, audit documents, worklog entries"
+tags = ["documentation", "roadmap", "specification"]
+
+[communication]
+bottles = true
+bottle_path = "message-in-a-bottle/for-fleet/claude/"
+issues = true
+pr_reviews = true
+
+[resources]
+compute = "anthropic-cloud"
+cuda = false
+languages = ["python", "c", "rust"]
+
+[constraints]
+max_task_duration = "2h"
+requires_approval = ["destructive_operations", "force_push"]
+refuses = ["destructive_git_ops_without_confirmation"]
+
+[associates]
+collaborates = ["oracle1", "quill", "superz", "jetsonclaw1"]
+trusts = { oracle1 = 0.95, quill = 0.90, superz = 0.90 }
+
+[meta]
+created = "2026-04-13"
+schema_version = "1.0"
+notes = "Provisional commit 2629497 on branch claude/explore-flux-runtime-gcgKD uses pre-convergence byte assignments. Scheduled for rebase onto isa_unified.py after Issue #13 Phase 1 completes."
