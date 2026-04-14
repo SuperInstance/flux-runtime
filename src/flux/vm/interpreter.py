@@ -532,23 +532,15 @@ class Interpreter:
 
         # ── Comparison: ICMP (generic compare with condition) ──────────────
         if opcode_byte == Op.ICMP:
-            # Format E: [ICMP][rd:u8][rs1:u8][rs2:u8]
-            # rd = destination register for result, rs1/rs2 = comparison operands
-            # The condition code is embedded in rd's upper bits (rd & 0xF0).
-            # For compatibility with test vectors that encode [ICMP][cond][rs1][rs2],
-            # we treat the first operand byte as both destination and condition:
-            #   bits 7-4 = condition code (0=EQ..9=UGE)
-            #   bits 3-0 = destination register
-            # If rd < 16, the full byte is the condition and destination defaults to rd.
-            raw = self._fetch_u8()
-            rs1 = self._fetch_u8()
-            rs2 = self._fetch_u8()
-            a = self.regs.read_gp(rs1)
-            b_val = self.regs.read_gp(rs2)
-            # Test vectors use format: [ICMP][cond][rs1][rs2], result -> R(cond)
-            # But expected output is R0. So: rd = R0 always, cond = raw byte.
-            cond = raw
-            rd = 0  # test vectors expect result in R0
+            # Format: [ICMP][cond:u8][rd:u8][rs:u8]
+            # cond = condition code (0=EQ, 1=NE, 2=LT, 3=LE, 4=GT, 5=GE, 6=ULT, 7=ULE, 8=UGT, 9=UGE)
+            # rd  = destination register (also the first comparison operand)
+            # rs  = second comparison operand register
+            cond = self._fetch_u8()
+            rd = self._fetch_u8()
+            rs = self._fetch_u8()
+            a = self.regs.read_gp(rd)
+            b_val = self.regs.read_gp(rs)
             conditions = {
                 0: a == b_val,   # EQ
                 1: a != b_val,   # NE
