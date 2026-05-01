@@ -22,7 +22,7 @@ class RegisterFile:
     """64-register file: R0-R15 (general), F0-F15 (float), V0-V15 (vector)."""
 
     GP_COUNT = 16    # R0-R15
-    FP_COUNT = 16    # F0-F15
+    FP_COUNT = 32    # F0-F15
     VEC_COUNT = 16   # V0-V15
 
     # Special register aliases (indices into the GP bank)
