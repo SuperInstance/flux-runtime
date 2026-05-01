@@ -261,3 +261,71 @@
 
 **Total:** 247 defined, 9 reserved = 256 slots
 **Confidence ops:** 16
+## Physics Opcodes (v3.1 — Marine Physics Extension)
+
+New opcodes for deterministic underwater physics computation.
+These use the `0x60-0x6F` range (previously reserved).
+
+| Hex | Mnemonic | Fmt | Operands | Category | Description |
+|-----|----------|-----|----------|----------|-------------|
+| 0x60 | PHY_ABSORB | E | rd, rs1, rs2 | physics | Francois-Garrison absorption coeff: rd = a(rs1.wavelength, rs2.water_type) |
+| 0x61 | PHY_SCATTER | E | rd, rs1, rs2 | physics | Scattering coeff: rd = b(rs1.wavelength, rs2.depth) |
+| 0x62 | PHY_JERLOV | E | rd, rs1, rs2 | physics | Jerlov water type: rd = classify(rs1.depth, rs2.chlorophyll) |
+| 0x63 | PHY_THERMO | E | rd, rs1, rs2 | physics | Thermocline gradient: rd = dT/dz(rs1.depth, rs2.season) |
+| 0x64 | PHY_SEABED | E | rd, rs1, rs2 | physics | Seabed return: rd = reflectivity(rs1.depth, rs2.sediment_type) |
+| 0x65 | PHY_ATTEN | E | rd, rs1, rs2 | physics | Total attenuation: rd = a + b (combined absorption + scattering) |
+| 0x66 | PHY_VISIB | E | rd, rs1, rs2 | physics | Visibility in meters: rd = 1/(c + epsilon) where c = attenuation |
+| 0x67 | PHY_SOUNDV | E | rd, rs1, rs2 | physics | Speed of sound in water: rd = 1449.2 + 4.6*rs1.temp - 0.055*rs1.temp^2 + 0.00029*rs1.temp^3 + (1.34-0.01*rs1.temp)*(rs1.salinity-35) + 0.016*rs1.depth |
+| 0x68 | PHY_REFRAC | E | rd, rs1, rs2 | physics | Acoustic refraction angle: rd = sin(theta) * v1/v2 (Snell's law) |
+
+### Execution Semantics
+
+All physics opcodes are **deterministic** — given the same inputs, they always
+produce identical outputs across all FLUX implementations. This is critical for
+multi-agent simulation where all agents must see the same underwater physics.
+
+### Implementation Notes
+
+- Physics opcodes may call into a native math library on the host platform
+- The runtime must ensure IEEE 754 float compliance for all physics operations
+- Constraint-theory snapping may be applied before/after physics ops for
+  synchronization-critical paths (PHY_SEABED, PHY_REFRAC)
+- Agents can A2A-query physics results via standard TELL/ASK opcodes:
+  ```
+  TELL R1, agent_sonar, PHY_ATTEN  ; ask sonar agent for attenuation
+  ASK  R2, agent_sonar, R1         ; receive result
+  ```
+
+### Example: Underwater Visibility Computation
+
+```asm
+; Compute visibility at 15m in coastal water
+LOAD_R      R0, 15.0        ; depth
+LOAD_R      R1, 480.0       ; wavelength (blue-green, nm)
+LOAD_R      R2, 1.0         ; water_type code (1=coastal)
+LOAD_R      R3, 8.0         ; water temperature (C)
+LOAD_R      R4, 35.0        ; salinity (PSU)
+
+; Compute absorption and scattering
+PHY_ABSORB  R5, R1, R2      ; absorption coefficient
+PHY_SCATTER R6, R1, R0      ; scattering coefficient
+
+; Total attenuation
+PHY_ATTEN   R7, R5, R6
+
+; Visibility in meters
+PHY_VISIB   R8, R7, R0
+
+; Speed of sound at this depth/temp/salinity
+PHY_SOUNDV  R9, R3, R4, R0  ; temp, salinity, depth
+
+; Result: R8 = visibility (meters), R9 = sound speed (m/s)
+```
+
+### Compatibility
+
+These opcodes are compatible with all FLUX implementations:
+- flux-runtime (Rust) — full implementation
+- flux-js (JS/V8) — numeric simulation
+- flux-py (Python) — reference implementation
+- flux-runtime-c (C) — edge-optimized
