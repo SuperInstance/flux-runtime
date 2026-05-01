@@ -1468,6 +1468,121 @@ class Interpreter:
                 self.regs.write_gp(0, 1)  # failure
             return
 
+        # ── Marine Physics ────────────────────────────────────────────────────
+        # PHY_ABSORB: Francois-Garrison absorption coefficient
+        if opcode_byte == Op.PHY_ABSORB:
+            rd, rs1, rs2 = self._decode_operands_E()
+            wavelength = self.regs.read_fp(rs1)
+            water_type = int(self.regs.read_fp(rs2))
+            wl = max(200.0, min(800.0, wavelength))
+            if water_type == 0:  # Coastal
+                result = 0.2 + 0.8 * math.exp(-((wl - 480) ** 2) / 5000.0)
+            elif water_type == 1:  # Oceanic
+                result = 0.05 + 0.3 * math.exp(-((wl - 420) ** 2) / 8000.0)
+            elif water_type == 2:  # Brackish
+                result = 0.3 + 0.9 * math.exp(-((wl - 480) ** 2) / 4000.0)
+            else:  # Polar
+                result = 0.1 + 0.5 * math.exp(-((wl - 450) ** 2) / 6000.0)
+            self.regs.write_fp(rd, result)
+            return
+
+        # PHY_SCATTER: Scattering coefficient
+        if opcode_byte == Op.PHY_SCATTER:
+            rd, rs1, rs2 = self._decode_operands_E()
+            wavelength = self.regs.read_fp(rs1)
+            depth = self.regs.read_fp(rs2)
+            wl = max(200.0, min(800.0, wavelength))
+            rayleigh = 0.002 * (400.0 / wl) ** 4.3
+            depth_factor = 0.01 / (1.0 + depth * 0.005)
+            result = rayleigh + depth_factor
+            self.regs.write_fp(rd, result)
+            return
+
+        # PHY_JERLOV: Jerlov water type classification
+        if opcode_byte == Op.PHY_JERLOV:
+            rd, rs1, rs2 = self._decode_operands_E()
+            depth = self.regs.read_fp(rs1)
+            chlorophyll = self.regs.read_fp(rs2)
+            if chlorophyll > 10.0 or depth < 5.0:
+                result = 0.0
+            elif chlorophyll > 1.0:
+                result = 1.0
+            elif chlorophyll > 0.1:
+                result = 2.0
+            else:
+                result = 3.0
+            self.regs.write_fp(rd, result)
+            return
+
+        # PHY_THERMO: Thermocline gradient
+        if opcode_byte == Op.PHY_THERMO:
+            rd, rs1, rs2 = self._decode_operands_E()
+            depth = self.regs.read_fp(rs1)
+            season = int(self.regs.read_fp(rs2))
+            surface_temp = 22.0 if season == 0 else 8.0
+            deep_temp = 4.0
+            tc = 15.0 if season == 0 else 40.0
+            tw = 5.0 if season == 0 else 15.0
+            gradient = (deep_temp - surface_temp) / tw
+            strength = math.exp(-((depth - tc) ** 2) / (2 * tw ** 2))
+            result = gradient * strength
+            self.regs.write_fp(rd, result)
+            return
+
+        # PHY_SEABED: Seabed return reflectivity
+        if opcode_byte == Op.PHY_SEABED:
+            rd, rs1, rs2 = self._decode_operands_E()
+            depth = self.regs.read_fp(rs1)
+            sediment = int(self.regs.read_fp(rs2))
+            reflect_map = {0: 0.3, 1: 0.5, 2: 0.7, 3: 0.85, 4: 0.2}
+            reflect = reflect_map.get(sediment, 0.3)
+            result = reflect * math.exp(-0.005 * depth)
+            self.regs.write_fp(rd, result)
+            return
+
+        # PHY_ATTEN: Total attenuation (absorption + scattering)
+        if opcode_byte == Op.PHY_ATTEN:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_fp(rs1) + self.regs.read_fp(rs2)
+            self.regs.write_fp(rd, result)
+            return
+
+        # PHY_VISIB: Visibility in meters (Secchi depth)
+        if opcode_byte == Op.PHY_VISIB:
+            rd, rs1, rs2 = self._decode_operands_E()
+            attenuation = self.regs.read_fp(rs1)
+            depth = max(0.1, self.regs.read_fp(rs2))
+            if attenuation <= 0.01:
+                result = 60.0
+            else:
+                result = min(depth, 1.7 / attenuation)
+            self.regs.write_fp(rd, result)
+            return
+
+        # PHY_SOUNDV: Speed of sound (Mackenzie equation)
+        if opcode_byte == Op.PHY_SOUNDV:
+            rd, rs1, rs2 = self._decode_operands_E()
+            temp = self.regs.read_fp(rs1)
+            salinity = self.regs.read_fp(rs2)
+            depth = getattr(self, '_last_depth', 0.0)
+            result = (1449.2 + 4.6 * temp - 0.055 * temp * temp
+                      + 0.00029 * temp * temp * temp
+                      + (1.34 - 0.01 * temp) * (salinity - 35.0)
+                      + 0.016 * depth)
+            self.regs.write_fp(rd, result)
+            return
+
+        # PHY_REFRAC: Acoustic refraction (Snell's law)
+        if opcode_byte == Op.PHY_REFRAC:
+            rd, rs1, rs2 = self._decode_operands_E()
+            theta = self.regs.read_fp(rs1)
+            v_ratio = self.regs.read_fp(rs2)
+            sin_t1 = math.sin(theta)
+            sin_t2 = sin_t1 / v_ratio if v_ratio != 0.0 else 0.0
+            result = math.asin(max(-1.0, min(1.0, sin_t2)))
+            self.regs.write_fp(rd, result)
+            return
+
         # ── System: DEBUG_BREAK ────────────────────────────────────────────
         if opcode_byte == Op.DEBUG_BREAK:
             # Format A: trigger debug callback if registered

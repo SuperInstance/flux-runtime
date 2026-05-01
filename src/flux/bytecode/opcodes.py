@@ -158,6 +158,17 @@ class Op(IntEnum):
     RESOURCE_RELEASE = 0x83
     DEBUG_BREAK = 0x84
 
+    # Marine Physics (0xB0-0xBF)
+    PHY_ABSORB = 0xB0  # rd = absorption(rs1.wavelength, rs2.water_type)
+    PHY_SCATTER = 0xB1 # rd = scattering(rs1.wavelength, rs2.depth)
+    PHY_JERLOV = 0xB2  # rd = classify(rs1.depth, rs2.chlorophyll)
+    PHY_THERMO = 0xB3  # rd = dT/dz(rs1.depth, rs2.season)
+    PHY_SEABED = 0xB4  # rd = reflectivity(rs1.depth, rs2.sediment)
+    PHY_ATTEN = 0xB5   # rd = absorption + scattering
+    PHY_VISIB = 0xB6   # rd = 1/attenuation
+    PHY_SOUNDV = 0xB7  # rd = sound_speed(rs1.temp, rs2.salinity, depth)
+    PHY_REFRAC = 0xB8  # rd = refraction_angle(rs1.theta, rs2.v_ratio)
+
 
 # ── Opcode classification ──────────────────────────────────────────────────
 # Matches the VM interpreter's actual fetch-decode patterns.
@@ -166,6 +177,8 @@ class Op(IntEnum):
 FORMAT_A = frozenset({
     Op.NOP, Op.HALT, Op.YIELD,
     Op.DUP, Op.SWAP, Op.DEBUG_BREAK, Op.EMERGENCY_STOP,
+    Op.PHY_ABSORB, Op.PHY_SCATTER, Op.PHY_JERLOV, Op.PHY_THERMO,
+    Op.PHY_SEABED, Op.PHY_ATTEN, Op.PHY_VISIB, Op.PHY_SOUNDV, Op.PHY_REFRAC,
 })
 
 # Format B: 2 bytes — opcode + reg:u8
@@ -201,6 +214,9 @@ FORMAT_E = frozenset({
     Op.IADD, Op.ISUB, Op.IMUL, Op.IDIV, Op.IMOD, Op.IREM,
     Op.IAND, Op.IOR, Op.IXOR, Op.ISHL, Op.ISHR,
     Op.FADD, Op.FSUB, Op.FMUL, Op.FDIV,
+    # Marine Physics: [op][rd][rs1][rs2]
+    Op.PHY_ABSORB, Op.PHY_SCATTER, Op.PHY_JERLOV, Op.PHY_THERMO,
+    Op.PHY_SEABED, Op.PHY_ATTEN, Op.PHY_VISIB, Op.PHY_SOUNDV, Op.PHY_REFRAC,
 })
 
 # Format G: variable — opcode + len:u16 + data:len bytes
