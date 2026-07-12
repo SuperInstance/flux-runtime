@@ -1,0 +1,38 @@
+;; ============================================
+;; factorial.flx — Compute 7! = 5040
+;; Demonstrates: multiplication in a loop, DEC, JNZ
+;; ============================================
+;;
+;; Computes: 7! = 7 × 6 × 5 × 4 × 3 × 2 × 1 = 5040
+;;
+;; This is the clean, documented version of the
+;; factorial test from cross_impl.flx.
+;;
+;; Register allocation:
+;;   R0 = accumulator (result)
+;;   R1 = counter (counts down from 7 to 1)
+
+    MOVI R0, 1           ;; accumulator = 1
+    MOVI R1, 7           ;; counter = 7
+
+fact_loop:
+    IMUL R0, R0, R1      ;; acc *= counter  (Format E)
+    DEC  R1              ;; counter--
+    JNZ  R1, fact_loop   ;; if counter != 0, loop
+
+    HALT                 ;; R0 = 5040
+
+;; --------------------------------------------
+;; Execution trace (key iterations):
+;;   Iter 1: R0 = 1*7 = 7,   R1 = 6
+;;   Iter 2: R0 = 7*6 = 42,  R1 = 5
+;;   Iter 3: R0 = 42*5 = 210, R1 = 4
+;;   Iter 4: R0 = 210*4 = 840, R1 = 3
+;;   Iter 5: R0 = 840*3 = 2520, R1 = 2
+;;   Iter 6: R0 = 2520*2 = 5040, R1 = 1
+;;   Iter 7: R0 = 5040*1 = 5040, R1 = 0 → exit
+;;
+;; Register state after HALT:
+;;   R0 = 5040   (7!)
+;;   R1 = 0      (counter exhausted)
+;; --------------------------------------------
