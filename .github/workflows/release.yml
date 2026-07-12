@@ -8,10 +8,16 @@ on:
 permissions:
   contents: write
 
+# Trusted publishing (OIDC) — no PyPI token needed if configured on PyPI.
+# See: https://docs.pypi.org/trusted-publishers/
 jobs:
   build-and-release:
-    name: Build & Publish Release
+    name: Build, Publish to PyPI, and Create GitHub Release
     runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -29,6 +35,9 @@ jobs:
 
       - name: Build package
         run: python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
