@@ -1,0 +1,74 @@
+;; ============================================
+;; memory_demo.flx — LOAD and STORE Operations
+;; Demonstrates: memory addressing, STORE, LOAD
+;; ============================================
+;;
+;; Stores 5 values to memory addresses 0-4
+;; (within the stack region's low address space),
+;; then loads them back and verifies they match.
+;;
+;; FLUX memory is addressed via the stack region
+;; by default. STORE writes a register value to
+;; mem[addr], LOAD reads mem[addr] into a register.
+;;
+;; Register allocation:
+;;   R0 = value to store / loaded value
+;;   R1 = memory address pointer
+
+    ;; --- Store phase: write values 10,20,30,40,50 to addrs 0-4 ---
+
+    MOVI R0, 10          ;; value = 10
+    MOVI R1, 0           ;; address = 0
+    STORE R0, R1         ;; mem[0] = 10
+
+    MOVI R0, 20
+    MOVI R1, 1
+    STORE R0, R1         ;; mem[1] = 20
+
+    MOVI R0, 30
+    MOVI R1, 2
+    STORE R0, R1         ;; mem[2] = 30
+
+    MOVI R0, 40
+    MOVI R1, 3
+    STORE R0, R1         ;; mem[3] = 40
+
+    MOVI R0, 50
+    MOVI R1, 4
+    STORE R0, R1         ;; mem[4] = 50
+
+    ;; --- Load phase: read values back ---
+    ;; R0 will end up holding the last loaded value (mem[4] = 50)
+
+    MOVI R1, 0
+    LOAD R2, R1          ;; R2 = mem[0] = 10
+
+    MOVI R1, 1
+    LOAD R3, R1          ;; R3 = mem[1] = 20
+
+    MOVI R1, 2
+    LOAD R4, R1          ;; R4 = mem[2] = 30
+
+    MOVI R1, 3
+    LOAD R5, R1          ;; R5 = mem[3] = 40
+
+    MOVI R1, 4
+    LOAD R0, R1          ;; R0 = mem[4] = 50
+
+    HALT
+
+;; --------------------------------------------
+;; Register state after HALT:
+;;   R0 = 50   (loaded from mem[4])
+;;   R2 = 10   (loaded from mem[0])
+;;   R3 = 20   (loaded from mem[1])
+;;   R4 = 30   (loaded from mem[2])
+;;   R5 = 40   (loaded from mem[3])
+;;
+;; Memory state:
+;;   mem[0] = 10
+;;   mem[1] = 20
+;;   mem[2] = 30
+;;   mem[3] = 40
+;;   mem[4] = 50
+;; --------------------------------------------
