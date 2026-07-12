@@ -1,0 +1,58 @@
+;; ============================================
+;; stack_demo.flx — LIFO Stack Operations
+;; Demonstrates: PUSH, POP, register clearing
+;; ============================================
+;;
+;; Pushes 5 values onto the stack, clears the
+;; registers, then pops them back in reverse
+;; order (LIFO = Last In, First Out).
+;;
+;; After popping, registers hold their original
+;; values again — proving the stack round-trips
+;; data correctly.
+;;
+;; Register allocation:
+;;   R0-R4 = values to push/pop
+;;   R5 = loop counter for verification
+
+    ;; --- Push phase: load 5 values ---
+    MOVI R0, 100         ;; R0 = 100
+    MOVI R1, 200         ;; R1 = 200
+    MOVI R2, 300         ;; R2 = 300
+    MOVI R3, 400         ;; R3 = 400
+    MOVI R4, 500         ;; R4 = 500
+
+    ;; --- Push them onto the stack ---
+    PUSH R0              ;; stack: [100]
+    PUSH R1              ;; stack: [100, 200]
+    PUSH R2              ;; stack: [100, 200, 300]
+    PUSH R3              ;; stack: [100, 200, 300, 400]
+    PUSH R4              ;; stack: [100, 200, 300, 400, 500]
+
+    ;; --- Clear registers to prove POP restores ---
+    MOVI R0, 0
+    MOVI R1, 0
+    MOVI R2, 0
+    MOVI R3, 0
+    MOVI R4, 0
+
+    ;; --- Pop phase: LIFO order (last pushed = first popped) ---
+    POP R4               ;; R4 = 500 (last pushed)
+    POP R3               ;; R3 = 400
+    POP R2               ;; R2 = 300
+    POP R1               ;; R1 = 200
+    POP R0               ;; R0 = 100 (first pushed)
+
+    HALT
+
+;; --------------------------------------------
+;; Register state after HALT (restored by POP):
+;;   R0 = 100  (pushed first, popped last)
+;;   R1 = 200
+;;   R2 = 300
+;;   R3 = 400
+;;   R4 = 500  (pushed last, popped first)
+;;
+;; This proves the stack is LIFO: the last value
+;; pushed is the first value popped.
+;; --------------------------------------------
