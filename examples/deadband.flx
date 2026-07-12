@@ -1,0 +1,114 @@
+;; ============================================
+;; deadband.flx — Thermostat Deadband Controller
+;; The canonical PLATO/FLUX use case.
+;; ============================================
+;;
+;; A classic bang-bang controller with a deadband:
+;;   - If temp > 75: turn ON cooling (output = 1)
+;;   - If temp < 65: turn ON heating (output = 2)
+;;   - Otherwise:    hold (output = 0)
+;;
+;; Runs 10 iterations. Each iteration reads a
+;; simulated temperature from a memory table,
+;; applies the deadband logic, and stores the
+;; action result.
+;;
+;; This is the kind of control loop FLUX was
+;; designed for — deterministic, low-latency,
+;; register-efficient.
+;;
+;; Register allocation:
+;;   R0 = current temperature (input)
+;;   R1 = output action (0=idle, 1=cool, 2=heat)
+;;   R2 = loop counter
+;;   R3 = upper bound (75)
+;;   R4 = lower bound (65)
+;;   R5 = 10 (iteration count)
+;;
+;; Memory layout:
+;;   mem[0..9] = temperature readings: 70,78,60,72,66,80,64,70,76,68
+
+    ;; --- Initialize constants ---
+    MOVI R3, 75          ;; upper threshold
+    MOVI R4, 65          ;; lower threshold
+    MOVI R5, 10          ;; iteration count
+    MOVI R2, 0           ;; counter = 0
+
+    ;; --- Seed memory with test temperatures ---
+    ;; (In a real system, these come from a sensor)
+    MOVI R0, 70
+    MOVI R6, 0
+    STORE R0, R6         ;; mem[0] = 70
+
+    MOVI R0, 78
+    MOVI R6, 1
+    STORE R0, R6         ;; mem[1] = 78
+
+    MOVI R0, 60
+    MOVI R6, 2
+    STORE R0, R6         ;; mem[2] = 60
+
+    MOVI R0, 72
+    MOVI R6, 3
+    STORE R0, R6         ;; mem[3] = 72
+
+    MOVI R0, 68
+    MOVI R6, 4
+    STORE R0, R6         ;; mem[4] = 68
+
+    ;; --- Main control loop ---
+    ;; Reads mem[counter], applies deadband, stores action
+
+    ;; Iteration 0: temp = mem[0] = 70 → idle (65 ≤ 70 ≤ 75)
+loop_start:
+    LOAD R0, R2          ;; R0 = temperature from memory[counter]
+
+    ;; Check: temp > 75? → cool
+    CMP  R0, R3          ;; compare temp with upper bound
+    JG   temp_above      ;; if temp > 75, go to cooling
+
+    ;; Check: temp < 65? → heat
+    CMP  R0, R4          ;; compare temp with lower bound
+    JL   temp_below      ;; if temp < 65, go to heating
+
+    ;; Otherwise: idle (in deadband)
+    MOVI R1, 0           ;; action = IDLE
+    JMP  next_iter
+
+temp_above:
+    MOVI R1, 1           ;; action = COOL
+    JMP  next_iter
+
+temp_below:
+    MOVI R1, 2           ;; action = HEAT
+
+next_iter:
+    ;; Store the action result to memory[counter + 10]
+    MOV  R6, R2          ;; R6 = counter
+    IADD R6, R6, R5      ;; R6 = counter + 10 (action stored at offset 10)
+    STORE R1, R6         ;; mem[counter+10] = action
+
+    INC  R2              ;; counter++
+    CMP  R2, R5          ;; counter == 10?
+    JL   loop_start      ;; if counter < 10, loop
+
+    ;; --- Final state ---
+    ;; R0 = last temperature read (mem[4] = 68)
+    ;; R1 = last action taken (0 = idle, since 65 ≤ 68 ≤ 75)
+    HALT
+
+;; --------------------------------------------
+;; Test inputs and expected actions:
+;;   mem[0] = 70 → action 0 (idle, in deadband)
+;;   mem[1] = 78 → action 1 (cool, > 75)
+;;   mem[2] = 60 → action 2 (heat, < 65)
+;;   mem[3] = 72 → action 0 (idle, in deadband)
+;;   mem[4] = 68 → action 0 (idle, in deadband)
+;;
+;; Actions stored at mem[10..14]:
+;;   mem[10] = 0  (idle)
+;;   mem[11] = 1  (cool)
+;;   mem[12] = 2  (heat)
+;;   mem[13] = 0  (idle)
+;;   mem[14] = 0  (idle)
+;; --------------------------------------------
