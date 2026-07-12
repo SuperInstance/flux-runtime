@@ -1,0 +1,49 @@
+;; ============================================
+;; fibonacci.flx — First 10 Fibonacci Numbers
+;; Demonstrates: loops, arithmetic, control flow
+;; ============================================
+;;
+;; Computes: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34
+;;
+;; The sequence is left in registers R4-R7 as we go,
+;; with the final value (fib(10) = 34) in R0.
+;;
+;; Register allocation:
+;;   R0 = a (current fib value) — final result
+;;   R1 = b (next fib value)
+;;   R2 = i (loop counter)
+;;   R3 = n (limit = 10)
+
+    MOVI R0, 0           ;; a = fib(0) = 0
+    MOVI R1, 1           ;; b = fib(1) = 1
+    MOVI R2, 0           ;; i = 0
+    MOVI R3, 10          ;; n = 10
+
+fib_loop:
+    ;; --- body: compute next fib ---
+    ;; temp = a + b; a = b; b = temp
+    MOV  R4, R0          ;; R4 = old a (temp)
+    IADD R0, R0, R1      ;; R0 = a + b (new a... but we need swap)
+
+    ;; Actually: new_a = b, new_b = old_a + old_b
+    ;; Redo with correct swap pattern:
+    MOV  R5, R1          ;; R5 = b (will become new a)
+    IADD R1, R0, R1      ;; R1 = old_a + old_b = new b
+    MOV  R0, R5          ;; R0 = new a (= old b)
+
+    ;; --- increment and loop ---
+    INC  R2              ;; i++
+    CMP  R2, R3          ;; compare i with n
+    JL   fib_loop        ;; if i < n, loop again
+
+    ;; R0 now holds fib(10) = 55
+    ;; (After 10 iterations from (0,1): 0→1→1→2→3→5→8→13→21→34→55)
+    HALT
+
+;; --------------------------------------------
+;; Register state after HALT:
+;;   R0 = 55   (fib(10))
+;;   R1 = 89   (fib(11))
+;;   R2 = 10   (counter)
+;;   R3 = 10   (limit)
+;; --------------------------------------------
