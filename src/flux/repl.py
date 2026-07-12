@@ -88,11 +88,43 @@ class FluxREPL:
             return {"error": str(e)}
     
     def execute_expr(self, expr: str) -> Dict[str, Any]:
-        """Compile and execute a simple expression."""
-        # For now, handle simple integer expressions
+        """Compile and execute a simple expression using AST (no eval)."""
+        import ast
+        import operator as op
+        
+        # AST operators for safe evaluation
+        _SAFE_OPS = {
+            ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
+            ast.Div: op.truediv, ast.FloorDiv: op.floordiv,
+            ast.Mod: op.mod, ast.Pow: op.pow, ast.LShift: op.lshift,
+            ast.RShift: op.rshift, ast.BitOr: op.or_, ast.BitAnd: op.and_,
+            ast.BitXor: op.xor, ast.USub: op.neg, ast.UAdd: op.pos,
+            ast.Invert: op.invert,
+        }
+        
+        def _safe_eval(node):
+            """Recursively evaluate an AST node — no exec, no builtins."""
+            if isinstance(node, ast.Constant):
+                if isinstance(node.value, (int, float)):
+                    return node.value
+                raise ValueError(f"Unsupported constant: {type(node.value).__name__}")
+            elif isinstance(node, ast.BinOp):
+                left = _safe_eval(node.left)
+                right = _safe_eval(node.right)
+                if type(node.op) in _SAFE_OPS:
+                    return _SAFE_OPS[type(node.op)](left, right)
+                raise ValueError(f"Unsupported operator: {type(node.op).__name__}")
+            elif isinstance(node, ast.UnaryOp):
+                operand = _safe_eval(node.operand)
+                if type(node.op) in _SAFE_OPS:
+                    return _SAFE_OPS[type(node.op)](operand)
+                raise ValueError(f"Unsupported unary op: {type(node.op).__name__}")
+            else:
+                raise ValueError(f"Disallowed expression node: {type(node).__name__}")
+        
         try:
-            # Evaluate the expression safely
-            result = eval(expr, {"__builtins__": {}})
+            tree = ast.parse(expr, mode="eval")
+            result = _safe_eval(tree.body)
             if isinstance(result, (int, float)):
                 # Generate MOVI R0, result; HALT
                 from flux.bytecode.opcodes import Op
