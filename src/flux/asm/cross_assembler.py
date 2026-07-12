@@ -155,6 +155,19 @@ class CrossAssembler:
         result.warnings = self.warnings
         return result
 
+    def assemble_source(
+        self,
+        source: str,
+        filename: str = "<input>",
+        output_format: OutputFormat = OutputFormat.BINARY,
+    ) -> AssemblyResult:
+        """Alias for :meth:`assemble` — assemble source text into bytecode.
+
+        Provided for API compatibility with tests and tooling that
+        refer to this method name.
+        """
+        return self.assemble(source, filename=filename, output_format=output_format)
+
     def assemble_file(
         self,
         path: str,
@@ -461,6 +474,7 @@ class CrossAssembler:
 
         elif op_def.format == "D":
             # Register + immediate16 (or just immediate16 with default reg 0)
+            instr_offset = len(bytecode)  # offset of this instruction
             if len(operands) == 1:
                 # JMP-style: just an immediate/label, default register=0
                 rs1 = 0
@@ -468,6 +482,18 @@ class CrossAssembler:
             else:
                 rs1 = parse_register(operands[0], loc)
                 imm = self._eval_expr(operands[1], labels)
+
+            # Jump opcodes use PC-relative offsets; convert absolute label
+            # addresses to relative offsets so the VM's `pc += offset` works.
+            # After decoding, the VM's pc points past the instruction, so the
+            # offset must be: target - (instr_start + instr_size)
+            _JUMP_MNEMONICS = {
+                "JMP", "JZ", "JNZ", "CALL",
+                "JE", "JNE", "JL", "JGE", "JG", "JLE",
+            }
+            if mnemonic in _JUMP_MNEMONICS and operands[-1].strip() in labels:
+                imm = imm - instr_offset - op_def.size
+
             if imm < -32768 or imm > 65535:
                 self.warnings.append(
                     f"{loc}: immediate {imm} truncated to 16-bit"

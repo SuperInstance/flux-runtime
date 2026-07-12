@@ -254,10 +254,12 @@ def test_assemble_forward_label_ref():
     result = asm.assemble(source)
     assert len(result.errors) == 0
     assert "end" in result.symbol_table
-    # JMP should have the offset to the HALT instruction
-    # JMP is 4 bytes, MOVI is 4 bytes, so offset should be 8
+    # JMP should have a PC-relative offset to the HALT instruction.
+    # JMP is at offset 0 (size 4), MOVI is at offset 4 (size 4), HALT at offset 8.
+    # The VM advances PC past the instruction before adding the offset,
+    # so offset = target - (instr_start + instr_size) = 8 - (0 + 4) = 4.
     imm = struct.unpack_from("<h", result.bytecode, 2)[0]
-    assert imm == 8  # offset from JMP to HALT
+    assert imm == 4  # PC-relative offset from after JMP to HALT
 
 
 def test_assemble_comments():

@@ -373,8 +373,9 @@ def test_debugger_continue() -> None:
     result = debugger.continue_exec()
 
     assert result.breakpoint_hit is True
-    # After executing the instruction at offset 2, PC should be at 3
-    assert result.pc_after == 3
+    # Breakpoint stops BEFORE executing the instruction at offset 2
+    assert result.pc_after == 2
+    assert debugger.pc == 2
 
 
 def test_debugger_continue_to_halt() -> None:

@@ -223,6 +223,7 @@ class FluxDebugger(Interpreter):
         self._original_bytecode = code
         self._call_stack: List[int] = []  # Track return addresses
         self._step_callback: Optional[Callable[[StepResult], None]] = None
+        self._pending_bp: Optional[int] = None  # Breakpoint awaiting step-through
 
         # Tracing support
         self._tracer = None
@@ -269,13 +270,27 @@ class FluxDebugger(Interpreter):
                 error=f"Disassembly error: {e}",
             )
 
-        # Check for breakpoint at this location
+        # Check for breakpoint at this location — stop BEFORE executing
         breakpoint_hit = False
         if pc_before in self._breakpoints:
             bp = self._breakpoints[pc_before]
             if bp.enabled:
-                bp.hit_count += 1
-                breakpoint_hit = True
+                if self._pending_bp != pc_before:
+                    # First arrival at this breakpoint — don't execute yet
+                    self._pending_bp = pc_before
+                    bp.hit_count += 1
+                    return StepResult(
+                        success=True,
+                        instruction=instr,
+                        pc_before=pc_before,
+                        pc_after=pc_before,
+                        cycles=0,
+                        halted=self.halted,
+                        breakpoint_hit=True,
+                    )
+                else:
+                    # Already stopped here — clear pending and execute through
+                    self._pending_bp = None
 
         # Capture register changes
         def _capture_changes() -> tuple:
@@ -404,6 +419,7 @@ class FluxDebugger(Interpreter):
         super().reset()
         self._call_stack.clear()
         self._trace_entries.clear()
+        self._pending_bp = None
         for bp in self._breakpoints.values():
             bp.hit_count = 0
 
@@ -433,6 +449,8 @@ class FluxDebugger(Interpreter):
     def disable_breakpoint(self, offset: int) -> bool:
         """Disable a breakpoint (without removing it)."""
         if offset in self._breakpoints:
+            if not self._breakpoints[offset].enabled:
+                return False  # Already disabled
             self._breakpoints[offset].enabled = False
             return True
         return False
