@@ -1,0 +1,23 @@
+;; ============================================
+;; hello.flx — Hello, FLUX!
+;; The minimal FLUX program.
+;; Demonstrates: MOVI, HALT, register output
+;; ============================================
+;;
+;; FLUX has no OUT instruction — programs communicate
+;; results through registers. R0 is the conventional
+;; "return value" register, like main() in C.
+;;
+;; To "print" the greeting, we store the value 42 in R0.
+;; A host wrapper or debugger can read R0 after HALT.
+;;
+;; Expected result: R0 = 42
+
+    MOVI R0, 42          ;; R0 = 42 (the answer)
+    HALT                 ;; stop execution
+
+;; --------------------------------------------
+;; Register state after HALT:
+;;   R0 = 42
+;;   Cycles = 2
+;; --------------------------------------------
