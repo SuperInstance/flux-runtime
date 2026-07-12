@@ -1,213 +1,83 @@
-# FLUX Examples — Practical, Runnable Demos
+# FLUX Examples
 
-Welcome to the FLUX example gallery. Each example is a self-contained Python
-script or FLUX.MD document that demonstrates a key FLUX concept with beautiful
-terminal output.
+Runnable FLUX assembly programs that demonstrate the VM's instruction set.
+Each `.flx` file is a complete, commented program you can assemble and execute
+on any FLUX VM implementation (Python, Rust, JavaScript).
 
 ## Quick Start
 
-New to FLUX? Read the **[Quick Start Guide](QUICKSTART.md)** first.
-
 ```bash
-cd /home/z/my-project/flux-py
-source .venv/bin/activate
-PYTHONPATH=src python3 examples/01_hello_world.py
-```
-
----
-
-## FLUX.MD Documents (Markdown → Bytecode)
-
-These `.md` files are **executable FLUX programs**. The parser extracts code
-blocks, compiles them through the C or Python frontend, and produces bytecode.
-
-### hello_world.md — Flagship Example
-**Difficulty:** Beginner
-
-The definitive FLUX.MD hello world. Covers the 6-layer architecture,
-C and Python compilation, bytecode format, VM register file, and opcode
-reference. The best starting point for understanding FLUX.
-
-```
+# Assemble and run any example
 PYTHONPATH=src python3 -c "
-from flux.pipeline.e2e import FluxPipeline
-result = FluxPipeline().run(open('examples/hello_world.md').read(), lang='md')
-print(f'Cycles: {result.cycles}, Success: {result.success}')
+from flux.asm.cross_assembler import CrossAssembler, OutputFormat
+from flux.vm.interpreter import Interpreter
+
+# Read the example
+source = open('examples/hello.flx').read()
+
+# Assemble
+assembler = CrossAssembler()
+result = assembler.assemble(source, output_format=OutputFormat.BINARY)
+
+# Execute
+vm = Interpreter(result.bytecode)
+vm.execute()
+
+# Check results
+for i in range(8):
+    print(f'  R{i} = {vm.regs.read_gp(i)}')
 "
 ```
 
-### 02_polyglot_add.md — Polyglot Math
-**Difficulty:** Beginner
+## Examples
 
-Mixes C (for fast math) and Python (for glue logic) in a single FLUX.MD
-document. Demonstrates the polyglot compilation concept and introduces the
-A2A agent communication model.
+| File | What It Teaches | Key Opcodes |
+|------|----------------|-------------|
+| [`hello.flx`](hello.flx) | Minimal program. Store a value in R0 and HALT. | `MOVI`, `HALT` |
+| [`fibonacci.flx`](fibonacci.flx) | First 10 Fibonacci numbers via a counting loop. | `IADD`, `MOV`, `CMP`, `JL`, `INC` |
+| [`factorial.flx`](factorial.flx) | Compute 7! = 5040 with a decrementing loop. | `IMUL`, `DEC`, `JNZ` |
+| [`stack_demo.flx`](stack_demo.flx) | Push 5 values, pop them back. LIFO ordering. | `PUSH`, `POP` |
+| [`memory_demo.flx`](memory_demo.flx) | Store to and load from memory addresses 0–4. | `STORE`, `LOAD` |
+| [`deadband.flx`](deadband.flx) | Thermostat deadband controller — the canonical PLATO/FLUX use case. | `CMP`, `JG`, `JL`, `STORE`, `LOAD` |
+| [`counter.flx`](counter.flx) | Up-counter from 0 to 100. Simplest meaningful loop. | `INC`, `CMP`, `JL` |
+| [`register_math.flx`](register_math.flx) | All five arithmetic ops with distinct operands. | `IADD`, `ISUB`, `IMUL`, `IDIV`, `IMOD` |
 
-### 03_fibonacci.md — Fibonacci at Three Levels
-**Difficulty:** Beginner
+## How FLUX Programs Work
 
-Computes fibonacci through: C source code, hand-crafted raw bytecode with
-hex dumps, and a VM execution trace table. Shows how the same algorithm
-looks at every layer of the stack.
+FLUX is a **register machine** — programs communicate results through registers,
+not through an output stream. After a program runs, you inspect the register
+file to see what it computed.
 
-### 04_agent_handshake.md — A2A Protocol Demo
-**Difficulty:** Intermediate
+### Conventions
 
-Demonstrates the A2A (Agent-to-Agent) protocol: message headers, the
-complete handshake sequence between Agent A (Producer) and Agent B (Worker),
-all A2A opcodes, and the INCREMENTS+2 trust engine.
+- **R0** is the conventional return value (like `main()` returning an int in C).
+- **HALT** stops the VM. Every program must end with HALT.
+- The **stack region** provides both stack space (via PUSH/POP) and general
+  memory (via LOAD/STORE at low addresses).
 
----
+### Instruction Formats
 
-## Python Scripts (Interactive Demos)
+| Format | Size | Layout | Example |
+|--------|------|--------|---------|
+| A | 1 byte | `[opcode]` | `HALT` |
+| B | 2 bytes | `[opcode][reg]` | `INC R0` |
+| C | 3 bytes | `[opcode][rd][rs1]` | `MOV R7, R0` |
+| D | 4 bytes | `[opcode][reg][imm16]` | `MOVI R0, 42` |
+| E | 4 bytes | `[opcode][rd][rs1][rs2]` | `IADD R0, R0, R1` |
 
-These `.py` files are standalone Python scripts that demonstrate specific
-FLUX subsystems with rich terminal output.
+### Cross-Implementation Compatibility
 
-### 01_hello_world.py — Three Ways to Run FLUX
-**Difficulty:** Beginner
+All examples use only opcodes verified to work identically across the three
+FLUX VM implementations (Python, Rust, JavaScript). The instruction subset is:
 
-The simplest possible FLUX programs:
-- **Raw bytecode**: Hand-encode MOVI + IADD + HALT, run on the VM
-- **FIR builder**: Use FIRBuilder to build SSA IR, encode, run
-- **Pipeline**: Compile C source through FluxPipeline, execute on VM
-- **Bonus**: A bytecode loop computing Sum(1..5)
+- **System:** `NOP`, `HALT`
+- **Move:** `MOV`, `MOVI`
+- **Arithmetic:** `IADD`, `ISUB`, `IMUL`, `IDIV`, `IMOD`, `INC`, `DEC`
+- **Stack:** `PUSH`, `POP`
+- **Memory:** `LOAD`, `STORE`
+- **Comparison:** `CMP` (sets zero/sign flags)
+- **Control flow:** `JMP`, `JZ`, `JNZ`, `JE`, `JNE`, `JG`, `JL`, `JGE`, `JLE`
 
-```bash
-PYTHONPATH=src python3 examples/01_hello_world.py
-```
+## License
 
-### 02_polyglot.py — Polyglot Pipeline
-**Difficulty:** Beginner
-
-Parses a FLUX.MD file, extracts C and Python code blocks, compiles each
-through the appropriate frontend, and runs the full pipeline.
-
-```bash
-PYTHONPATH=src python3 examples/02_polyglot.py
-```
-
-### 03_a2a_agents.py — Agent Communication
-**Difficulty:** Intermediate
-
-Creates 3 agents (Producer → Transformer → Consumer), demonstrates binary
-A2A message serialization, trust score evolution, and the full opcode table.
-
-```bash
-PYTHONPATH=src python3 examples/03_a2a_agents.py
-```
-
-### 04_adaptive_profiling.py — Adaptive Profiler
-**Difficulty:** Intermediate
-
-Simulates an audio processing pipeline, classifies modules by heat level
-(FROZEN → COOL → WARM → HOT → HEAT), generates language recommendations,
-and displays a colored heatmap.
-
-```bash
-PYTHONPATH=src python3 examples/04_adaptive_profiling.py
-```
-
-### 05_bytecode_playground.py — Interactive REPL
-**Difficulty:** Beginner
-
-An interactive REPL where you type expressions like `3 + 4` or `10 * 6 + 2`
-and see the generated bytecode, disassembly, execution trace, and register
-state. Also supports `:fib N`, `:c CODE`, `:py CODE`, `:trace`, and more.
-
-```bash
-PYTHONPATH=src python3 examples/05_bytecode_playground.py
-```
-
-### 05_tile_composition.py — Tile System
-**Difficulty:** Intermediate
-
-Explores the 34 built-in computation tiles, creates custom tiles, composes
-them (chain, parallel), searches the registry, and analyzes costs.
-
-```bash
-PYTHONPATH=src python3 examples/05_tile_composition.py
-```
-
-### 06_evolution.py — Self-Evolution Engine
-**Difficulty:** Advanced
-
-Demonstrates the evolution engine: genome snapshots, pattern mining for
-hot execution paths, mutation proposals, correctness validation, and
-fitness progress over generations.
-
-```bash
-PYTHONPATH=src python3 examples/06_evolution.py
-```
-
-### 07_full_synthesis.py — The Grand Tour
-**Difficulty:** Advanced
-
-The "wow" demo — wires every FLUX subsystem together: boots 12 modules,
-profiles a workload, classifies by heat, gets language recommendations,
-hot-reloads a module, runs 3 generations of self-evolution, and produces
-a full system report.
-
-```bash
-PYTHONPATH=src python3 examples/07_full_synthesis.py
-```
-
----
-
-## Example Index
-
-| # | File | Type | Difficulty | Topic |
-|---|------|------|-----------|-------|
-| — | [QUICKSTART.md](QUICKSTART.md) | Guide | Beginner | Getting started |
-| — | [hello_world.md](hello_world.md) | FLUX.MD | Beginner | Architecture overview |
-| 01 | [01_hello_world.py](01_hello_world.py) | Python | Beginner | Three execution approaches |
-| 02 | [02_polyglot.py](02_polyglot.py) | Python | Beginner | Polyglot compilation |
-| 02 | [02_polyglot_add.md](02_polyglot_add.md) | FLUX.MD | Beginner | C + Python in one doc |
-| 03 | [03_a2a_agents.py](03_a2a_agents.py) | Python | Intermediate | Agent communication |
-| 03 | [03_fibonacci.md](03_fibonacci.md) | FLUX.MD | Beginner | Fibonacci at 3 levels |
-| 04 | [04_adaptive_profiling.py](04_adaptive_profiling.py) | Python | Intermediate | Heat classification |
-| 04 | [04_agent_handshake.md](04_agent_handshake.md) | FLUX.MD | Intermediate | A2A protocol |
-| 05 | [05_bytecode_playground.py](05_bytecode_playground.py) | Python | Beginner | Interactive REPL |
-| 05 | [05_tile_composition.py](05_tile_composition.py) | Python | Intermediate | Tile system |
-| 06 | [06_evolution.py](06_evolution.py) | Python | Advanced | Self-evolution |
-| 07 | [07_full_synthesis.py](07_full_synthesis.py) | Python | Advanced | Complete system |
-
----
-
-## Architecture Overview
-
-```
-FLUX.MD ──→ Parser ──→ FIR Builder ──→ Optimizer ──→ Bytecode ──→ VM
-                                    ↓
-                              Tile Registry
-                                    ↓
-                              Evolution Engine
-                                    ↓
-                              Adaptive Selector
-                              (heat → language)
-```
-
-## Source Layout
-
-```
-src/flux/
-├── a2a/                # Binary A2A message protocol
-├── adaptive/           # Profiler + language selector
-├── bytecode/           # Encoder, decoder, validator, opcodes
-├── compiler/           # Multi-language compilation pipeline
-├── evolution/          # Self-evolution engine
-├── fir/                # SSA intermediate representation
-├── frontend/           # C and Python frontend compilers
-├── jit/                # JIT compiler + cache
-├── memory/             # Learning and bandit algorithms
-├── modules/            # Fractal hot-reload module system
-├── optimizer/          # FIR optimization passes
-├── parser/             # FLUX.MD parser
-├── pipeline/           # End-to-end pipeline + debugger
-├── protocol/           # Messages, channels, negotiation
-├── runtime/            # Agent runtime + orchestrator
-├── stdlib/             # Math, strings, collections, agents
-├── synthesis/          # The complete FLUX synthesizer
-├── tiles/              # Composable computation patterns
-└── vm/                 # Micro-VM interpreter
-```
+Same as the flux-runtime repository (MIT).
