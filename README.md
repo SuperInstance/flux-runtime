@@ -12,9 +12,9 @@
      Fluid Language Universal eXecution
   </pre>
   <p><strong>A self-assembling, self-improving runtime that compiles markdown to bytecode.</strong></p>
-[![Benchmark](https://github.com/SuperInstance/flux-runtime/actions/workflows/benchmark.yml/badge.svg)](https://github.com/SuperInstance/flux-runtime/actions/workflows/benchmark.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+  [![Benchmark](https://github.com/SuperInstance/flux-runtime/actions/workflows/benchmark.yml/badge.svg)](https://github.com/SuperInstance/flux-runtime/actions/workflows/benchmark.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
   <p>
-    <code>pip install flux-runtime</code> &nbsp;·&nbsp;
+    <code>pip install flux-vm</code> &nbsp;·&nbsp;
     <a href="https://github.com/SuperInstance/flux-runtime">GitHub</a> &nbsp;·&nbsp;
     <a href="https://github.com/SuperInstance/flux-runtime/tree/main/playground">Playground</a>
   </p>
@@ -30,7 +30,7 @@
 
 ## What is FLUX?
 
-FLUX is a **markdown-to-bytecode runtime** designed for AI agents. You write structured markdown files containing polyglot code blocks — mixing C, Python, Rust, or any language line by line — and the FLUX compiler weaves them into a single optimized, verifiable bytecode that runs on a 64-register Micro-VM.
+**FLUX — Fluid Language Universal eXecution** — is a **markdown-to-bytecode runtime** designed for AI agents. You write structured markdown files containing polyglot code blocks — mixing C, Python, Rust, or any language line by line — and the FLUX compiler weaves them into a single optimized, verifiable bytecode that runs on a 64-register Micro-VM.
 
 But that's the mechanics. Here's the **idea**:
 
@@ -79,7 +79,7 @@ A lawyer uses best practices of legalese to build contracts and documentation. A
 ## Quick Start
 
 ```bash
-pip install flux-runtime
+pip install flux-vm
 ```
 
 ```bash
@@ -89,6 +89,34 @@ flux run output.bin                     # Execute in the VM
 ```
 
 That's it. Three commands from zero to running bytecode.
+
+## 📦 Related Packages
+
+FLUX is implemented across multiple languages — same bytecode, different shells:
+
+| Package | Language | Registry | Install |
+|---------|----------|----------|---------|
+| **[flux-vm](https://pypi.org/project/flux-vm/)** | Python | PyPI | `pip install flux-vm` |
+| **[fluxvm](https://crates.io/crates/fluxvm)** | Rust | crates.io | `cargo add fluxvm` |
+| **[flux-js](https://www.npmjs.com/package/flux-js)** | JavaScript | npm | `npm install flux-js` |
+| **[flux-compiler](https://github.com/SuperInstance/flux-compiler)** | Rust/Python | GitHub | `cargo install flux-compiler` |
+
+Additional implementations: [C](https://github.com/SuperInstance/flux-runtime-c) · [Zig](https://github.com/SuperInstance/flux-zig) · [Go](https://github.com/SuperInstance/flux-swarm) · [Java](https://github.com/SuperInstance/flux-java) · [WASM](https://github.com/SuperInstance/flux-wasm) · [CUDA](https://github.com/SuperInstance/flux-cuda)
+
+## 🌐 Ecosystem
+
+FLUX is part of a broader research ecosystem exploring agent-first computation:
+
+| Project | Description |
+|---------|-------------|
+| [PLATO Engine Block](https://github.com/SuperInstance/plato-engine-block) | Constraint engine powering FLUX verification |
+| [Constraint-Theory-Core](https://github.com/SuperInstance/Constraint-Theory) | Mathematical foundations for constraint-based computation |
+| [AI-Writings](https://github.com/SuperInstance/AI-Writings) | Philosophy, essays, and design rationale behind FLUX |
+| [Captain's Log](https://github.com/SuperInstance/captains-log) | Oracle1 growth diary and agent dojo curriculum |
+| [Iron-to-Iron](https://github.com/SuperInstance/iron-to-iron) | I2I protocol — agents communicate through git commits |
+| [flux-research](https://github.com/SuperInstance/flux-research) | 40K words: compiler taxonomy, ISA v2, agent-first design |
+
+📖 **[Full package index →](https://github.com/SuperInstance/flux/blob/main/PACKAGES.md)**
 
 ## Architecture Overview
 
@@ -309,9 +337,9 @@ Working implementations in `PaperBridge`:
 
 ---
 
-## Ecosystem (April 2026)
+## Ecosystem Implementations
 
-FLUX is now implemented in **11 languages**, with vocabulary interpreters in 4:
+FLUX is now implemented in **11+ languages**, with vocabulary interpreters in several:
 
 | Repo | Language | Tests | Vocab Interpreter |
 |------|----------|-------|-------------------|
@@ -326,17 +354,6 @@ FLUX is now implemented in **11 languages**, with vocabulary interpreters in 4:
 | [flux-py](https://github.com/SuperInstance/flux-py) | Python (minimal) | ✓ | Building |
 | [flux-cuda](https://github.com/SuperInstance/flux-cuda) | CUDA | GPU parallel | |
 | [flux-llama](https://github.com/SuperInstance/flux-llama) | C/llama.cpp | LLM integration | |
-
-## Related Repos
-
-| Repo | Description |
-|------|-------------|
-| [flux-research](https://github.com/SuperInstance/flux-research) | 40K words: compiler taxonomy, ISA v2, agent-first design |
-| [flux-benchmarks](https://github.com/SuperInstance/flux-benchmarks) | Performance comparison across 7 runtimes |
-| [captains-log](https://github.com/SuperInstance/captains-log) | Oracle1 growth diary + 15-exercise dojo curriculum |
-| [oracle1-index](https://github.com/SuperInstance/oracle1-index) | 663 repos indexed, searchable, activity feed |
-| [iron-to-iron](https://github.com/SuperInstance/iron-to-iron) | I2I protocol — agents communicate through git commits |
-| [superinstance-papers](https://github.com/SuperInstance/superinstance-papers) | 244 research papers → FLUX vocabulary |
 
 ## Synthesis
 
