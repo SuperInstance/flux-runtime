@@ -1,0 +1,63 @@
+;; ============================================
+;; register_math.flx — All Arithmetic Operations
+;; Demonstrates: ADD, SUB, MUL, DIV, MOD
+;; ============================================
+;;
+;; Exercises every Format E arithmetic opcode
+;; with distinct operand values so you can verify
+;; each one independently.
+;;
+;; Register allocation:
+;;   R0 = operand A (left)
+;;   R1 = operand B (right)
+;;   R2 = ADD result
+;;   R3 = SUB result
+;;   R4 = MUL result
+;;   R5 = DIV result
+;;   R6 = MOD result
+
+    ;; --- Load operands ---
+    MOVI R0, 84          ;; A = 84
+    MOVI R1, 7           ;; B = 7
+
+    ;; --- ADD: 84 + 7 = 91 ---
+    IADD R2, R0, R1      ;; R2 = 91
+
+    ;; --- SUB: 84 - 7 = 77 ---
+    ISUB R3, R0, R1      ;; R3 = 77
+
+    ;; --- MUL: 84 × 7 = 588 ---
+    IMUL R4, R0, R1      ;; R4 = 588
+
+    ;; --- DIV: 84 ÷ 7 = 12 ---
+    IDIV R5, R0, R1      ;; R5 = 12
+
+    ;; --- MOD: 84 % 7 = 0 ---
+    ;; (84 is evenly divisible by 7)
+    IMOD R6, R0, R1      ;; R6 = 0
+
+    ;; --- Bonus: use different operands for MOD ---
+    MOVI R0, 100
+    MOVI R1, 7
+    IMOD R6, R0, R1      ;; R6 = 100 % 7 = 2
+
+    HALT
+
+;; --------------------------------------------
+;; Register state after HALT:
+;;   R0 = 100   (last A operand)
+;;   R1 = 7     (last B operand)
+;;   R2 = 91    (84 + 7)
+;;   R3 = 77    (84 - 7)
+;;   R4 = 588   (84 × 7)
+;;   R5 = 12    (84 ÷ 7)
+;;   R6 = 2     (100 % 7)
+;; --------------------------------------------
+;;
+;; Arithmetic opcode reference (Format E: rd, rs1, rs2):
+;;   IADD  rd = rs1 + rs2
+;;   ISUB  rd = rs1 - rs2
+;;   IMUL  rd = rs1 * rs2
+;;   IDIV  rd = rs1 / rs2  (integer division, truncates toward zero)
+;;   IMOD  rd = rs1 % rs2  (remainder after integer division)
+;; --------------------------------------------
