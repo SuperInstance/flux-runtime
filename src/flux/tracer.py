@@ -273,7 +273,6 @@ class ConservationLedger:
     - System / resource:   3 units
     - SIMD:                4 units
     """
-
     CATEGORY_WEIGHTS = {
         "arithmetic": 1,
         "comparison": 1,
@@ -284,9 +283,20 @@ class ConservationLedger:
         "simd": 4,
         "a2a": 5,
         "system": 3,
+        # Room interaction categories for PLATO governance logging
+        "room_enter": 2,
+        "room_exit": 2,
+        "protocol_send": 3,
+        "protocol_receive": 3,
+        "governance_decision": 4,
+        "budget_check": 1,
+        "budget_request": 2,
     }
 
     def __init__(self) -> None:
+        self.entries: List[Dict[str, Any]] = []
+        self.total_consumed: int = 0
+
         self.entries: List[Dict[str, Any]] = []
         self.total_consumed: int = 0
 
