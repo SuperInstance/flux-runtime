@@ -151,6 +151,7 @@ class Interpreter:
 
         # Stack starts at the top and grows downward
         self.regs.sp = memory_size
+        self._initial_sp = memory_size  # Track for RET empty-stack detection
 
     # ── Public API ─────────────────────────────────────────────────────────
 
@@ -819,9 +820,8 @@ class Interpreter:
             return
 
         if opcode_byte == Op.RET:
-            stack = self.memory.get_region("stack")
-            # Check if stack is empty (returning from main function)
-            if self.regs.sp >= stack.size - 4:
+            # Check if stack is empty by comparing SP to initial value
+            if self.regs.sp >= self._initial_sp:
                 # Stack is empty, halt the VM
                 self.halted = True
                 return
