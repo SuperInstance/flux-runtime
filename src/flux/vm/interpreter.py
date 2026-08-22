@@ -25,6 +25,7 @@ import struct
 from typing import Callable, Optional
 
 from flux.bytecode.opcodes import Op, opcode_size
+from flux.bytecode.opcodes_unified import UnifiedOp
 from flux.vm.memory import MemoryManager
 from flux.vm.registers import RegisterFile
 
@@ -80,6 +81,15 @@ class VMResourceError(VMError):
 
 # ── Interpreter ────────────────────────────────────────────────────────────
 
+# System B (unified ISA) A2A opcode → handler name map. Register-based
+# (Format E), unlike System A's variable-length string A2A payloads.
+_UNIFIED_A2A_NAMES = {
+    0x50: "TELL", 0x51: "ASK", 0x52: "DELEG", 0x53: "BCAST",
+    0x54: "ACCEPT", 0x55: "DECLINE", 0x56: "REPORT", 0x57: "MERGE",
+    0x58: "FORK", 0x59: "JOIN", 0x5A: "SIGNAL", 0x5B: "AWAIT",
+    0x5C: "TRUST", 0x5D: "DISCOV", 0x5E: "STATUS", 0x5F: "HEARTBT",
+}
+
 
 class Interpreter:
     """FLUX Micro-VM bytecode interpreter.
@@ -108,7 +118,14 @@ class Interpreter:
         bytecode: bytes,
         memory_size: int = 65536,
         max_cycles: int = MAX_CYCLES,
+        isa: str = "system_a",
     ) -> None:
+        # ISA selector. "system_a" (default) = legacy numbering in opcodes.py;
+        # "unified" / "system_b" = converged System B numbering in isa_unified.py.
+        # Both tables are preserved; this flag chooses which one to dispatch on.
+        _isa = (isa or "system_a").strip().lower()
+        self.isa = "unified" if _isa in ("unified", "system_b", "b") else "system_a"
+
         self.regs = RegisterFile()
         self.memory = MemoryManager()
         self.bytecode = bytecode
@@ -274,6 +291,19 @@ class Interpreter:
         val = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24)
         return val if val < 0x80000000 else val - 0x100000000
 
+    def _fetch_i16_be(self) -> int:
+        """Fetch a big-endian signed 16-bit immediate (System B Format F).
+
+        The unified ISA encodes imm16 big-endian (high byte first) in the
+        executable ground truth (signal_compiler.py ``_emit_format_f`` and the
+        conformance vectors), despite ``isa_unified.py``'s header claiming
+        little-endian. See memory/flux-ab-truth-2026-08-21.md §note.
+        """
+        hi = self._fetch_u8()
+        lo = self._fetch_u8()
+        val = (hi << 8) | lo
+        return val if val < 0x8000 else val - 0x10000
+
     def _fetch_var_data(self) -> bytes:
         """Fetch variable-length data (Format G): u16 length prefix + data."""
         length = self._fetch_u16()
@@ -376,8 +406,322 @@ class Interpreter:
 
     # ── Single-step execution ──────────────────────────────────────────────
 
+    def _step_unified(self) -> None:
+        """Execute one instruction using System B (unified ISA) numbering.
+
+        This is the converged 3-agent ISA (isa_unified.py / opcodes_unified.py).
+        It is opt-in via ``Interpreter(..., isa="unified")``; System A remains
+        the default and is untouched.
+        """
+        start_pc = self.pc
+        opcode_byte = self._fetch_u8()
+
+        # ── System control (Format A) ─────────────────────────────────────
+        if opcode_byte == UnifiedOp.HALT:
+            self.running = False
+            self.halted = True
+            return
+        if opcode_byte == UnifiedOp.NOP:
+            return
+        if opcode_byte == UnifiedOp.RET:
+            if self.regs.sp >= self._initial_sp:
+                self.halted = True
+                return
+            self.pc = self._stack_pop()
+            return
+
+        # ── Single-register ops (Format B) ────────────────────────────────
+        if opcode_byte == UnifiedOp.INC:
+            (reg,) = self._decode_operands_B()
+            result = self.regs.read_gp(reg) + 1
+            self.regs.write_gp(reg, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.DEC:
+            (reg,) = self._decode_operands_B()
+            result = self.regs.read_gp(reg) - 1
+            self.regs.write_gp(reg, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.NOT:
+            (reg,) = self._decode_operands_B()
+            result = ~self.regs.read_gp(reg)
+            self.regs.write_gp(reg, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.NEG:
+            (reg,) = self._decode_operands_B()
+            result = -self.regs.read_gp(reg)
+            self.regs.write_gp(reg, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.PUSH:
+            (reg,) = self._decode_operands_B()
+            self._stack_push(self.regs.read_gp(reg))
+            return
+        if opcode_byte == UnifiedOp.POP:
+            (reg,) = self._decode_operands_B()
+            self.regs.write_gp(reg, self._stack_pop())
+            return
+
+        # ── Move immediates ───────────────────────────────────────────────
+        if opcode_byte == UnifiedOp.MOVI:  # Format D: op, rd, imm8 (signed)
+            rd = self._fetch_u8()
+            imm = self._fetch_i8()
+            self.regs.write_gp(rd, imm)
+            self._set_flags(imm)
+            return
+        if opcode_byte == UnifiedOp.MOVI16:  # Format F: op, rd, imm16 (big-endian)
+            rd = self._fetch_u8()
+            imm = self._fetch_i16_be()
+            self.regs.write_gp(rd, imm)
+            self._set_flags(imm)
+            return
+
+        # ── Integer arithmetic / logic (Format E) ─────────────────────────
+        if opcode_byte == UnifiedOp.ADD:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) + self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.SUB:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) - self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.MUL:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) * self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.DIV:
+            rd, rs1, rs2 = self._decode_operands_E()
+            divisor = self.regs.read_gp(rs2)
+            if divisor == 0:
+                raise VMDivisionByZeroError(
+                    "Integer division by zero", opcode=opcode_byte, pc=start_pc,
+                )
+            result = int(self.regs.read_gp(rs1) / divisor)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.MOD:
+            rd, rs1, rs2 = self._decode_operands_E()
+            divisor = self.regs.read_gp(rs2)
+            if divisor == 0:
+                raise VMDivisionByZeroError(
+                    "Integer modulo by zero", opcode=opcode_byte, pc=start_pc,
+                )
+            dividend = self.regs.read_gp(rs1)
+            result = dividend - int(dividend / divisor) * divisor
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.AND:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) & self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.OR:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) | self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.XOR:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) ^ self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.SHL:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) << (self.regs.read_gp(rs2) & 0x1F)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.SHR:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) >> (self.regs.read_gp(rs2) & 0x1F)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.MIN:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = min(self.regs.read_gp(rs1), self.regs.read_gp(rs2))
+            self.regs.write_gp(rd, result)
+            return
+        if opcode_byte == UnifiedOp.MAX:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = max(self.regs.read_gp(rs1), self.regs.read_gp(rs2))
+            self.regs.write_gp(rd, result)
+            return
+
+        # ── Compare (Format E) ────────────────────────────────────────────
+        if opcode_byte == UnifiedOp.CMP_EQ:
+            rd, rs1, rs2 = self._decode_operands_E()
+            a, b = self.regs.read_gp(rs1), self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, 1 if a == b else 0)
+            self._set_cmp_flags(a, b)
+            return
+        if opcode_byte == UnifiedOp.CMP_LT:
+            rd, rs1, rs2 = self._decode_operands_E()
+            a, b = self.regs.read_gp(rs1), self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, 1 if a < b else 0)
+            self._set_cmp_flags(a, b)
+            return
+        if opcode_byte == UnifiedOp.CMP_GT:
+            rd, rs1, rs2 = self._decode_operands_E()
+            a, b = self.regs.read_gp(rs1), self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, 1 if a > b else 0)
+            self._set_cmp_flags(a, b)
+            return
+        if opcode_byte == UnifiedOp.CMP_NE:
+            rd, rs1, rs2 = self._decode_operands_E()
+            a, b = self.regs.read_gp(rs1), self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, 1 if a != b else 0)
+            self._set_cmp_flags(a, b)
+            return
+
+        # ── Float (Format E) ──────────────────────────────────────────────
+        if opcode_byte == UnifiedOp.FADD:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, self.regs.read_fp(rs1) + self.regs.read_fp(rs2))
+            return
+        if opcode_byte == UnifiedOp.FSUB:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, self.regs.read_fp(rs1) - self.regs.read_fp(rs2))
+            return
+        if opcode_byte == UnifiedOp.FMUL:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, self.regs.read_fp(rs1) * self.regs.read_fp(rs2))
+            return
+        if opcode_byte == UnifiedOp.FDIV:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, self.regs.read_fp(rs1) / self.regs.read_fp(rs2))
+            return
+        if opcode_byte == UnifiedOp.FMIN:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, min(self.regs.read_fp(rs1), self.regs.read_fp(rs2)))
+            return
+        if opcode_byte == UnifiedOp.FMAX:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, max(self.regs.read_fp(rs1), self.regs.read_fp(rs2)))
+            return
+        if opcode_byte == UnifiedOp.FTOI:
+            rd, rs1, _ = self._decode_operands_E()
+            self.regs.write_gp(rd, int(self.regs.read_fp(rs1)))
+            return
+        if opcode_byte == UnifiedOp.ITOF:
+            rd, rs1, _ = self._decode_operands_E()
+            self.regs.write_fp(rd, float(self.regs.read_gp(rs1)))
+            return
+
+        # ── Memory / move (Format E) ──────────────────────────────────────
+        if opcode_byte == UnifiedOp.LOAD:
+            rd, rs1, rs2 = self._decode_operands_E()
+            addr = self.regs.read_gp(rs1) + self.regs.read_gp(rs2)
+            stack = self.memory.get_region("stack")
+            self.regs.write_gp(rd, stack.read_i32(addr))
+            return
+        if opcode_byte == UnifiedOp.STORE:
+            rd, rs1, rs2 = self._decode_operands_E()
+            addr = self.regs.read_gp(rs1) + self.regs.read_gp(rs2)
+            stack = self.memory.get_region("stack")
+            stack.write_i32(addr, self.regs.read_gp(rd))
+            return
+        if opcode_byte == UnifiedOp.MOV:
+            rd, rs1, _ = self._decode_operands_E()
+            self.regs.write_gp(rd, self.regs.read_gp(rs1))
+            return
+        if opcode_byte == UnifiedOp.SWP:
+            rd, rs1, _ = self._decode_operands_E()
+            a, b = self.regs.read_gp(rd), self.regs.read_gp(rs1)
+            self.regs.write_gp(rd, b)
+            self.regs.write_gp(rs1, a)
+            return
+
+        # ── Branches ──────────────────────────────────────────────────────
+        if opcode_byte == UnifiedOp.JZ:
+            rd, rs1, _ = self._decode_operands_E()
+            if self.regs.read_gp(rd) == 0:
+                self.pc += self.regs.read_gp(rs1)
+            return
+        if opcode_byte == UnifiedOp.JNZ:
+            rd, rs1, _ = self._decode_operands_E()
+            if self.regs.read_gp(rd) != 0:
+                self.pc += self.regs.read_gp(rs1)
+            return
+        if opcode_byte == UnifiedOp.JLT:
+            rd, rs1, _ = self._decode_operands_E()
+            if self.regs.read_gp(rd) < 0:
+                self.pc += self.regs.read_gp(rs1)
+            return
+        if opcode_byte == UnifiedOp.JGT:
+            rd, rs1, _ = self._decode_operands_E()
+            if self.regs.read_gp(rd) > 0:
+                self.pc += self.regs.read_gp(rs1)
+            return
+        if opcode_byte == UnifiedOp.JMP:
+            self._fetch_u8()  # rd (ignored by JMP)
+            imm16 = self._fetch_i16_be()
+            self.pc += imm16
+            return
+        if opcode_byte == UnifiedOp.CALL:
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
+            self._stack_push(self.pc)
+            self.pc = self.regs.read_gp(rd) + imm16
+            return
+        if opcode_byte == UnifiedOp.LOOP:
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
+            v = self.regs.read_gp(rd) - 1
+            self.regs.write_gp(rd, v)
+            if v > 0:
+                self.pc -= imm16
+            return
+
+        # ── A2A (Format E) ────────────────────────────────────────────────
+        if opcode_byte in _UNIFIED_A2A_NAMES:
+            rd, rs1, rs2 = self._decode_operands_E()
+            payload = struct.pack(
+                "<III",
+                self.regs.read_gp(rd),
+                self.regs.read_gp(rs1),
+                self.regs.read_gp(rs2),
+            )
+            self._dispatch_a2a(_UNIFIED_A2A_NAMES[opcode_byte], payload)
+            return
+
+        # ── Confidence: C_THRESH (Format D) ───────────────────────────────
+        if opcode_byte == UnifiedOp.C_THRESH:
+            # Confidence machinery is out of scope for the Python interpreter;
+            # consume (rd, imm8) and no-op (documented stub).
+            self._fetch_u8()  # rd
+            self._fetch_u8()  # imm8
+            return
+
+        # ── Unknown / not-yet-implemented unified opcode ──────────────────
+        try:
+            name = UnifiedOp(opcode_byte).name
+        except ValueError:
+            name = "RESERVED"
+        raise VMInvalidOpcodeError(
+            f"Unknown or unimplemented unified opcode: 0x{opcode_byte:02X} ({name})",
+            opcode=opcode_byte,
+            pc=start_pc,
+        )
+
     def _step(self) -> None:
         """Fetch, decode, and execute one instruction."""
+        if self.isa == "unified":
+            self._step_unified()
+            return
         start_pc = self.pc
         opcode_byte = self._fetch_u8()
 
