@@ -6,6 +6,13 @@ and FluxSynthesizer. Imports are performed inside each fixture
 to avoid import-time side effects and keep test collection fast.
 """
 
+# NOTE (2026-08-21, A/B reconciliation): this module intentionally tests
+# the LEGACY System A opcode numbering (flux.bytecode.opcodes.Op) and raw
+# System A bytes. Per the reconciliation plan it is RETAINED AS-IS — no
+# mapping is deleted. The unified (System B) equivalents live in
+# tests/test_conformance_unified.py, tests/test_toolchain_unified.py, and
+# tests/test_dual_mode_equivalence.py.
+
 from __future__ import annotations
 
 import struct
