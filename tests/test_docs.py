@@ -437,7 +437,7 @@ class TestGeneratorWriteAll:
     def test_write_all_content_valid(self, generator, tmp_path):
         """Written files should have valid markdown content."""
         generator.write_all(output_dir=str(tmp_path / "out"))
-        api = (tmp_path / "out" / "api_reference.md").read_text()
+        api = (tmp_path / "out" / "api_reference.md").read_text(encoding="utf-8")
         assert "# API Reference" in api
 
 

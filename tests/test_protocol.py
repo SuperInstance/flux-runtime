@@ -662,6 +662,7 @@ class TestAgentRegistry:
         reg.register(a)
         reg.register(b)
 
+        a.last_seen = time.time() - 100.0  # guarantee distinct timestamps (Windows clock granularity)
         b.heartbeat()  # b is more recent
         routed = reg.route("compute")
         assert routed is not None

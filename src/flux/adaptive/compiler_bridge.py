@@ -132,7 +132,7 @@ class CompilerBridge:
         """
         import time as _time
 
-        start = _time.time_ns()
+        start = _time.perf_counter_ns()
         source_hash = hashlib.sha256(source.encode()).hexdigest()[:16]
 
         # Check if recompilation is supported
@@ -150,7 +150,7 @@ class CompilerBridge:
         cache_key = f"{source_hash}:{from_lang}:{to_lang}"
         if self._enable_cache and cache_key in self._cache:
             self._cache_hits += 1
-            elapsed = _time.time_ns() - start
+            elapsed = _time.perf_counter_ns() - start
             return RecompileResult(
                 success=True,
                 from_lang=from_lang,
@@ -176,7 +176,7 @@ class CompilerBridge:
             encoder = BytecodeEncoder()
             bytecode = encoder.encode(module)
 
-            elapsed = _time.time_ns() - start
+            elapsed = _time.perf_counter_ns() - start
 
             # Cache the result
             if self._enable_cache:
@@ -193,7 +193,7 @@ class CompilerBridge:
                 compilation_time_ns=elapsed,
             )
         except Exception as exc:
-            elapsed = _time.time_ns() - start
+            elapsed = _time.perf_counter_ns() - start
             return RecompileResult(
                 success=False,
                 from_lang=from_lang,

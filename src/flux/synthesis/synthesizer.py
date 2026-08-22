@@ -239,7 +239,7 @@ class FluxSynthesizer:
         Returns:
             WorkloadResult with profiling data.
         """
-        start = time.monotonic_ns()
+        start = time.perf_counter_ns()
         module_calls_before = self.profiler.module_count
         samples_before = self.profiler.sample_count
 
@@ -251,21 +251,21 @@ class FluxSynthesizer:
             try:
                 fn()
             except Exception as exc:
-                elapsed = time.monotonic_ns() - start
+                elapsed = time.perf_counter_ns() - start
                 return WorkloadResult(
                     success=False,
                     elapsed_ns=elapsed,
                     error=str(exc),
                 )
         except Exception as exc:
-            elapsed = time.monotonic_ns() - start
+            elapsed = time.perf_counter_ns() - start
             return WorkloadResult(
                 success=False,
                 elapsed_ns=elapsed,
                 error=str(exc),
             )
 
-        elapsed = time.monotonic_ns() - start
+        elapsed = time.perf_counter_ns() - start
 
         # Build heatmap string representation
         heatmap = self.profiler.get_heatmap()

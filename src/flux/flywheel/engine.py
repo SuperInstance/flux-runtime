@@ -121,7 +121,7 @@ class FlywheelEngine:
         Returns:
             FlywheelReport with all results and metrics.
         """
-        total_start = time.monotonic_ns()
+        total_start = time.perf_counter_ns()
         report = FlywheelReport()
         report.initial_acceleration = self._acceleration_factor
         report.initial_fitness = self.synth.current_fitness
@@ -143,14 +143,14 @@ class FlywheelEngine:
         # Final state
         report.final_acceleration = self._acceleration_factor
         report.final_fitness = self.synth.current_fitness
-        report.total_time_ns = time.monotonic_ns() - total_start
+        report.total_time_ns = time.perf_counter_ns() - total_start
         report.velocity_trend = self._metrics.get_velocity_trend()
 
         return report
 
     def _run_revolution(self) -> FlywheelRecord:
         """Run a single complete revolution through all 6 phases."""
-        rev_start = time.monotonic_ns()
+        rev_start = time.perf_counter_ns()
         self.revolution += 1
 
         record = FlywheelRecord(revolution=self.revolution)
@@ -228,7 +228,7 @@ class FlywheelEngine:
 
         # Finalize record
         record.fitness_after = self.synth.current_fitness
-        record.revolution_time_ns = time.monotonic_ns() - rev_start
+        record.revolution_time_ns = time.perf_counter_ns() - rev_start
 
         # Record in metrics
         self._metrics.record_revolution(record)
@@ -464,7 +464,7 @@ class FlywheelEngine:
 
         def run_single_experiment(hypothesis: Hypothesis) -> ExperimentResult:
             """Run a single experiment for a hypothesis."""
-            start = time.monotonic_ns()
+            start = time.perf_counter_ns()
 
             # Simulate experiment time based on acceleration factor
             # Higher acceleration = faster experiments
@@ -497,7 +497,7 @@ class FlywheelEngine:
                 if self._validation_fn is not None:
                     validation_passed = self._validation_fn(mutated)
 
-                elapsed = time.monotonic_ns() - start
+                elapsed = time.perf_counter_ns() - start
 
                 # Determine outcome
                 if fitness_after > fitness_before * 1.001 and validation_passed:
@@ -529,7 +529,7 @@ class FlywheelEngine:
                 )
 
             except Exception as exc:
-                elapsed = time.monotonic_ns() - start
+                elapsed = time.perf_counter_ns() - start
                 return ExperimentResult(
                     hypothesis=hypothesis,
                     outcome=ExperimentOutcome.FAILURE,

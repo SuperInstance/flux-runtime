@@ -674,26 +674,26 @@ class GrandConductor:
 
             # System report
             report = self.synthesizer.get_system_report()
-            with open(os.path.join(output_dir, "system_report.txt"), "w") as f:
+            with open(os.path.join(output_dir, "system_report.txt"), "w", encoding="utf-8") as f:
                 f.write(report.to_text())
             count += 1
 
             # Module tree
             tree = self.synthesizer.get_module_tree()
-            with open(os.path.join(output_dir, "module_tree.txt"), "w") as f:
+            with open(os.path.join(output_dir, "module_tree.txt"), "w", encoding="utf-8") as f:
                 f.write(f"# Module Tree for {self.name}\n\n")
                 f.write(tree)
             count += 1
 
             # JSON report
             import json
-            with open(os.path.join(output_dir, "system_report.json"), "w") as f:
+            with open(os.path.join(output_dir, "system_report.json"), "w", encoding="utf-8") as f:
                 json.dump(report.to_dict(), f, indent=2, default=str)
             count += 1
 
             # Stats
             stats = self.get_stats()
-            with open(os.path.join(output_dir, "stats.json"), "w") as f:
+            with open(os.path.join(output_dir, "stats.json"), "w", encoding="utf-8") as f:
                 json.dump(stats, f, indent=2, default=str)
             count += 1
 
