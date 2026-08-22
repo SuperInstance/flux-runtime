@@ -427,8 +427,13 @@ class SignalCompiler:
         for child in body:
             self._compile_op(child, line=line)
         
-        # LOOP: decrement counter, jump back if > 0
-        loop_back = len(self._bytecode) - self._label_map[label_start]
+        # LOOP: decrement counter, jump back if > 0.
+        # Back-offset is relative to the pc AFTER the 4-byte LOOP instruction
+        # (interpreter: pc -= imm16 post-fetch), matching _resolve_jumps'
+        # `target - (offset + 4)` convention. The historical code omitted the
+        # +4, so LOOP jumped to itself and the body ran once — caught by the
+        # Phase 3 conformance vector (2026-08-21).
+        loop_back = (len(self._bytecode) + 4) - self._label_map[label_start]
         self._emit_format_f(0x46, counter, loop_back, source_line=line)  # LOOP
     
     def _compile_branch(self, op: dict, line: int):
