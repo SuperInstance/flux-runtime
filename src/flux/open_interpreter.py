@@ -832,7 +832,6 @@ def interactive():
       - Execution result
       - Register state
     """
-    import sys
 
     interpreter = OpenFluxInterpreter()
 

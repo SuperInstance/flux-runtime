@@ -21,7 +21,6 @@ from flux.bytecode.opcodes import Op
 from flux.compiler.pipeline import FluxCompiler
 from flux.runtime.agent import Agent, AgentConfig
 from flux.runtime.agent_runtime import AgentRuntime
-from flux.vm.interpreter import Interpreter
 
 
 passed = 0

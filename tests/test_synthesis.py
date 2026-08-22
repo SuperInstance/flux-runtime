@@ -5,7 +5,6 @@ language recommendations, hot reload, evolution, tile composition, namespace
 isolation, system reports, and full demo pipeline.
 """
 
-import time
 import pytest
 from flux.synthesis.synthesizer import FluxSynthesizer, WorkloadResult
 from flux.synthesis.report import SystemReport
@@ -15,11 +14,10 @@ from flux.modules.card import ModuleCard
 from flux.modules.reloader import FractalReloader
 from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
 from flux.adaptive.selector import AdaptiveSelector, LanguageRecommendation
-from flux.tiles.registry import TileRegistry, default_registry
+from flux.tiles.registry import TileRegistry
 from flux.tiles.tile import Tile, TileType
-from flux.tiles.ports import TilePort, PortDirection
-from flux.fir.types import TypeContext, IntType
-from flux.evolution.genome import Genome, MutationStrategy
+from flux.fir.types import TypeContext
+from flux.evolution.genome import Genome
 from flux.evolution.evolution import EvolutionReport
 from flux.evolution.validator import CorrectnessValidator
 

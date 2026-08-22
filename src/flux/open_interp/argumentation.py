@@ -6,7 +6,7 @@ objection/sustained mechanics. This provides Dung-style argumentation semantics
 for resolving vocabulary conflicts between autonomous agents.
 """
 
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass, field
 
 

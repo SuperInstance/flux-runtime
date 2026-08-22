@@ -6,7 +6,6 @@ because the framework only weighs logical validity, not moral transparency.
 
 Fix: Transparency-adjusted confidence scores.
 """
-from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
 

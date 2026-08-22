@@ -7,12 +7,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from flux.modules.granularity import (
     Granularity,
-    GranularityMeta,
     get_granularity_meta,
 )
-from flux.modules.card import ModuleCard, CompileResult
+from flux.modules.card import ModuleCard
 from flux.modules.container import ModuleContainer, ReloadResult
-from flux.modules.reloader import FractalReloader, ReloadEvent, GranularityRecommendation
+from flux.modules.reloader import FractalReloader, ReloadEvent
 from flux.modules.namespace import ModuleNamespace, NameNotFoundError
 from flux.fir.types import TypeContext
 

@@ -10,10 +10,9 @@ from __future__ import annotations
 from typing import Optional
 
 from flux.fir.types import (
-    FIRType, TypeContext, IntType, BoolType, UnitType, StringType,
+    FIRType, IntType, BoolType, UnitType, StringType,
 )
 from flux.fir.values import Value
-from flux.fir.instructions import Call, Unreachable
 from flux.fir.builder import FIRBuilder
 
 

@@ -3,15 +3,13 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Any, Callable, TYPE_CHECKING
+from typing import Any, Callable, TYPE_CHECKING
 
-from .ports import TilePort, PortDirection
+from .ports import TilePort
 
 if TYPE_CHECKING:
-    from ..fir.types import TypeContext, FIRType
     from ..fir.values import Value
     from ..fir.builder import FIRBuilder
-    from ..fir.blocks import FIRModule
 
 
 class TileType(Enum):

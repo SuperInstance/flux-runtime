@@ -8,7 +8,6 @@ When an agent's vocabulary is pruned, the table reflects the change.
 This is the knowledge layer that JetsonClaw1 doesn't have —
 he handles hardware routing, I handle semantic routing.
 """
-import json
 import time
 from typing import Dict, List, Optional, Set
 from dataclasses import dataclass, field

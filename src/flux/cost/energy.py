@@ -7,12 +7,11 @@ memory hierarchy energy models.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
-from flux.fir.blocks import FIRFunction, FIRModule
+from flux.fir.blocks import FIRFunction
 from flux.fir.instructions import Instruction
-from flux.cost.model import CostModel, CostEstimate
+from flux.cost.model import CostModel
 
 
 @dataclass

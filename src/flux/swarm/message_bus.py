@@ -13,7 +13,7 @@ import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Optional
 
 
 # ── Message Types ─────────────────────────────────────────────────────────

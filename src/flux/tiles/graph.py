@@ -2,17 +2,16 @@
 
 from __future__ import annotations
 from collections import deque
-from dataclasses import dataclass, field
-from typing import Optional, TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from .tile import Tile, TileInstance
-from .ports import TilePort
 
 if TYPE_CHECKING:
     from ..fir.types import TypeContext
     from ..fir.values import Value
     from ..fir.builder import FIRBuilder
-    from ..fir.blocks import FIRModule, FIRFunction, FIRBlock
+    from ..fir.blocks import FIRModule
 
 
 @dataclass
@@ -125,8 +124,6 @@ class TileGraph:
         Returns:
             A FIRModule containing the compiled graph
         """
-        from ..fir.types import UnitType
-        from ..fir.values import Value
 
         module = builder.new_module("tile_graph")
         func = builder.new_function(module, "graph_main", [], [ctx.get_unit()])

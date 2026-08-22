@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import time
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Optional
 
 from flux.fir.types import TypeContext
 from flux.fir.blocks import FIRModule

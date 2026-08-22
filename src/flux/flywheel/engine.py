@@ -23,15 +23,11 @@ from __future__ import annotations
 
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional, Any, Callable
 
 from flux.synthesis.synthesizer import FluxSynthesizer
 from flux.evolution.genome import MutationStrategy, Genome
-from flux.evolution.mutator import SystemMutator
-from flux.evolution.pattern_mining import PatternMiner
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
 
 from .hypothesis import (
     Hypothesis,
@@ -43,7 +39,7 @@ from .hypothesis import (
     FlywheelReport,
     IntegrationReport,
 )
-from .knowledge import KnowledgeBase, GeneralizedRule
+from .knowledge import KnowledgeBase
 from .metrics import FlywheelMetrics
 
 

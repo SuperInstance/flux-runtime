@@ -15,8 +15,6 @@ import uuid
 sys.path.insert(0, "src")
 
 from flux.vm.interpreter import Interpreter
-from flux.bytecode.opcodes import Op
-from flux.a2a.messages import A2AMessage
 
 # Import the simulator
 sys.path.insert(0, "examples")
@@ -421,7 +419,6 @@ def test_fleet_state_initialization() -> None:
 
 def main():
     """Run all tests."""
-    import sys
 
     print("\n" + "=" * 60)
     print("  FLUX FLEET SIMULATOR TESTS")

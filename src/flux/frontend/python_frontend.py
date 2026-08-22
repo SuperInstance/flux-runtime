@@ -7,20 +7,13 @@ for/range, return, print, calls, int/float/str literals.
 from __future__ import annotations
 
 import ast
-from typing import Optional
 
 from flux.fir.types import (
-    TypeContext, FIRType, IntType, FloatType, BoolType, UnitType, StringType,
+    TypeContext, FIRType, FloatType,
 )
 from flux.fir.values import Value
 from flux.fir.builder import FIRBuilder
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
-from flux.fir.instructions import (
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-)
+from flux.fir.blocks import FIRModule, FIRFunction
 
 
 class PythonFrontendCompiler:

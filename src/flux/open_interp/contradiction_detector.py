@@ -18,9 +18,8 @@ Usage:
 """
 
 import re
-import hashlib
-from typing import List, Dict, Optional, Tuple, Set
-from dataclasses import dataclass, field
+from typing import List, Dict
+from dataclasses import dataclass
 from enum import Enum
 
 

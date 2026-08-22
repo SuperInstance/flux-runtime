@@ -24,7 +24,7 @@ import math
 import struct
 from typing import Callable, Optional
 
-from flux.bytecode.opcodes import Op, opcode_size
+from flux.bytecode.opcodes import Op
 from flux.bytecode.opcodes_unified import UnifiedOp
 from flux.vm.memory import MemoryManager
 from flux.vm.registers import RegisterFile

@@ -17,22 +17,16 @@ import pytest
 from flux.adaptive.profiler import (
     AdaptiveProfiler,
     HeatLevel,
-    ProfileSample,
     SampleHandle,
-    BottleneckEntry,
-    BottleneckReport,
 )
 from flux.adaptive.selector import (
-    LanguageProfile,
     LANGUAGES,
     AdaptiveSelector,
     SelectionEvent,
-    LanguageRecommendation,
 )
 from flux.adaptive.compiler_bridge import (
     CompilerBridge,
     LanguageCompiler,
-    RecompileResult,
 )
 
 

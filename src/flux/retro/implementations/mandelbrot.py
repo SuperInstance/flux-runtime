@@ -24,7 +24,6 @@ Register layout (inner loop bytecode)
 
 from __future__ import annotations
 
-from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
 from ._asm import Assembler
 

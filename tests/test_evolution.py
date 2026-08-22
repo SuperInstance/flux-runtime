@@ -9,15 +9,12 @@ Tests cover:
 - Integration pipeline: profiler → miner → mutator → validator
 """
 
-import time
 import pytest
 
 from flux.evolution.genome import (
     Genome,
-    GenomeDiff,
     ModuleSnapshot,
     TileSnapshot,
-    ProfilerSnapshot,
     OptimizationRecord,
     MutationStrategy,
 )
@@ -31,12 +28,9 @@ from flux.evolution.mutator import (
     SystemMutator,
     MutationProposal,
     MutationResult,
-    MutationRecord,
 )
 from flux.evolution.validator import (
     CorrectnessValidator,
-    TestCase,
-    ValidationResult,
     RegressionReport,
 )
 from flux.evolution.evolution import (
@@ -45,8 +39,8 @@ from flux.evolution.evolution import (
     EvolutionReport,
     EvolutionStep,
 )
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
-from flux.adaptive.selector import AdaptiveSelector, LANGUAGES
+from flux.adaptive.profiler import AdaptiveProfiler
+from flux.adaptive.selector import AdaptiveSelector
 from flux.modules.container import ModuleContainer
 from flux.modules.granularity import Granularity
 from flux.tiles.registry import TileRegistry

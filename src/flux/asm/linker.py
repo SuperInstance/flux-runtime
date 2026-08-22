@@ -13,9 +13,9 @@ from __future__ import annotations
 import struct
 import json
 from dataclasses import dataclass, field
-from typing import Optional, BinaryIO
+from typing import Optional
 
-from .errors import AsmError, AsmErrorKind, SourceLocation
+from .errors import AsmError, AsmErrorKind
 
 
 @dataclass

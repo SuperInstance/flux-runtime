@@ -15,15 +15,11 @@ import traceback
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from flux.bytecode.opcodes import Op
-from flux.fir.types import TypeContext, IntType, FloatType, BoolType
-from flux.fir.values import Value
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
+from flux.fir.types import TypeContext, IntType, FloatType
+from flux.fir.blocks import FIRModule
 from flux.fir.builder import FIRBuilder
-from flux.fir.validator import FIRValidator
-from flux.fir.printer import print_fir
 from flux.fir.instructions import (
-    IAdd, ISub, IMul, Return, Unreachable, Call,
-    Tell, Ask, Delegate,
+    Call,
 )
 from flux.bytecode.encoder import BytecodeEncoder
 from flux.bytecode.decoder import BytecodeDecoder
@@ -31,14 +27,13 @@ from flux.compiler.pipeline import FluxCompiler
 from flux.optimizer.pipeline import OptimizationPipeline
 from flux.types.unify import TypeUnifier
 from flux.protocol.message import (
-    MessageKind, MessageId, Request, Response, Event, Error,
+    MessageKind, Request, Response, Event,
 )
 from flux.protocol.serialization import BinaryMessageCodec
-from flux.reload.hot_loader import HotLoader, ModuleVersion
-from flux.stdlib.intrinsics import STDLIB_INTRINSICS, PrintFn
+from flux.reload.hot_loader import HotLoader
+from flux.stdlib.intrinsics import STDLIB_INTRINSICS
 from flux.pipeline.e2e import FluxPipeline
 from flux.pipeline.polyglot import PolyglotCompiler, PolyglotSource
-from flux.pipeline.debug import PipelineDebugger, disassemble_bytecode, print_fir_module
 from flux.vm.interpreter import Interpreter
 
 

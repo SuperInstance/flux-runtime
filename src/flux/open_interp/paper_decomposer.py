@@ -21,7 +21,7 @@ Usage:
 
 import os
 import re
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional
 from .decomposer import DecomposedVocabulary
 
 

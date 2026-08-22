@@ -39,7 +39,7 @@ import re
 import json
 import time
 import os
-from typing import List, Dict, Optional, Callable
+from typing import List, Dict, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 

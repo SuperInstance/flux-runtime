@@ -5,23 +5,18 @@ import traceback
 
 sys.path.insert(0, "src")
 
-from flux.fir.types import TypeContext, IntType, FloatType, BoolType, UnitType, StringType
+from flux.fir.types import TypeContext
 from flux.fir.values import Value
 from flux.fir.instructions import (
-    IAdd, ISub, IMul, IDiv, INeg,
-    FAdd, FSub, FMul, FDiv,
-    IAnd, IOr, IXor,
-    IEq, ILt,
-    Return, Jump, Branch,
-    Call, Store, Alloca,
-    is_terminator,
+    IAdd, ISub, IMul, FAdd, FMul, Return, Jump, Branch,
+    Call, Store,
 )
 from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
 from flux.fir.builder import FIRBuilder
 
 from flux.jit.compiler import JITCompiler, JITFunction, RegisterAllocation
-from flux.jit.cache import JITCache, CacheEntry
-from flux.jit.tracing import ExecutionTracer, BlockProfile, FunctionProfile
+from flux.jit.cache import JITCache
+from flux.jit.tracing import ExecutionTracer
 from flux.jit.ir_optimize import (
     const_fold_pass,
     dead_code_pass,

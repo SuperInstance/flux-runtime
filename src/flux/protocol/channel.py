@@ -11,10 +11,9 @@ from __future__ import annotations
 
 import enum
 from collections import deque
-from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Set
 
-from .message import MessageEnvelope, MessageKind
+from .message import MessageEnvelope
 
 
 # ── Channel kinds ───────────────────────────────────────────────────────────

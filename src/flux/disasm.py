@@ -17,10 +17,10 @@ from __future__ import annotations
 
 import struct
 import json
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 
-from flux.bytecode.opcodes import Op, get_format, FORMAT_A, FORMAT_B, FORMAT_C, FORMAT_D, FORMAT_E, FORMAT_G
+from flux.bytecode.opcodes import Op, get_format
 
 
 # ── Color codes for terminal output ─────────────────────────────────────────────
@@ -410,7 +410,6 @@ def disassemble_to_json(bytecode: bytes, indent: int = 2) -> str:
 
 def main() -> None:
     """Command-line entry point for the disassembler."""
-    import sys
     import argparse
 
     parser = argparse.ArgumentParser(

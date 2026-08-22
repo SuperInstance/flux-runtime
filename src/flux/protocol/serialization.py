@@ -9,8 +9,7 @@ from __future__ import annotations
 
 import json
 import struct
-import uuid
-from typing import Any, Dict, List, Optional
+from typing import List
 
 from .message import (
     MessageEnvelope,

@@ -21,9 +21,8 @@ Usage:
     result = rt.run("steer to heading 270")
 """
 
-import os
 import re
-from typing import List, Optional
+from typing import List
 from .vocabulary import Vocabulary
 
 

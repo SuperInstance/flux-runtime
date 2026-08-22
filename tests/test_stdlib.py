@@ -13,30 +13,29 @@ import pytest
 
 sys.path.insert(0, "src")
 
-from flux.fir.types import TypeContext, IntType, FloatType, BoolType, StringType
+from flux.fir.types import TypeContext, IntType, StringType
 from flux.fir.values import Value
 from flux.fir.builder import FIRBuilder
-from flux.fir.blocks import FIRModule, FIRFunction
-from flux.fir.instructions import Call, Unreachable, SetField, GetField, GetElem, SetElem, MemSet
+from flux.fir.instructions import Call, Unreachable, GetField
 
 from flux.stdlib.intrinsics import (
-    IntrinsicFunction, PrintFn, AssertFn, PanicFn,
+    PrintFn, AssertFn, PanicFn,
     SizeofFn, AlignofFn, TypeOfFn, STDLIB_INTRINSICS,
 )
 from flux.stdlib.collections import (
-    CollectionImpl, ListImpl, MapImpl, SetImpl, QueueImpl, StackImpl,
+    ListImpl, MapImpl, SetImpl, QueueImpl, StackImpl,
     STDLIB_COLLECTIONS,
 )
 from flux.stdlib.math import (
-    MathFunction, MinFn, MaxFn, AbsFn, ClampFn, LerpFn, SqrtFn,
+    MinFn, MaxFn, AbsFn, ClampFn, LerpFn, SqrtFn,
     STDLIB_MATH, emit_lerp_instructions,
 )
 from flux.stdlib.strings import (
-    StringFunction, ConcatFn, SubstringFn, SplitFn, JoinFn,
+    ConcatFn, SubstringFn, SplitFn, JoinFn,
     LengthFn, FormatFn, STDLIB_STRINGS,
 )
 from flux.stdlib.agents import (
-    AgentFunction, AgentRegistryImpl, MessageQueueImpl, TaskSchedulerImpl,
+    AgentRegistryImpl, MessageQueueImpl, TaskSchedulerImpl,
     STDLIB_AGENTS,
 )
 

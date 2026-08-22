@@ -11,8 +11,7 @@ If ghost ratio exceeds a threshold, it flags necrosis.
 The cure: mandatory novelty injection — a percentage of tiles MUST use
 recently-decomposed vocabulary (from Paper Decomposer, not Ghost Loader).
 """
-import time
-from typing import List, Dict, Optional
+from typing import List, Dict
 from dataclasses import dataclass
 from enum import Enum
 

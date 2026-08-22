@@ -61,8 +61,7 @@ Total: 256 opcode slots, ~200 defined, ~56 reserved for future expansion.
 """
 
 from dataclasses import dataclass
-from typing import Optional, List, Dict
-from enum import IntEnum
+from typing import List
 
 
 class FormatType(str):

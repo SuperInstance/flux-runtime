@@ -8,9 +8,8 @@ Agents can run untrusted bytecode in a sandbox that:
 - Never affects the host environment
 """
 
-import struct
 from dataclasses import dataclass, field
-from typing import Optional, Dict, List
+from typing import Optional, List
 
 
 @dataclass

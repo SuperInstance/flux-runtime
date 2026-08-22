@@ -10,10 +10,9 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from flux.bytecode.formats import (
-    Format, Opcode, TypeField,
-    encode_format_a, encode_format_b, encode_format_c,
+    Opcode, encode_format_a, encode_format_b, encode_format_c,
     encode_format_d, encode_format_e, encode_format_f, encode_format_g,
-    decode_instruction, opcode_table, OPCODE_FORMAT,
+    decode_instruction, opcode_table,
 )
 
 

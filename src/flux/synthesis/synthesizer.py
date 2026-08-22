@@ -21,13 +21,12 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Callable, Optional, Any
+from typing import Callable, Optional
 
 from flux.modules.granularity import Granularity
 from flux.modules.card import ModuleCard
 from flux.modules.container import ModuleContainer, ReloadResult
 from flux.modules.reloader import FractalReloader
-from flux.modules.namespace import ModuleNamespace
 from flux.adaptive.profiler import (
     AdaptiveProfiler,
     HeatLevel,
@@ -37,15 +36,13 @@ from flux.adaptive.selector import (
     AdaptiveSelector,
     LanguageRecommendation,
 )
-from flux.tiles.registry import TileRegistry, default_registry
+from flux.tiles.registry import default_registry
 from flux.evolution.genome import Genome
-from flux.evolution.pattern_mining import PatternMiner, ExecutionTrace
-from flux.evolution.mutator import SystemMutator
+from flux.evolution.pattern_mining import PatternMiner
 from flux.evolution.validator import CorrectnessValidator
 from flux.evolution.evolution import (
     EvolutionEngine,
     EvolutionReport,
-    EvolutionRecord,
 )
 
 

@@ -23,9 +23,7 @@ and teach the interpreter new words.
 
 import os
 import re
-import struct
-import json
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 
 

@@ -11,11 +11,9 @@ from __future__ import annotations
 import logging
 import pickle
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Optional
 
 from flux.fir.types import FIRType, TypeContext
-from flux.fir.values import Value
-from flux.fir.instructions import Instruction
 from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
 
 from .ir_optimize import (
@@ -24,7 +22,6 @@ from .ir_optimize import (
     inline_pass,
     block_layout_pass,
     _get_operand_values,
-    _max_value_id,
 )
 from .cache import JITCache
 from .tracing import ExecutionTracer

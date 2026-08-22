@@ -3,7 +3,7 @@
 import pytest
 import math
 from flux.bytecode.opcodes import Op
-from flux.vm.interpreter import Interpreter, VMHaltError
+from flux.vm.interpreter import Interpreter
 
 
 def make_absorb_program():

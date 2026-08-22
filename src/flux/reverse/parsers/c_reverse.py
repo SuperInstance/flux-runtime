@@ -7,8 +7,7 @@ Uses regex-based parsing for a simple C subset (no preprocessor macros, etc.).
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 from flux.reverse.code_map import (
     CodeMapping,

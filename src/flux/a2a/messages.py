@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import struct
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 # Header format: <16s16s8sBBIIH  = 16+16+8+1+1+4+4+2 = 52

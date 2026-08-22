@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import struct
 
-from .opcodes import Op, get_format, instruction_size
+from .opcodes import Op, get_format
 
 MAGIC = b"FLUX"
 HEADER_SIZE = 18  # 4s(4) + H(2) + H(2) + H(2) + I(4) + I(4) = 18

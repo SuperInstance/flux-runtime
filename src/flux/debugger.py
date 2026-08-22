@@ -36,19 +36,16 @@ With tracing::
 from __future__ import annotations
 
 import struct
-import sys
 import json
-from typing import Optional, List, Dict, Any, Set, Callable, Union
+from typing import Optional, List, Dict, Any, Callable
 from dataclasses import dataclass, field
 
 from flux.vm.interpreter import (
     Interpreter,
     VMError,
     VMHaltError,
-    VMInvalidOpcodeError,
-    VMDivisionByZeroError,
 )
-from flux.bytecode.opcodes import Op, get_format
+from flux.bytecode.opcodes import Op
 from flux.disasm import (
     FluxDisassembler,
     DisassembledInstruction,

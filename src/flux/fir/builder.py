@@ -3,7 +3,7 @@
 from __future__ import annotations
 from typing import Optional
 
-from .types import FIRType, TypeContext, BoolType, UnitType
+from .types import FIRType, TypeContext
 from .values import Value
 from .instructions import (
     IAdd, ISub, IMul, IDiv, IMod, INeg,

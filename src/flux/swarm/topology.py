@@ -17,9 +17,7 @@ Provides methods for:
 from __future__ import annotations
 
 from collections import deque
-from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 
 # ── Topology Types ─────────────────────────────────────────────────────────

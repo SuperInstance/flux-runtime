@@ -7,9 +7,8 @@ from __future__ import annotations
 
 import struct
 from dataclasses import dataclass, field
-from typing import Optional
 
-from .opcodes import Op, get_format, instruction_size
+from .opcodes import Op, get_format
 
 
 # ── Decoded data structures ──────────────────────────────────────────────────

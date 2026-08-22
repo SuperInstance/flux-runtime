@@ -8,19 +8,10 @@ prediction models.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
 
-from flux.fir.blocks import FIRFunction, FIRModule, FIRBlock
+from flux.fir.blocks import FIRFunction, FIRModule
 from flux.fir.instructions import (
-    Instruction, IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IAnd, IOr, IXor, IShl, IShr, INot,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-    ITrunc, ZExt, SExt, FTrunc, FExt, Bitcast,
-    Load, Store, Alloca, GetField, SetField, GetElem, SetElem, MemCopy, MemSet,
-    Jump, Branch, Switch, Call, Return, Unreachable,
-    Tell, Ask, Delegate, TrustCheck, CapRequire,
+    Instruction, IAdd, ISub, Load, GetElem,
 )
 
 

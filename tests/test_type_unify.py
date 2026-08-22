@@ -7,7 +7,7 @@ sys.path.insert(0, "src")
 
 from flux.fir.types import (
     TypeContext, IntType, FloatType, BoolType, UnitType, StringType,
-    RefType, ArrayType, VectorType, FuncType, StructType,
+    RefType, ArrayType, FuncType, StructType,
 )
 from flux.types.unify import TypeUnifier, _type_eq
 from flux.types.compat import (

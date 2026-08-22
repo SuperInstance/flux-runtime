@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Optional
 
 from flux.fir.types import (
-    FIRType, TypeContext, IntType, BoolType,
+    FIRType, TypeContext,
 )
 from flux.fir.values import Value
 from flux.fir.builder import FIRBuilder

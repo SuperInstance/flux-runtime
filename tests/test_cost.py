@@ -1,23 +1,14 @@
 """Tests for the FLUX cost model and energy estimation."""
 
-import pytest
 
 from flux.fir.types import TypeContext
 from flux.fir.values import Value
 from flux.fir.instructions import (
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IAnd, IOr, IXor, IShl, IShr, INot,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-    ITrunc, ZExt, SExt, FTrunc, FExt, Bitcast,
-    Load, Store, Alloca, GetField, SetField, GetElem, SetElem, MemCopy, MemSet,
-    Jump, Branch, Switch, Call, Return, Unreachable,
-    Tell, Ask, Delegate, TrustCheck, CapRequire,
+    IAdd, ISub, IMul, IDiv, FAdd, FDiv, Load, Store, GetElem, Jump, Branch, Call, Return, Tell, Ask,
 )
 from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
-from flux.cost.model import CostModel, CostEstimate, ModuleCostReport, SpeedupReport
-from flux.cost.energy import EnergyModel, EnergyEstimate, CarbonEstimate
+from flux.cost.model import CostModel, CostEstimate
+from flux.cost.energy import EnergyModel, EnergyEstimate
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────

@@ -25,9 +25,8 @@ Usage:
 """
 
 import os
-import re
 import time
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Set, Tuple
 from dataclasses import dataclass, field
 from collections import Counter
 
@@ -137,7 +136,7 @@ class VocabularyPruner:
         Prune vocabulary to only entries with min_calls or more uses.
         Also keeps any entries that are dependencies of kept entries.
         """
-        from .vocabulary import Vocabulary, VocabEntry
+        from .vocabulary import Vocabulary
         
         # Find entries that meet the threshold
         kept_names = set()

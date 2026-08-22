@@ -13,9 +13,9 @@ API: OpenFluxInterpreter().run("factorial of 7") → 5040
 import os
 import re
 import sys
-from typing import Optional, Dict, List
+from typing import Optional, List
 
-from .vocabulary import Vocabulary, VocabEntry
+from .vocabulary import Vocabulary
 from .assembler import assemble_text
 from .sandbox import SandboxVM, SandboxResult
 

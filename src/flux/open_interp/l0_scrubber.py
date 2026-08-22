@@ -14,8 +14,8 @@ The scrubber prevents vocabulary bloat and maintains the integrity of the L0 lay
 """
 
 import re
-from typing import List, Optional, Set, Tuple
-from dataclasses import dataclass, field
+from typing import List, Tuple
+from dataclasses import dataclass
 
 
 @dataclass

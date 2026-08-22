@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Optional, Any, Callable
 
-from .genome import Genome, MutationStrategy, OptimizationRecord
+from .genome import Genome, MutationStrategy
 from .pattern_mining import DiscoveredPattern
 
 

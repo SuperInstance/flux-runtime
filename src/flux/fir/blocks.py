@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from .types import TypeContext, FIRType, FuncType, StructType
-from .values import Value
 from .instructions import Instruction
 
 

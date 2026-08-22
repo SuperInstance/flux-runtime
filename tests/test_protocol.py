@@ -24,7 +24,7 @@ from flux.protocol.message import (
     Request, Response, Event, Error,
 )
 from flux.protocol.channel import (
-    Channel, DirectChannel, BroadcastChannel, TopicChannel, ChannelKind,
+    DirectChannel, BroadcastChannel, TopicChannel,
 )
 from flux.protocol.registry import (
     AgentDescriptor, CapabilityDescriptor, AgentRegistry,
@@ -33,7 +33,7 @@ from flux.protocol.negotiation import (
     NegotiationState, CapabilityOffer, TrustHandshake, Negotiator,
 )
 from flux.protocol.serialization import (
-    BinaryMessageCodec, HEADER_SIZE, PROTOCOL_MAGIC,
+    BinaryMessageCodec, HEADER_SIZE,
 )
 
 

@@ -8,23 +8,12 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
-from dataclasses import dataclass, field, replace, is_dataclass
+from dataclasses import replace, is_dataclass
 from typing import Optional, Any
 
-from flux.fir.types import FIRType, IntType, FloatType, BoolType
 from flux.fir.values import Value
 from flux.fir.instructions import (
-    Instruction, is_terminator,
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IAnd, IOr, IXor, IShl, IShr, INot,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-    ITrunc, ZExt, SExt, FTrunc, FExt, Bitcast,
-    Load, Store, Alloca, GetField, SetField, GetElem, SetElem,
-    MemCopy, MemSet,
-    Jump, Branch, Switch, Call, Return, Unreachable,
-    Tell, Ask, Delegate, TrustCheck, CapRequire,
+    Instruction, Jump, Branch, Switch, Call, Return,
 )
 from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
 

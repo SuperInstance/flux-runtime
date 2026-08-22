@@ -6,8 +6,7 @@ look contradictory but aren't. This filter checks scope before flagging.
 
 Fix: Add context_tag awareness to contradiction detection.
 """
-import re
-from typing import Optional, List
+from typing import List
 from dataclasses import dataclass
 
 

@@ -4,7 +4,6 @@ Tests natural language parsing, markdown code blocks, mathematical notation,
 and A2A agent communication patterns.
 """
 
-import pytest
 from flux.open_interpreter import (
     OpenFluxInterpreter,
     interpret,

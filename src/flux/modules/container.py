@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional, Union
 
 from .granularity import Granularity
-from .card import ModuleCard, CompileResult
+from .card import ModuleCard
 from .namespace import ModuleNamespace
 
 

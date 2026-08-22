@@ -48,8 +48,8 @@ import json
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from flux.bytecode.opcodes import Op, get_format, instruction_size
-from flux.disasm import FluxDisassembler, DisassembledInstruction
+from flux.bytecode.opcodes import Op
+from flux.disasm import FluxDisassembler
 
 
 __all__ = [

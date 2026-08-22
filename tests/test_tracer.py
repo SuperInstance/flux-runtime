@@ -17,10 +17,9 @@ import json
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from flux.bytecode.opcodes import Op
-from flux.vm.interpreter import Interpreter
-from flux.tracer import FluxTracer, TraceResult, TraceEntry, ConservationLedger
-from flux.profiler import FluxProfiler, ProfileResult
-from flux.debugger import FluxDebugger, StepResult
+from flux.tracer import FluxTracer, ConservationLedger
+from flux.profiler import FluxProfiler
+from flux.debugger import FluxDebugger
 
 
 # ── Helper ─────────────────────────────────────────────────────────────────

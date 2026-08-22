@@ -173,7 +173,7 @@ class TestAgentTaskExecution:
         assert agent.task_success_rate == 1.0
 
     def test_task_success_rate(self):
-        from flux.swarm.agent import FluxAgent, AgentTask
+        from flux.swarm.agent import FluxAgent
         agent = FluxAgent(agent_id="task-rate")
         agent._tasks_completed = 8
         agent._tasks_failed = 2
@@ -359,7 +359,7 @@ class TestTopologyConnections:
         assert topo.neighbors("b") == {"a"}
 
     def test_remove_agent(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import Topology
         topo = Topology.hierarchical("orch", ["w1", "w2"])
         topo.remove_agent("w1")
         assert "w1" not in topo.agents
@@ -367,7 +367,7 @@ class TestTopologyConnections:
         assert topo.edge_count == 1
 
     def test_to_dict(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import Topology
         topo = Topology.hierarchical("orch", ["w1"])
         d = topo.to_dict()
         assert d["type"] == "hierarchical"
@@ -897,7 +897,7 @@ class TestTopologyOptimization:
         assert isinstance(change.description, str)
 
     def test_optimize_frequent_communication(self):
-        from flux.swarm import Swarm, Topology, AgentMessage
+        from flux.swarm import Swarm, Topology
         topo = Topology.flat_mesh(["a", "b", "c"])
         swarm = Swarm(name="test", topology=topo)
         swarm.spawn("a")
@@ -998,7 +998,7 @@ class TestSwarmIntegration:
 
     def test_full_swarm_lifecycle(self):
         from flux.swarm import (
-            Swarm, Topology, FluxAgent, AgentRole,
+            Swarm, Topology, AgentRole,
             AgentTask, AgentMessage,
         )
         # Create swarm with hierarchical topology
@@ -1047,7 +1047,7 @@ class TestSwarmIntegration:
         assert swarm.agent_count == 3
 
     def test_pubsub_swarm(self):
-        from flux.swarm import Swarm, Topology, AgentMessage
+        from flux.swarm import Swarm, Topology
         topo = Topology.flat_mesh(["pub", "sub1", "sub2", "sub3"])
         swarm = Swarm(name="pubsub-test", topology=topo)
         swarm.spawn("pub")

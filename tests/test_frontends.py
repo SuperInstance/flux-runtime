@@ -11,8 +11,6 @@ import traceback
 
 sys.path.insert(0, "src")
 
-from flux.fir.types import TypeContext
-from flux.fir.instructions import IAdd, ISub, IMul, Branch, Jump, Return
 from flux.fir.blocks import FIRModule
 
 from flux.frontend.c_frontend import CFrontendCompiler

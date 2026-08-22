@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from flux.fir.types import (
     FIRType, TypeContext, IntType, FloatType, BoolType, UnitType,

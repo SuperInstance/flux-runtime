@@ -15,7 +15,6 @@ to avoid import-time side effects and keep test collection fast.
 
 from __future__ import annotations
 
-import struct
 
 import pytest
 
@@ -47,7 +46,6 @@ def sample_module(fir_builder):
       - One entry block "entry"
       - One instruction: Return of a constant
     """
-    from flux.fir.blocks import FIRBlock
 
     module = fir_builder.new_module("test_module")
 

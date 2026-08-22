@@ -11,7 +11,7 @@ from typing import Optional
 
 from flux.fir.types import (
     FIRType, IntType, FloatType, BoolType, UnitType, StringType,
-    RefType, ArrayType, VectorType, FuncType, StructType, TypeContext,
+    RefType, ArrayType, VectorType, FuncType, TypeContext,
 )
 from flux.types.generic import GenericType, TypeVar
 from flux.types.unify import TypeUnifier, _type_eq

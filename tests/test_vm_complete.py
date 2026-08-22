@@ -12,8 +12,7 @@ import pytest
 
 from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import (
-    Interpreter, VMError, VMTypeError, VMDivisionByZeroError,
-    VMStackOverflowError, VMHaltError,
+    Interpreter, VMTypeError, VMDivisionByZeroError,
 )
 
 

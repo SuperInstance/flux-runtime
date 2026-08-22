@@ -3,7 +3,6 @@ to unified FIR and bytecode using cross-language type unification."""
 
 from __future__ import annotations
 
-import struct
 from dataclasses import dataclass, field
 from typing import Optional
 

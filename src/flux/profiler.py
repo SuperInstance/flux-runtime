@@ -28,26 +28,11 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
-from flux.bytecode.opcodes import Op, get_format
-from flux.disasm import (
-    ARITHMETIC_OPS,
-    CONTROL_FLOW_OPS,
-    MEMORY_OPS,
-    COMPARISON_OPS,
-    STACK_OPS,
-    TYPE_OPS,
-    SIMD_OPS,
-    A2A_OPS,
-    SYSTEM_OPS,
-)
+from flux.bytecode.opcodes import Op
 from flux.tracer import (
     FluxTracer,
-    TraceResult,
     _categorise_opcode,
     _disassemble_at,
-    _snapshot_registers,
-    _snapshot_flags,
-    _snapshot_memory,
 )
 
 

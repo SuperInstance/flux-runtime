@@ -6,7 +6,6 @@ No labels, no forward references — just straightforward instruction encoding.
 """
 
 import struct
-from typing import Dict, Tuple, Optional
 
 
 # Opcode table — matches the Python VM Format E encoding

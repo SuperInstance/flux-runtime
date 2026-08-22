@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import os
 import re
 from pathlib import Path
 
-from .introspector import CodeIntrospector, ModuleInfo
+from .introspector import CodeIntrospector
 from .renderer import MarkdownRenderer, AsciiRenderer
 from .stats import CodeStatistics
 

@@ -10,9 +10,7 @@ I2I Context:
     Artifact: this file
     Acceptance criteria: runs in <512MB RAM, <100ms per vocab lookup
 """
-from typing import List, Dict, Optional
 from dataclasses import dataclass
-import json
 
 
 @dataclass

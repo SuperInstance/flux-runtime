@@ -1,9 +1,7 @@
 """FIR Validator — validates structural invariants of a FIR module."""
 
 from __future__ import annotations
-from typing import Optional
 
-from .types import FIRType
 from .values import Value
 from .instructions import Instruction, is_terminator
 from .blocks import FIRModule, FIRFunction, FIRBlock

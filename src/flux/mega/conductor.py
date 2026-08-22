@@ -25,7 +25,6 @@ from typing import Any, Callable, Optional
 # ── Core subsystems ──────────────────────────────────────────────────────────
 from flux.synthesis.synthesizer import (
     FluxSynthesizer,
-    WorkloadResult,
 )
 from flux.flywheel.engine import FlywheelEngine
 from flux.flywheel.hypothesis import FlywheelReport
@@ -50,7 +49,6 @@ from flux.flywheel.knowledge import KnowledgeBase
 from flux.memory.bandit import MutationBandit
 from flux.memory.store import (
     MemoryStore,
-    MemoryStats,
 )
 from flux.memory.experience import (
     Experience,
@@ -58,11 +56,9 @@ from flux.memory.experience import (
     GeneralizedRule as MemoryGeneralizedRule,
 )
 from flux.evolution.evolution import EvolutionReport
-from flux.evolution.genome import Genome
 from flux.modules.card import ModuleCard
 from flux.creative.sonification import Sonifier, MusicSequence, ExecutionEvent
 from flux.creative.live import LiveCodingSession
-from flux.adaptive.profiler import AdaptiveProfiler
 
 
 # ── Result Types ─────────────────────────────────────────────────────────────

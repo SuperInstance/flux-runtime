@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import logging
 from collections import OrderedDict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Optional
 
 logger = logging.getLogger(__name__)

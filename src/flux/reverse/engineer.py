@@ -6,13 +6,10 @@ code in any supported language and mapping it to FLUX FIR equivalents.
 
 from __future__ import annotations
 
-from typing import Optional
 
 from flux.reverse.code_map import (
-    CodeMapping,
     CodeMap,
     ConstructType,
-    Difficulty,
     MigrationStep,
     MigrationPlan,
 )

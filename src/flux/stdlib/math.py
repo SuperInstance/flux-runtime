@@ -9,12 +9,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from flux.fir.types import (
-    FIRType, TypeContext, IntType, FloatType, BoolType,
-)
 from flux.fir.values import Value
 from flux.fir.builder import FIRBuilder
-from flux.fir.instructions import Branch, Jump
 
 
 # ── Base ────────────────────────────────────────────────────────────────────

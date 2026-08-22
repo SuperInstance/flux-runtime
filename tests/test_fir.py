@@ -12,8 +12,8 @@ from flux.fir.types import (
 )
 from flux.fir.values import Value
 from flux.fir.instructions import (
-    IAdd, FAdd, Call, Return, Jump, Branch,
-    Tell, Ask, Store, GetField, is_terminator,
+    IAdd, Call, Return, Jump, Branch,
+    Store, is_terminator,
     Alloca,
 )
 from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock

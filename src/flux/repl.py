@@ -3,15 +3,11 @@ FLUX REPL — Interactive Read-Eval-Print Loop for the FLUX runtime.
 """
 from __future__ import annotations
 
-import sys
 import struct
-import readline
 import shlex
 from typing import Optional, Dict, Any, List
-from dataclasses import dataclass
 
 from flux.vm.interpreter import Interpreter, VMError
-from flux.bytecode.opcodes import Op
 from flux.a2a.messages import A2AMessage
 import uuid
 

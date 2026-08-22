@@ -1,7 +1,7 @@
 """Sandboxed execution environment for FLUX agents."""
 
 from __future__ import annotations
-from .capabilities import CapabilityRegistry, Permission
+from .capabilities import CapabilityRegistry
 from .resource_limits import ResourceLimits, ResourceMonitor
 
 
@@ -21,7 +21,6 @@ class Sandbox:
     def grant_capability(
         self, resource: str, permissions: int, ttl: float = 3600.0
     ):
-        from .capabilities import CapabilityToken
         return self.capabilities.grant(self.agent_id, resource, permissions, ttl)
 
     def check_permission(self, resource: str, permission: int) -> bool:

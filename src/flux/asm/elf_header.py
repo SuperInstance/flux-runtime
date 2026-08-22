@@ -9,9 +9,8 @@ from __future__ import annotations
 import struct
 import time
 from dataclasses import dataclass, field
-from typing import Optional, BinaryIO
+from typing import Optional
 
-from .errors import AsmError, AsmErrorKind
 
 
 # FLUX ELF constants

@@ -7,7 +7,7 @@ import tempfile
 
 import pytest
 
-from flux.memory.store import MemoryStore, MemoryEntry, MemoryStats, TIER_ORDER
+from flux.memory.store import MemoryStore, MemoryEntry
 from flux.memory.experience import Experience, ExperienceRecorder, GeneralizedRule
 from flux.memory.bandit import MutationBandit, StrategyStats
 from flux.memory.learning import LearningRateAdapter, LearningState

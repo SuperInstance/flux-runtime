@@ -18,13 +18,11 @@ from typing import Any, Callable, Optional
 
 from .agent import (
     AgentRole,
-    AgentTask,
     FluxAgent,
-    TrustProfile,
 )
-from .deadlock import DeadlockDetector, DeadlockReport, DeadlockSeverity
+from .deadlock import DeadlockDetector, DeadlockReport
 from .message_bus import AgentMessage, MessageBus
-from .topology import SwarmTopology, Topology
+from .topology import Topology
 
 
 # ── Report Types ───────────────────────────────────────────────────────────

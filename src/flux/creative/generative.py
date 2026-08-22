@@ -9,13 +9,11 @@ Provides generative tiles that interpret rules into computation:
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from flux.tiles.tile import Tile, TileType
 
 if TYPE_CHECKING:
-    from flux.fir.types import TypeContext
     from flux.fir.values import Value
     from flux.fir.builder import FIRBuilder
 
@@ -86,7 +84,6 @@ class LSystemTile(Tile):
         [ → push state
         ] → pop state
         """
-        from flux.fir.types import IntType
 
         expanded = self.expand()
 

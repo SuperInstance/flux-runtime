@@ -23,8 +23,7 @@ import re
 import struct
 from dataclasses import dataclass, field
 from enum import Enum
-from io import StringIO
-from typing import Optional, Union
+from typing import Optional
 
 from .opcodes_compat import (
     OPCODE_DEFS,

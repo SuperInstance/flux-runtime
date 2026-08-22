@@ -3,7 +3,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
-from ..fir.types import TypeContext, BoolType, UnitType, IntType
+from ..fir.types import TypeContext
 from ..fir.values import Value
 from ..fir.builder import FIRBuilder
 from .tile import Tile, TileType
@@ -877,7 +877,6 @@ def _cast_fir_blueprint(
     value = inputs.get("value")
     target_type_name = params.get("target_type", "i32")
     if value:
-        from ..fir.types import IntType, FloatType
         if target_type_name.startswith("i"):
             bits = int(target_type_name[1:])
             target = _ctx.get_int(bits)

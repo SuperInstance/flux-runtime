@@ -16,7 +16,6 @@ Python orchestrates the game loop and renders the display.
 from __future__ import annotations
 
 import random
-from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
 from ._builder import BytecodeBuilder
 
@@ -180,7 +179,6 @@ class Snake:
             stack.write(_MEM_GRID, bytes(grid))
 
             # Write direction deltas to memory (i32, 4 bytes each)
-            import struct as _struct
             for i in range(4):
                 stack.write_i32(600 + i * 4, _DIR_DR[i])
                 stack.write_i32(620 + i * 4, _DIR_DC[i])

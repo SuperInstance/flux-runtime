@@ -4,7 +4,7 @@ import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from flux.open_interp.contradiction_detector import (
-    ContradictionDetector, ScanReport, Contradiction, Severity
+    ContradictionDetector, Severity
 )
 from flux.open_interp.vocabulary import Vocabulary, VocabEntry
 

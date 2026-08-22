@@ -1,8 +1,8 @@
 """Tests for Signal → FLUX Bytecode Compiler."""
-import sys, os, json
+import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from flux.a2a.signal_compiler import SignalCompiler, CompiledSignal
+from flux.a2a.signal_compiler import SignalCompiler
 
 
 class TestSignalLet:

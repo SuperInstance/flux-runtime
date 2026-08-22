@@ -18,9 +18,7 @@ register file indexed by rd.
 """
 
 from enum import IntEnum
-from dataclasses import dataclass
-from typing import List, Tuple, Optional
-import struct
+from typing import List, Tuple
 
 
 class Format(IntEnum):

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Optional, Any, Callable
+from typing import Any, Callable
 
 from .genome import Genome
 

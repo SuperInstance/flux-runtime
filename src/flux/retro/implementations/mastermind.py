@@ -14,7 +14,6 @@ Bytecode algorithm:
 from __future__ import annotations
 
 import random
-from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
 from ._builder import BytecodeBuilder
 

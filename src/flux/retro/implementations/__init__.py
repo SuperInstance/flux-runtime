@@ -11,31 +11,31 @@ Each game is implemented as a self-contained Python module that:
 _HAS = {}
 
 try:
-    from .game_of_life import GameOfLife
+    from .game_of_life import GameOfLife  # noqa: F401
     _HAS["GameOfLife"] = True
 except ImportError:
     pass
 
 try:
-    from .snake import Snake
+    from .snake import Snake  # noqa: F401
     _HAS["Snake"] = True
 except ImportError:
     pass
 
 try:
-    from .mastermind import Mastermind
+    from .mastermind import Mastermind  # noqa: F401
     _HAS["Mastermind"] = True
 except ImportError:
     pass
 
 try:
-    from .tic_tac_toe import TicTacToeAI
+    from .tic_tac_toe import TicTacToeAI  # noqa: F401
     _HAS["TicTacToeAI"] = True
 except ImportError:
     pass
 
 try:
-    from .lunar_lander import LunarLander
+    from .lunar_lander import LunarLander  # noqa: F401
     _HAS["LunarLander"] = True
 except ImportError:
     pass

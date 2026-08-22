@@ -30,7 +30,6 @@ from flux.creative.visualization import (
 )
 from flux.tiles.tile import Tile, TileType
 from flux.tiles.graph import TileGraph
-from flux.fir.types import TypeContext
 
 
 # ══════════════════════════════════════════════════════════════════════════════

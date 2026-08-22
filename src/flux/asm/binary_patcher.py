@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import struct
 from dataclasses import dataclass, field
-from typing import Optional, Union
+from typing import Optional
 
 from .errors import AsmError, AsmErrorKind
 

@@ -12,12 +12,10 @@ Tests for FLUX Bytecode Security Verifier — R&D Round 13
 # tests/test_dual_mode_equivalence.py.
 
 import struct
-import pytest
 from flux.security.bytecode_verifier import (
     BytecodeVerifier, VerificationReport, VerificationFinding,
-    Severity, VerifierPolicy, DecodedInstruction, decode_instruction,
+    Severity, VerifierPolicy, decode_instruction,
     decode_all, verify, verify_hex, is_safe, OPCODE_FORMATS, NUM_REGISTERS,
-    MAX_STACK_DEPTH, CONTROL_FLOW_OPCODES,
 )
 
 

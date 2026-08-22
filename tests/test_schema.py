@@ -2,10 +2,8 @@
 
 import json
 
-import pytest
 
 from flux.schema.architecture import (
-    FLUX_ARCHITECTURE,
     get_architecture_schema,
     get_layer_by_id,
     get_module_dependencies,
@@ -20,7 +18,6 @@ from flux.schema.tile_schema import (
     search_tiles,
 )
 from flux.schema.builder_schema import (
-    FLUX_BUILDER_SCHEMA,
     get_builder_schema,
     get_open_questions,
 )

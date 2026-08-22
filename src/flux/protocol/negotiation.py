@@ -13,9 +13,9 @@ from __future__ import annotations
 import enum
 import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional
 
-from .registry import CapabilityDescriptor, AgentDescriptor
+from .registry import CapabilityDescriptor
 
 
 # ── Negotiation states ──────────────────────────────────────────────────────

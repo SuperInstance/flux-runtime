@@ -14,8 +14,6 @@ Each tick:  velocity -= 2 (gravity),  optional thrust (+5, costs 1 fuel),
 
 from __future__ import annotations
 
-import struct
-from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
 from ._builder import BytecodeBuilder
 

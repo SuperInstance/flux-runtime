@@ -1,5 +1,5 @@
 """Tests for Term Obituary — graceful vocabulary death."""
-import sys, os, tempfile, json
+import sys, os, tempfile
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from flux.open_interp.term_obituary import (

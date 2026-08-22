@@ -7,7 +7,6 @@ prediction accuracy, and provide what-if analysis capabilities.
 
 from __future__ import annotations
 
-import copy
 import random
 import time
 from dataclasses import dataclass, field
@@ -16,20 +15,14 @@ from typing import Optional, Any
 from flux.cost.model import CostModel
 from flux.evolution.genome import (
     Genome,
-    GenomeDiff,
     MutationStrategy,
     ModuleSnapshot,
     TileSnapshot,
-    OptimizationRecord,
-    ProfilerSnapshot,
 )
 from flux.evolution.mutator import (
     MutationProposal,
-    MutationResult,
     SystemMutator,
 )
-from flux.evolution.pattern_mining import DiscoveredPattern
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
 
 
 # ── Data Types ──────────────────────────────────────────────────────────

@@ -21,7 +21,6 @@ from flux.parser.nodes import (
     FluxModule,
     Heading,
     ListBlock,
-    ListItem,
     NativeBlock,
     Paragraph,
     SourceSpan,

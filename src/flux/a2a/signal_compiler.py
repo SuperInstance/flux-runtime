@@ -27,7 +27,7 @@ Signal opcodes → FLUX bytecodes:
 """
 import json
 import zlib
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Tuple
 from dataclasses import dataclass, field
 
 

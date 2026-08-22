@@ -12,7 +12,6 @@ from typing import Optional
 
 from flux.fir.types import TypeContext
 from flux.fir.blocks import FIRModule
-from flux.fir.printer import print_fir
 
 
 @dataclass

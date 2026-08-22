@@ -6,7 +6,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from flux.optimizer.passes import ConstantFoldingPass, DeadCodeEliminationPass, InlineFunctionsPass
 from flux.optimizer.pipeline import OptimizationPipeline
 from flux.fir.types import TypeContext
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
 from flux.fir.builder import FIRBuilder
 
 

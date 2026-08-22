@@ -26,8 +26,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from flux.bytecode.opcodes import Op
 from flux.disasm import (
     FluxDisassembler,
-    DisassemblyResult,
-    DisassembledInstruction,
     disassemble,
     disassemble_to_dict,
     disassemble_to_json,
@@ -35,10 +33,7 @@ from flux.disasm import (
 from flux.debugger import (
     FluxDebugger,
     StepResult,
-    Breakpoint,
-    Watchpoint,
 )
-from flux.vm.interpreter import VMError
 
 
 # ── Helper functions ─────────────────────────────────────────────────────────

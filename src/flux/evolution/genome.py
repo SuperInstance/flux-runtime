@@ -12,14 +12,13 @@ import hashlib
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Any
+from typing import Any
 
 from flux.adaptive.profiler import (
     AdaptiveProfiler,
     HeatLevel,
-    BottleneckReport,
 )
-from flux.adaptive.selector import AdaptiveSelector, LanguageRecommendation
+from flux.adaptive.selector import AdaptiveSelector
 
 
 # ── Snapshot Types ────────────────────────────────────────────────────────────
@@ -172,7 +171,6 @@ class Genome:
 
     def _capture_modules(self, container: Any) -> None:
         """Recursively capture module container state."""
-        from flux.modules.card import ModuleCard
 
         heatmap: dict[str, HeatLevel] = {}
         call_counts: dict[str, int] = {}

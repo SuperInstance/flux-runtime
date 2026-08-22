@@ -5,7 +5,6 @@ import hashlib
 import time
 from dataclasses import dataclass
 from enum import IntFlag
-from typing import Optional
 
 
 class Permission(IntFlag):

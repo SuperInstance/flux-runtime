@@ -7,19 +7,13 @@ arithmetic (+,-,*,/,%), comparison (==,!=,<,>,<=,>=), calls, int/float literals.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional, Union
 
-from flux.fir.types import TypeContext, FIRType, IntType, FloatType, UnitType
+from flux.fir.types import TypeContext, FIRType, FloatType
 from flux.fir.values import Value
 from flux.fir.builder import FIRBuilder
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
-from flux.fir.instructions import (
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-)
+from flux.fir.blocks import FIRModule, FIRFunction
 
 
 # ── C AST Node Types ────────────────────────────────────────────────────────

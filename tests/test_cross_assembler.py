@@ -12,14 +12,12 @@ sys.path.insert(0, "src")
 
 import json
 import struct
-import os
-import tempfile
 
 from flux.asm.errors import AsmError, AsmErrorKind, SourceLocation, make_error
 from flux.asm.macros import MacroPreprocessor
-from flux.asm.cross_assembler import CrossAssembler, OutputFormat, AssemblyResult
+from flux.asm.cross_assembler import CrossAssembler, OutputFormat
 from flux.asm.linker import FluxLinker, ObjectFile
-from flux.asm.binary_patcher import BinaryPatcher, Patch
+from flux.asm.binary_patcher import BinaryPatcher
 from flux.asm.elf_header import ElfHeader
 
 

@@ -1,9 +1,9 @@
 """Tests for Beachcomb — scheduled scavenging system."""
-import sys, os, tempfile, json, time
+import sys, os, tempfile, time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from flux.open_interp.beachcomb import (
-    Beachcomber, Sweep, SweepResult, SourceType, OnFind, Priority
+    Beachcomber, Sweep, SourceType, OnFind, Priority
 )
 
 

@@ -7,12 +7,11 @@ parametric polymorphism with instantiation and substitution).
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Optional, Union
+from dataclasses import dataclass
+from typing import Optional
 
 from flux.fir.types import (
-    FIRType, TypeContext, IntType, FloatType, BoolType, UnitType,
-    StringType, RefType, ArrayType, VectorType, FuncType, StructType,
+    FIRType, TypeContext, RefType, ArrayType, VectorType, FuncType, StructType,
 )
 
 

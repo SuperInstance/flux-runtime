@@ -18,7 +18,6 @@ from __future__ import annotations
 
 def run_demo() -> None:
     """Run the full FLUX synthesis demo."""
-    import time
     from flux.synthesis.synthesizer import FluxSynthesizer
 
     print("=" * 72)

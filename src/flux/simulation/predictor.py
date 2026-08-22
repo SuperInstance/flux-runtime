@@ -7,12 +7,10 @@ and trend extrapolation for forecasting.
 from __future__ import annotations
 
 import time
-import math
 from dataclasses import dataclass, field
 from typing import Optional, Any
 
-from flux.cost.model import CostModel, CostEstimate
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
+from flux.cost.model import CostModel
 
 
 # ── Memory Store (dict-based fallback) ─────────────────────────────────

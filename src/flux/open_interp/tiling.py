@@ -21,9 +21,9 @@ This is the "tiling fine-tuning" Casey described:
 
 import re
 import os
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict
 from dataclasses import dataclass, field
-from .vocabulary import Vocabulary, VocabEntry
+from .vocabulary import Vocabulary
 from .assembler import assemble_text
 from .sandbox import SandboxVM, SandboxResult
 

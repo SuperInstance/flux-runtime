@@ -8,10 +8,9 @@ from __future__ import annotations
 
 import asyncio
 import time
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
-from .granularity import Granularity, GranularityMeta, get_granularity_meta
+from .granularity import Granularity, get_granularity_meta
 from .container import ModuleContainer, ReloadResult
 
 

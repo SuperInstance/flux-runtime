@@ -5,19 +5,17 @@ sys.path.insert(0, "src")
 
 import struct
 
-from flux.fir.types import TypeContext, IntType, FloatType
+from flux.fir.types import TypeContext
 from flux.fir.values import Value
 from flux.fir.instructions import (
-    IAdd, ISub, IMul, INeg, Return, Jump, Branch, Call,
-    Tell, Ask, TrustCheck, CapRequire, Load, Store, Alloca,
-    IEq, ILt, FAdd, FDiv, Unreachable,
+    IAdd, ISub, IMul, INeg, Jump, Branch, Tell, Ask, TrustCheck, FAdd, FDiv, Unreachable,
 )
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
+from flux.fir.blocks import FIRModule
 from flux.fir.builder import FIRBuilder
 
-from flux.bytecode.opcodes import Op, get_format
+from flux.bytecode.opcodes import Op
 from flux.bytecode.encoder import BytecodeEncoder, MAGIC, VERSION, HEADER_SIZE
-from flux.bytecode.decoder import BytecodeDecoder, DecodedInstruction, DecodedFunction
+from flux.bytecode.decoder import BytecodeDecoder
 from flux.bytecode.validator import BytecodeValidator
 
 

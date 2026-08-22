@@ -1,12 +1,11 @@
 """Tests for the FLUX Tile System — composable computation vocabulary."""
 
 import pytest
-from flux.fir.types import TypeContext, IntType, FloatType, BoolType
+from flux.fir.types import TypeContext
 from flux.fir.values import Value
 from flux.fir.builder import FIRBuilder
-from flux.fir.blocks import FIRModule
 
-from flux.tiles.tile import Tile, TileType, TileInstance, CompositeTile, ParallelTile
+from flux.tiles.tile import Tile, TileType, TileInstance, CompositeTile
 from flux.tiles.ports import TilePort, PortDirection, CoercionInfo
 from flux.tiles.graph import TileGraph, TileEdge
 from flux.tiles.registry import TileRegistry, default_registry
@@ -20,7 +19,7 @@ from flux.tiles.library import (
     tell_tile, ask_tile, broadcast_tile, a2a_reduce_tile,
     a2a_scatter_tile, barrier_tile,
     print_effect_tile, log_effect_tile, state_mut_tile,
-    cast_tile, reshape_tile, pack_tile, unpack_tile,
+    cast_tile, pack_tile, unpack_tile,
     join_tile, split_tile,
     ALL_BUILTIN_TILES,
 )

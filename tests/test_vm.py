@@ -29,9 +29,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import (
     Interpreter,
-    VMError,
-    VMHaltError,
-    VMStackOverflowError,
     VMInvalidOpcodeError,
     VMDivisionByZeroError,
 )

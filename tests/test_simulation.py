@@ -1,24 +1,21 @@
 """Tests for the FLUX simulation layer — digital twin, predictor, speculator, oracle."""
 
-import time
 import pytest
 
 from flux.cost.model import CostModel
 from flux.evolution.genome import (
-    Genome, MutationStrategy, ModuleSnapshot, TileSnapshot,
+    Genome, MutationStrategy, TileSnapshot,
 )
 from flux.evolution.mutator import MutationProposal
 from flux.flywheel.hypothesis import (
-    Hypothesis, ExperimentOutcome,
+    Hypothesis,
 )
 from flux.flywheel.knowledge import KnowledgeBase
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
 from flux.synthesis.synthesizer import FluxSynthesizer
 
 from flux.simulation.digital_twin import (
     DigitalTwin, SimulatedResult, SimulatedEvolutionReport,
-    PredictionRecord, WhatIfResult, ChaosReport, ChaosFault,
-    TwinReport,
+    PredictionRecord, WhatIfResult, ChaosReport, TwinReport,
 )
 from flux.simulation.predictor import (
     PerformancePredictor, CapacityForecast, MemoryStore,

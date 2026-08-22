@@ -27,10 +27,10 @@ from dataclasses import dataclass, field
 from typing import Optional, Any, Callable
 
 from .genome import Genome
-from .pattern_mining import PatternMiner, DiscoveredPattern, ExecutionTrace
-from .mutator import SystemMutator, MutationProposal, MutationResult, MutationRecord
+from .pattern_mining import PatternMiner, ExecutionTrace
+from .mutator import SystemMutator, MutationRecord
 from .validator import CorrectnessValidator, ValidationResult
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
+from flux.adaptive.profiler import AdaptiveProfiler
 from flux.adaptive.selector import AdaptiveSelector
 
 

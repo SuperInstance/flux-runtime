@@ -13,9 +13,8 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
 
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
+from flux.adaptive.profiler import AdaptiveProfiler
 from flux.modules.container import ModuleContainer
 from flux.modules.granularity import Granularity
 from flux.tiles.registry import TileRegistry

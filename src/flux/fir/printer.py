@@ -1,7 +1,6 @@
 """FIR Printer — human-readable text representation of FIR modules."""
 
 from __future__ import annotations
-from typing import Optional
 
 from .types import (
     FIRType, IntType, FloatType, BoolType, UnitType, StringType,
@@ -11,17 +10,8 @@ from .types import (
 from .values import Value
 from .instructions import (
     Instruction,
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IAnd, IOr, IXor, IShl, IShr, INot,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-    ITrunc, ZExt, SExt, FTrunc, FExt, Bitcast,
-    Load, Store, Alloca, GetField, SetField, GetElem, SetElem, MemCopy, MemSet,
-    Jump, Branch, Switch, Call, Return, Unreachable,
-    Tell, Ask, Delegate, TrustCheck, CapRequire,
 )
-from .blocks import FIRModule, FIRFunction, FIRBlock
+from .blocks import FIRModule
 
 
 # ── Type rendering ──────────────────────────────────────────────────────────
