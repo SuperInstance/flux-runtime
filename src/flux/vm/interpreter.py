@@ -392,16 +392,18 @@ class Interpreter:
 
     # ── A2A dispatch helper ────────────────────────────────────────────────
 
-    def _dispatch_a2a(self, opcode_name: str, data: bytes) -> None:
+    def _dispatch_a2a(self, opcode_name: str, data: bytes, rd: int | None = None) -> None:
         """Dispatch an A2A opcode to the registered handler.
 
         If no handler is registered, the opcode is logged as a no-op stub.
-        The handler may optionally return a value to place in R0.
+        The handler may optionally return a value: in unified mode (``rd``
+        given) it is written to rd per the converged spec (ASK "resp→rd");
+        in System A mode (``rd`` is None) it goes to R0, unchanged.
         """
         if self._a2a_handler is not None:
             result = self._a2a_handler(opcode_name, data)
             if result is not None:
-                self.regs.write_gp(0, int(result))
+                self.regs.write_gp(rd if rd is not None else 0, int(result))
         # If no handler, silently no-op (stub behavior for self-hosting)
 
     # ── Single-step execution ──────────────────────────────────────────────
@@ -646,25 +648,33 @@ class Interpreter:
             return
 
         # ── Branches ──────────────────────────────────────────────────────
+        # JZ/JNZ/JLT/JGT are Format F (op, rd, imm16 big-endian) — the
+        # executable ground truth (signal_compiler back-patches an imm16,
+        # parallel to JMP). The isa_unified.py "Format E" label was a spec
+        # inconsistency, corrected 2026-08-21.
         if opcode_byte == UnifiedOp.JZ:
-            rd, rs1, _ = self._decode_operands_E()
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
             if self.regs.read_gp(rd) == 0:
-                self.pc += self.regs.read_gp(rs1)
+                self.pc += imm16
             return
         if opcode_byte == UnifiedOp.JNZ:
-            rd, rs1, _ = self._decode_operands_E()
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
             if self.regs.read_gp(rd) != 0:
-                self.pc += self.regs.read_gp(rs1)
+                self.pc += imm16
             return
         if opcode_byte == UnifiedOp.JLT:
-            rd, rs1, _ = self._decode_operands_E()
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
             if self.regs.read_gp(rd) < 0:
-                self.pc += self.regs.read_gp(rs1)
+                self.pc += imm16
             return
         if opcode_byte == UnifiedOp.JGT:
-            rd, rs1, _ = self._decode_operands_E()
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
             if self.regs.read_gp(rd) > 0:
-                self.pc += self.regs.read_gp(rs1)
+                self.pc += imm16
             return
         if opcode_byte == UnifiedOp.JMP:
             self._fetch_u8()  # rd (ignored by JMP)
@@ -691,11 +701,13 @@ class Interpreter:
             rd, rs1, rs2 = self._decode_operands_E()
             payload = struct.pack(
                 "<III",
-                self.regs.read_gp(rd),
-                self.regs.read_gp(rs1),
-                self.regs.read_gp(rs2),
+                self.regs.read_gp(rd) & 0xFFFFFFFF,
+                self.regs.read_gp(rs1) & 0xFFFFFFFF,
+                self.regs.read_gp(rs2) & 0xFFFFFFFF,
             )
-            self._dispatch_a2a(_UNIFIED_A2A_NAMES[opcode_byte], payload)
+            # Per the converged spec (e.g. ASK "resp→rd"), a handler result
+            # lands in rd (not the System A R0 convention).
+            self._dispatch_a2a(_UNIFIED_A2A_NAMES[opcode_byte], payload, rd=rd)
             return
 
         # ── Confidence: C_THRESH (Format D) ───────────────────────────────

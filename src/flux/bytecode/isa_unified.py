@@ -11,7 +11,12 @@ Converged: ~200 opcodes organized by FORMAT and function.
 Confidence-OPTIONAL: base ops are plain, CONF_ variants at 0x60+.
 
 Encoding: Variable-length by FORMAT (A=1B through G=5B)
-All multi-byte formats are little-endian for the immediate fields.
+NOTE — endianness (verified 2026-08-21, flux-runtime A/B reconciliation):
+  imm16/imm32 fields in Formats F/G are BIG-ENDIAN (high byte first) in the
+  executable ground truth: signal_compiler._emit_format_f, the conformance
+  MOVI16 vector [0x40, rd, 0x10, 0x00] = 4096, and bytecode/formats.py all
+  agree. The earlier "little-endian" claim in this header was wrong and has
+  been corrected; the unified interpreter decodes imm16 via _fetch_i16_be.
 
 Opcode ranges:
   0x00-0x03  Format A  System control
@@ -168,10 +173,14 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x39, "STORE",  "E", "rd, rs1, rs2", "mem[rs1 + rs2] = rd",                  "memory",   "converged")
     op(0x3A, "MOV",    "E", "rd, rs1, -",  "rd = rs1",                              "move",     "converged")
     op(0x3B, "SWP",    "E", "rd, rs1, -",  "swap(rd, rs1)",                         "move",     "converged")
-    op(0x3C, "JZ",     "E", "rd, rs1, -",  "if rd == 0: pc += rs1",                 "control",  "converged")
-    op(0x3D, "JNZ",    "E", "rd, rs1, -",  "if rd != 0: pc += rs1",                 "control",  "converged")
-    op(0x3E, "JLT",    "E", "rd, rs1, -",  "if rd < 0: pc += rs1",                  "control",  "converged")
-    op(0x3F, "JGT",    "E", "rd, rs1, -",  "if rd > 0: pc += rs1",                  "control",  "converged")
+    # Format F (op, rd, imm16 BE) — NOT Format E. The executable ground truth
+    # (signal_compiler _compile_if back-patches a big-endian imm16 at bytes
+    # 2-3, parallel to JMP 0x43) requires an immediate offset; the original
+    # "E, rd/rs1" label was a spec inconsistency, corrected 2026-08-21.
+    op(0x3C, "JZ",     "F", "rd, imm16",  "if rd == 0: pc += imm16",              "control",  "converged")
+    op(0x3D, "JNZ",    "F", "rd, imm16",  "if rd != 0: pc += imm16",              "control",  "converged")
+    op(0x3E, "JLT",    "F", "rd, imm16",  "if rd < 0: pc += imm16",               "control",  "converged")
+    op(0x3F, "JGT",    "F", "rd, imm16",  "if rd > 0: pc += imm16",               "control",  "converged")
     
     # ═══════════════════════════════════════════
     # 0x40-0x47: Format F — Register + Imm16

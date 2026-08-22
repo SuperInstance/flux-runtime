@@ -26,7 +26,12 @@ from enum import Enum
 from io import StringIO
 from typing import Optional, Union
 
-from .opcodes_compat import OPCODE_DEFS, OpcodeDef, parse_register
+from .opcodes_compat import (
+    OPCODE_DEFS,
+    UNIFIED_OPCODE_DEFS,
+    OpcodeDef,
+    parse_register,
+)
 from .errors import AsmError, AsmErrorKind, SourceLocation
 from .macros import MacroPreprocessor
 
@@ -97,13 +102,39 @@ class CrossAssembler:
         defines: Optional[dict[str, str]] = None,
         origin: int = 0,
         preprocess: bool = True,
+        target: str = "system_a",
     ):
+        """Create a cross-assembler.
+
+        ``target`` selects the opcode numbering and encoding, mirroring the
+        interpreter's ISA selector:
+
+        - ``"system_a"`` (default) — legacy System A table (OPCODE_DEFS),
+          little-endian imm16. Byte-for-byte unchanged behavior.
+        - ``"unified"`` (alias ``"system_b"``) — converged System B table
+          (UNIFIED_OPCODE_DEFS, from isa_unified.py), big-endian imm16 in
+          Formats F/G per the executable ground truth.
+        """
+        t = (target or "system_a").lower().replace("-", "_")
+        if t in ("system_b", "unified"):
+            self.target = "unified"
+        elif t == "system_a":
+            self.target = "system_a"
+        else:
+            raise ValueError(
+                f"Unknown target: {target!r} (use 'system_a' or 'unified')"
+            )
         self.include_paths = include_paths or ["."]
         self.defines = defines or {}
         self.origin = origin
         self.preprocess = preprocess
         self.errors: list[AsmError] = []
         self.warnings: list[str] = []
+
+    @property
+    def _defs(self) -> dict[str, OpcodeDef]:
+        """Active opcode table for the selected target."""
+        return UNIFIED_OPCODE_DEFS if self.target == "unified" else OPCODE_DEFS
 
     def assemble(
         self,
@@ -310,10 +341,10 @@ class CrossAssembler:
             return 0
 
         mnemonic = parts[0].upper()
-        if mnemonic not in OPCODE_DEFS:
+        if mnemonic not in self._defs:
             return 1  # unknown, assume 1
 
-        op_def = OPCODE_DEFS[mnemonic]
+        op_def = self._defs[mnemonic]
         return op_def.size
 
     def _estimate_directive_size(self, line: str) -> int:
@@ -426,15 +457,15 @@ class CrossAssembler:
 
         mnemonic = parts[0].upper()
 
-        if mnemonic not in OPCODE_DEFS:
+        if mnemonic not in self._defs:
             raise AsmError(
                 message=f"Unknown mnemonic: {mnemonic}",
                 kind=AsmErrorKind.UNKNOWN_OPCODE,
                 location=loc,
-                hints=[f"Did you mean one of: {', '.join(sorted(OPCODE_DEFS.keys())[:10])}?"],
+                hints=[f"Did you mean one of: {', '.join(sorted(self._defs.keys())[:10])}?"],
             )
 
-        op_def = OPCODE_DEFS[mnemonic]
+        op_def = self._defs[mnemonic]
         operands = parts[1:]
 
         if len(operands) < op_def.min_operands:
@@ -453,6 +484,12 @@ class CrossAssembler:
 
         # Encode based on format
         opcode_byte = op_def.opcode
+
+        if self.target == "unified":
+            self._emit_instruction_unified(
+                mnemonic, op_def, operands, labels, bytecode, loc,
+            )
+            return
 
         if op_def.format == "A":
             # No operands
@@ -520,6 +557,86 @@ class CrossAssembler:
             bytecode.append(opcode_byte)
             bytecode.append(rd)
             bytecode.extend(struct.pack("<H", imm & 0xFFFF))
+
+    def _emit_instruction_unified(
+        self,
+        mnemonic: str,
+        op_def: OpcodeDef,
+        operands: list[str],
+        labels: dict[str, int],
+        bytecode: bytearray,
+        loc: SourceLocation,
+    ) -> None:
+        """Emit one instruction using System B (unified) numbering/encodings.
+
+        System B formats (all imm16 BIG-endian — executable ground truth,
+        matching signal_compiler and the unified interpreter's _fetch_i16_be):
+            A: [op]
+            B: [op][rd]
+            C: [op][imm8]
+            D: [op][rd][imm8]
+            E: [op][rd][rs1][rs2]
+            F: [op][rd][imm16]      (JZ/JNZ/JLT/JGT/JMP/CALL/LOOP: relative)
+            G: [op][rd][rs1][imm16]
+        """
+        opcode_byte = op_def.opcode
+        instr_offset = len(bytecode)
+
+        # Jump mnemonics take a PC-relative offset: the unified VM's pc points
+        # past the 4-byte instruction, so offset = target - (start + size).
+        _UNIFIED_JUMPS = {"JZ", "JNZ", "JLT", "JGT", "JMP", "CALL", "LOOP"}
+
+        def _rel_if_label(imm: int) -> int:
+            if mnemonic in _UNIFIED_JUMPS and operands[-1].strip() in labels:
+                return imm - instr_offset - op_def.size
+            return imm
+
+        def _imm16_bytes(imm: int) -> bytes:
+            imm = max(-32768, min(32767, imm))
+            u = imm & 0xFFFF
+            return bytes([(u >> 8) & 0xFF, u & 0xFF])  # big-endian
+
+        fmt = op_def.format
+        if fmt == "A":
+            bytecode.append(opcode_byte)
+        elif fmt == "B":
+            bytecode.append(opcode_byte)
+            bytecode.append(parse_register(operands[0], loc))
+        elif fmt == "C":
+            imm = self._eval_expr(operands[0], labels) & 0xFF
+            bytecode.extend([opcode_byte, imm])
+        elif fmt == "D":
+            rd = parse_register(operands[0], loc)
+            imm = self._eval_expr(operands[1], labels) & 0xFF
+            bytecode.extend([opcode_byte, rd, imm])
+        elif fmt == "E":
+            rd = parse_register(operands[0], loc)
+            rs1 = parse_register(operands[1], loc)
+            rs2 = parse_register(operands[2], loc)
+            bytecode.extend([opcode_byte, rd, rs1, rs2])
+        elif fmt == "F":
+            if len(operands) == 1:
+                # JMP-style: just a label/immediate, rd defaults to 0
+                rd, imm = 0, self._eval_expr(operands[0], labels)
+            else:
+                rd = parse_register(operands[0], loc)
+                imm = self._eval_expr(operands[1], labels)
+            imm = _rel_if_label(imm)
+            bytecode.append(opcode_byte)
+            bytecode.append(rd)
+            bytecode.extend(_imm16_bytes(imm))
+        elif fmt == "G":
+            rd = parse_register(operands[0], loc)
+            rs1 = parse_register(operands[1], loc)
+            imm = self._eval_expr(operands[2], labels)
+            bytecode.extend([opcode_byte, rd, rs1])
+            bytecode.extend(_imm16_bytes(imm))
+        else:  # pragma: no cover — unified table only uses A-G
+            raise AsmError(
+                message=f"Unified target: unsupported format {fmt!r} for {mnemonic}",
+                kind=AsmErrorKind.UNKNOWN_OPCODE,
+                location=loc,
+            )
 
     def _eval_expr(self, expr: str, labels: dict[str, int]) -> int:
         """Evaluate a constant expression (immediate value or label reference)."""

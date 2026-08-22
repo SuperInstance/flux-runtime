@@ -26,6 +26,7 @@ Signal opcodes → FLUX bytecodes:
   await      → AWAIT (0x5B)
 """
 import json
+import zlib
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass, field
 
@@ -60,7 +61,29 @@ class SignalCompiler:
     }
     """
     
-    def __init__(self, num_registers: int = 64):
+    def __init__(self, num_registers: int = 64, isa: str = "unified"):
+        """Create a Signal compiler.
+
+        ``isa`` mirrors the interpreter's selector. Signal is a System
+        B-native surface (its A2A ops are register-based Format E; System A's
+        A2A is variable-length Format G with string payloads — no Signal
+        mapping exists), so the compiler emits the unified (System B)
+        numbering it has always emitted; ``"system_b"`` is accepted as an
+        alias for ``"unified"``. Requesting ``"system_a"`` raises: inventing
+        a Format-G Signal emission would create a third dialect rather than
+        preserve the two existing ones.
+        """
+        isa_norm = (isa or "unified").lower().replace("-", "_")
+        if isa_norm in ("system_b", "unified"):
+            self.isa = "unified"
+        elif isa_norm == "system_a":
+            raise ValueError(
+                "SignalCompiler does not support isa='system_a': Signal is a "
+                "System B-native surface (register-based A2A). System A A2A is "
+                "Format G (string payloads) and has no Signal mapping."
+            )
+        else:
+            raise ValueError(f"Unknown isa: {isa!r} (use 'unified' or 'system_b')")
         self.num_registers = num_registers
         self.reset()
     
@@ -126,8 +149,44 @@ class SignalCompiler:
         return self._emit(opcode, rd, rs1, rs2, source_line=source_line)
     
     def _emit_format_f(self, opcode: int, rd: int, imm16: int, source_line: int = 0) -> int:
+        """Format F: [op][rd][imm16hi][imm16lo] — imm16 is BIG-endian.
+
+        Verified executable truth (conformance MOVI16 vector + the unified
+        interpreter's _fetch_i16_be); isa_unified.py's old "little-endian"
+        header claim was corrected 2026-08-21.
+        """
         imm16 = imm16 & 0xFFFF
         return self._emit(opcode, rd, (imm16 >> 8) & 0xFF, imm16 & 0xFF, source_line=source_line)
+
+    # ── Unified-mode operand helpers (A2A register population) ──
+
+    @staticmethod
+    def _intern_id(name: str) -> int:
+        """Deterministic 15-bit id for a symbolic name (agent/tag/token).
+
+        Register-based A2A (converged spec: TELL "Send rs2 to agent rs1, tag
+        rd") carries integer operand values, so symbolic strings are interned
+        to a stable id. Masked to 0x7FFF so it always loads as a positive
+        MOVI16 immediate.
+        """
+        return zlib.crc32(str(name).encode("utf-8")) & 0x7FFF
+
+    def _load_operand(self, reg: int, value: Any, line: int):
+        """Load ``value`` into register ``reg`` (MOVI/MOVI16/MOV) so A2A
+        opcodes dispatch with populated operands instead of all-zero
+        registers."""
+        if isinstance(value, bool):
+            value = int(value)
+        if isinstance(value, int) and -128 <= value <= 127:
+            self._emit_format_d(0x18, reg, value, source_line=line)      # MOVI
+        elif isinstance(value, int) and -32768 <= value <= 32767:
+            self._emit_format_f(0x40, reg, value, source_line=line)      # MOVI16
+        elif isinstance(value, str) and value in self._register_map:
+            src = self._register_map[value]
+            self._emit_format_e(0x3A, reg, src, 0, source_line=line)     # MOV
+        else:
+            # Symbolic string (agent name, tag, message token) → interned id
+            self._emit_format_f(0x40, reg, self._intern_id(value), source_line=line)
     
     # ── Signal op compilers ──
     
@@ -230,49 +289,82 @@ class SignalCompiler:
         self._emit_format_e(opcode, rd, rs1, rs2, source_line=line)
     
     def _compile_tell(self, op: dict, line: int):
-        """tell: send info to agent → TELL (0x50)"""
+        """tell: send info to agent → TELL (0x50)
+
+        Converged spec: "Send rs2 to agent rs1, tag rd" — the operand
+        registers are POPULATED (tag id → rd, agent id → rs1, data → rs2)
+        before the opcode, so the A2A handler receives real values.
+        """
         to_name = op.get("to", "")
         what = op.get("what", "")
         tag = op.get("tag", "")
-        
+
         rd = self._alloc_reg(f"_tag_{tag}" if tag else f"_msg{self._reg_counter}")
         rs1 = self._alloc_reg(f"_agent_{to_name}")
         rs2 = self._alloc_reg(f"_data_{what}")
-        
+
+        self._load_operand(rd, tag if tag else "untagged", line)
+        self._load_operand(rs1, to_name, line)
+        self._load_operand(rs2, what, line)
+
         self._emit_format_e(0x50, rd, rs1, rs2, source_line=line)  # TELL
     
     def _compile_ask(self, op: dict, line: int):
-        """ask: request info from agent → ASK (0x51)"""
+        """ask: request info from agent → ASK (0x51)
+
+        Converged spec: "Request rs2 from agent rs1, resp→rd" — rs1/rs2 are
+        populated; rd is the response destination and is left unloaded (the
+        interpreter writes the handler's result there).
+        """
         to_name = op.get("from", op.get("to", ""))
         what = op.get("what", "")
         into = op.get("into", f"_resp{self._reg_counter}")
-        
+
         rd = self._alloc_reg(into)
         rs1 = self._alloc_reg(f"_agent_{to_name}")
         rs2 = self._alloc_reg(f"_query_{what}")
-        
+
+        self._load_operand(rs1, to_name, line)
+        self._load_operand(rs2, what, line)
+
         self._emit_format_e(0x51, rd, rs1, rs2, source_line=line)  # ASK
     
     def _compile_delegate(self, op: dict, line: int):
-        """delegate: assign task → DELEG (0x52)"""
+        """delegate: assign task → DELEG (0x52)
+
+        Converged spec: "Delegate task rs2 to agent rs1" — rs1/rs2 populated.
+        """
         to_name = op.get("to", "")
         task = op.get("task", "")
-        
+
         rd = self._alloc_reg(f"_deleg{self._reg_counter}")
         rs1 = self._alloc_reg(f"_agent_{to_name}")
         rs2 = self._alloc_reg(f"_task_{task}")
-        
+
+        self._load_operand(rs1, to_name, line)
+        self._load_operand(rs2, task, line)
+
         self._emit_format_e(0x52, rd, rs1, rs2, source_line=line)  # DELEG
     
     def _compile_broadcast(self, op: dict, line: int):
-        """broadcast: send to all → BCAST (0x53)"""
+        """broadcast: send to all → BCAST (0x53)
+
+        Converged spec: "Broadcast rs2 to fleet, tag rd" — rs1 stays 0
+        (broadcast target = all agents), rd/rs2 populated.
+        """
         what = op.get("what", "")
         tag = op.get("tag", "")
-        
+
         rd = self._alloc_reg(f"_btag_{tag}" if tag else f"_bcast{self._reg_counter}")
-        rs1 = 0  # broadcast target = 0 (all)
+        # rs1 must reference a register holding 0 ("broadcast to all"): a
+        # fresh, never-loaded register. Using literal register number 0 would
+        # make the packed agent field alias whatever R0 holds (e.g. the tag).
+        rs1 = self._alloc_reg("_bcast_target_all")
         rs2 = self._alloc_reg(f"_bdata_{what}")
-        
+
+        self._load_operand(rd, tag if tag else "untagged", line)
+        self._load_operand(rs2, what, line)
+
         self._emit_format_e(0x53, rd, rs1, rs2, source_line=line)  # BCAST
     
     def _compile_seq(self, op: dict, line: int):
@@ -288,7 +380,10 @@ class SignalCompiler:
         
         cond_reg = self._register_map.get(cond_name, self._alloc_reg(cond_name))
         
-        # JZ: if cond == 0, jump to else
+        # JZ: if cond == 0, jump to else.
+        # Format F (op, rd, imm16 big-endian) — the executable truth; the
+        # isa_unified.py "Format E" label was a spec inconsistency, fixed
+        # 2026-08-21. Back-patch below writes the BE imm16 at bytes 2-3.
         jump_offset = self._emit_format_e(0x3C, cond_reg, 0, 0, source_line=line)  # JZ
         
         # Compile "then" body

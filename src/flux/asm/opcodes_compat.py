@@ -252,3 +252,58 @@ _OPCODE_ALIASES = {
 for alias, target in _OPCODE_ALIASES.items():
     if target in OPCODE_DEFS:
         OPCODE_DEFS[alias] = OPCODE_DEFS[target]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Unified (System B) opcode table — target for the one-way convergence.
+#
+# Built from the single source of truth (flux.bytecode.isa_unified.
+# build_unified_isa()) rather than hand-copied numbers. System B formats
+# differ from System A's:
+#   A: 1 byte  [op]
+#   B: 2 bytes [op][rd]
+#   C: 2 bytes [op][imm8]
+#   D: 3 bytes [op][rd][imm8]
+#   E: 4 bytes [op][rd][rs1][rs2]
+#   F: 4 bytes [op][rd][imm16]  — BIG-endian (executable ground truth)
+#   G: 5 bytes [op][rd][rs1][imm16] — BIG-endian
+# JZ/JNZ/JLT/JGT are Format F (rd + imm16), per the corrected spec — the
+# original "Format E" label was an inconsistency resolved 2026-08-21.
+#
+# The System A table above is UNTOUCHED (legacy, default).
+# ─────────────────────────────────────────────────────────────────────────────
+
+from ..bytecode.isa_unified import build_unified_isa  # noqa: E402
+
+_UNIFIED_SIZE_BY_FORMAT = {"A": 1, "B": 2, "C": 2, "D": 3, "E": 4, "F": 4, "G": 5}
+_UNIFIED_OPERANDS_BY_FORMAT = {
+    "A": (0, 0), "B": (1, 1), "C": (1, 1), "D": (2, 2),
+    "E": (3, 3), "F": (1, 2), "G": (3, 3),
+}
+
+UNIFIED_OPCODE_DEFS: dict[str, OpcodeDef] = {}
+
+for _udef in build_unified_isa():
+    if _udef.reserved:
+        continue
+    _lo, _hi = _UNIFIED_OPERANDS_BY_FORMAT.get(_udef.format, (1, 1))
+    UNIFIED_OPCODE_DEFS[_udef.mnemonic] = OpcodeDef(
+        mnemonic=_udef.mnemonic,
+        opcode=_udef.opcode,
+        format=_udef.format,
+        size=_UNIFIED_SIZE_BY_FORMAT.get(_udef.format, 1),
+        min_operands=_lo,
+        max_operands=_hi,
+        description=_udef.description,
+    )
+
+# Unified aliases: System A-style mnemonics → their converged equivalents
+# (only where a real mapping exists — no invented entries).
+_UNIFIED_ALIASES = {
+    "IADD": "ADD", "ISUB": "SUB", "IMUL": "MUL", "IDIV": "DIV", "IMOD": "MOD",
+    "IAND": "AND", "IOR": "OR", "IXOR": "XOR", "INOT": "NOT",
+    "BROADCAST": "BCAST", "DELEGATE": "DELEG",
+}
+for _alias, _target in _UNIFIED_ALIASES.items():
+    if _target in UNIFIED_OPCODE_DEFS:
+        UNIFIED_OPCODE_DEFS[_alias] = UNIFIED_OPCODE_DEFS[_target]
