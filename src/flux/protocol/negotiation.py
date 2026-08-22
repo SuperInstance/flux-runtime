@@ -48,7 +48,7 @@ class CapabilityOffer:
     requirements : list
         List of capability names the offering agent requires from the counterparty.
     trust_level : float
-        Minimum trust level required (0.0–1.0).
+        Minimum trust level required (0.0-1.0).
     expires_at : float
         Unix timestamp when this offer expires.
     metadata : dict
@@ -160,14 +160,14 @@ class TrustHandshake:
         self.proof = proof
 
     def accept(self) -> None:
-        """Accept the handshake (step 4 — success)."""
+        """Accept the handshake (step 4 - success)."""
         if self.state != NegotiationState.COUNTER_PROPOSED:
             raise ValueError(f"Cannot accept in state {self.state.name}")
         self.state = NegotiationState.ACCEPTED
         self.completed_at = time.time()
 
     def reject(self, reason: str = "") -> None:
-        """Reject the handshake (step 4 — failure)."""
+        """Reject the handshake (step 4 - failure)."""
         self.state = NegotiationState.REJECTED
         self.error = reason
         self.completed_at = time.time()

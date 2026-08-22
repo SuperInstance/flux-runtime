@@ -20,20 +20,20 @@ from .tile import (
 )
 
 __all__ = [
-    # Core
-    "Tile",
-    "TileType",
-    "TileInstance",
+    "CoercionInfo",
     "CompositeTile",
     "ParallelTile",
-    # Ports
-    "TilePort",
     "PortDirection",
-    "CoercionInfo",
+    # Core
+    "Tile",
+    "TileEdge",
     # Graph
     "TileGraph",
-    "TileEdge",
+    "TileInstance",
+    # Ports
+    "TilePort",
     # Registry
     "TileRegistry",
+    "TileType",
     "default_registry",
 ]

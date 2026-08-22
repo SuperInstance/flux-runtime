@@ -249,7 +249,7 @@ class Swarm:
             return None
 
         values = []
-        for agent_id, agent in self.agents.items():
+        for _agent_id, agent in self.agents.items():
             values.append(agent.get_stats())
 
         try:

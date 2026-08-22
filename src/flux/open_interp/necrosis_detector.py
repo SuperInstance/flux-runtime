@@ -46,11 +46,11 @@ class TileProvenance:
 class NecrosisDetector:
     """
     Detects and prevents epistemic stagnation from over-reliance on ghost vocabulary.
-    
+
     The Functioning Mausoleum scenario: agents achieve perfect communication
     using only dead concepts, incapable of incorporating new research because
     the pruning system correctly identifies novel knowledge as "inefficient."
-    
+
     Cure: Enforce a minimum novelty ratio.
     """
 

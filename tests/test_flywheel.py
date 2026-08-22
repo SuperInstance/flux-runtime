@@ -347,7 +347,7 @@ class TestKnowledgeBase:
             description="test", target_path="t",
             mutation_type=MutationStrategy.ADD_TILE,
         )
-        for i in range(10):
+        for _i in range(10):
             result = ExperimentResult(
                 hypothesis=h, outcome=ExperimentOutcome.SUCCESS,
                 actual_speedup=1.5,
@@ -468,7 +468,7 @@ class TestKnowledgeBase:
             description="test", target_path="t",
             mutation_type=MutationStrategy.RECOMPILE_LANGUAGE,
         )
-        skip, reason = kb.should_skip(h)
+        skip, _ = kb.should_skip(h)
         assert not skip
 
     def test_query_similar(self):
@@ -838,7 +838,7 @@ class TestMultipleRevolutions:
         curve = engine.get_acceleration_curve()
         assert len(curve) == 3
         # Each entry is (revolution, factor)
-        for rev, factor in curve:
+        for _rev, factor in curve:
             assert factor >= 1.0
 
     def test_metrics_track_all_revolutions(self, profiler_data):

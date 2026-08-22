@@ -22,6 +22,7 @@ JSON export for tooling integration::
 
 from __future__ import annotations
 
+import contextlib
 import json
 import time
 from collections import Counter, defaultdict
@@ -280,16 +281,12 @@ class FluxProfiler:
                 if op in _MEMORY_READ_OPS:
                     result.memory_patterns.reads += 1
                     # Try to determine which region
-                    try:
+                    with contextlib.suppress(Exception):
                         result.memory_patterns.regions_accessed["stack"] += 1
-                    except Exception:
-                        pass
                 elif op in _MEMORY_WRITE_OPS:
                     result.memory_patterns.writes += 1
-                    try:
+                    with contextlib.suppress(Exception):
                         result.memory_patterns.regions_accessed["stack"] += 1
-                    except Exception:
-                        pass
             except (ValueError, Exception):
                 pass
 

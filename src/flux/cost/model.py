@@ -168,7 +168,7 @@ class CostModel:
     def _memory_cost(self) -> float:
         """Expected memory access cost using hierarchy probabilities."""
         expected = 0.0
-        for level, (latency, prob) in self.MEMORY_HIERARCHY.items():
+        for _level, (latency, prob) in self.MEMORY_HIERARCHY.items():
             expected += latency * prob
         return expected
 

@@ -17,6 +17,7 @@ The GrandConductor orchestrates all FLUX subsystems into one cohesive machine:
 
 from __future__ import annotations
 
+import contextlib
 import os
 import time
 from collections.abc import Callable
@@ -298,10 +299,8 @@ class GrandConductor:
         )
 
         # Update modularity from selector if available
-        try:
+        with contextlib.suppress(Exception):
             assessment.modularity = self.synthesizer.selector.get_modularity_score()
-        except Exception:
-            pass
 
         return assessment
 

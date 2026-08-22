@@ -1,5 +1,5 @@
 """
-Paper Decomposer — Research Papers → FLUX Vocabulary
+Paper Decomposer - Research Papers → FLUX Vocabulary
 
 Reads a directory of research papers (.md files) and extracts named concepts,
 formulas, and key innovations into FLUX vocabulary entries.
@@ -50,14 +50,14 @@ class PaperSection:
 class PaperDecomposer:
     """
     Decomposes research papers into FLUX vocabulary patterns.
-    
+
     Extracts:
     - Named concepts from headings
     - Mathematical formulas and their descriptions
     - Key innovations and contributions
     - Tuple definitions and formal systems
     - Performance claims and metrics
-    
+
     Each concept becomes a vocabulary entry with a natural language pattern
     in FLUX-ese that any agent can learn and use.
     """
@@ -70,7 +70,7 @@ class PaperDecomposer:
         """Decompose all papers in a directory into vocabulary."""
         entries = []
 
-        for root, dirs, files in os.walk(directory):
+        for root, _dirs, files in os.walk(directory):
             for fname in sorted(files):
                 if fname.endswith('.md') and not fname.startswith('.'):
                     fpath = os.path.join(root, fname)
@@ -210,11 +210,11 @@ class PaperDecomposer:
             formulas.append(m.group(1).strip())
 
         # `...` inline code that looks like math
-        for m in re.finditer(r'`([A-Za-z_]+\([^)]+\)|[A-Z]\s*[=∈⊂∪∩].*?)`', text):
+        for m in re.finditer(r'`([A-Za-z_]+\([^)]+\)|[A-Z]\s*[=∈⊂\u222a∩].*?)`', text):
             formulas.append(m.group(1).strip())
 
         # X = (A, B, C) tuple definitions
-        for m in re.finditer(r'([A-Zα-ωΑ-Ω]+)\s*=\s*\(([^)]+)\)', text):
+        for m in re.finditer(r'([A-Z\u03b1-\u03c9\u0391-\u03a9]+)\s*=\s*\(([^)]+)\)', text):
             formulas.append(f"{m.group(1)} = ({m.group(2)})")
 
         return formulas[:5]  # Cap at 5
@@ -284,7 +284,7 @@ class PaperDecomposer:
     def _title_to_pattern(self, title: str) -> str:
         """Convert a paper title to a FLUX-ese pattern."""
         # Clean
-        title = re.sub(r'[📊📐📈🤖🔷🌍⚛️⚡🚀🎯💡:\-–—]', '', title).strip()
+        title = re.sub(r'[📊📐📈🤖🔷🌍⚛️⚡🚀🎯💡:\---]', '', title).strip()
 
         # Remove "Paper N:" prefix
         title = re.sub(r'^Paper\s+\d+:\s*', '', title, flags=re.IGNORECASE)
@@ -333,7 +333,7 @@ class PaperDecomposer:
 
     def _title_to_name(self, title: str) -> str:
         """Convert a title to a safe name."""
-        name = re.sub(r'[📊📐📈🤖🔷🌍⚛️⚡🚀🎯💡:\-–—\s]+', '_', title)
+        name = re.sub(r'[📊📐📈🤖🔷🌍⚛️⚡🚀🎯💡:\---\s]+', '_', title)
         name = re.sub(r'[^a-zA-Z0-9_]', '', name)
         name = re.sub(r'_+', '_', name).strip('_').lower()
         return name[:40]

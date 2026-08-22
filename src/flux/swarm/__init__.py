@@ -37,26 +37,26 @@ from .topology import (
 )
 
 __all__ = [
-    # Agent
-    "FluxAgent",
+    # Message Bus
+    "AgentMessage",
+    "AgentResult",
     "AgentRole",
     "AgentTask",
-    "AgentResult",
-    "TrustProfile",
-    # Topology
-    "SwarmTopology",
-    "Topology",
-    # Swarm
-    "Swarm",
-    "SwarmReport",
-    "SwarmEvolutionReport",
-    "TopologyChange",
     # Deadlock
     "DeadlockDetector",
     "DeadlockReport",
     "DeadlockResolution",
     "DeadlockSeverity",
-    # Message Bus
-    "AgentMessage",
+    # Agent
+    "FluxAgent",
     "MessageBus",
+    # Swarm
+    "Swarm",
+    "SwarmEvolutionReport",
+    "SwarmReport",
+    # Topology
+    "SwarmTopology",
+    "Topology",
+    "TopologyChange",
+    "TrustProfile",
 ]

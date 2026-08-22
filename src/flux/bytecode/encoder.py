@@ -1,15 +1,15 @@
-"""Bytecode Encoder — encodes FIRModule into FLUX binary bytecode format.
+"""Bytecode Encoder - encodes FIRModule into FLUX binary bytecode format.
 
 Binary layout:
   [Header 16B][Type Table][Name Pool][Function Table][Code Section]
 
 Header (16 bytes):
   magic:    b'FLUX'         (4 bytes)
-  version:  uint16 LE        (2 bytes)  — always 1
-  flags:    uint16 LE        (2 bytes)  — reserved, 0
-  n_funcs:  uint16 LE        (2 bytes)  — number of functions
-  type_off: uint32 LE        (4 bytes)  — byte offset to type table
-  code_off: uint32 LE        (4 bytes)  — byte offset to code section
+  version:  uint16 LE        (2 bytes)  - always 1
+  flags:    uint16 LE        (2 bytes)  - reserved, 0
+  n_funcs:  uint16 LE        (2 bytes)  - number of functions
+  type_off: uint32 LE        (4 bytes)  - byte offset to type table
+  code_off: uint32 LE        (4 bytes)  - byte offset to code section
 
 Instruction encoding (variable length, little-endian):
   Format A (1B):  [opcode]
@@ -112,7 +112,7 @@ class BytecodeEncoder:
         # ── 4. Compute section offsets ───────────────────────────────────
         type_off = HEADER_SIZE
         func_table_off = type_off + len(type_table) + len(name_pool)
-        code_off = func_table_off + len(func_entries) * 12  # 3 × u32
+        code_off = func_table_off + len(func_entries) * 12  # 3 x u32
 
         # ── 5. Assemble header (18 bytes) ───────────────────────────────
         header = struct.pack(

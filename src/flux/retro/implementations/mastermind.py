@@ -1,8 +1,8 @@
-"""FLUX Retro: Mastermind — code-breaking comparison in FLUX bytecode.
+"""FLUX Retro: Mastermind - code-breaking comparison in FLUX bytecode.
 
 The VM computes black/white pegs for a given guess vs. secret:
-  • R0–R3 = secret code (digits 1-6)
-  • R4–R7 = guess code   (digits 1-6)
+  • R0-R3 = secret code (digits 1-6)
+  • R4-R7 = guess code   (digits 1-6)
   • R8     = black pegs (correct digit, correct position)
   • R9     = white pegs (correct digit, wrong position)
 
@@ -291,7 +291,7 @@ class Mastermind:
     @staticmethod
     def demonstrate():
         print("=" * 60)
-        print("  FLUX RETRO — MASTERMIND")
+        print("  FLUX RETRO - MASTERMIND")
         print("  Code-breaking with FLUX bytecode comparison engine")
         print("=" * 60)
 

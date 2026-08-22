@@ -193,7 +193,7 @@ class RepoSignaler:
             return manifest
 
         # Scan recursively for .ese and .fluxvocab files
-        for root, dirs, files in os.walk(vocab_dir):
+        for root, _dirs, files in os.walk(vocab_dir):
             for fname in files:
                 if fname.endswith('.ese') or fname.endswith('.fluxvocab'):
                     fpath = os.path.join(root, fname)
@@ -257,7 +257,7 @@ class RepoSignaler:
 
         # Check directory names
         dir_scores = {}
-        for root, dirs, files in os.walk(vocab_dir):
+        for _root, dirs, _files in os.walk(vocab_dir):
             for d in dirs:
                 lower_d = d.lower()
                 for dialect, keywords in RepoSignaler.DIALECT_PATTERNS.items():
@@ -266,7 +266,7 @@ class RepoSignaler:
 
         # Check filenames
         file_scores = {}
-        for root, dirs, files in os.walk(vocab_dir):
+        for _root, _dirs, files in os.walk(vocab_dir):
             for f in files:
                 if f.endswith('.ese') or f.endswith('.fluxvocab'):
                     lower_f = f.lower()

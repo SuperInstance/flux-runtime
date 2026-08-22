@@ -1,9 +1,9 @@
-"""Register File — 64-register file for the FLUX Micro-VM.
+"""Register File - 64-register file for the FLUX Micro-VM.
 
 Layout:
-    R0  – R15 : 16 general-purpose integer registers
-    F0  – F15 : 16 floating-point registers
-    V0  – V15 : 16 SIMD/vector registers (128-bit bytearrays)
+    R0  - R15 : 16 general-purpose integer registers
+    F0  - F15 : 16 floating-point registers
+    V0  - V15 : 16 SIMD/vector registers (128-bit bytearrays)
 
 Special ABI aliases:
     R11 (SP)    : Stack pointer

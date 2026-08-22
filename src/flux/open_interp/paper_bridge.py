@@ -67,7 +67,7 @@ class StructuralMemoryResult:
 class PaperBridge:
     """
     Implements working functions for SuperInstance paper concepts.
-    
+
     Concepts implemented:
     1. Confidence Cascade (Paper 03) — zone-based confidence with deadband
     2. OCDS Origin Tracking (Paper 01) — S=(O,D,T,Φ) provenance
@@ -87,12 +87,12 @@ class PaperBridge:
     def confidence_cascade(self, value: float, deadband: float = 0.1) -> ConfidenceResult:
         """
         Confidence Cascade Architecture (Paper 03).
-        
+
         Three-zone model:
           Zone 1 (conf > 0.8): Act immediately. High confidence.
           Zone 2 (0.4 ≤ conf ≤ 0.8): Escalate. Medium confidence.
           Zone 3 (conf < 0.4): Fail-safe. Low confidence.
-        
+
         Deadband: if new value within deadband of last, skip recomputation.
         """
         should_recompute = True
@@ -130,7 +130,7 @@ class PaperBridge:
     def ocds_track(self, origin: str, data: Any, transform: str, function: str) -> OCDSTuple:
         """
         Origin-Centric Data Systems (Paper 01).
-        
+
         S = (O, D, T, Φ) four-tuple for complete data provenance.
         Every datum carries its origin, the data itself, the transform applied,
         and the mathematical relationship.
@@ -151,7 +151,7 @@ class PaperBridge:
                      f_confidence: float = 1.0, g_confidence: float = 1.0) -> TileComposeResult:
         """
         Tile Algebra Composition (Paper 08).
-        
+
         compose(f,g)(x) = g(f(x))
         Confidence = product of individual confidences.
         Composition preserves behavior, confidence, and safety.
@@ -169,9 +169,9 @@ class PaperBridge:
     def rate_of_change(self, history: list[tuple]) -> RateResult:
         """
         Rate-Based Change Mechanics (Paper 05).
-        
+
         x(t) = x₀ + ∫r(τ)dτ
-        
+
         Monitor rates instead of states. Detect anomalies before they happen.
         """
         if len(history) < 2:
@@ -223,7 +223,7 @@ class PaperBridge:
     def emergence_detect(self, agent_results: list[float]) -> EmergenceResult:
         """
         Emergence Detection (Paper 27).
-        
+
         Detect when collective behavior transcends individual behavior.
         emerged if collective_score > 1.5 * individual_avg.
         """
@@ -258,7 +258,7 @@ class PaperBridge:
     def structural_memory_encode(self, capacity: float, load: float, age: float = 0.0) -> StructuralMemoryResult:
         """
         Structural Memory (Paper 20).
-        
+
         Memory IS the structure, not a representation stored IN the structure.
         Encode constraints as physical form.
         """

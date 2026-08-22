@@ -17,14 +17,14 @@ class Granularity(Enum):
     Higher values = smaller units = faster reload.
     """
 
-    TRAIN = 0       # Largest — full library, slowest reload
+    TRAIN = 0       # Largest - full library, slowest reload
     CARRIAGE = 1    # Sub-library section
     LUGGAGE = 2     # Feature group
     BAG = 3         # Component cluster
     POCKET = 4      # Single component
     WALLET = 5      # Organized sub-component
     SLOT = 6        # Named position
-    CARD = 7        # Atomic unit — fastest hot-reload
+    CARD = 7        # Atomic unit - fastest hot-reload
 
 
 class GranularityMeta:
@@ -32,7 +32,7 @@ class GranularityMeta:
 
     Attributes:
         granularity: The granularity level this metadata describes.
-        reload_cost: Relative cost of reloading at this level (1–100).
+        reload_cost: Relative cost of reloading at this level (1-100).
                      Lower = cheaper (CARD = 1), higher = expensive (TRAIN = 100).
         isolation: How independent units at this level are from siblings.
                    0.0 = fully coupled, 1.0 = fully isolated.

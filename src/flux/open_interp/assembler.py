@@ -58,7 +58,7 @@ def parse_reg(s: str) -> int:
 def assemble_text(text: str) -> bytes:
     """
     Assemble FLUX assembly text into bytecode.
-    
+
     Supports:
         MOVI R0, 7        → [0x2B, 0x00, 0x07, 0x00]
         IADD R0, R1, R2   → [0x08, 0x00, 0x01, 0x02]

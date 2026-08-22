@@ -33,7 +33,7 @@ class TestEdgeProfiler:
     def _make_vocab(self):
         vocab = Vocabulary()
         vocab.entries = []
-        for i, (name, tags) in enumerate([
+        for _i, (name, tags) in enumerate([
             ("compute", ["essential", "core"]),
             ("store", ["essential", "core"]),
             ("halt", ["essential", "core"]),

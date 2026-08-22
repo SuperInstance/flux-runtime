@@ -377,7 +377,7 @@ class FlywheelEngine:
                 metadata={"suggested_language": candidate.get("suggested_language", "rust")},
             )
             # Check if knowledge base says to skip
-            skip, reason = self._knowledge.should_skip(h)
+            skip, _ = self._knowledge.should_skip(h)
             if not skip:
                 hypotheses.append(h)
 
@@ -393,7 +393,7 @@ class FlywheelEngine:
                 confidence=0.6,
                 source="pattern_miner",
             )
-            skip, reason = self._knowledge.should_skip(h)
+            skip, _ = self._knowledge.should_skip(h)
             if not skip:
                 hypotheses.append(h)
 
@@ -409,7 +409,7 @@ class FlywheelEngine:
                 confidence=0.5,
                 source="tile_registry",
             )
-            skip, reason = self._knowledge.should_skip(h)
+            skip, _ = self._knowledge.should_skip(h)
             if not skip:
                 hypotheses.append(h)
 
@@ -434,7 +434,7 @@ class FlywheelEngine:
                     source="research",
                     metadata={"rule_condition": rule.condition},
                 )
-                skip, reason = self._knowledge.should_skip(h)
+                skip, _ = self._knowledge.should_skip(h)
                 if not skip:
                     hypotheses.append(h)
 

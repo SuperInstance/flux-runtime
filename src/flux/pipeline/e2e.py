@@ -34,7 +34,7 @@ class PipelineResult:
     halted : bool
         Whether the VM halted normally.
     registers : dict[int, int] | None
-        Register state after execution (R0–R15).
+        Register state after execution (R0-R15).
     errors : list[str]
         Any errors encountered during compilation/execution.
     """

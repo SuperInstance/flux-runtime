@@ -7,9 +7,9 @@ up what's interesting, decide what to keep.
 
 Usage:
     from flux.open_interp.beachcomb import Beachcomber, Sweep, SweepResult
-    
+
     bc = Beachcomber("oracle1")
-    
+
     # Add sweeps dynamically
     bc.add_sweep(Sweep(
         name="jetsonclaw1-bottles",
@@ -20,7 +20,7 @@ Usage:
         notify_channel="telegram",
         priority="medium",
     ))
-    
+
     bc.add_sweep(Sweep(
         name="lucineer-commits",
         source_type="git-commits",
@@ -30,7 +30,7 @@ Usage:
         notify_channel="none",
         filter_pattern="\x5bI2I:",
     ))
-    
+
     # Run all due sweeps
     results = bc.sweep_all()
 """
@@ -146,9 +146,9 @@ class SweepResult:
 
 class Beachcomber:
     """
-    The beachcomber walks the shore, checking for bottles, 
+    The beachcomber walks the shore, checking for bottles,
     commits, news, prices — whatever the agent has configured.
-    
+
     Sweeps are dynamic. The agent (or the human) can add, remove,
     and reconfigure sweeps at any time. The beachcomber remembers
     what it's already seen (via last_sweep timestamps and etags).
@@ -203,7 +203,7 @@ class Beachcomber:
     def sweep_all(self) -> list[SweepResult]:
         """Run all due sweeps. Returns results for sweeps that found items."""
         results = []
-        for name, sweep in self.sweeps.items():
+        for _name, sweep in self.sweeps.items():
             if sweep.is_due():
                 result = self._run_sweep(sweep)
                 sweep.last_sweep = time.time()

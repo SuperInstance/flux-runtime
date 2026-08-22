@@ -56,10 +56,7 @@ class HotLoader:
         source: str = "",
     ) -> ModuleVersion:
         """Load a new version. Old version stays for existing calls."""
-        if self._modules.get(name):
-            parent = self._modules[name][-1]
-        else:
-            parent = None
+        parent = self._modules[name][-1] if self._modules.get(name) else None
 
         version_id = self._next_version_id
         self._next_version_id += 1

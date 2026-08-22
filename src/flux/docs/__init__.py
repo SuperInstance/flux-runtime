@@ -18,16 +18,16 @@ from .stats import (
 )
 
 __all__ = [
+    "APIDeclaration",
+    "AsciiRenderer",
     # Introspection
     "CodeIntrospector",
-    "ModuleInfo",
-    "APIDeclaration",
-    "ComplexityMetrics",
-    # Rendering
-    "MarkdownRenderer",
-    "AsciiRenderer",
     # Statistics
     "CodeStatistics",
+    "ComplexityMetrics",
     # Generator
     "DocumentationGenerator",
+    # Rendering
+    "MarkdownRenderer",
+    "ModuleInfo",
 ]

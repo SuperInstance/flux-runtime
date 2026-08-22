@@ -135,7 +135,7 @@ _CASES = [
          Op.STORE, 0, 1, Op.LOAD, 2, 1, Op.HALT],
         # MOVI R0,4242 (16-bit? 4242>127 → MOVI16 BE); STORE R0,R1,R2; LOAD R3,R1,R2
         [0x40, 0, 0x10, 0x92, 0x39, 0, 1, 2, 0x38, 3, 1, 2, 0x00],
-        lambda vm: vm.regs.read_gp(2 if not vm.isa == "unified" else 3) == 4242,
+        lambda vm: vm.regs.read_gp(2 if vm.isa != "unified" else 3) == 4242,
     ),
     (
         "call_ret_subroutine",

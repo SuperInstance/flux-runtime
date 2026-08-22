@@ -624,7 +624,7 @@ class TestReactionDiffusionTile:
 
     def test_run_with_preset(self):
         rd = ReactionDiffusionTile(grid_size=8, iterations=2)
-        U, V = rd.run(preset="stripes")
+        _, _ = rd.run(preset="stripes")
         assert rd.feed_rate == ReactionDiffusionTile.PRESETS["stripes"]["feed_rate"]
 
     def test_grid_stats(self):

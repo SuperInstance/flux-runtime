@@ -30,7 +30,7 @@ class FIRValidator:
         """Validate a module. Returns a list of error strings. Empty = valid."""
         errors: list[str] = []
 
-        for func_name, func in module.functions.items():
+        for _func_name, func in module.functions.items():
             errors.extend(self._validate_function(func))
 
         return errors
@@ -99,7 +99,7 @@ class FIRValidator:
         #    in the same block — cross-block SSA dominance is checked at a
         #    higher level in a real compiler).
         defined: set[int] = set()  # set of value IDs
-        for pname, ptype in block.params:
+        for _pname, _ptype in block.params:
             pass  # Block params don't have Value IDs in this representation
 
         for instr in block.instructions:

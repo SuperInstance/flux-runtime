@@ -39,21 +39,21 @@ from .metrics import (
 )
 
 __all__ = [
+    "ExperimentOutcome",
+    "ExperimentResult",
     # Engine
     "FlywheelEngine",
+    # Metrics
+    "FlywheelMetrics",
     "FlywheelPhase",
-    # Hypothesis & Results
-    "Hypothesis",
-    "ExperimentResult",
-    "ExperimentOutcome",
-    "ObservationData",
-    "LearnedInsights",
     "FlywheelRecord",
     "FlywheelReport",
+    "GeneralizedRule",
+    # Hypothesis & Results
+    "Hypothesis",
     "IntegrationReport",
     # Knowledge
     "KnowledgeBase",
-    "GeneralizedRule",
-    # Metrics
-    "FlywheelMetrics",
+    "LearnedInsights",
+    "ObservationData",
 ]

@@ -99,16 +99,10 @@ def are_compatible(t1: FIRType, t2: FIRType) -> bool:
             if not are_compatible(p2, p1):  # note: reversed
                 return False
         # Returns are covariant
-        for r1, r2 in zip(t1.returns, t2.returns):
-            if not are_compatible(r1, r2):
-                return False
-        return True
+        return all(are_compatible(r1, r2) for r1, r2 in zip(t1.returns, t2.returns))
 
     # TypeVar is compatible with anything
-    if isinstance(t1, TypeVar) or isinstance(t2, TypeVar):
-        return True
-
-    return False
+    return bool(isinstance(t1, TypeVar) or isinstance(t2, TypeVar))
 
 
 def coercion_cost(t1: FIRType, t2: FIRType, ctx: TypeContext | None = None) -> int:

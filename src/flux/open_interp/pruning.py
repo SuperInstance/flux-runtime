@@ -47,7 +47,7 @@ class UsageStats:
 class UsageTracker:
     """
     Tracks which vocabulary entries are actually used during execution.
-    
+
     Agents mark entries as used during their normal operation.
     The tracker records frequency, recency, and dependency information.
     """
@@ -127,7 +127,7 @@ class PruneReport:
 class VocabularyPruner:
     """
     Prunes vocabulary to only what's needed.
-    
+
     Three pruning strategies:
     1. By usage: keep only entries that were actually called
     2. By size: keep top-N most used entries
@@ -176,7 +176,7 @@ class VocabularyPruner:
                            target: str = "embedded") -> 'Vocabulary':
         """
         Prune vocabulary based on hardware constraints.
-        
+
         Targets:
         - "embedded": only L0 primitives, no loops, max 20 entries
         - "edge": L0 + L1, max 50 entries
@@ -281,13 +281,13 @@ class VocabularyPruner:
 class RuntimeCompiler:
     """
     Compiles a pruned vocabulary into a standalone Python runtime.
-    
+
     Generates a single .py file with:
     - Minimal VM (only needed opcodes)
     - Assembler (only needed patterns)
     - Vocabulary entries that survived pruning
     - run(text) function for natural language input
-    
+
     Zero dependencies. Copy it to any agent's repo and it works.
     """
 
@@ -428,7 +428,7 @@ class RuntimeCompiler:
     for line in text.split('\\n'):
         line = line.split('--')[0].split('//')[0].strip()
         if line: lines.append(line)
-    
+
     opcodes = {
         'NOP': 0x00, 'MOV': 0x01, 'MOVI': 0x2B,
         'IADD': 0x08, 'ISUB': 0x09, 'IMUL': 0x0A, 'IDIV': 0x0B,
@@ -437,7 +437,7 @@ class RuntimeCompiler:
         'HALT': 0x80,
     }
     register = lambda r: int(r.upper().replace('R', ''))
-    
+
     bytecode = bytearray()
     for line in lines:
         parts = line.replace(',', ' ').split()

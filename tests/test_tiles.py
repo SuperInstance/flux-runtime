@@ -373,7 +373,7 @@ class TestFIREmissionCompute:
 
     def test_tile_without_blueprint_raises(self):
         t = Tile(name="no_impl", tile_type=TileType.COMPUTE)
-        builder, ctx = self._make_builder()
+        builder, _ = self._make_builder()
         with pytest.raises(RuntimeError, match="no FIR blueprint"):
             t.to_fir(builder, {})
 
@@ -1139,7 +1139,7 @@ class TestTileCostEstimation:
         assert comp.cost_estimate == 10.0
 
     def test_a2a_tiles_more_expensive_than_compute(self):
-        for ct in default_registry.by_type(TileType.COMPUTE):
+        for _ct in default_registry.by_type(TileType.COMPUTE):
             for at in default_registry.by_type(TileType.A2A):
                 # A2A tiles should generally be expensive
                 assert at.cost_estimate >= 1.0

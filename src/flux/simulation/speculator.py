@@ -1,4 +1,4 @@
-"""Speculative Execution Engine — executes multiple mutations in parallel (speculatively).
+"""Speculative Execution Engine - executes multiple mutations in parallel (speculatively).
 
 Instead of trying one mutation at a time, this engine:
 1. Generates N hypotheses
@@ -94,7 +94,7 @@ class SpeculativeEngine:
 
         Workflow:
         1. Simulate all hypotheses using the digital twin
-        2. Rank by estimated value (speedup × confidence / risk)
+        2. Rank by estimated value (speedup x confidence / risk)
         3. Execute top K in parallel
         4. Keep the best result
         5. Roll back the rest
@@ -127,9 +127,9 @@ class SpeculativeEngine:
 
         result.simulations_run = len(simulated)
 
-        # Step 2: Rank by estimated value (speedup × confidence × (1 - risk))
+        # Step 2: Rank by estimated value (speedup x confidence x (1 - risk))
         def rank_score(item: tuple[Hypothesis, SimulatedResult]) -> float:
-            hyp, sim = item
+            hyp, _ = item
             return hyp.expected_speedup * hyp.confidence * (1.0 - hyp.risk_level)
 
         simulated.sort(key=rank_score, reverse=True)

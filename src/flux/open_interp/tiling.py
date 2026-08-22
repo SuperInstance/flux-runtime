@@ -1,5 +1,5 @@
 """
-FLUX Tiling System — Vocabulary compounds into higher-order vocabulary.
+FLUX Tiling System - Vocabulary compounds into higher-order vocabulary.
 
 A "tile" is a vocabulary entry that can reference other vocabulary entries.
 When you compose tiles, you get new words with richer meanings.
@@ -15,7 +15,7 @@ The vocabulary just gets more sophisticated. Like learning bigger words.
 
 This is the "tiling fine-tuning" Casey described:
 - Level N vocabulary compiles to Level N-1 vocabulary + glue logic
-- Eventually the architecture grows into "hardcode replacement" —
+- Eventually the architecture grows into "hardcode replacement" -
   markdowns so good and compilers so well-tuned that inference is rarely needed
 """
 
@@ -32,7 +32,7 @@ from .vocabulary import Vocabulary
 class Tile:
     """
     A tile is a vocabulary entry that can reference other tiles.
-    
+
     Tiles compose like functions:
       tile_fahrenheit = Tile("celsius to fahrenheit", depends=["compute", "multiply"])
       tile_wind_chill = Tile("wind chill", depends=["celsius to fahrenheit", "power"])
@@ -80,12 +80,12 @@ class TileResult:
 class TilingInterpreter:
     """
     An interpreter where vocabulary tiles compose into higher-order vocabulary.
-    
+
     Level 0: Primitive bytecode operations (compute, factorial, etc.)
     Level 1: Compositions of level-0 (average, range-check, etc.)
     Level 2: Compositions of level-1 (is-normal, classify, etc.)
     Level N: Each level uses the previous level's vocabulary as building blocks
-    
+
     The key insight: higher-level tiles don't need more bytecode.
     They just arrange existing bytecode in more sophisticated ways.
     """
@@ -126,7 +126,7 @@ class TilingInterpreter:
     def run(self, text: str) -> TileResult:
         """
         Execute natural language text through the tiling system.
-        
+
         Tries tiles from highest level to lowest (most sophisticated first).
         Falls back to base vocabulary, then inline math.
         """
@@ -158,10 +158,10 @@ class TilingInterpreter:
             )
 
         # Try inline math
-        m = re.search(r'(\d+)\s*([+\-*/×÷])\s*(\d+)', text)
+        m = re.search(r'(\d+)\s*([+\-*/x÷])\s*(\d+)', text)
         if m:
             a, op, b = int(m.group(1)), m.group(2), int(m.group(3))
-            ops = {'+': a+b, '-': a-b, '*': a*b, '×': a*b, '/': int(a/b), '÷': int(a/b)}
+            ops = {'+': a+b, '-': a-b, '*': a*b, 'x': a*b, '/': int(a/b), '÷': int(a/b)}
             return TileResult(value=ops.get(op, 0), success=True, tiles_used=['inline_math'], level=0)
 
         return TileResult(success=False, error=f"No tile match: {text[:60]}")
@@ -193,7 +193,7 @@ class TilingInterpreter:
                                 groups: dict[str, str], refs: list[str]) -> TileResult:
         """
         Execute a tile that composes other tiles.
-        
+
         Template syntax for composition:
           @tile_name(args) → execute tile_name with args, capture result
           $last_result → use previous tile's result
@@ -259,7 +259,7 @@ class TilingInterpreter:
 def build_default_tiling() -> TilingInterpreter:
     """
     Build the default tiling interpreter with level-0 through level-3 tiles.
-    
+
     Level 0: Primitives (compute, factorial, square, etc.)
     Level 1: Compositions (average, range-check, gcd)
     Level 2: Domain concepts (is-normal, classify, percentage)

@@ -19,18 +19,18 @@ from .opcodes import Op, get_format, instruction_size
 from .validator import BytecodeValidator
 
 __all__ = [
+    # Decoder
+    "BytecodeDecoder",
+    # Encoder
+    "BytecodeEncoder",
+    # Validator
+    "BytecodeValidator",
+    "DecodedFunction",
+    "DecodedInstruction",
+    "DecodedModule",
+    "DecodedType",
     # Opcodes
     "Op",
     "get_format",
     "instruction_size",
-    # Encoder
-    "BytecodeEncoder",
-    # Decoder
-    "BytecodeDecoder",
-    "DecodedInstruction",
-    "DecodedFunction",
-    "DecodedModule",
-    "DecodedType",
-    # Validator
-    "BytecodeValidator",
 ]

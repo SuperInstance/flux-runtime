@@ -1,4 +1,4 @@
-"""ModuleNamespace — isolated namespace for module containers."""
+"""ModuleNamespace - isolated namespace for module containers."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ class NameNotFoundError(KeyError):
 class ModuleNamespace:
     """Isolated namespace for a module container.
 
-    Namespaces form a parent–child chain.  ``resolve`` walks up the chain
+    Namespaces form a parent-child chain.  ``resolve`` walks up the chain
     to find a binding, while ``bind`` always writes into the local scope.
     """
 

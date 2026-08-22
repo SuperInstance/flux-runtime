@@ -27,7 +27,7 @@ class ScopedEntry:
 class ContextualConflictFilter:
     """
     Filters contradiction candidates by context scope before expensive analysis.
-    
+
     Prevents false positives from entries in different domains that look
     contradictory but describe different facets of reality.
     """

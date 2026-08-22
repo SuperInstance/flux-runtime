@@ -197,7 +197,7 @@ class MacroPreprocessor:
                 location=loc,
             )
 
-        name, was_active, any_active = self._cond_stack[-1]
+        name, _, any_active = self._cond_stack[-1]
         # Check if all parent conditionals are active
         parent_active = all(active for _, active, _ in self._cond_stack[:-1])
         new_active = parent_active and not any_active

@@ -28,21 +28,21 @@ from .reloader import (
 )
 
 __all__ = [
+    "CompileResult",
+    # Reloader
+    "FractalReloader",
     # Granularity
     "Granularity",
     "GranularityMeta",
-    "get_granularity_meta",
+    "GranularityRecommendation",
     # Card
     "ModuleCard",
-    "CompileResult",
     # Container
     "ModuleContainer",
-    "ReloadResult",
-    # Reloader
-    "FractalReloader",
-    "ReloadEvent",
-    "GranularityRecommendation",
     # Namespace
     "ModuleNamespace",
     "NameNotFoundError",
+    "ReloadEvent",
+    "ReloadResult",
+    "get_granularity_meta",
 ]

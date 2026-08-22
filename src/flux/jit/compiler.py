@@ -231,7 +231,7 @@ class JITCompiler:
 
         # Include block parameters
         for block in func.blocks:
-            for pname, ptype in block.params:
+            for pname, _ptype in block.params:
                 # Use a canonical ID for block params
                 param_id = hash((block.label, pname))
                 all_values.append(param_id)

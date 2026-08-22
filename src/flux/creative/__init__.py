@@ -36,24 +36,24 @@ from .visualization import (
 )
 
 __all__ = [
-    # Sonification
-    "Sonifier",
-    "MusicSequence",
-    "MusicEvent",
+    "BeatResult",
+    "CellularAutomatonTile",
+    "ChangeRecord",
     "ExecutionEvent",
+    "ExecutionVisualizer",
+    "FractalTile",
     # Generative
     "LSystemTile",
-    "CellularAutomatonTile",
-    "FractalTile",
-    "ReactionDiffusionTile",
     # Live
     "LiveCodingSession",
+    "MusicEvent",
+    "MusicSequence",
     "PerformanceState",
-    "ChangeRecord",
-    "VersionRecord",
-    "BeatResult",
+    "ReactionDiffusionTile",
     "Recording",
+    # Sonification
+    "Sonifier",
     # Visualization
     "TileGraphVisualizer",
-    "ExecutionVisualizer",
+    "VersionRecord",
 ]

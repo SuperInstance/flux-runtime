@@ -152,9 +152,8 @@ class TestModuleDependencies:
             for dep in deps.get(module, []):
                 if dep in in_stack:
                     return True
-                if dep not in visited:
-                    if has_cycle(dep):
-                        return True
+                if dep not in visited and has_cycle(dep):
+                    return True
             in_stack.discard(module)
             return False
 

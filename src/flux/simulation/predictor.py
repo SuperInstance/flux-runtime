@@ -1,4 +1,4 @@
-"""Performance Predictor — predicts system performance without running workloads.
+"""Performance Predictor - predicts system performance without running workloads.
 
 Uses cost model for static analysis, historical data for regression,
 and trend extrapolation for forecasting.
@@ -242,7 +242,7 @@ class PerformancePredictor:
         """Predict which module will be the bottleneck.
 
         The bottleneck is the module with the highest predicted
-        execution time × call frequency.
+        execution time x call frequency.
 
         Args:
             module_paths: List of module paths to evaluate.
@@ -356,7 +356,7 @@ class PerformancePredictor:
                 return "recompile:typescript"
             return "none"
 
-        # COOL — don't optimize
+        # COOL - don't optimize
         return "none"
 
     # ── Helpers ─────────────────────────────────────────────────────────

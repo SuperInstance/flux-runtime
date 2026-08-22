@@ -829,7 +829,7 @@ class TestBanditDistribution:
     def test_get_distribution(self, bandit):
         dist = bandit.get_distribution()
         assert len(dist) == 5
-        for name, (mean, std) in dist.items():
+        for _name, (mean, std) in dist.items():
             assert 0.0 <= mean <= 1.0
             assert std >= 0.0
 

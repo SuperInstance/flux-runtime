@@ -1,5 +1,5 @@
 """
-Open-Flux-Interpreter — The Crown Jewel
+Open-Flux-Interpreter - The Crown Jewel
 
 Markdown/Text → Vocabulary Match → Assembly → Bytecode → Sandboxed Execution
 
@@ -22,7 +22,7 @@ from .vocabulary import Vocabulary
 class OpenFluxInterpreter:
     """
     The Open-Flux-Interpreter.
-    
+
     Converts markdown/natural language to FLUX bytecode via vocabulary matching,
     then executes in a sandbox. Agents can load custom vocabularies to teach
     it domain-specific words.
@@ -53,12 +53,12 @@ class OpenFluxInterpreter:
     def run(self, text: str, result_reg: int = 0, max_cycles: int = 1_000_000) -> SandboxResult:
         """
         Main entry point: text → bytecode → execution → result.
-        
+
         Args:
             text: Natural language, markdown, or FLUX assembly
             result_reg: Which register to read as the result
             max_cycles: Safety limit for execution
-            
+
         Returns:
             SandboxResult with registers, cycles, and any errors
         """
@@ -146,12 +146,12 @@ class OpenFluxInterpreter:
     def _try_inline_math(self, text: str) -> int | None:
         """Try to evaluate simple inline math like '3 + 4' or '10 * 5'."""
         # "what is X op Y"
-        m = re.search(r'(\d+)\s*([+\-*/×÷])\s*(\d+)', text)
+        m = re.search(r'(\d+)\s*([+\-*/x÷])\s*(\d+)', text)
         if m:
             a, op, b = int(m.group(1)), m.group(2), int(m.group(3))
             if op in ('+',): return a + b
             if op in ('-',): return a - b
-            if op in ('*', '×'): return a * b
+            if op in ('*', 'x'): return a * b
             if op in ('/', '÷') and b != 0: return int(a / b)
         return None
 
@@ -213,12 +213,12 @@ class OpenFluxInterpreter:
     def _print_help(self):
         print("""
   Commands:
-    <text>     — interpret text as bytecode and execute
-    vocab      — list loaded vocabulary patterns
-    load <dir> — load vocabulary from a folder
-    help       — show this help
-    quit       — exit
-    
+    <text>     - interpret text as bytecode and execute
+    vocab      - list loaded vocabulary patterns
+    load <dir> - load vocabulary from a folder
+    help       - show this help
+    quit       - exit
+
   Examples:
     flux> compute 3 + 4
     flux> factorial of 7

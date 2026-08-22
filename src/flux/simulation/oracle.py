@@ -1,4 +1,4 @@
-"""Decision Oracle — combines predictions, twin simulations, and historical data
+"""Decision Oracle - combines predictions, twin simulations, and historical data
 to make optimal evolution decisions.
 
 The oracle answers questions like:
@@ -29,7 +29,7 @@ class OracleDecision:
     reasoning: str = ""
     estimated_speedup: float = 1.0
     estimated_risk: float = 0.5
-    expected_value: float = 0.0   # speedup × confidence × (1 - risk)
+    expected_value: float = 0.0   # speedup x confidence x (1 - risk)
     priority: float = 0.0
 
     @property
@@ -45,7 +45,7 @@ class OracleDecision:
 class ROIEstimate:
     """Return on investment estimate for a mutation.
 
-    ROI = (speedup × frequency × time_saved) / (compile_time + test_time)
+    ROI = (speedup x frequency x time_saved) / (compile_time + test_time)
     """
     proposal: MutationProposal
     estimated_speedup: float = 1.0
@@ -225,7 +225,7 @@ class DecisionOracle:
     def roi_estimate(self, proposal: MutationProposal) -> ROIEstimate:
         """Estimate return on investment for a mutation.
 
-        ROI = (speedup × frequency × time_saved) / (compile_time + test_time)
+        ROI = (speedup x frequency x time_saved) / (compile_time + test_time)
 
         Args:
             proposal: The mutation proposal to evaluate.

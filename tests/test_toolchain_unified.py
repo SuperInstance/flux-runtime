@@ -281,7 +281,7 @@ def test_tell_data_from_bound_register_uses_mov():
     vm.on_a2a(lambda name, data: seen.append((name, _struct.unpack("<III", data))) and None)
     vm.execute()
 
-    tag, agent, data = seen[0][1]
+    _, _, data = seen[0][1]
     assert data == 1234
 
 

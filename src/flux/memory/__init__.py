@@ -28,19 +28,19 @@ from .store import (
 )
 
 __all__ = [
-    # Store
-    "MemoryStore",
-    "MemoryEntry",
-    "MemoryStats",
     "TIER_ORDER",
     # Experience
     "Experience",
     "ExperienceRecorder",
     "GeneralizedRule",
-    # Bandit
-    "MutationBandit",
-    "StrategyStats",
     # Learning
     "LearningRateAdapter",
     "LearningState",
+    "MemoryEntry",
+    "MemoryStats",
+    # Store
+    "MemoryStore",
+    # Bandit
+    "MutationBandit",
+    "StrategyStats",
 ]

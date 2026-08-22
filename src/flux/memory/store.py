@@ -428,24 +428,23 @@ class MemoryStore:
                         "access_count": entry.access_count,
                     })
 
-        if tier in ("frozen", "all"):
-            if os.path.exists(self._frozen_path):
-                for fname in os.listdir(self._frozen_path):
-                    if fname.endswith(".json.gz"):
-                        try:
-                            fpath = os.path.join(self._frozen_path, fname)
-                            with gzip.open(fpath, "rt", encoding="utf-8") as f:
-                                data = json.load(f)
-                            if _matches(data.get("key", "")):
-                                results.append({
-                                    "key": data.get("key", ""),
-                                    "value": data.get("value"),
-                                    "tier": "frozen",
-                                    "relevance": 0.0,
-                                    "access_count": 0,
-                                })
-                        except (json.JSONDecodeError, OSError):
-                            continue
+        if tier in ("frozen", "all") and os.path.exists(self._frozen_path):
+            for fname in os.listdir(self._frozen_path):
+                if fname.endswith(".json.gz"):
+                    try:
+                        fpath = os.path.join(self._frozen_path, fname)
+                        with gzip.open(fpath, "rt", encoding="utf-8") as f:
+                            data = json.load(f)
+                        if _matches(data.get("key", "")):
+                            results.append({
+                                "key": data.get("key", ""),
+                                "value": data.get("value"),
+                                "tier": "frozen",
+                                "relevance": 0.0,
+                                "access_count": 0,
+                            })
+                    except (json.JSONDecodeError, OSError):
+                        continue
 
         return results
 

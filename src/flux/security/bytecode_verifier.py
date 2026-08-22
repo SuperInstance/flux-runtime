@@ -243,7 +243,7 @@ def decode_instruction(bytecode: bytes, offset: int) -> DecodedInstruction:
             is_valid=False, error=f"Unknown opcode 0x{opcode:02X}"
         )
 
-    fmt, expected_size, num_regs = OPCODE_FORMATS[opcode]
+    fmt, expected_size, _ = OPCODE_FORMATS[opcode]
 
     # Check if we have enough bytes
     remaining = len(bytecode) - offset

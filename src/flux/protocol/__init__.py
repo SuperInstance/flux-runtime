@@ -44,15 +44,29 @@ from .serialization import (
 )
 
 __all__ = [
-    # Messages
-    "MessageKind", "MessageEnvelope", "Request", "Response", "Event", "Error",
-    "MessageId",
-    # Channels
-    "Channel", "DirectChannel", "BroadcastChannel", "TopicChannel",
     # Registry
-    "AgentDescriptor", "CapabilityDescriptor", "AgentRegistry",
-    # Negotiation
-    "NegotiationState", "CapabilityOffer", "TrustHandshake", "Negotiator",
+    "AgentDescriptor",
+    "AgentRegistry",
+    "BinaryMessageCodec",
+    "BroadcastChannel",
+    "CapabilityDescriptor",
+    "CapabilityOffer",
+    # Channels
+    "Channel",
+    "DirectChannel",
+    "Error",
+    "Event",
+    "MessageEnvelope",
+    "MessageId",
+    # Messages
+    "MessageKind",
     # Serialization
-    "MessageSerializer", "BinaryMessageCodec",
+    "MessageSerializer",
+    # Negotiation
+    "NegotiationState",
+    "Negotiator",
+    "Request",
+    "Response",
+    "TopicChannel",
+    "TrustHandshake",
 ]

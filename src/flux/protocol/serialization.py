@@ -141,7 +141,7 @@ class BinaryMessageCodec(MessageSerializer):
                 f"got {len(data)}"
             )
 
-        (magic, version, kind_val, flags,
+        (magic, version, kind_val, _,
          msg_id_bytes, conv_bytes,
          sender_len, receiver_len,
          timestamp, payload_len, metadata_len) = HEADER_STRUCT.unpack_from(data, 0)

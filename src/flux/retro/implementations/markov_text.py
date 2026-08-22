@@ -84,7 +84,7 @@ class MarkovChainText:
 
         # Scan cumulative frequencies
         cumul = 0
-        for i, (f_idx, freq) in enumerate(followers):
+        for _i, (_f_idx, freq) in enumerate(followers):
             cumul += freq
             # If target < cumul → select this word
             a.movi(3, cumul)

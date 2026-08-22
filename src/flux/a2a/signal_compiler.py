@@ -9,7 +9,7 @@ Any agent can write in Signal and execute on any FLUX VM.
 
 Signal opcodes → FLUX bytecodes:
   tell       → TELL (0x50)
-  ask        → ASK (0x52)  
+  ask        → ASK (0x52)
   delegate   → DELEG (0x52)
   broadcast  → BCAST (0x53)
   add/sub..  → ADD/SUB (0x20-0x24)
@@ -48,7 +48,7 @@ class CompiledSignal:
 class SignalCompiler:
     """
     Compiles Signal JSON programs to FLUX FORMAT_A-G bytecodes.
-    
+
     Signal program structure:
     {
       "program": "name",
@@ -369,7 +369,7 @@ class SignalCompiler:
 
     def _compile_seq(self, op: dict, line: int):
         """seq: sequential execution — just compile children in order"""
-        for i, child in enumerate(op.get("body", [])):
+        for _i, child in enumerate(op.get("body", [])):
             self._compile_op(child, line=line)
 
     def _compile_if(self, op: dict, line: int):

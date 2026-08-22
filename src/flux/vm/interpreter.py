@@ -1077,7 +1077,7 @@ class Interpreter:
         # ── Stack: LEAVE (restore frame pointer, deallocate) ───────────────
         if opcode_byte == Op.LEAVE:
             # Format B: [LEAVE][unused:u8]
-            (unused,) = self._decode_operands_B()
+            (_,) = self._decode_operands_B()
             # Restore SP to FP
             self.regs.sp = self.regs.fp
             # Pop old FP
@@ -1392,7 +1392,7 @@ class Interpreter:
 
         # ── ISA v3: Confidence ops (0x3D-0x3F) ───────────────────────────
         if opcode_byte == Op.CONF:
-            rd, conf_raw = self._decode_operands_D()
+            rd, _ = self._decode_operands_D()
             return
         if opcode_byte == Op.MERGE:
             rd, rs1, rs2 = self._decode_operands_E()
@@ -1910,10 +1910,7 @@ class Interpreter:
             rd, rs1, rs2 = self._decode_operands_E()
             attenuation = self.regs.read_fp(rs1)
             depth = max(0.1, self.regs.read_fp(rs2))
-            if attenuation <= 0.01:
-                result = 60.0
-            else:
-                result = min(depth, 1.7 / attenuation)
+            result = 60.0 if attenuation <= 0.01 else min(depth, 1.7 / attenuation)
             self.regs.write_fp(rd, result)
             return
 

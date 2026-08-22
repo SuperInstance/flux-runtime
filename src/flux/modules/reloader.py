@@ -148,7 +148,7 @@ class FractalReloader:
 
         # Walk from root to find the actual container types along the path
         current = self.root
-        for i, part in enumerate(parts):
+        for i, _part in enumerate(parts):
             if isinstance(current, ModuleContainer):
                 next_node = current.get_by_path(".".join(parts[:i + 1]))
                 if isinstance(next_node, ModuleContainer):

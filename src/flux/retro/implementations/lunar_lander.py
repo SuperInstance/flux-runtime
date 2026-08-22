@@ -1,4 +1,4 @@
-"""FLUX Retro: Lunar Lander — physics simulation in pure FLUX bytecode.
+"""FLUX Retro: Lunar Lander - physics simulation in pure FLUX bytecode.
 
 The VM simulates a lunar lander descending to the surface:
   • R0 = altitude  (starts at 1000 m)
@@ -20,7 +20,7 @@ from ._builder import BytecodeBuilder
 
 # Memory layout
 _MEM_TICK_LOG = 1000       # start of tick-log area (altitude, velocity, fuel per tick)
-_LOG_ENTRY_SIZE = 12       # 3 × i32 per tick
+_LOG_ENTRY_SIZE = 12       # 3 x i32 per tick
 _MAX_TICKS = 50
 
 
@@ -41,7 +41,7 @@ class LunarLander:
 
     @staticmethod
     def _default_schedule() -> list[int]:
-        # Free-fall for 25 ticks then try to brake — dramatic demo
+        # Free-fall for 25 ticks then try to brake - dramatic demo
         sched = [0] * _MAX_TICKS
         for t in range(25, 40):
             sched[t] = 1
@@ -202,7 +202,7 @@ class LunarLander:
     @staticmethod
     def demonstrate():
         print("=" * 60)
-        print("  FLUX RETRO — LUNAR LANDER")
+        print("  FLUX RETRO - LUNAR LANDER")
         print("  Physics simulation in FLUX bytecode")
         print("=" * 60)
 

@@ -439,7 +439,7 @@ def _inline_single_block_call(
     # Map callee param value IDs to call argument Value objects
     # Callee params get IDs starting from 0 (builder convention)
     value_map: dict[int, Value] = {}
-    for i, (pname, ptype) in enumerate(block.params):
+    for i, (_pname, _ptype) in enumerate(block.params):
         value_map[i] = call_args[i]
 
     # Shift all other value IDs by offset

@@ -30,7 +30,7 @@ class BytecodeValidator:
 
         # ── 2. Parse and verify header fields ────────────────────────────
         try:
-            _, version, flags, n_funcs, type_off, code_off = struct.unpack_from(
+            _, version, _, n_funcs, type_off, code_off = struct.unpack_from(
                 "<4sHHHII", data, 0
             )
         except struct.error as e:
@@ -204,7 +204,7 @@ class BytecodeValidator:
                 if pos + 4 > end:
                     errors.append(f"{context}: truncated Format E at offset {pos - start}")
                     break
-                for reg_idx, byte_off in [(0, pos + 1), (1, pos + 2), (2, pos + 3)]:
+                for _reg_idx, byte_off in [(0, pos + 1), (1, pos + 2), (2, pos + 3)]:
                     reg = data[byte_off]
                     if reg > MAX_REGISTER:
                         errors.append(

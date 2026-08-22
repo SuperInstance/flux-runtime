@@ -1,6 +1,6 @@
-"""FLUX Retro: Snake — movement and collision in FLUX bytecode.
+"""FLUX Retro: Snake - movement and collision in FLUX bytecode.
 
-The snake moves on an 8×8 grid stored in memory:
+The snake moves on an 8x8 grid stored in memory:
   • 0 = empty,  1 = snake body,  2 = food,  3 = snake head
   • Grid stored at stack memory offset 1000 (64 bytes)
 
@@ -306,7 +306,7 @@ class Snake:
     @staticmethod
     def demonstrate():
         print("=" * 60)
-        print("  FLUX RETRO — SNAKE")
+        print("  FLUX RETRO - SNAKE")
         print("  Movement & collision computed in FLUX bytecode")
         print("=" * 60)
 

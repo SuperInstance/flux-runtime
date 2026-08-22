@@ -304,7 +304,7 @@ class TestProfilerShouldRecompile:
             p.record_call("hot_mod", duration_ns=100)
         p.record_call("cool_mod", duration_ns=100)
 
-        should, reason = p.should_recompile("cool_mod")
+        should, _ = p.should_recompile("cool_mod")
         assert should is False
 
     def test_heat_should_recompile(self):
@@ -916,13 +916,13 @@ class TestCompilerBridgeCanRecompile:
     def test_missing_source(self):
         bridge = CompilerBridge()
         bridge.register_compiler("rust", LanguageCompiler(lang="rust"))
-        can, reason = bridge.can_recompile("python", "rust")
+        can, _ = bridge.can_recompile("python", "rust")
         assert can is False
 
     def test_missing_target(self):
         bridge = CompilerBridge()
         bridge.register_compiler("python", LanguageCompiler(lang="python"))
-        can, reason = bridge.can_recompile("python", "rust")
+        can, _ = bridge.can_recompile("python", "rust")
         assert can is False
 
     def test_source_cannot_produce_fir(self):

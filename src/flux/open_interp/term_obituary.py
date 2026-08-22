@@ -78,7 +78,7 @@ class Obituary:
 class TermCemetery:
     """
     The graveyard of deprecated vocabulary terms.
-    
+
     Every dead term gets an obituary. Other agents can consult
     the cemetery to understand why terms changed and how to migrate.
     """

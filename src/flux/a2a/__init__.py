@@ -30,20 +30,25 @@ from flux.a2a.trust import AgentProfile, InteractionRecord, TrustEngine
 __all__ = [
     # Messages
     "A2AMessage",
-    # Transport
-    "LocalTransport",
-    # Trust
-    "InteractionRecord",
-    "AgentProfile",
-    "TrustEngine",
     # Coordinator
     "AgentCoordinator",
+    "AgentProfile",
+    "BranchBody",
     # Protocol Primitives (Phase 1: adopted from flux-a2a-prototype)
-    "BranchPrimitive", "BranchBody",
-    "ForkPrimitive", "ForkInherit", "ForkMutation",
+    "BranchPrimitive",
     "CoIteratePrimitive",
-    "DiscussPrimitive", "Participant",
-    "SynthesizePrimitive", "SynthesisSource",
+    "DiscussPrimitive",
+    "ForkInherit",
+    "ForkMutation",
+    "ForkPrimitive",
+    # Trust
+    "InteractionRecord",
+    # Transport
+    "LocalTransport",
+    "Participant",
     "ReflectPrimitive",
+    "SynthesisSource",
+    "SynthesizePrimitive",
+    "TrustEngine",
     "parse_primitive",
 ]

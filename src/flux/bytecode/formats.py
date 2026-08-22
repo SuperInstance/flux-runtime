@@ -136,7 +136,7 @@ class Opcode(IntEnum):
 
 # Opcode → Format mapping
 OPCODE_FORMAT = {}
-for name, val in Opcode.__members__.items():
+for _name, val in Opcode.__members__.items():
     op = int(val)
     if op <= 0x03:
         OPCODE_FORMAT[op] = Format.A

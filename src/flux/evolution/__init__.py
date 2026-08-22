@@ -44,33 +44,33 @@ from .validator import (
 )
 
 __all__ = [
-    # Genome
-    "Genome",
-    "GenomeDiff",
-    "ModuleSnapshot",
-    "TileSnapshot",
-    "ProfilerSnapshot",
-    "OptimizationRecord",
-    "MutationStrategy",
-    # Pattern Mining
-    "PatternMiner",
-    "ExecutionTrace",
-    "DiscoveredPattern",
-    "TileSuggestion",
-    # Mutator
-    "SystemMutator",
-    "MutationProposal",
-    "MutationResult",
-    "MutationRecord",
     # Validator
     "CorrectnessValidator",
-    "TestCase",
-    "TestResult",
-    "ValidationResult",
-    "RegressionReport",
+    "DiscoveredPattern",
     # Engine
     "EvolutionEngine",
     "EvolutionRecord",
     "EvolutionReport",
     "EvolutionStep",
+    "ExecutionTrace",
+    # Genome
+    "Genome",
+    "GenomeDiff",
+    "ModuleSnapshot",
+    "MutationProposal",
+    "MutationRecord",
+    "MutationResult",
+    "MutationStrategy",
+    "OptimizationRecord",
+    # Pattern Mining
+    "PatternMiner",
+    "ProfilerSnapshot",
+    "RegressionReport",
+    # Mutator
+    "SystemMutator",
+    "TestCase",
+    "TestResult",
+    "TileSnapshot",
+    "TileSuggestion",
+    "ValidationResult",
 ]

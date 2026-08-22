@@ -53,7 +53,7 @@ class EdgeConstraints:
 class EdgeProfiler:
     """
     Generates edge-optimized vocabulary profiles.
-    
+
     Takes a full vocabulary and hardware constraints, outputs
     a pruned profile with only what fits.
     """

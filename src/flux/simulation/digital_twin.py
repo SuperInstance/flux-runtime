@@ -310,7 +310,7 @@ class DigitalTwin:
         current_genome = Genome.from_dict(self.shadow_genome.to_dict())
         SystemMutator()
 
-        for gen in range(generations):
+        for _gen in range(generations):
             # Generate synthetic proposals
             proposals = self._generate_synthetic_proposals(current_genome)
 
@@ -573,7 +573,7 @@ class DigitalTwin:
 
         fault_types = ["kill_module", "corrupt_tile", "disconnect_agents", "oom"]
 
-        for i in range(n_faults):
+        for _i in range(n_faults):
             fault_type = random.choice(fault_types)
             severity = random.uniform(0.3, 1.0)
 

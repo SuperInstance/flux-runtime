@@ -1,6 +1,6 @@
-"""Mandelbrot set renderer — hybrid FLUX bytecode approach.
+"""Mandelbrot set renderer - hybrid FLUX bytecode approach.
 
-Computes a 16×16 pixel Mandelbrot set using **Python for the outer loops**
+Computes a 16x16 pixel Mandelbrot set using **Python for the outer loops**
 and **FLUX bytecode for the inner hot loop** (z = z² + c iteration).
 
 Each pixel is computed by running a small bytecode program that:
@@ -9,7 +9,7 @@ Each pixel is computed by running a small bytecode program that:
   3. Counts iterations until |z|² > threshold or max reached
   4. Stores iteration count in a memory region
 
-Fixed-point format: values × 256  (8 bits integer, 8 bits fraction)
+Fixed-point format: values x 256  (8 bits integer, 8 bits fraction)
   e.g. -2.0 → -512,  1.0 → 256,  0.5 → 128
 
 Register layout (inner loop bytecode)
@@ -180,15 +180,15 @@ class MandelbrotRenderer:
 
     @classmethod
     def demonstrate(cls) -> None:
-        """Compute and render a 16×16 Mandelbrot set."""
+        """Compute and render a 16x16 Mandelbrot set."""
         bytecode = cls.build_pixel_bytecode()
         vm = Interpreter(bytecode, memory_size=65536, isa="system_a")
 
         print("=" * 64)
-        print("  FLUX BYTECODE MANDELBROT  —  16×16 hybrid renderer")
+        print("  FLUX BYTECODE MANDELBROT  -  16x16 hybrid renderer")
         print("=" * 64)
         print(f"  Inner-loop bytecode: {len(bytecode)} bytes")
-        print(f"  Grid: {cls.GRID}×{cls.GRID}, max iterations: {cls.MAX_ITERATIONS}")
+        print(f"  Grid: {cls.GRID}x{cls.GRID}, max iterations: {cls.MAX_ITERATIONS}")
 
         # Compute all pixels
         iterations = []

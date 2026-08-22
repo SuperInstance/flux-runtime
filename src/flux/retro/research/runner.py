@@ -101,7 +101,7 @@ def get_game_class(slug: str):
 
 def run_iteration(game_cls, iteration_num: int, plan: tuple) -> dict:
     """Run a single research iteration on a game."""
-    iter_num, approach, hypothesis = plan
+    _, approach, _ = plan
 
     start = time.perf_counter()
     try:

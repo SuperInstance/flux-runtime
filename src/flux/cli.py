@@ -46,6 +46,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import contextlib
 import struct
 import sys
 
@@ -551,10 +552,8 @@ def _compile_python_fallback(source: str) -> bytes:
         # Try simple assignment: name = EXPR
         if "=" in line and not line.startswith("def ") and not line.startswith("if ") and not line.startswith("for ") and not line.startswith("while ") and not line.startswith("return") and not line.startswith("import") and not line.startswith("from"):
             expr = line.split("=", 1)[1].strip()
-            try:
+            with contextlib.suppress(Exception):
                 result_val = eval(expr, {"__builtins__": {}})
-            except Exception:
-                pass
 
     # Generate MOVI R0, result_val; HALT
     if isinstance(result_val, int) and -32768 <= result_val <= 32767:

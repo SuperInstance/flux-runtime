@@ -834,7 +834,7 @@ def test_opcode_count_over_50():
     from flux.asm.opcodes_compat import OPCODE_DEFS
     # Count only non-aliased opcodes (check by unique opcode byte values)
     unique_opcodes = set()
-    for name, definition in OPCODE_DEFS.items():
+    for _name, definition in OPCODE_DEFS.items():
         unique_opcodes.add(definition.opcode)
     assert len(unique_opcodes) >= 50, f"Only {len(unique_opcodes)} unique opcodes"
 

@@ -175,7 +175,7 @@ class ExecutionTracer:
             List of hot paths.
         """
         paths = []
-        for func_name, profile in self._function_profiles.items():
+        for _func_name, profile in self._function_profiles.items():
             if not profile.block_profiles:
                 continue
 

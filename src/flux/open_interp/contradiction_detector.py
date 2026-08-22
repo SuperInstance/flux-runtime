@@ -60,7 +60,7 @@ class ScanReport:
 class ContradictionDetector:
     """
     Detects contradictions in FLUX vocabulary collections.
-    
+
     Checks:
     1. Duplicate patterns — two entries matching the same text
     2. Register collisions — two entries writing to the same result register

@@ -1,4 +1,4 @@
-"""Agent Coordinator — Orchestrates multiple agents within a single VM.
+"""Agent Coordinator - Orchestrates multiple agents within a single VM.
 
 Ties together :class:`LocalTransport` for message delivery and
 :class:`TrustEngine` for trust-gated communication.  Agents are
@@ -96,11 +96,11 @@ class AgentCoordinator:
         receiver : str
             Name of the receiving agent.
         msg_type : int
-            A2A message type (0x60–0x7B).
+            A2A message type (0x60-0x7B).
         payload : bytes
             Application-level payload.
         priority : int
-            Delivery priority 0–15.
+            Delivery priority 0-15.
         in_reply_to : uuid.UUID, optional
             UUID this message is replying to.
 

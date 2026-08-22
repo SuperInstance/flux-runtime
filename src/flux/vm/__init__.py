@@ -21,17 +21,17 @@ from .memory import MemoryManager, MemoryRegion
 from .registers import RegisterFile
 
 __all__ = [
-    # Registers
-    "RegisterFile",
-    # Memory
-    "MemoryRegion",
-    "MemoryManager",
     # Interpreter
     "Interpreter",
+    "MemoryManager",
+    # Memory
+    "MemoryRegion",
+    # Registers
+    "RegisterFile",
+    "VMDivisionByZeroError",
     # Errors
     "VMError",
     "VMHaltError",
-    "VMStackOverflowError",
     "VMInvalidOpcodeError",
-    "VMDivisionByZeroError",
+    "VMStackOverflowError",
 ]

@@ -1,4 +1,4 @@
-"""Game Catalog — specifications for all 10 reverse-engineering targets."""
+"""Game Catalog - specifications for all 10 reverse-engineering targets."""
 
 from __future__ import annotations
 
@@ -42,7 +42,7 @@ GAMES: list[GameSpec] = [
         description=(
             "John Conway's cellular automaton: a grid of cells where each cell "
             "lives or dies based on the number of living neighbors. Demonstrates "
-            "emergent complexity from simple rules — perfect for testing FLUX's "
+            "emergent complexity from simple rules - perfect for testing FLUX's "
             "grid computation patterns and SIMD-like parallel operations."
         ),
         core_mechanics=[
@@ -98,7 +98,7 @@ GAMES: list[GameSpec] = [
             "Angle calculation from hit position",
         ],
         open_challenges=[
-            "FLUX uses integer registers — how to simulate floating-point ball physics?",
+            "FLUX uses integer registers - how to simulate floating-point ball physics?",
             "Fixed-point arithmetic: what precision is optimal for Pong?",
             "Can we use memory regions as a framebuffer for ball rendering?",
             "What's the minimum cycles per frame for playable responsiveness?",
@@ -137,7 +137,7 @@ GAMES: list[GameSpec] = [
         ],
         open_challenges=[
             "How to implement a queue in FLUX bytecode with only stack operations?",
-            "Circular buffer in a memory region — what addressing mode works best?",
+            "Circular buffer in a memory region - what addressing mode works best?",
             "Can we use ENTER/LEAVE for snake segment allocation?",
             "What's the optimal grid size for FLUX's memory constraints?",
         ],
@@ -176,7 +176,7 @@ GAMES: list[GameSpec] = [
             "Random bag generator (7-bag randomizer)",
         ],
         open_challenges=[
-            "Rotation matrices with integer arithmetic — can ISHL/ISHR approximate rotation?",
+            "Rotation matrices with integer arithmetic - can ISHL/ISHR approximate rotation?",
             "How to represent the 10x20 playfield efficiently in memory regions?",
             "Can the tile system compose 'piece rotation' tiles with 'collision check' tiles?",
             "What's the minimum bytecode for all 7 piece shapes plus rotations?",
@@ -193,7 +193,7 @@ GAMES: list[GameSpec] = [
         description=(
             "Will Crowther & Don Woods' Colossal Cave Adventure: a text-based "
             "dungeon exploration game with rooms, objects, and a parser. Perfect "
-            "for testing FLUX's A2A protocol — rooms as agents, objects as "
+            "for testing FLUX's A2A protocol - rooms as agents, objects as "
             "messages, and the parser as an A2A dispatcher."
         ),
         core_mechanics=[
@@ -253,7 +253,7 @@ GAMES: list[GameSpec] = [
             "Color palette generation",
         ],
         open_challenges=[
-            "FLUX has FP registers but limited FP opcodes — how to implement z² + c efficiently?",
+            "FLUX has FP registers but limited FP opcodes - how to implement z² + c efficiently?",
             "Can we use fixed-point (int*256) as a faster alternative to FP?",
             "What's the minimum resolution for a recognizable Mandelbrot rendering?",
             "Can memory regions serve as a pixel buffer for output?",
@@ -293,7 +293,7 @@ GAMES: list[GameSpec] = [
         ],
         open_challenges=[
             "Can bitwise AND/XOR patterns efficiently compute black/white pegs?",
-            "How to represent 6 colors × 4 positions as a compact FLUX register value?",
+            "How to represent 6 colors x 4 positions as a compact FLUX register value?",
             "Can we use SIMD registers for parallel comparison of all positions?",
             "What's the optimal AI strategy expressible in FLUX bytecode?",
         ],
@@ -368,7 +368,7 @@ GAMES: list[GameSpec] = [
             "Move generation",
         ],
         open_challenges=[
-            "FLUX has a 4096-byte stack — can minimax recurse deep enough for 9-ply search?",
+            "FLUX has a 4096-byte stack - can minimax recurse deep enough for 9-ply search?",
             "How many cycles does a full game tree evaluation take?",
             "Can CALL/RET + stack operations implement recursive minimax efficiently?",
             "What's the optimal board encoding for FLUX registers (bitboard vs array)?",

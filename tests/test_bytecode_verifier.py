@@ -138,7 +138,7 @@ class TestOpcodeFormatTable:
         assert len(OPCODE_FORMATS) > 200
 
     def test_no_negative_sizes(self):
-        for code, (fmt, size, nregs) in OPCODE_FORMATS.items():
+        for code, (_fmt, size, nregs) in OPCODE_FORMATS.items():
             assert size > 0, f"Opcode 0x{code:02X} has non-positive size"
             assert nregs >= 0, f"Opcode 0x{code:02X} has negative register count"
 

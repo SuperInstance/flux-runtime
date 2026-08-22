@@ -297,7 +297,7 @@ class TestBottleneckDetection:
         module = _empty_module("mod")
         module.functions["only"] = f
         model = CostModel()
-        name, cost = model.bottleneck_function(module)
+        name, _ = model.bottleneck_function(module)
         assert name == "only"
 
 
@@ -524,7 +524,7 @@ class TestEnergyModelInheritsCostModel:
         module = _empty_module("mod")
         module.functions["f"] = f
         model = EnergyModel()
-        name, cost = model.bottleneck_function(module)
+        name, _ = model.bottleneck_function(module)
         assert name == "f"
 
 

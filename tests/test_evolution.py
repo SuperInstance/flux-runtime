@@ -592,13 +592,13 @@ class TestPatternMinerRecording:
         assert miner.trace_count == 1
 
     def test_record_multiple_traces(self, miner):
-        for i in range(10):
+        for _i in range(10):
             miner.record_call_sequence(["a", "b", "c"])
         assert miner.trace_count == 10
 
     def test_max_trace_length(self, profiler):
         miner = PatternMiner(profiler, max_trace_length=5)
-        for i in range(10):
+        for _i in range(10):
             miner.record_call_sequence(["a", "b"])
         assert miner.trace_count == 5
 
@@ -1494,7 +1494,7 @@ class TestIntegrationPipeline:
         def workload():
             profiler.record_call("root.math.add", duration_ns=100)
 
-        for i in range(5):
+        for _i in range(5):
             engine.step(module_root, tile_registry, workload=workload)
 
         history = engine.get_history()

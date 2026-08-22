@@ -1,4 +1,4 @@
-"""FluxAgent — autonomous agent within the FLUX swarm runtime.
+"""FluxAgent - autonomous agent within the FLUX swarm runtime.
 
 Each agent has:
 - Its own module container (nested in the swarm)
@@ -28,11 +28,11 @@ class AgentRole(Enum):
 
     Agents evolve their role based on profiling data:
     - GENERAL: Default, no specialization yet
-    - SPECIALIST_COMPUTE: Fast path executor (C+SIMD) — lots of computation
-    - SPECIALIST_COORDINATOR: A2A routing, orchestration — lots of messaging
-    - SPECIALIST_EXPLORER: Creative, experimental — lots of diverse work
-    - SPECIALIST_MEMORY: Data management, caching — lots of state
-    - SPECIALIST_IO: Input/output, side effects — lots of I/O
+    - SPECIALIST_COMPUTE: Fast path executor (C+SIMD) - lots of computation
+    - SPECIALIST_COORDINATOR: A2A routing, orchestration - lots of messaging
+    - SPECIALIST_EXPLORER: Creative, experimental - lots of diverse work
+    - SPECIALIST_MEMORY: Data management, caching - lots of state
+    - SPECIALIST_IO: Input/output, side effects - lots of I/O
     """
     GENERAL = "general"
     SPECIALIST_COMPUTE = "compute"
@@ -130,7 +130,7 @@ class AgentTask:
         task_id: Unique task identifier.
         task_type: Type of task (e.g. "compute", "route", "explore").
         payload: Task-specific data.
-        priority: Task priority (0–15).
+        priority: Task priority (0-15).
         source_agent: Agent that created this task.
     """
     task_id: str

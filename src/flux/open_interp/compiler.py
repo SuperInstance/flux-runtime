@@ -7,14 +7,14 @@ at runtime — the words ARE the functions.
 
 Usage:
     from flux.open_interp.compiler import compile_interpreter
-    
+
     # Agent creates a domain-specific runtime
     compile_interpreter(
         vocab_folders=["vocabularies/math", "vocabularies/autopilot"],
         output="autopilot_runtime.py",
         class_name="AutopilotFlux"
     )
-    
+
     # Now agents use it directly
     from autopilot_runtime import AutopilotFlux
     rt = AutopilotFlux()
@@ -35,13 +35,13 @@ def compile_interpreter(
 ) -> str:
     """
     Compile vocabulary folders into a standalone Python interpreter module.
-    
+
     The generated module has:
     - A method for each vocabulary pattern (named from the pattern)
     - A run() method that auto-matches text to methods
     - A sandbox for safe execution
     - No external dependencies
-    
+
     Returns the path to the generated file.
     """
     vocab = Vocabulary()

@@ -572,7 +572,7 @@ class NativeBridge:
         Returns:
             The result of the Python function call
         """
-        for name, entry in self._functions.items():
+        for _name, entry in self._functions.items():
             pattern = entry["pattern"]
             # Build regex from pattern
             parts = re.split(r'(\$\w+)', pattern)

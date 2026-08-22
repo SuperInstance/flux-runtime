@@ -1,24 +1,24 @@
-"""INCREMENTS+2 Trust Engine — Multi-dimensional trust computation for A2A agents.
+"""INCREMENTS+2 Trust Engine - Multi-dimensional trust computation for A2A agents.
 
 Trust is computed as a weighted composite of six dimensions:
 
-    T = α·T_history + β·T_capability + γ·T_latency
-        + δ·T_consistency + ε·T_determinism + ζ·T_audit
+    T = alpha·T_history + beta·T_capability + gamma·T_latency
+        + delta·T_consistency + epsilon·T_determinism + zeta·T_audit
 
 Dimension weights:
-    history      α = 0.30
-    capability   β = 0.25
-    latency      γ = 0.20
-    consistency  δ = 0.15
-    determinism  ε = 0.05
-    audit        ζ = 0.05
+    history      alpha = 0.30
+    capability   beta = 0.25
+    latency      gamma = 0.20
+    consistency  delta = 0.15
+    determinism  epsilon = 0.05
+    audit        zeta = 0.05
 
 Decay
 -----
 Trust decays over time based on the most recent interaction:
-    composite *= (1 − λ · elapsed / max_age)
+    composite *= (1 - lambda · elapsed / max_age)
 
-where λ is the decay rate per second and max_age is the time horizon.
+where lambda is the decay rate per second and max_age is the time horizon.
 
 Profiles are stored as ``dict[(agent_a, agent_b)] → AgentProfile``, where
 each profile holds a bounded deque of ``InteractionRecord`` entries.
@@ -47,7 +47,7 @@ class InteractionRecord:
     latency_ms : float
         Round-trip latency in milliseconds.
     capability_match : float
-        How well the capability matched expectations (0.0–1.0).
+        How well the capability matched expectations (0.0-1.0).
     behavior_signature : float
         Metric of behavioral consistency / fingerprint.
     """
@@ -75,7 +75,7 @@ class AgentProfile:
     w_history, w_capability, … : float
         Dimension weights (must sum to 1.0).
     decay_rate : float
-        Decay per second (λ).
+        Decay per second (lambda).
     max_age_seconds : float
         Time horizon for decay computation.
     """
@@ -94,7 +94,7 @@ class AgentProfile:
     w_audit: float = 0.05
 
     # Decay parameters
-    decay_rate: float = 0.01  # per second (λ)
+    decay_rate: float = 0.01  # per second (lambda)
     max_age_seconds: float = 3600.0  # 1 hour horizon
 
 
@@ -142,7 +142,7 @@ class TrustEngine:
         latency_ms : float
             Round-trip latency in milliseconds.
         capability_match : float
-            How well the capability matched expectations (0.0–1.0).
+            How well the capability matched expectations (0.0-1.0).
         behavior_signature : float
             Metric of behavioral consistency.
 
@@ -255,7 +255,7 @@ class TrustEngine:
     def _compute_history(self, profile: AgentProfile) -> float:
         """T_history: exponential moving average of binary outcomes.
 
-        Uses EMA with α=0.1 seeded at NEUTRAL_TRUST.
+        Uses EMA with alpha=0.1 seeded at NEUTRAL_TRUST.
         Success → 1.0, Failure → 0.0.
         """
         alpha = 0.1
@@ -294,7 +294,7 @@ class TrustEngine:
         return 1.0 - (avg_latency - target_ms) / (max_ms - target_ms)
 
     def _compute_consistency(self, profile: AgentProfile) -> float:
-        """T_consistency: 1 − coefficient_of_variation of latencies.
+        """T_consistency: 1 - coefficient_of_variation of latencies.
 
         Measures how stable the latency pattern is.  A consistently
         fast agent scores high; an erratic one scores low.
@@ -318,7 +318,7 @@ class TrustEngine:
     def _compute_determinism(self, profile: AgentProfile) -> float:
         """T_determinism: how consistent behavior signatures are.
 
-        Computed as 1 − (stdev / mean) of behavior_signature values.
+        Computed as 1 - (stdev / mean) of behavior_signature values.
         If all signatures are identical, this returns 1.0.
         Requires at least 2 data points.
         """
@@ -344,7 +344,7 @@ class TrustEngine:
     def _compute_decay(self, profile: AgentProfile) -> float:
         """Time-based decay factor.
 
-        decay = max(0.0, 1 − λ · elapsed / max_age)
+        decay = max(0.0, 1 - lambda · elapsed / max_age)
 
         where elapsed is the time since the most recent interaction.
         """

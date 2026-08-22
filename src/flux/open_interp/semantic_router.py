@@ -72,7 +72,7 @@ class AgentKnowledge:
 class SemanticRoutingTable:
     """
     The lighthouse's map of which agent knows what.
-    
+
     Used when:
     - A task comes in that needs a specific domain
     - An agent asks "who knows about X?"

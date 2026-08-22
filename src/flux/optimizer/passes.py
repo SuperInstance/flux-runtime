@@ -30,7 +30,7 @@ class ConstantFoldingPass(OptimizationPass):
         changes = 0
         for func in module.functions.values():
             for block in func.blocks:
-                for i, instr in enumerate(block.instructions):
+                for _i, instr in enumerate(block.instructions):
                     op = instr.opcode
                     # Check if this is a binary op with constant-like operands
                     if op in ("iadd", "isub", "imul", "fadd", "fsub", "fmul"):

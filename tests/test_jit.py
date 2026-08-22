@@ -472,7 +472,7 @@ def test_const_fold_float():
 
 def test_jit_compile_simple_function():
     """JITCompiler should compile a simple function."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler()
@@ -488,7 +488,7 @@ def test_jit_compile_simple_function():
 
 def test_jit_compile_optimization_stats():
     """JIT compile should produce optimization statistics."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler(inline_threshold=5)
@@ -502,7 +502,7 @@ def test_jit_compile_optimization_stats():
 
 def test_jit_register_allocation():
     """JIT should produce register allocation."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler()
@@ -515,7 +515,7 @@ def test_jit_register_allocation():
 
 def test_jit_compile_multi_block():
     """JITCompiler should handle multi-block functions."""
-    mod, ctx = _build_multi_block_module()
+    mod, _ = _build_multi_block_module()
     func = mod.functions["max"]
 
     compiler = JITCompiler()
@@ -826,7 +826,7 @@ def test_tracer_threshold_setter():
 
 def test_jit_with_tracing():
     """JIT compiler should work with tracing enabled."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler(enable_tracing=True)
@@ -843,7 +843,7 @@ def test_jit_with_tracing():
 
 def test_jit_cache_integration():
     """JIT compiler should use the cache."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler()
@@ -860,7 +860,7 @@ def test_jit_cache_integration():
 
 def test_jit_invalidate_cache():
     """JIT compiler cache invalidation should work."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler()

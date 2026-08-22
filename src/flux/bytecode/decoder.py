@@ -1,4 +1,4 @@
-"""Bytecode Decoder — decodes FLUX binary bytecode into structured representation.
+"""Bytecode Decoder - decodes FLUX binary bytecode into structured representation.
 
 See encoder.py for the binary format specification.
 """
@@ -48,7 +48,7 @@ class DecodedModule:
 
 MAGIC = b"FLUX"
 HEADER_SIZE = 18  # 4s(4) + H(2) + H(2) + H(2) + I(4) + I(4) = 18
-FUNC_TABLE_ENTRY_SIZE = 12  # 3 × uint32
+FUNC_TABLE_ENTRY_SIZE = 12  # 3 x uint32
 
 
 class BytecodeDecoder:
@@ -309,7 +309,7 @@ class BytecodeDecoder:
         try:
             op = Op(raw_op)
         except ValueError:
-            # Unknown opcode — treat as NOP-sized (1 byte)
+            # Unknown opcode - treat as NOP-sized (1 byte)
             return DecodedInstruction(
                 opcode=Op.NOP,
                 operands=[raw_op],  # store raw value for diagnostics

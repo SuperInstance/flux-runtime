@@ -37,7 +37,7 @@ def disassemble_bytecode(bytecode: bytes, start: int = 0) -> str:
     offset = start
     if len(bytecode) >= 18 and bytecode[:4] == b"FLUX":
         # Parse header
-        magic, version, flags, n_funcs, type_off, code_off = struct.unpack_from(
+        _, version, flags, n_funcs, type_off, code_off = struct.unpack_from(
             "<4sHHHII", bytecode, 0
         )
         lines = [

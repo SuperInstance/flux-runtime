@@ -4,7 +4,7 @@ Vocabulary — user-defined word → bytecode pattern mappings.
 Each vocabulary folder contains .fluxvocab files:
 
     # vocabularies/math/operations.fluxvocab
-    
+
     pattern: "compute $a + $b"
     expand: |
         MOVI R0, ${a}
@@ -12,7 +12,7 @@ Each vocabulary folder contains .fluxvocab files:
         IADD R0, R0, R1
         HALT
     result: R0
-    
+
     pattern: "factorial of $n"
     template: factorial
     args: {"n": "$n"}

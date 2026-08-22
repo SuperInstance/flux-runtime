@@ -228,7 +228,7 @@ class ParallelTile:
     ) -> dict[str, Value]:
         """Emit FIR for each parallel instance. Returns last instance outputs."""
         last_outputs = {}
-        for i in range(self.count):
+        for _i in range(self.count):
             # Prefix input names with instance index for uniqueness
             last_outputs = self.tile.to_fir(builder, inputs)
         return last_outputs

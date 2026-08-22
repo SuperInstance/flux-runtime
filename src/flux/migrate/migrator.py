@@ -402,7 +402,7 @@ def _migrate_c(source: str, filename: str) -> tuple[str, int, int, int]:
     # ── Functions ──────────────────────────────────────────────────────────
     functions = _extract_c_functions(source)
     func_count = len(functions)
-    for name, params_str, lineno, _ in functions:
+    for name, params_str, _lineno, _ in functions:
         w(_section_header(f"Function: {name}"))
         w("")
         sig = _c_params_to_fir(params_str)

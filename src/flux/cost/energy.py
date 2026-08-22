@@ -153,7 +153,7 @@ class EnergyModel(CostModel):
     def _memory_energy(self) -> float:
         """Expected energy per memory access using hierarchy probabilities."""
         expected = 0.0
-        for level, (energy, prob) in self.MEMORY_ENERGY.items():
+        for _level, (energy, prob) in self.MEMORY_ENERGY.items():
             expected += energy * prob
         return expected
 
