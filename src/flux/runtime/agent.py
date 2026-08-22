@@ -73,6 +73,7 @@ class Agent:
             bytecode,
             memory_size=self.config.memory_size,
             max_cycles=self.config.max_cycles,
+            isa="system_a",
         )
 
     def execute(self) -> int:

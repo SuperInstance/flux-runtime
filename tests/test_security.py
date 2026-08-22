@@ -102,7 +102,7 @@ def test_sandbox_lifecycle():
 
 def test_empty_bytecode_raises():
     """Feeding empty bytes to the VM must raise ValueError."""
-    vm = Interpreter(b"")
+    vm = Interpreter(b"", isa="system_a")
     try:
         vm.execute()
         assert False, "Expected ValueError for empty bytecode"
@@ -114,7 +114,7 @@ def test_empty_bytecode_raises():
 def test_oversized_bytecode_raises():
     """Bytecode larger than 1 MB must raise ValueError."""
     huge = b'\x00' * (Interpreter.MAX_BYTECODE_SIZE + 1)
-    vm = Interpreter(huge)
+    vm = Interpreter(huge, isa="system_a")
     try:
         vm.execute()
         assert False, "Expected ValueError for oversized bytecode"
@@ -125,7 +125,7 @@ def test_oversized_bytecode_raises():
 
 def test_valid_bytecode_passes_verification():
     """Normal bytecode (NOP + HALT) must pass verification."""
-    vm = Interpreter(bytes([Op.NOP, Op.HALT]))
+    vm = Interpreter(bytes([Op.NOP, Op.HALT]), isa="system_a")
     cycles = vm.execute()
     assert cycles == 2
     print("  PASS test_valid_bytecode_passes_verification")
@@ -137,7 +137,7 @@ def test_valid_bytecode_passes_verification():
 def test_cap_require_without_grant_raises():
     """CAP_REQUIRE for an ungranted capability must raise VMA2AError."""
     bytecode = _cap_require_bytes(42) + bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     try:
         vm.execute()
         assert False, "Expected VMA2AError for ungranted capability"
@@ -149,7 +149,7 @@ def test_cap_require_without_grant_raises():
 def test_cap_grant_then_require_succeeds():
     """CAP_GRANT followed by CAP_REQUIRE for the same cap must succeed."""
     bytecode = _cap_grant_bytes(42) + _cap_require_bytes(42) + bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.execute()
     assert 42 in vm.capabilities
     print("  PASS test_cap_grant_then_require_succeeds")
@@ -158,7 +158,7 @@ def test_cap_grant_then_require_succeeds():
 def test_cap_revoke_then_require_raises():
     """CAP_REVOKE followed by CAP_REQUIRE for the same cap must raise."""
     bytecode = _cap_grant_bytes(7) + _cap_revoke_bytes(7) + _cap_require_bytes(7) + bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     try:
         vm.execute()
         assert False, "Expected VMA2AError after revocation"
@@ -170,7 +170,7 @@ def test_cap_revoke_then_require_raises():
 def test_capabilities_cleared_on_reset():
     """VM reset must clear the capability set."""
     bytecode = _cap_grant_bytes(1) + bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.execute()
     assert 1 in vm.capabilities
     vm.reset()

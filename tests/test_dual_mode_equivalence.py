@@ -24,7 +24,7 @@ from flux.vm.interpreter import Interpreter
 
 
 def run_a(bytecode) -> Interpreter:
-    vm = Interpreter(bytes(bytecode))  # default isa="system_a"
+    vm = Interpreter(bytes(bytecode), isa="system_a")  # legacy mode, explicit
     vm.execute()
     return vm
 
@@ -170,7 +170,7 @@ def test_a2a_tell_both_modes_dispatch():
     design: Format G raw bytes vs Format E packed registers)."""
     # System A: TELL 0x60, Format G [op][len:u16 LE][data]
     a_events = []
-    vm_a = Interpreter(bytes([Op.TELL, 3, 0, ord("h"), ord("i"), 0, Op.HALT]))
+    vm_a = Interpreter(bytes([Op.TELL, 3, 0, ord("h"), ord("i"), 0, Op.HALT]), isa="system_a")
     vm_a.on_a2a(lambda n, d: a_events.append((n, bytes(d))) and None)
     vm_a.execute()
     assert a_events and a_events[0][0] == "TELL"

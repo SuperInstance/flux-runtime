@@ -154,7 +154,7 @@ class TextAdventure:
     def demonstrate(cls) -> None:
         """Run an automated text adventure tour."""
         bytecode = cls.build_bytecode()
-        vm = Interpreter(bytecode, memory_size=65536)
+        vm = Interpreter(bytecode, memory_size=65536, isa="system_a")
         cls._init_room_data(vm)
 
         # Run once to verify bytecode works

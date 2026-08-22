@@ -57,7 +57,7 @@ def test_nop() -> None:
     """NOP executes and increments cycle count."""
     # NOP (1 byte) + HALT (1 byte) = 2 cycles
     bytecode = bytes([Op.NOP, Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     cycles = vm.execute()
     assert cycles == 2, f"Expected 2 cycles, got {cycles}"
     assert vm.halted is True
@@ -66,7 +66,7 @@ def test_nop() -> None:
 def test_halt() -> None:
     """HALT stops execution after 1 cycle."""
     bytecode = bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     cycles = vm.execute()
     assert cycles == 1, f"Expected 1 cycle, got {cycles}"
     assert vm.halted is True
@@ -76,7 +76,7 @@ def test_halt() -> None:
 def test_mov() -> None:
     """MOV R0, R1 copies R1's value into R0."""
     bytecode = bytes([Op.MOV, 0x00, 0x01, Op.HALT])  # MOV R0, R1; HALT
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(1, 42)
     vm.execute()
     assert vm.regs.read_gp(0) == 42, f"Expected R0=42, got R0={vm.regs.read_gp(0)}"
@@ -85,7 +85,7 @@ def test_mov() -> None:
 def test_add() -> None:
     """IADD R0, R1, R2 computes R0 = R1 + R2."""
     bytecode = bytes([Op.IADD, 0x00, 0x01, 0x02, Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(1, 10)
     vm.regs.write_gp(2, 20)
     vm.execute()
@@ -96,7 +96,7 @@ def test_push_pop() -> None:
     """PUSH and POP work correctly on the stack."""
     # PUSH R0; POP R1; HALT
     bytecode = bytes([Op.PUSH, 0x00, Op.POP, 0x01, Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     initial_sp = vm.regs.sp
     vm.regs.write_gp(0, 42)
 
@@ -121,7 +121,7 @@ def test_jump_forward() -> None:
         Op.INC, 0x00,                # 8: INC R0 (skipped)
         Op.HALT,                     # 10: HALT
     ])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(0, 0)
     vm.execute()
     assert vm.regs.read_gp(0) == 0, f"R0 should be 0 (INCs skipped), got {vm.regs.read_gp(0)}"
@@ -141,7 +141,7 @@ def test_jump_zero() -> None:
         Op.INC, 0x00,                # 8: INC R0 (skipped)
         Op.HALT,                     # 10: HALT
     ])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(0, 0)  # R0 is zero -> jump taken
     vm.execute()
     assert vm.regs.read_gp(0) == 0, f"R0 should be 0 (jump taken), got {vm.regs.read_gp(0)}"
@@ -157,7 +157,7 @@ def test_jump_not_taken() -> None:
         Op.INC, 0x00,
         Op.HALT,
     ])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(0, 7)  # R0 is non-zero -> jump NOT taken, INCs execute
     vm.execute()
     assert vm.regs.read_gp(0) == 10, f"R0 should be 10 (3 INCs), got {vm.regs.read_gp(0)}"
@@ -183,7 +183,7 @@ def test_call_return() -> None:
         Op.MOV, 0x00, 0x01,          # 9:  MOV R0, R1
         Op.RET,                      # 12: RET
     ])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(1, 99)
     vm.execute()
     assert vm.regs.read_gp(0) == 99, f"R0 should be 99, got {vm.regs.read_gp(0)}"
@@ -201,7 +201,7 @@ def test_loop() -> None:
         Op.JNZ, 0x00, 0xFA, 0xFF,    # 2: JNZ R0, -6 -> back to byte 0
         Op.HALT,                     # 6: HALT
     ])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(0, 3)  # countdown from 3
     vm.execute()
     assert vm.regs.read_gp(0) == 0, f"R0 should be 0 after loop, got {vm.regs.read_gp(0)}"
@@ -214,7 +214,7 @@ def test_division_by_zero() -> None:
     """IDIV by zero raises VMDivisionByZeroError."""
     # IDIV R0, R1, R2: R0 = R1 / R2, with R2 = 0
     bytecode = bytes([Op.IDIV, 0x00, 0x01, 0x02])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(1, 10)
     vm.regs.write_gp(2, 0)
 
@@ -230,7 +230,7 @@ def test_cycle_budget() -> None:
     """Exceeding max cycles stops execution gracefully."""
     # Byte 0: JMP -4  -> infinite loop (PC=4, offset=-4, PC=0)
     bytecode = bytes([Op.JMP, 0x00, 0xFC, 0xFF])
-    vm = Interpreter(bytecode, max_cycles=100)
+    vm = Interpreter(bytecode, max_cycles=100, isa="system_a")
     cycles = vm.execute()
     assert cycles == 100, f"Expected 100 cycles (budget), got {cycles}"
     assert vm.running is False
@@ -251,7 +251,7 @@ def test_memory_read_write() -> None:
         Op.LOAD, 0x02, 0x00,        # 11: LOAD R2, R0 -> R2 = mem[100]
         Op.HALT,                    # 14: HALT
     ])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.execute()
     assert vm.regs.read_gp(2) == 42, f"R2 should be 42, got {vm.regs.read_gp(2)}"
 
@@ -281,7 +281,7 @@ def test_cmp_je() -> None:
         Op.INC, 0x00,                # 9: INC R0 (skipped)
         Op.HALT,                     # 11: HALT
     ])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(0, 5)
     vm.regs.write_gp(1, 5)
     vm.execute()
@@ -297,7 +297,7 @@ def test_cmp_jne() -> None:
         Op.INC, 0x00,                # 9: INC R0 (skipped)
         Op.HALT,                     # 11: HALT
     ])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(0, 5)
     vm.regs.write_gp(1, 3)
     vm.execute()
@@ -307,7 +307,7 @@ def test_cmp_jne() -> None:
 def test_neg() -> None:
     """INEG negates a register value."""
     bytecode = bytes([Op.INEG, 0x00, 0x01, Op.HALT])  # INEG R0, R1
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(1, 7)
     vm.execute()
     assert vm.regs.read_gp(0) == -7, f"Expected R0=-7, got {vm.regs.read_gp(0)}"
@@ -327,7 +327,7 @@ def test_bitwise() -> None:
         Op.INOT, 0x05, 0x01,         # R5 = ~R1
         Op.HALT,
     ])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(1, 0b1100)  # 12
     vm.regs.write_gp(2, 0b1010)  # 10
     vm.execute()
@@ -341,7 +341,7 @@ def test_mov_registers() -> None:
     """MOV and IADD use encoded register values correctly."""
     # IADD R10, R8, R9: R10 = R8 + R9
     bytecode = bytes([Op.IADD, 10, 8, 9, Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(8, 100)
     vm.regs.write_gp(9, 200)
     vm.execute()
@@ -351,7 +351,7 @@ def test_mov_registers() -> None:
 def test_sp_property() -> None:
     """SP property correctly aliases R11."""
     bytecode = bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.sp = 12345
     assert vm.regs.read_gp(11) == 12345, "SP should alias R11"
     vm.regs.write_gp(11, 99999)
@@ -436,7 +436,7 @@ def test_stack_push_pop_static() -> None:
 def test_dump_state() -> None:
     """dump_state returns a complete VM snapshot."""
     bytecode = bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.regs.write_gp(0, 42)
     vm.execute()
 
@@ -449,7 +449,7 @@ def test_dump_state() -> None:
 def test_unknown_opcode() -> None:
     """Unknown opcode raises VMInvalidOpcodeError."""
     bytecode = bytes([0xFF])  # not a valid opcode
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     try:
         vm.execute()
         assert False, "Expected VMInvalidOpcodeError"

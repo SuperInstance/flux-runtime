@@ -403,7 +403,7 @@ def test_vm_arithmetic_correctness():
         Op.HALT,                       # HALT
     ])
 
-    interp = Interpreter(bytecode, memory_size=65536)
+    interp = Interpreter(bytecode, memory_size=65536, isa="system_a")
     cycles = interp.execute()
 
     assert interp.halted
@@ -418,7 +418,7 @@ def test_vm_arithmetic_correctness():
         Op.HALT,
     ])
 
-    interp2 = Interpreter(bytecode_mul)
+    interp2 = Interpreter(bytecode_mul, isa="system_a")
     interp2.execute()
     assert interp2.regs.read_gp(0) == 42  # 7 * 6 = 42
 
@@ -430,7 +430,7 @@ def test_vm_arithmetic_correctness():
         Op.HALT,
     ])
 
-    interp3 = Interpreter(bytecode_sub)
+    interp3 = Interpreter(bytecode_sub, isa="system_a")
     interp3.execute()
     assert interp3.regs.read_gp(0) == 63  # 100 - 37 = 63
 
@@ -450,7 +450,7 @@ def test_vm_control_flow():
         Op.HALT,
     ])
 
-    interp = Interpreter(bytecode)
+    interp = Interpreter(bytecode, isa="system_a")
     interp.regs.write_gp(0, 5)  # Start at 5
     cycles = interp.execute()
 
@@ -467,7 +467,7 @@ def test_vm_control_flow():
         Op.HALT,
     ])
 
-    interp2 = Interpreter(bytecode_jz)
+    interp2 = Interpreter(bytecode_jz, isa="system_a")
     interp2.execute()
     assert interp2.regs.read_gp(1) == 42  # R1 should stay 42
 

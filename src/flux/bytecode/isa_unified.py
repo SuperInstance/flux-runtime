@@ -1,6 +1,23 @@
 """
 FLUX Unified ISA — The Complete Opcode Table
 
+**ISA status (2026-08-21, A/B reconciliation phases 1-6 executed):**
+
+This module is **System B** — the converged unified numbering, and the
+**canonical** target. Since the cutover (see ``docs/RECONCILIATION.md``), the
+VM interpreter DEFAULTS to this table (``Interpreter(isa="unified")``).
+
+- **System A (legacy)** = ``flux.bytecode.opcodes.Op`` — Oracle1's original VM
+  numbering. Still fully supported, byte-for-byte unchanged; select via
+  ``Interpreter(isa="system_a")``. Its table is preserved, never deleted.
+- **System B (canonical)** = this table (``build_unified_isa()``) and its
+  IntEnum mirror ``flux.bytecode.opcodes_unified.UnifiedOp``.
+
+Corrections landed during reconciliation (see ``docs/RECONCILIATION.md``):
+JZ/JNZ/JLT/JGT are **Format F** (op, rd, imm16 big-endian), not Format E; and
+imm16/imm32 fields in Formats F/G are **big-endian** (the earlier
+"little-endian" claim in this header was wrong).
+
 Three agents, one ISA. This is the converged opcode space:
 
 Oracle1 🔮: 115 base opcodes (Python runtime, semantic layer)

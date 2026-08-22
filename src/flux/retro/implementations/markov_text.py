@@ -143,7 +143,7 @@ class MarkovChainText:
         word_idx = vocab.index(seed_word.lower())
         rand_counter = 42
 
-        vm = Interpreter(bytes([Op.HALT]), memory_size=65536)
+        vm = Interpreter(bytes([Op.HALT]), memory_size=65536, isa="system_a")
 
         generated = [vocab[word_idx]]
 

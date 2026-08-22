@@ -173,7 +173,7 @@ class Snake:
         score = 0
 
         for step in range(_STEPS):
-            vm = Interpreter(bc, memory_size=65536)
+            vm = Interpreter(bc, memory_size=65536, isa="system_a")
             stack = vm.memory.get_region("stack")
 
             # Write grid to memory

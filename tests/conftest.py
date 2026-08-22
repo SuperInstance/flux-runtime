@@ -91,7 +91,7 @@ def vm(simple_bytecode):
     """
     from flux.vm.interpreter import Interpreter
 
-    interpreter = Interpreter(simple_bytecode)
+    interpreter = Interpreter(simple_bytecode, isa="system_a")
     return interpreter
 
 

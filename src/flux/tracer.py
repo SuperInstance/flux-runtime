@@ -35,7 +35,7 @@ Or via the VM directly::
     from flux.tracer import FluxTracer
 
     tracer = FluxTracer()
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm._tracer = tracer   # attach
     tracer.attach(vm)
     vm.execute()
@@ -530,7 +530,7 @@ class FluxTracer:
         self._result.bytecode_size = len(bytecode)
         self._result.start_time = time.perf_counter()
 
-        vm = Interpreter(bytecode, memory_size=memory_size)
+        vm = Interpreter(bytecode, memory_size=memory_size, isa="system_a")
         vm.max_cycles = max_steps
         self.attach(vm)
 

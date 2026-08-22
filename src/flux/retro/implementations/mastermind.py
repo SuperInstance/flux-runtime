@@ -205,7 +205,7 @@ class Mastermind:
     def evaluate(self, guess: list[int]) -> dict:
         """Run the VM with secret and guess, return pegs."""
         bc = self.build_bytecode()
-        vm = Interpreter(bc)
+        vm = Interpreter(bc, isa="system_a")
         # Load secret into R0-R3, guess into R4-R7
         for i in range(_CODE_LEN):
             vm.regs.write_gp(i, self.secret[i])

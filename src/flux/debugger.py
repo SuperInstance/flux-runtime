@@ -211,10 +211,16 @@ class FluxDebugger(Interpreter):
         memory_size: int = 65536,
         max_cycles: int = 100_000,
         enable_trace: bool = False,
+        isa: str = "system_a",
     ):
-        """Initialize the debugger."""
+        """Initialize the debugger.
+
+        The debugger defaults to System A (legacy) numbering to stay
+        byte-for-byte compatible with the System A disassembler it drives;
+        pass ``isa="unified"`` to debug converged (System B) bytecode.
+        """
         code = self._extract_code(bytecode)
-        super().__init__(code, memory_size=memory_size, max_cycles=max_cycles)
+        super().__init__(code, memory_size=memory_size, max_cycles=max_cycles, isa=isa)
 
         # Debugger state
         self._breakpoints: Dict[int, Breakpoint] = {}

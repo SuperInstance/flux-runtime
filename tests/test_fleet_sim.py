@@ -78,7 +78,7 @@ def test_simulator_runs() -> None:
 def test_navigator_adjusts_heading() -> None:
     _section("test_navigator_adjusts_heading")
 
-    vm = Interpreter(bytecode=NAVIGATOR_BYTECODE, memory_size=4096)
+    vm = Interpreter(bytecode=NAVIGATOR_BYTECODE, memory_size=4096, isa="system_a")
 
     # Test 1: Basic addition (45 + 10 = 55)
     vm.reset()
@@ -121,7 +121,7 @@ def test_navigator_adjusts_heading() -> None:
 def test_weather_scout_generates_conditions() -> None:
     _section("test_weather_scout_generates_conditions")
 
-    vm = Interpreter(bytecode=WEATHER_SCOUT_BYTECODE, memory_size=4096)
+    vm = Interpreter(bytecode=WEATHER_SCOUT_BYTECODE, memory_size=4096, isa="system_a")
 
     # Test with timestep 0
     vm.reset()
@@ -149,7 +149,7 @@ def test_weather_scout_generates_conditions() -> None:
 def test_fish_finder_returns_catch() -> None:
     _section("test_fish_finder_returns_catch")
 
-    vm = Interpreter(bytecode=FISH_FINDER_BYTECODE, memory_size=4096)
+    vm = Interpreter(bytecode=FISH_FINDER_BYTECODE, memory_size=4096, isa="system_a")
 
     # Test optimal conditions (depth=300, temp=60)
     vm.reset()
@@ -182,7 +182,7 @@ def test_fish_finder_returns_catch() -> None:
 def test_supply_manager_flags_low_fuel() -> None:
     _section("test_supply_manager_flags_low_fuel")
 
-    vm = Interpreter(bytecode=SUPPLY_MANAGER_BYTECODE, memory_size=4096)
+    vm = Interpreter(bytecode=SUPPLY_MANAGER_BYTECODE, memory_size=4096, isa="system_a")
 
     # Test low fuel (should return 1 = urgent)
     vm.reset()
@@ -226,7 +226,7 @@ def test_supply_manager_flags_low_fuel() -> None:
 def test_captain_makes_decisions() -> None:
     _section("test_captain_makes_decisions")
 
-    vm = Interpreter(bytecode=CAPTAIN_BYTECODE, memory_size=4096)
+    vm = Interpreter(bytecode=CAPTAIN_BYTECODE, memory_size=4096, isa="system_a")
 
     # Test low fuel -> return to port (decision = 1)
     vm.reset()

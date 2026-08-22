@@ -194,7 +194,8 @@ class Agent:
         self.interpreter = Interpreter(
             bytecode=self.bytecode,
             memory_size=4096,
-            max_cycles=100_000
+            max_cycles=100_000,
+            isa="system_a"
         )
 
     def run(self, inputs: Dict[int, int]) -> int:
@@ -246,7 +247,8 @@ class Agent:
             self.interpreter = Interpreter(
                 bytecode=self.bytecode,
                 memory_size=4096,
-                max_cycles=100_000
+                max_cycles=100_000,
+                isa="system_a"
             )
         self.inbox: List[A2AMessage] = []
 

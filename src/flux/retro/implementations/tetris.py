@@ -271,7 +271,7 @@ class Tetris:
     def demonstrate(cls) -> None:
         """Build, execute, and display Tetris simulation results."""
         bytecode = cls.build_bytecode()
-        vm = Interpreter(bytecode, memory_size=65536)
+        vm = Interpreter(bytecode, memory_size=65536, isa="system_a")
 
         print("=" * 64)
         print("  FLUX BYTECODE TETRIS  —  I-piece drop simulation")

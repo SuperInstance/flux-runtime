@@ -109,7 +109,7 @@ class OpenFluxInterpreter:
             disassembly_text = self._format_disassembly(disasm_result)
 
             # Execute bytecode
-            vm = Interpreter(bytecode, max_cycles=self.max_cycles)
+            vm = Interpreter(bytecode, max_cycles=self.max_cycles, isa="system_a")
             vm.on_a2a(self._a2a_handler)
 
             try:

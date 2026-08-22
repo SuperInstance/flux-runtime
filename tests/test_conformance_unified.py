@@ -116,10 +116,24 @@ def test_signal_arithmetic_executes_on_unified_vm():
     assert vm.halted
 
 
-def test_system_a_default_unchanged():
-    """Default ISA remains System A: legacy bytecode still executes unchanged."""
+def test_system_a_legacy_mode_unchanged():
+    """Legacy System A bytecode still executes unchanged via isa="system_a".
+
+    The 2026-08-21 cutover flipped the interpreter DEFAULT to System B
+    (unified). System A remains fully supported for byte-for-byte compat
+    via the explicit flag — no mapping was deleted.
+    """
     # System A: MOVI R0,42 = 0x2B (Format D: op, reg, imm16), HALT = 0x80
-    vm = Interpreter(bytes([0x2B, 0x00, 0x2A, 0x00, 0x80]))
+    vm = Interpreter(bytes([0x2B, 0x00, 0x2A, 0x00, 0x80]), isa="system_a")
+    vm.execute()
+    assert vm.regs.read_gp(0) == 42
+    assert vm.halted
+
+
+def test_default_is_unified_after_cutover():
+    """Default ISA is System B (unified) post-cutover (2026-08-21)."""
+    # Unified: MOVI R0,42 = 0x18 (Format D: op, rd, imm8), HALT = 0x00
+    vm = Interpreter(bytes([0x18, 0x00, 42, 0x00]))
     vm.execute()
     assert vm.regs.read_gp(0) == 42
     assert vm.halted
@@ -471,7 +485,7 @@ def test_cross_assembler_dual_mode_diverges_correctly():
     assert not a.errors and not u.errors
     assert a.bytecode != u.bytecode      # different numberings by design
 
-    vm_a = Interpreter(a.bytecode)                 # default System A
+    vm_a = Interpreter(a.bytecode, isa="system_a")  # legacy mode, explicit
     vm_a.execute()
     assert vm_a.regs.read_gp(1) == 42 and vm_a.halted
 

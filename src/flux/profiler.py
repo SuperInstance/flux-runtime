@@ -260,7 +260,7 @@ class FluxProfiler:
         result.bytecode_size = len(bytecode)
         self._result = result
 
-        vm = Interpreter(bytecode, memory_size=memory_size)
+        vm = Interpreter(bytecode, memory_size=memory_size, isa="system_a")
         vm.max_cycles = max_steps
 
         # Tracking state

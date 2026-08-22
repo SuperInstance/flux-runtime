@@ -19,7 +19,7 @@ from flux.vm.interpreter import (
 
 def _make_vm(bytecode: bytes, memory_size: int = 65536) -> Interpreter:
     """Create an interpreter with given bytecode."""
-    return Interpreter(bytecode, memory_size=memory_size)
+    return Interpreter(bytecode, memory_size=memory_size, isa="system_a")
 
 
 def _i16(val: int) -> bytes:

@@ -153,7 +153,7 @@ class LunarLander:
 
     def run(self) -> dict:
         bc = self.build_bytecode()
-        vm = Interpreter(bc, memory_size=65536)
+        vm = Interpreter(bc, memory_size=65536, isa="system_a")
         # Write thrust schedule into stack memory at offset 500
         stack = vm.memory.get_region("stack")
         for i, t in enumerate(self.thrust_schedule[:_MAX_TICKS]):
@@ -173,7 +173,7 @@ class LunarLander:
     def run_with_log(self) -> dict:
         """Run and also decode the tick-by-tick log from memory."""
         bc = self.build_bytecode()
-        vm = Interpreter(bc, memory_size=65536)
+        vm = Interpreter(bc, memory_size=65536, isa="system_a")
         stack = vm.memory.get_region("stack")
         for i, t in enumerate(self.thrust_schedule[:_MAX_TICKS]):
             stack.write(500 + i, bytes([t]))

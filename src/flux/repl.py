@@ -41,7 +41,7 @@ class FluxREPL:
         # Start with just a HALT instruction
         from flux.bytecode.opcodes import Op
         empty_code = bytes([Op.HALT])
-        self.vm = Interpreter(empty_code, memory_size=self.memory_size)
+        self.vm = Interpreter(empty_code, memory_size=self.memory_size, isa="system_a")
         # Reset PC to start
         self.vm.pc = 0
         self.vm.halted = False
@@ -72,7 +72,7 @@ class FluxREPL:
         old_regs = [self.vm.regs.read_gp(i) for i in range(16)] if self.vm else []
         
         # Create new VM with the bytecode
-        self.vm = Interpreter(bytecode, memory_size=self.memory_size)
+        self.vm = Interpreter(bytecode, memory_size=self.memory_size, isa="system_a")
         try:
             cycles = self.vm.execute()
             regs = [self.vm.regs.read_gp(i) for i in range(16)]
@@ -139,7 +139,7 @@ class FluxREPL:
                 
                 # Execute
                 old_regs = [self.vm.regs.read_gp(i) for i in range(16)] if self.vm else []
-                self.vm = Interpreter(bytecode, memory_size=self.memory_size)
+                self.vm = Interpreter(bytecode, memory_size=self.memory_size, isa="system_a")
                 cycles = self.vm.execute()
                 regs = [self.vm.regs.read_gp(i) for i in range(16)]
                 return {
@@ -224,7 +224,7 @@ class FluxREPL:
             bytecode = compiler.compile(c_code)
             
             old_regs = [self.vm.regs.read_gp(i) for i in range(16)] if self.vm else []
-            self.vm = Interpreter(bytecode, memory_size=self.memory_size)
+            self.vm = Interpreter(bytecode, memory_size=self.memory_size, isa="system_a")
             cycles = self.vm.execute()
             regs = [self.vm.regs.read_gp(i) for i in range(16)]
             return {

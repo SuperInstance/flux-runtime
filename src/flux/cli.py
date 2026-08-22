@@ -442,7 +442,7 @@ def _cmd_hello() -> None:
 
     from flux.vm.interpreter import Interpreter
 
-    vm = Interpreter(extracted, memory_size=4096)
+    vm = Interpreter(extracted, memory_size=4096, isa="system_a")
     cycles = vm.execute()
     result = vm.regs.read_gp(0)
 
@@ -593,7 +593,7 @@ def _cmd_run(args: argparse.Namespace) -> None:
     # Strip FLUX header and extract just the code section
     bytecode = _extract_code_section(raw)
 
-    vm = Interpreter(bytecode, max_cycles=args.cycles)
+    vm = Interpreter(bytecode, max_cycles=args.cycles, isa="system_a")
     try:
         cycles = vm.execute()
     except (IndexError, VMError) as exc:
@@ -708,7 +708,7 @@ def _cmd_replay(args: argparse.Namespace) -> None:
     # Strip FLUX header and extract just the code section
     bytecode = _extract_code_section(raw)
 
-    vm = Interpreter(bytecode, max_cycles=args.cycles)
+    vm = Interpreter(bytecode, max_cycles=args.cycles, isa="system_a")
 
     # Save reference to the real _step method before monkey-patching
     original_step = vm._step

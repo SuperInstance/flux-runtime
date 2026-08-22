@@ -190,7 +190,7 @@ class GameOfLife:
 
         for gen in range(generations):
             # Create VM with source buffer pre-loaded
-            vm = Interpreter(bc, memory_size=65536)
+            vm = Interpreter(bc, memory_size=65536, isa="system_a")
             stack = vm.memory.get_region("stack")
 
             # Write source buffer
@@ -220,7 +220,7 @@ class GameOfLife:
         gen_metrics = []
 
         for gen in range(generations):
-            vm = Interpreter(bc, memory_size=65536)
+            vm = Interpreter(bc, memory_size=65536, isa="system_a")
             stack = vm.memory.get_region("stack")
             stack.write(_SRC_BASE, bytes(frames[-1]))
             stack.write(_DST_BASE, bytes(_BUF_SIZE))

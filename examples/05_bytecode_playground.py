@@ -277,7 +277,7 @@ class StepInterpreter:
         """Execute bytecode, optionally with step tracing."""
         from flux.vm.interpreter import Interpreter
 
-        interp = Interpreter(self.bytecode, memory_size=4096)
+        interp = Interpreter(self.bytecode, memory_size=4096, isa="system_a")
         self.trace_log.clear()
 
         if trace:

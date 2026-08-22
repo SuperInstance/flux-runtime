@@ -221,6 +221,7 @@ class FluxPipeline:
             result.code_section,
             memory_size=self.memory_size,
             max_cycles=self.max_cycles,
+            isa="system_a",
         )
         result.cycles = interp.execute()
         result.halted = interp.halted

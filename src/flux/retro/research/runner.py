@@ -114,7 +114,7 @@ def run_iteration(game_cls, iteration_num: int, plan: tuple) -> dict:
         bytecode_size = len(bytecode)
 
         from flux.vm.interpreter import Interpreter
-        vm = Interpreter(bytecode, memory_size=65536)
+        vm = Interpreter(bytecode, memory_size=65536, isa="system_a")
         cycles = vm.execute()
 
         elapsed_ms = (time.perf_counter() - start) * 1000

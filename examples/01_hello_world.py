@@ -93,7 +93,7 @@ def approach_a_raw_bytecode() -> None:
 
     from flux.vm.interpreter import Interpreter
 
-    interp = Interpreter(bytecode, memory_size=4096)
+    interp = Interpreter(bytecode, memory_size=4096, isa="system_a")
     cycles = interp.execute()
 
     result_r0 = interp.regs.read_gp(0)
@@ -146,7 +146,7 @@ def approach_b_fir_builder() -> None:
     code_off = struct.unpack_from("<I", bytecode, 14)[0]
     code_section = bytecode[code_off:]
 
-    interp = Interpreter(code_section, memory_size=4096)
+    interp = Interpreter(code_section, memory_size=4096, isa="system_a")
     cycles = interp.execute()
     info(f"Executed FIR-compiled bytecode in {cycles} cycle(s)")
     register_dump(interp)
@@ -251,7 +251,7 @@ def bonus_loop() -> None:
     detail("      JNZ R1, loop    ; if counter != 0, goto loop")
     detail("      HALT")
 
-    interp = Interpreter(bytecode, memory_size=4096)
+    interp = Interpreter(bytecode, memory_size=4096, isa="system_a")
     cycles = interp.execute()
 
     result = interp.regs.read_gp(0)

@@ -118,12 +118,14 @@ class Interpreter:
         bytecode: bytes,
         memory_size: int = 65536,
         max_cycles: int = MAX_CYCLES,
-        isa: str = "system_a",
+        isa: str = "unified",
     ) -> None:
-        # ISA selector. "system_a" (default) = legacy numbering in opcodes.py;
-        # "unified" / "system_b" = converged System B numbering in isa_unified.py.
+        # ISA selector. "unified" / "system_b" (DEFAULT) = converged System B
+        # numbering in isa_unified.py — the canonical target post-cutover
+        # (2026-08-21). "system_a" = legacy numbering in opcodes.py, still
+        # fully supported for byte-for-byte compat with pre-cutover bytecode.
         # Both tables are preserved; this flag chooses which one to dispatch on.
-        _isa = (isa or "system_a").strip().lower()
+        _isa = (isa or "unified").strip().lower()
         self.isa = "unified" if _isa in ("unified", "system_b", "b") else "system_a"
 
         self.regs = RegisterFile()
@@ -296,8 +298,9 @@ class Interpreter:
 
         The unified ISA encodes imm16 big-endian (high byte first) in the
         executable ground truth (signal_compiler.py ``_emit_format_f`` and the
-        conformance vectors), despite ``isa_unified.py``'s header claiming
-        little-endian. See memory/flux-ab-truth-2026-08-21.md §note.
+        conformance vectors). ``isa_unified.py``'s header now documents this
+        big-endian convention (its earlier little-endian claim was corrected
+        2026-08-21). See docs/RECONCILIATION.md.
         """
         hi = self._fetch_u8()
         lo = self._fetch_u8()
@@ -412,8 +415,8 @@ class Interpreter:
         """Execute one instruction using System B (unified ISA) numbering.
 
         This is the converged 3-agent ISA (isa_unified.py / opcodes_unified.py).
-        It is opt-in via ``Interpreter(..., isa="unified")``; System A remains
-        the default and is untouched.
+        It is the DEFAULT execution path since the 2026-08-21 cutover; System A
+        (legacy) is preserved and selectable via ``Interpreter(..., isa="system_a")``.
         """
         start_pc = self.pc
         opcode_byte = self._fetch_u8()
