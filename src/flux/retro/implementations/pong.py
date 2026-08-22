@@ -203,7 +203,7 @@ class Pong:
         print(f"  Bytecode size: {len(bytecode)} bytes")
 
         # Show initial state
-        print(f"\n  Initial state:")
+        print("\n  Initial state:")
         print(cls.render_field(15, 7, 5, 5))
 
         vm.execute()

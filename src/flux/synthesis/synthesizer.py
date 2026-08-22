@@ -577,7 +577,7 @@ class FluxSynthesizer:
         """Recursively render container tree."""
         connector = "└── " if is_last else "├── "
         card_count = len(container.cards)
-        child_count = len(container.children)
+        len(container.children)
         label = f"{container.name} [{container.granularity.name}]"
         if card_count:
             label += f" ({card_count} cards)"

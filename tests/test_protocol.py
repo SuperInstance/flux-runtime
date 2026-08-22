@@ -1076,7 +1076,7 @@ class TestBinaryMessageCodec:
 
     def test_batch_encode_decode(self):
         """Multiple messages can be batch-encoded and decoded."""
-        codec = BinaryMessageCodec()
+        BinaryMessageCodec()
         msgs = [
             Request.create(sender="a", receiver="b", method="m1", payload={"i": i})
             for i in range(5)
@@ -1099,7 +1099,7 @@ class TestBinaryMessageCodec:
 
     def test_batch_with_malformed_skipped(self):
         """Malformed messages in a batch are skipped."""
-        codec = BinaryMessageCodec()
+        BinaryMessageCodec()
         msgs = [
             Request.create(sender="a", receiver="b", method="ok"),
         ]

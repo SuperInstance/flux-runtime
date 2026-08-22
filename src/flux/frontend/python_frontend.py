@@ -563,7 +563,7 @@ class PythonFrontendCompiler:
 
         # Else
         self._builder.set_block(else_bb)
-        else_val = self._compile_expr(func, node.orelse)
+        self._compile_expr(func, node.orelse)
         if else_bb.terminator is None:
             self._builder.jump(merge_label)
 

@@ -237,7 +237,7 @@ def test_rollback():
 
     e.rollback(0)  # back to gen 0
     assert e.get("rollback_param") == original
-    print(f"✅ test_rollback: gen 3 → gen 0")
+    print("✅ test_rollback: gen 3 → gen 0")
 
 
 def test_deterministic():
@@ -276,7 +276,7 @@ def test_boundary_clamping():
         e.cycle(0.1)  # aggressive
         assert 0.0 <= e.get("clamped") <= 1.0
 
-    print(f"✅ test_boundary_clamping: always in [0, 1]")
+    print("✅ test_boundary_clamping: always in [0, 1]")
 
 
 if __name__ == "__main__":

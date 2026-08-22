@@ -278,7 +278,7 @@ class VocabArbitration:
             fw = self.create_framework_for_conflict(interp1, interp2)
 
             # Evaluate the framework
-            results = fw.evaluate()
+            fw.evaluate()
 
             # Determine winner
             accepted = fw.get_accepted()

@@ -92,17 +92,17 @@ class LSystemTile(Tile):
         i32 = ctx.get_int(32, signed=True)
 
         # Allocate position and angle storage
-        pos_x = builder.alloca(i32)
-        pos_y = builder.alloca(i32)
-        angle_reg = builder.alloca(i32)
+        builder.alloca(i32)
+        builder.alloca(i32)
+        builder.alloca(i32)
 
         # Initialize position to origin and angle to 0
-        zero = builder._emit(type(builder)._emit.__self__._new_value("zero", i32))  # placeholder
+        builder._emit(type(builder)._emit.__self__._new_value("zero", i32))  # placeholder
         # Use simple approach: the expanded string is returned as metadata
         # For actual FIR emission, we store the result
 
         # Store length as output
-        length = len(expanded)
+        len(expanded)
 
         # Return a representation of the expansion
         return {"result": inputs.get("input", None) if inputs else None}
@@ -236,7 +236,7 @@ class CellularAutomatonTile(Tile):
         """Emit FIR for cellular automaton computation."""
         # Run the automaton and return summary
         history = self.run()
-        total_alive = sum(sum(row) for row in history)
+        sum(sum(row) for row in history)
         return {"result": inputs.get("input", None) if inputs else None}
 
 

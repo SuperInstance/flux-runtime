@@ -115,7 +115,7 @@ class PythonReverseEngineer:
                 seen.add(mapping.original)
                 steps.append(MigrationStep(
                     step_number=step_num,
-                    description=f"Map unknown construct",
+                    description="Map unknown construct",
                     original_code=mapping.original.strip(),
                     flux_code=mapping.flux_ir.strip(),
                     difficulty=Difficulty.MEDIUM,
@@ -200,9 +200,9 @@ class PythonReverseEngineer:
             )
             construct = ConstructType.ASYNC
             notes = (
-                f"Python async def maps to FLUX A2A TELL/ASK pattern. "
-                f"The function becomes an agent that can receive TELL messages "
-                f"and respond with ASK results."
+                "Python async def maps to FLUX A2A TELL/ASK pattern. "
+                "The function becomes an agent that can receive TELL messages "
+                "and respond with ASK results."
             )
         else:
             flux_ir = (
@@ -214,8 +214,8 @@ class PythonReverseEngineer:
             )
             construct = ConstructType.FUNCTION
             notes = (
-                f"Python def maps directly to a FIR function. "
-                f"Parameters become SSA values, body becomes basic blocks."
+                "Python def maps directly to a FIR function. "
+                "Parameters become SSA values, body becomes basic blocks."
             )
 
         mappings.append(CodeMapping(
@@ -272,10 +272,10 @@ class PythonReverseEngineer:
             f"}}"
         )
         notes = (
-            f"Python class maps to a FIR module. Instance fields become "
-            f"struct members, methods become FIR functions. "
-            f"__init__ becomes a constructor. Class inheritance maps to "
-            f"module composition via A2A DELEGATE."
+            "Python class maps to a FIR module. Instance fields become "
+            "struct members, methods become FIR functions. "
+            "__init__ becomes a constructor. Class inheritance maps to "
+            "module composition via A2A DELEGATE."
         )
         mappings.append(CodeMapping(
             original=original,
@@ -306,8 +306,8 @@ class PythonReverseEngineer:
         flux_ir = "\n".join(flux_ir_lines)
 
         notes = (
-            f"Python import maps to FIR module reference. "
-            f"For cross-module communication, this becomes an A2A DELEGATE."
+            "Python import maps to FIR module reference. "
+            "For cross-module communication, this becomes an A2A DELEGATE."
         )
         mappings.append(CodeMapping(
             original=original,
@@ -335,8 +335,8 @@ class PythonReverseEngineer:
             f"# Use: CALL {module}::<function>"
         )
         notes = (
-            f"Python 'from X import Y' maps to FIR module reference + function call. "
-            f"DELEGATE establishes the module connection, CALL invokes the function."
+            "Python 'from X import Y' maps to FIR module reference + function call. "
+            "DELEGATE establishes the module connection, CALL invokes the function."
         )
         mappings.append(CodeMapping(
             original=original,
@@ -373,9 +373,9 @@ class PythonReverseEngineer:
             f"STORE <value>, {targets_str}"
         )
         notes = (
-            f"Python variable assignment maps to FIR ALLOCA + STORE. "
-            f"In SSA form, each assignment creates a new immutable value. "
-            f"Variables are stored on the stack via ALLOCA."
+            "Python variable assignment maps to FIR ALLOCA + STORE. "
+            "In SSA form, each assignment creates a new immutable value. "
+            "Variables are stored on the stack via ALLOCA."
         )
         mappings.append(CodeMapping(
             original=original,
@@ -444,8 +444,8 @@ class PythonReverseEngineer:
                 f"IO_WRITE <args...>  # FLUX I/O operation"
             )
             notes = (
-                f"Python print() maps to FLUX IO_WRITE. "
-                f"Output goes through the FLUX I/O subsystem."
+                "Python print() maps to FLUX IO_WRITE. "
+                "Output goes through the FLUX I/O subsystem."
             )
             construct = ConstructType.IO_WRITE
         else:
@@ -455,8 +455,8 @@ class PythonReverseEngineer:
                 f"CALL {func_name}, [{args}]"
             )
             notes = (
-                f"Python function call maps to FIR CALL instruction. "
-                f"For cross-agent calls, this could be TELL or ASK."
+                "Python function call maps to FIR CALL instruction. "
+                "For cross-agent calls, this could be TELL or ASK."
             )
             construct = ConstructType.CALL
 
@@ -502,9 +502,9 @@ class PythonReverseEngineer:
             f"  after:"
         )
         notes = (
-            f"Python try/except maps to FLUX A2A BARRIER pattern. "
-            f"BARRIER creates a synchronization point that catches errors. "
-            f"Handlers become error recovery blocks."
+            "Python try/except maps to FLUX A2A BARRIER pattern. "
+            "BARRIER creates a synchronization point that catches errors. "
+            "Handlers become error recovery blocks."
         )
         mappings.append(CodeMapping(
             original=original,
@@ -527,20 +527,20 @@ class PythonReverseEngineer:
         original = self._get_source_line(source, line) if line is not None else "if ..."
 
         flux_ir = (
-            f"# if/else → FIR BRANCH\n"
-            f"  entry:\n"
-            f"    BR <cond>, then_block, else_block\n"
-            f"  then_block:\n"
-            f"    # then body\n"
-            f"    JMP merge\n"
-            f"  else_block:\n"
-            f"    # else body\n"
-            f"    JMP merge\n"
-            f"  merge:"
+            "# if/else → FIR BRANCH\n"
+            "  entry:\n"
+            "    BR <cond>, then_block, else_block\n"
+            "  then_block:\n"
+            "    # then body\n"
+            "    JMP merge\n"
+            "  else_block:\n"
+            "    # else body\n"
+            "    JMP merge\n"
+            "  merge:"
         )
         notes = (
-            f"Python if/else maps to FIR BRANCH instruction. "
-            f"Each branch becomes a basic block, merging at the end."
+            "Python if/else maps to FIR BRANCH instruction. "
+            "Each branch becomes a basic block, merging at the end."
         )
         mappings.append(CodeMapping(
             original=original,
@@ -565,17 +565,17 @@ class PythonReverseEngineer:
 
         if isinstance(node, ast.ListComp):
             flux_ir = (
-                f"# list comprehension → SIMD vector ops\n"
-                f"  # [expr for x in iter] maps to:\n"
-                f"  VLOAD <iter_data>  # load into vector registers\n"
-                f"  VMAP <expr>        # apply expression to each lane\n"
-                f"  VSTORE <result>    # store results"
+                "# list comprehension → SIMD vector ops\n"
+                "  # [expr for x in iter] maps to:\n"
+                "  VLOAD <iter_data>  # load into vector registers\n"
+                "  VMAP <expr>        # apply expression to each lane\n"
+                "  VSTORE <result>    # store results"
             )
         elif isinstance(node, ast.DictComp):
             flux_ir = (
-                f"# dict comprehension → map tile\n"
-                f"  # {{k:v for ...}} maps to:\n"
-                f"  TILE map(input_keys, input_values) -> result_map"
+                "# dict comprehension → map tile\n"
+                "  # {k:v for ...} maps to:\n"
+                "  TILE map(input_keys, input_values) -> result_map"
             )
         else:
             flux_ir = (
@@ -693,19 +693,19 @@ class PythonReverseEngineer:
     @staticmethod
     def _step_description(construct_type: str, original: str) -> str:
         desc_map = {
-            ConstructType.VARIABLE: f"Convert variable assignment to FIR SSA",
-            ConstructType.FUNCTION: f"Convert function to FIR function",
-            ConstructType.IO_WRITE: f"Replace print() with IO_WRITE",
-            ConstructType.IMPORT: f"Convert import to FIR module reference",
-            ConstructType.CALL: f"Convert function call to FIR CALL",
-            ConstructType.LOOP: f"Convert loop to FIR basic blocks + jumps",
-            ConstructType.CLASS: f"Convert class to FIR module",
-            ConstructType.ERROR_HANDLING: f"Convert try/except to A2A BARRIER",
-            ConstructType.ASYNC: f"Convert async def to A2A TELL/ASK pattern",
-            ConstructType.COMPREHENSION: f"Convert comprehension to SIMD ops",
-            ConstructType.DECORATOR: f"Convert decorator to tile composition",
+            ConstructType.VARIABLE: "Convert variable assignment to FIR SSA",
+            ConstructType.FUNCTION: "Convert function to FIR function",
+            ConstructType.IO_WRITE: "Replace print() with IO_WRITE",
+            ConstructType.IMPORT: "Convert import to FIR module reference",
+            ConstructType.CALL: "Convert function call to FIR CALL",
+            ConstructType.LOOP: "Convert loop to FIR basic blocks + jumps",
+            ConstructType.CLASS: "Convert class to FIR module",
+            ConstructType.ERROR_HANDLING: "Convert try/except to A2A BARRIER",
+            ConstructType.ASYNC: "Convert async def to A2A TELL/ASK pattern",
+            ConstructType.COMPREHENSION: "Convert comprehension to SIMD ops",
+            ConstructType.DECORATOR: "Convert decorator to tile composition",
         }
-        return desc_map.get(construct_type, f"Map construct to FLUX")
+        return desc_map.get(construct_type, "Map construct to FLUX")
 
     @staticmethod
     def _estimate_total(steps: list[MigrationStep]) -> str:

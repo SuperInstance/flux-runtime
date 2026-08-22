@@ -279,7 +279,7 @@ def test_a2a_messages_sent() -> None:
     sim.add_agent(Agent("supply_manager", SUPPLY_MANAGER_BYTECODE))
     sim.add_agent(Agent("captain", CAPTAIN_BYTECODE))
 
-    report = sim.run()
+    sim.run()
 
     total_sent = sum(agent.messages_sent for agent in sim.agents.values())
     total_received = sum(agent.messages_received for agent in sim.agents.values())

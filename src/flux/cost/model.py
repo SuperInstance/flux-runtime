@@ -252,7 +252,6 @@ class CostModel:
     def memory_access_pattern(self, func: FIRFunction) -> str:
         """Classify memory access pattern: 'sequential' / 'strided' / 'random'."""
         load_count = 0
-        total_index_variance = 0.0
         has_getelem = False
         has_loop_induction = False
 

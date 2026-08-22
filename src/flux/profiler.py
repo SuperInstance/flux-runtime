@@ -491,7 +491,7 @@ class FluxProfiler:
         lines.append(f"  Total reads  : {mp.reads}")
         lines.append(f"  Total writes : {mp.writes}")
         if mp.regions_accessed:
-            lines.append(f"  Regions accessed:")
+            lines.append("  Regions accessed:")
             for region, cnt in mp.regions_accessed.most_common():
                 lines.append(f"    {region}: {cnt}")
         lines.append("")

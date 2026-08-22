@@ -870,20 +870,20 @@ def interactive():
             print("-" * 60)
 
             if result.success:
-                print(f"✓ Success!")
+                print("✓ Success!")
                 print(f"  Result: R0 = {result.result}")
                 print(f"  Cycles: {result.cycles}")
                 print(f"  Halted: {result.halted}")
 
                 if result.registers:
-                    print(f"\n  Registers:")
+                    print("\n  Registers:")
                     for reg, val in sorted(result.registers.items()):
                         print(f"    R{reg} = {val}")
 
                 # Show A2A messages if any
                 a2a_msgs = interpreter.get_a2a_messages()
                 if a2a_msgs:
-                    print(f"\n  A2A Messages:")
+                    print("\n  A2A Messages:")
                     for msg in a2a_msgs:
                         print(f"    [{msg['opcode']}] {msg['data']}")
             else:

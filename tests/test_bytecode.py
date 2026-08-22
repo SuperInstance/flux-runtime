@@ -244,7 +244,7 @@ def test_encode_a2a():
 
     msg = _make_value(0, "msg")
     cap = _make_value(1, "cap")
-    auth = _make_value(2, "auth")
+    _make_value(2, "auth")
     thr = _make_value(3, "thr")
     ctx = TypeContext()
 

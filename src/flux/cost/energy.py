@@ -204,7 +204,7 @@ class EnergyModel(CostModel):
         energy = self.estimate_energy(func)
         energy_per_exec_kwh = energy.total_nj * 1e-12
         carbon_per_exec_kwh = energy_per_exec_kwh * grid_carbon_g_per_kwh
-        total_carbon = carbon_per_exec_kwh * executions
+        carbon_per_exec_kwh * executions
 
         return CarbonEstimate(
             function_name=func.name,

@@ -103,7 +103,7 @@ class TestIntrospectorModuleListing:
 
     def test_list_modules_finds_fir(self, introspector):
         modules = introspector.list_modules()
-        names = [m.name for m in modules]
+        [m.name for m in modules]
         assert any("types" in m.path for m in modules if "fir" in m.path)
         assert len(modules) > 10  # project has many modules
 

@@ -210,7 +210,7 @@ class LunarLander:
         log = result["log"]
         rc = result["result_code"]
 
-        print(f"\n  Thrust schedule: free-fall 25 ticks, burn ticks 25-39, coast")
+        print("\n  Thrust schedule: free-fall 25 ticks, burn ticks 25-39, coast")
         print(f"  {'TICK':>4}  {'ALT':>7}  {'VEL':>7}  {'FUEL':>5}  {'BURN':>4}")
         print("  " + "-" * 38)
 

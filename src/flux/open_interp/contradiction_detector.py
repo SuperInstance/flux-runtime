@@ -114,7 +114,7 @@ class ContradictionDetector:
             patterns_seen.setdefault(pattern_normalized, []).append(i)
             
             # Check result register collisions
-            result_reg = getattr(entry, 'result_reg', 0)
+            getattr(entry, 'result_reg', 0)
             
             # Check self-dependency
             depends = getattr(entry, 'depends', [])

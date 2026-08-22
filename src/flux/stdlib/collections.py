@@ -99,7 +99,7 @@ class ListImpl(CollectionImpl):
         return builder.getfield(self_val, "len", self.FIELD_LEN, i32)
 
     def emit_push(self, builder: FIRBuilder, self_val: Value, item: Value) -> None:
-        struct_type = self.get_struct_type(builder._ctx)
+        self.get_struct_type(builder._ctx)
         i32 = builder._ctx.get_int(32)
         # Load current len
         len_val = self.emit_len(builder, self_val)
@@ -180,7 +180,7 @@ class MapImpl(CollectionImpl):
 
     def emit_push(self, builder: FIRBuilder, self_val: Value, item: Value) -> None:
         # Maps use insert semantics — delegate to a runtime call
-        i32 = builder._ctx.get_int(32)
+        builder._ctx.get_int(32)
         builder.call("flux.map_insert", [self_val, item], return_type=None)
 
     def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Optional[Value]:
@@ -235,7 +235,7 @@ class SetImpl(CollectionImpl):
         return builder.getfield(self_val, "size", self.FIELD_SIZE, i32)
 
     def emit_push(self, builder: FIRBuilder, self_val: Value, item: Value) -> None:
-        i32 = builder._ctx.get_int(32)
+        builder._ctx.get_int(32)
         builder.call("flux.set_insert", [self_val, item], return_type=None)
 
     def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Optional[Value]:
@@ -296,7 +296,7 @@ class QueueImpl(CollectionImpl):
         return builder.getfield(self_val, "len", self.FIELD_LEN, i32)
 
     def emit_push(self, builder: FIRBuilder, self_val: Value, item: Value) -> None:
-        i32 = builder._ctx.get_int(32)
+        builder._ctx.get_int(32)
         builder.call("flux.queue_enqueue", [self_val, item], return_type=None)
 
     def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Optional[Value]:
@@ -351,7 +351,7 @@ class StackImpl(CollectionImpl):
         return builder.getfield(self_val, "top", self.FIELD_TOP, i32)
 
     def emit_push(self, builder: FIRBuilder, self_val: Value, item: Value) -> None:
-        i32 = builder._ctx.get_int(32)
+        builder._ctx.get_int(32)
         builder.call("flux.stack_push", [self_val, item], return_type=None)
 
     def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Optional[Value]:

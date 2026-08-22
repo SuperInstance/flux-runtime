@@ -40,7 +40,7 @@ def run_test(name, fn):
         fn()
         passed += 1
         print(f"  ✓ {name}")
-    except Exception as e:
+    except Exception:
         failed += 1
         print(f"  ✗ {name}")
         traceback.print_exc()
@@ -363,7 +363,7 @@ def test_cross_language_int_unification():
     c_int = u.from_c("int")        # IntType(32, signed=True)
     py_int = u.from_python(int)    # IntType(64, signed=True)
     rs_i32 = u.from_rust("i32")    # IntType(32, signed=True)
-    rs_i64 = u.from_rust("i64")    # IntType(64, signed=True)
+    u.from_rust("i64")    # IntType(64, signed=True)
 
     # i32 and i32 should unify to i32
     lub = u.unify(c_int, rs_i32)
@@ -382,7 +382,7 @@ def test_cross_language_float_unification():
     u = TypeUnifier()
 
     c_float = u.from_c("float")      # FloatType(32)
-    c_double = u.from_c("double")    # FloatType(64)
+    u.from_c("double")    # FloatType(64)
     py_float = u.from_python(float)  # FloatType(64)
     rs_f32 = u.from_rust("f32")      # FloatType(32)
 
@@ -811,7 +811,7 @@ def test_type_scheme_instantiate_with_subs():
 
 def test_type_scheme_instantiate_fresh():
     """TypeScheme instantiation without substitutions should produce fresh vars."""
-    ctx = TypeContext()
+    TypeContext()
     tv = TypeVar(type_id=-1, name="T")
     vec = GenericType(type_id=-1, name="Vec", args=(tv,))
 
@@ -842,7 +842,7 @@ def test_type_scheme_apply():
 
 def test_type_scheme_free_vars():
     """TypeScheme free_vars should exclude bound variables."""
-    ctx = TypeContext()
+    TypeContext()
     tv_t = TypeVar(type_id=-1, name="T")
     tv_u = TypeVar(type_id=-1, name="U")
 
@@ -893,7 +893,7 @@ def test_substitute_type_var():
 def test_substitute_generic():
     """Substitution should replace type variables in generic types."""
     ctx = TypeContext()
-    tv_t = TypeVar(type_id=-1, name="T")
+    TypeVar(type_id=-1, name="T")
     tv_k = TypeVar(type_id=-2, name="K")
     tv_v = TypeVar(type_id=-3, name="V")
 

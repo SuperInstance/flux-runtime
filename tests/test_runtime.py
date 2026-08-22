@@ -33,7 +33,7 @@ def run_test(name, fn):
         fn()
         passed += 1
         print(f"  ✓ {name}")
-    except Exception as e:
+    except Exception:
         failed += 1
         print(f"  ✗ {name}")
         traceback.print_exc()
@@ -226,7 +226,7 @@ def test_agent_register_and_execute():
     agent2_id = rt.register_agent(AgentConfig(name="calc2"))
     agent2 = rt.get_agent(agent2_id)
     agent2.load_bytecode(bytecode)
-    cycles2 = rt.execute_agent(agent2_id)
+    rt.execute_agent(agent2_id)
     assert agent2.get_register(0) == 30
 
 
@@ -250,8 +250,8 @@ def test_multi_agent_basic():
     counter.set_register(0, 5)  # start countdown from 5
 
     # Execute both
-    cycles1 = rt.execute_agent(id1)
-    cycles2 = rt.execute_agent(id2)
+    rt.execute_agent(id1)
+    rt.execute_agent(id2)
 
     # Verify agent 1
     assert rt.get_agent(id1).is_halted()

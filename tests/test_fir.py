@@ -32,7 +32,7 @@ def run_test(name, fn):
         fn()
         passed += 1
         print(f"  ✓ {name}")
-    except Exception as e:
+    except Exception:
         failed += 1
         print(f"  ✗ {name}")
         traceback.print_exc()
@@ -297,7 +297,7 @@ def test_struct_type():
     """Struct creation, interning, and field access type info."""
     ctx = TypeContext()
     f32 = ctx.get_float(32)
-    i32 = ctx.get_int(32)
+    ctx.get_int(32)
 
     vec4 = ctx.get_struct("Vec4", (
         ("x", f32),

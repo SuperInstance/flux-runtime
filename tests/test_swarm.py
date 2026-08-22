@@ -854,7 +854,7 @@ class TestSwarmEvolution:
         from flux.swarm import Swarm, Topology, AgentRole, AgentTask
         topo = Topology.hierarchical("orch", ["w1", "w2"])
         swarm = Swarm(name="test", topology=topo)
-        orch = swarm.spawn("orch", AgentRole.GENERAL)
+        swarm.spawn("orch", AgentRole.GENERAL)
         w1 = swarm.spawn("w1", AgentRole.GENERAL)
         w2 = swarm.spawn("w2", AgentRole.GENERAL)
 
@@ -922,7 +922,7 @@ class TestSwarmReport:
         from flux.swarm import Swarm, Topology, AgentRole, AgentTask
         topo = Topology.hierarchical("orch", ["w1"])
         swarm = Swarm(name="report-test", topology=topo)
-        orch = swarm.spawn("orch", AgentRole.SPECIALIST_COORDINATOR)
+        swarm.spawn("orch", AgentRole.SPECIALIST_COORDINATOR)
         w1 = swarm.spawn("w1", AgentRole.SPECIALIST_COMPUTE)
         w1.execute_task(AgentTask(task_id="t1", task_type="compute"))
 
@@ -1006,7 +1006,7 @@ class TestSwarmIntegration:
         swarm = Swarm(name="full-test", topology=topo)
 
         # Spawn agents
-        orch = swarm.spawn("orch", AgentRole.SPECIALIST_COORDINATOR)
+        swarm.spawn("orch", AgentRole.SPECIALIST_COORDINATOR)
         w1 = swarm.spawn("w1", AgentRole.SPECIALIST_COMPUTE)
         w2 = swarm.spawn("w2", AgentRole.GENERAL)
         w3 = swarm.spawn("w3", AgentRole.SPECIALIST_EXPLORER)

@@ -160,7 +160,7 @@ def main():
     games_to_run = [args.game] if args.game else list(GAME_IMPORTS.keys())
     n_iter = min(args.iterations, len(ITERATION_PLANS))
 
-    print(f"\n  FLUX Retro Research Runner")
+    print("\n  FLUX Retro Research Runner")
     print(f"  Games: {len(games_to_run)}")
     print(f"  Iterations per game: {n_iter}")
     print(f"  Total planned iterations: {len(games_to_run) * n_iter}")
@@ -233,7 +233,7 @@ def main():
 
     # Print summary
     print(f"\n  {'═'*64}")
-    print(f"  RESEARCH SESSION COMPLETE")
+    print("  RESEARCH SESSION COMPLETE")
     print(f"  {'═'*64}")
     print(f"  Games processed: {len(all_results)}")
     print(f"  Total iterations: {sum(r.get('iterations', 0) for r in all_results.values())}")

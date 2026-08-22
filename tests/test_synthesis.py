@@ -382,7 +382,7 @@ class TestTileIntegration:
 
     def test_register_custom_tile(self, synth):
         """Register a custom tile."""
-        ctx = TypeContext()
+        TypeContext()
         tile = Tile(
             name="custom_greeting",
             tile_type=TileType.EFFECT,
@@ -564,10 +564,10 @@ class TestFullPipeline:
         synth.load_module("m", "pass", "python")
         synth.record_call("test_app.m", duration_ns=1000, calls=50)
 
-        report1 = synth.evolve(generations=2)
+        synth.evolve(generations=2)
         gen1 = synth.generation
 
-        report2 = synth.evolve(generations=2)
+        synth.evolve(generations=2)
         gen2 = synth.generation
 
         assert gen2 > gen1

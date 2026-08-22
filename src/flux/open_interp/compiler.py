@@ -143,14 +143,14 @@ def compile_interpreter(
         method_names.add(safe_name)
         
         # Method definition
-        method_lines.append(f'    ')
+        method_lines.append('    ')
         method_lines.append(f'    def {safe_name}(self, **kwargs):')
         method_lines.append(f'        """{entry.description or entry.pattern}"""')
         method_lines.append(f'        asm = """{entry.bytecode_template}"""')
-        method_lines.append(f'        for k, v in kwargs.items():')
-        method_lines.append(f'            asm = asm.replace("${{"+k+"}}", str(v))')
-        method_lines.append(f'        bc = _asm(asm)')
-        method_lines.append(f'        vm = _VM(bc).execute()')
+        method_lines.append('        for k, v in kwargs.items():')
+        method_lines.append('            asm = asm.replace("${"+k+"}", str(v))')
+        method_lines.append('        bc = _asm(asm)')
+        method_lines.append('        vm = _VM(bc).execute()')
         method_lines.append(f'        return Result(success=vm.halted, value=vm.gp[{entry.result_reg}], cycles=vm.cycles)')
         
         # Pattern registration (inside __init__)

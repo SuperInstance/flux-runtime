@@ -241,7 +241,7 @@ class L0Scrubber:
         """
         conflicts = []
         definition_lower = definition.lower()
-        name_lower = name.lower()
+        name.lower()
 
         # Check for negation patterns
         for prim in self.L0_PRIMITIVES:
@@ -301,7 +301,6 @@ class L0Scrubber:
         of the candidate primitive.
         """
         challenges = []
-        combined = f"{name}: {definition}"
 
         # Challenge 1: Boundary conditions
         challenges.append(
@@ -385,8 +384,8 @@ class L0Scrubber:
             report.passed = False
             report.recommendation = 'needs-refinement'
             report.reasoning = (
-                f"Can be expressed as tiling of existing primitives. "
-                f"Must show why it cannot be decomposed."
+                "Can be expressed as tiling of existing primitives. "
+                "Must show why it cannot be decomposed."
             )
 
         # Moderate overlap
@@ -479,7 +478,7 @@ if __name__ == '__main__':
                 print(f"  - {conflict}")
 
         if report.challenges:
-            print(f"Sample Challenges:")
+            print("Sample Challenges:")
             for challenge in report.challenges[:2]:
                 print(f"  - {challenge}")
 

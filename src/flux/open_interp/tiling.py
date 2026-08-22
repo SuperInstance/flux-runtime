@@ -217,7 +217,7 @@ class TilingInterpreter:
                     results_chain.append(last_value)
         
         # If the template still has @refs, just run what we can
-        clean = re.sub(r'@\w+\([^)]*\)', str(last_value), resolved)
+        re.sub(r'@\w+\([^)]*\)', str(last_value), resolved)
         
         return TileResult(
             value=last_value,

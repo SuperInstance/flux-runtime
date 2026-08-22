@@ -417,8 +417,8 @@ def _cmd_hello() -> None:
     raw_code = movi_r0_3 + movi_r1_4 + iadd + halt
 
     print(f"  {YELLOW}1. Bytecode Generation{RESET}")
-    print(f"     Source:  3 + 4 = 7")
-    print(f"     Opcodes: MOVI R0, 3 | MOVI R1, 4 | IADD R0, R0, R1 | HALT")
+    print("     Source:  3 + 4 = 7")
+    print("     Opcodes: MOVI R0, 3 | MOVI R1, 4 | IADD R0, R0, R1 | HALT")
     print(f"     Bytes:   {' '.join(f'{b:02X}' for b in raw_code)} ({len(raw_code)} bytes)")
     print()
 
@@ -446,7 +446,7 @@ def _cmd_hello() -> None:
     cycles = vm.execute()
     result = vm.regs.read_gp(0)
 
-    print(f"     VM state:")
+    print("     VM state:")
     print(f"       R0 = {result}  (expected 7)")
     print(f"       Cycles used: {cycles}")
     print(f"       Halted: {vm.halted}")
@@ -464,10 +464,10 @@ def _cmd_hello() -> None:
 
     # ── Architecture overview
     print(f"  {YELLOW}5. FLUX Architecture{RESET}")
-    print(f"     ├─ 64-register file (16 GP, 16 FP, 16 VEC)")
-    print(f"     ├─ 104 opcodes (arithmetic, control flow, memory, A2A)")
-    print(f"     ├─ Variable-length encoding (1-8 bytes per instruction)")
-    print(f"     └─ Binary format: [Header][Type Table][Name Pool][Func Table][Code]")
+    print("     ├─ 64-register file (16 GP, 16 FP, 16 VEC)")
+    print("     ├─ 104 opcodes (arithmetic, control flow, memory, A2A)")
+    print("     ├─ Variable-length encoding (1-8 bytes per instruction)")
+    print("     └─ Binary format: [Header][Type Table][Name Pool][Func Table][Code]")
     print()
 
     # ── Success message
@@ -598,8 +598,8 @@ def _cmd_run(args: argparse.Namespace) -> None:
         cycles = vm.execute()
     except (IndexError, VMError) as exc:
         print(f"Error during execution: {exc}", file=sys.stderr)
-        print(f"  The bytecode may use register indices beyond the VM's 16 GP registers.", file=sys.stderr)
-        print(f"  Try: flux hello  (for a working demo with simple bytecode)", file=sys.stderr)
+        print("  The bytecode may use register indices beyond the VM's 16 GP registers.", file=sys.stderr)
+        print("  Try: flux hello  (for a working demo with simple bytecode)", file=sys.stderr)
         sys.exit(1)
     print(f"Executed in {cycles} cycles. R0={vm.regs.read_gp(0)}")
 
@@ -669,11 +669,9 @@ def _cmd_info() -> None:
     module_count = len(list(src_dir.rglob("*.py")))
     # Search upward from this file for the tests/ directory
     search = Path(__file__).resolve().parent
-    test_dir = None
     for _ in range(6):
         candidate = search / "tests"
         if candidate.is_dir():
-            test_dir = candidate
             break
         search = search.parent
     test_count = 1907  # verified by pytest; update after adding tests
@@ -737,7 +735,7 @@ def _cmd_replay(args: argparse.Namespace) -> None:
         cycles = vm.execute()
     except (IndexError, VMError) as exc:
         print(f"\n  Execution error at cycle {vm.cycle_count}: {exc}", file=sys.stderr)
-        print(f"  The bytecode may use features not yet supported by the VM.", file=sys.stderr)
+        print("  The bytecode may use features not yet supported by the VM.", file=sys.stderr)
         sys.exit(1)
     print(f"Replay finished in {cycles} cycles. R0={vm.regs.read_gp(0)}")
 
@@ -778,9 +776,9 @@ def _cmd_migrate(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     print()
-    print(f"  ╔═══════════════════════════════════════════════════════════╗")
-    print(f"  ║                   FLUX MIGRATE v1.0                      ║")
-    print(f"  ╚═══════════════════════════════════════════════════════════╝")
+    print("  ╔═══════════════════════════════════════════════════════════╗")
+    print("  ║                   FLUX MIGRATE v1.0                      ║")
+    print("  ╚═══════════════════════════════════════════════════════════╝")
     print()
 
     migrator = FluxMigrator(
@@ -873,7 +871,7 @@ Initial state:
             for _ in range(count):
                 result = debugger.step()
                 if result.instruction:
-                    color = get_instruction_color(result.instruction.opcode)
+                    get_instruction_color(result.instruction.opcode)
                     print(f"0x{result.pc_before:04x}: {result.instruction.opcode_name} {result.instruction.operands}")
                 if result.halted:
                     print("Program halted.")
@@ -1051,13 +1049,13 @@ def _cmd_run_md(args: argparse.Namespace) -> None:
         print()
 
         if result.success:
-            print(f"✓ Success!")
+            print("✓ Success!")
             print(f"  Result: R0 = {result.result}")
             print(f"  Cycles: {result.cycles}")
             print(f"  Halted: {result.halted}")
 
             if result.registers:
-                print(f"\n  Registers:")
+                print("\n  Registers:")
                 for reg, val in sorted(result.registers.items()):
                     print(f"    R{reg} = {val}")
         else:

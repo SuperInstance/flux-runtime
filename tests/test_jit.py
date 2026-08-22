@@ -35,7 +35,7 @@ def run_test(name, fn):
         fn()
         passed += 1
         print(f"  ✓ {name}")
-    except Exception as e:
+    except Exception:
         failed += 1
         print(f"  ✗ {name}")
         traceback.print_exc()
@@ -202,7 +202,7 @@ def test_block_layout_reorder_for_fallthrough():
 
     # Initial order: entry, merge, cold, hot, exit
     func.blocks = [entry, merge, cold, hot, exit_blk]
-    old_labels = [b.label for b in func.blocks]
+    [b.label for b in func.blocks]
 
     reordered = block_layout_pass(mod)
     # The layout pass should have reordered blocks
@@ -401,7 +401,7 @@ def test_const_fold_no_side_effects():
     )
     func.blocks = [entry]
 
-    changes = const_fold_pass(mod, known_constants={0: 5, 1: 0})
+    const_fold_pass(mod, known_constants={0: 5, 1: 0})
     # Only the IAdd should be considered for folding
     # The Store should remain
     has_store = any(isinstance(i, Store) for i in entry.instructions)
@@ -628,7 +628,7 @@ def test_cache_hit_rate():
     cache.get("a")  # hit
     cache.get("b")  # miss
 
-    assert cache.hit_rate == pytest_approx(2/3, abs=0.01) if 'pytest_approx' in dir() else abs(cache.hit_rate - 2/3) < 0.01
+    assert abs(cache.hit_rate - 2/3) < 0.01
     # Manually check
     assert cache.stats["hits"] == 2
     assert cache.stats["misses"] == 1

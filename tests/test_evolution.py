@@ -64,7 +64,7 @@ def selector(profiler):
 @pytest.fixture
 def tile_registry():
     reg = TileRegistry()
-    ctx = TypeContext()
+    TypeContext()
     # Register a few test tiles
     t1 = Tile(
         name="test_map",
@@ -531,7 +531,6 @@ class TestGenomeMutation:
         assert genome.generation == 0
 
     def test_mutate_updates_checksum(self, genome):
-        original_checksum = genome.checksum
         mutated = genome.mutate(MutationStrategy.INLINE_OPTIMIZATION, "root")
         assert mutated.checksum != "" or mutated.checksum == ""
         # Checksums should differ if there were actual changes
@@ -840,7 +839,7 @@ class TestMutatorProposals:
                 version=1, checksum="abc", heat_level="HOT", call_count=10,
             )
             genome.language_assignments[f"mod_{i}"] = "python"
-        proposals = mutator.propose_mutations(genome, [])
+        mutator.propose_mutations(genome, [])
         assert len(mutator.get_pending_mutations()) <= 2
 
 
@@ -1382,7 +1381,7 @@ class TestIntegrationPipeline:
         selector = AdaptiveSelector(profiler)
         miner = PatternMiner(profiler)
         mutator = SystemMutator()
-        validator = CorrectnessValidator()
+        CorrectnessValidator()
 
         # 3. Record execution traces
         for _ in range(10):

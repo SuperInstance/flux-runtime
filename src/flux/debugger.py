@@ -670,7 +670,7 @@ class FluxDebugger(Interpreter):
                 op = entry["opcode"]
                 opcode_counts[op] = opcode_counts.get(op, 0) + 1
 
-            lines.append(f"\n  Opcode frequency (top 10):")
+            lines.append("\n  Opcode frequency (top 10):")
             for name, cnt in sorted(opcode_counts.items(), key=lambda x: -x[1])[:10]:
                 pct = cnt / len(self._trace_entries) * 100
                 lines.append(f"    {name:<20} {cnt:>5} ({pct:5.1f}%)")

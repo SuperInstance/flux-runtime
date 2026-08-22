@@ -296,7 +296,7 @@ class TestFIREmissionCompute:
         entry = builder.new_block(func, "entry")
         builder.set_block(entry)
 
-        data = builder.alloca(ctx.get_int(32))
+        builder.alloca(ctx.get_int(32))
         data_val = Value(id=0, name="data", type=ctx.get_int(32))
         results = map_tile.to_fir(builder, {"data": data_val})
         assert "result" in results

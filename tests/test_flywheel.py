@@ -407,7 +407,7 @@ class TestKnowledgeBase:
             kb.add_success(ExperimentResult(
                 hypothesis=h, outcome=ExperimentOutcome.SUCCESS, actual_speedup=1.5,
             ))
-        rules2 = kb.generalize()
+        kb.generalize()
 
         # Should have the same rules (updated, not duplicated)
         assert len(kb.rules) == len(rules1)
@@ -762,7 +762,7 @@ class TestFlywheelEngineCreation:
         engine = FlywheelEngine(profiler_data)
         # Add some profiling data
         profiler_data.record_call("a.b", calls=10)
-        report = engine.spin(rounds=1)
+        engine.spin(rounds=1)
         assert engine.revolution >= 1
 
         engine.reset()
@@ -927,7 +927,7 @@ class TestExperimentExecution:
         ]
         start = time.monotonic_ns()
         results = engine._experiment(hypotheses)
-        elapsed = time.monotonic_ns() - start
+        time.monotonic_ns() - start
         assert len(results) == 5
         # All experiments should complete (not hang)
         for r in results:
@@ -1110,7 +1110,7 @@ class TestTerminationSafety:
     def test_completes_in_reasonable_time(self, profiler_data):
         engine = FlywheelEngine(profiler_data, max_workers=2)
         start = time.monotonic_ns()
-        report = engine.spin(rounds=5)
+        engine.spin(rounds=5)
         elapsed = time.monotonic_ns() - start
         # Should complete 5 revolutions in under 30 seconds
         assert elapsed < 30_000_000_000
@@ -1146,7 +1146,7 @@ class TestEdgeCases:
             return True
 
         engine.set_validation_fn(validation_fn)
-        report = engine.spin(rounds=1)
+        engine.spin(rounds=1)
         # Validation fn should have been called at least once
         assert call_count[0] >= 0  # May or may not be called depending on hypotheses
 
@@ -1167,7 +1167,7 @@ class TestEdgeCases:
     def test_consecutive_spins(self, profiler_data):
         """Spinning multiple times should accumulate state."""
         engine = FlywheelEngine(profiler_data, max_workers=2)
-        r1 = engine.spin(rounds=2)
+        engine.spin(rounds=2)
         r2 = engine.spin(rounds=2)
         assert engine.revolution == 4
         assert r2.revolutions_completed == 2
@@ -1177,7 +1177,6 @@ class TestEdgeCases:
         """Acceleration factor should persist across multiple spin() calls."""
         engine = FlywheelEngine(profiler_data, max_workers=2)
         engine.spin(rounds=2)
-        factor_after_first = engine._acceleration_factor
         engine.spin(rounds=2)
         # Factor should be at least as high as before (non-decreasing above 1.0)
         assert engine._acceleration_factor >= 1.0

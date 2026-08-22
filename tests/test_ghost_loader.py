@@ -644,7 +644,7 @@ class TestResurrectionContext:
 
     def test_resurrection_context_default_timestamp(self):
         """Test that resurrection context gets default timestamp."""
-        context = ResurrectionContext()
+        ResurrectionContext()
         before = time.time()
         time.sleep(0.01)
         context2 = ResurrectionContext()

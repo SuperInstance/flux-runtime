@@ -70,7 +70,7 @@ class CodeIntrospector:
             return modules
 
         for py_file in sorted(flux_dir.rglob("*.py")):
-            rel = py_file.relative_to(flux_dir)
+            py_file.relative_to(flux_dir)
             info = self.get_module_info(str(py_file))
             if info is not None:
                 modules.append(info)

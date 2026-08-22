@@ -67,7 +67,7 @@ class TileGraphVisualizer:
                 lines.append(f"  │ tags: {tag_str[:18]:<18s} │")
             cost = f"{instance.tile.cost_estimate:.1f}"
             lines.append(f"  │ cost: {cost:<18s} │")
-            lines.append(f"  └──────────────────────────┘")
+            lines.append("  └──────────────────────────┘")
             lines.append("")
 
         # Draw edges

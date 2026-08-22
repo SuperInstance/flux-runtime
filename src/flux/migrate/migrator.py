@@ -180,7 +180,7 @@ def _migrate_python(source: str, filename: str) -> Tuple[str, int, int, int]:
     except SyntaxError:
         # Return the raw source wrapped in a minimal FLUX.MD
         w(f"## module: {module_name}")
-        w(f"## lang: python")
+        w("## lang: python")
         w("")
         w(_section_header("Code"))
         w("")
@@ -189,7 +189,7 @@ def _migrate_python(source: str, filename: str) -> Tuple[str, int, int, int]:
 
     # ── Header ─────────────────────────────────────────────────────────────
     w(f"## module: {module_name}")
-    w(f"## lang: python")
+    w("## lang: python")
     w("")
 
     # ── Imports ────────────────────────────────────────────────────────────
@@ -380,7 +380,7 @@ def _migrate_c(source: str, filename: str) -> Tuple[str, int, int, int]:
     module_name = Path(filename).stem
 
     w(f"## module: {module_name}")
-    w(f"## lang: c")
+    w("## lang: c")
     w("")
 
     # ── Includes ───────────────────────────────────────────────────────────
@@ -491,7 +491,7 @@ def _migrate_js(source: str, filename: str) -> Tuple[str, int, int, int]:
     module_name = Path(filename).stem
 
     w(f"## module: {module_name}")
-    w(f"## lang: javascript")
+    w("## lang: javascript")
     w("")
 
     # ── Imports ───────────────────────────────────────────────────────────

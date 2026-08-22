@@ -186,7 +186,7 @@ class CReverseEngineer:
         mappings: list[CodeMapping],
     ) -> None:
         fields = self._parse_struct_fields(fields_str)
-        fir_fields = ", ".join(f"{f.name}: {self._c_type_to_fir(f.type_name)}" for f in fields)
+        ", ".join(f"{f.name}: {self._c_type_to_fir(f.type_name)}" for f in fields)
 
         original_line = lines[line_num - 1] if line_num <= len(lines) else f"struct {name}"
 
@@ -271,15 +271,15 @@ class CReverseEngineer:
             line_num = source[:m.start()].count("\n") + 1
             original_line = lines[line_num - 1] if line_num <= len(lines) else "malloc(...)"
             flux_ir = (
-                f"# malloc() → REGION_CREATE\n"
-                f"  REGION_CREATE <size>  →  returns RefType\n"
-                f"  # FLUX uses linear region memory model\n"
-                f"  # No manual free needed — region is destroyed on scope exit"
+                "# malloc() → REGION_CREATE\n"
+                "  REGION_CREATE <size>  →  returns RefType\n"
+                "  # FLUX uses linear region memory model\n"
+                "  # No manual free needed — region is destroyed on scope exit"
             )
             notes = (
-                f"C malloc maps to FLUX REGION_CREATE. "
-                f"FLUX uses linear memory regions instead of manual malloc/free. "
-                f"Memory is automatically freed when the region goes out of scope."
+                "C malloc maps to FLUX REGION_CREATE. "
+                "FLUX uses linear memory regions instead of manual malloc/free. "
+                "Memory is automatically freed when the region goes out of scope."
             )
             mappings.append(CodeMapping(
                 original=original_line,
@@ -294,15 +294,15 @@ class CReverseEngineer:
             line_num = source[:m.start()].count("\n") + 1
             original_line = lines[line_num - 1] if line_num <= len(lines) else "free(...)"
             flux_ir = (
-                f"# free() → REGION_DESTROY\n"
-                f"  REGION_DESTROY <ptr>  # or implicit on scope exit\n"
-                f"  # In FLUX, regions are automatically managed\n"
-                f"  # Explicit REGION_DESTROY only needed for early cleanup"
+                "# free() → REGION_DESTROY\n"
+                "  REGION_DESTROY <ptr>  # or implicit on scope exit\n"
+                "  # In FLUX, regions are automatically managed\n"
+                "  # Explicit REGION_DESTROY only needed for early cleanup"
             )
             notes = (
-                f"C free maps to FLUX REGION_DESTROY. "
-                f"In most cases, FLUX handles this automatically when "
-                f"the memory region goes out of scope."
+                "C free maps to FLUX REGION_DESTROY. "
+                "In most cases, FLUX handles this automatically when "
+                "the memory region goes out of scope."
             )
             mappings.append(CodeMapping(
                 original=original_line,
@@ -321,12 +321,12 @@ class CReverseEngineer:
             line_num = source[:m.start()].count("\n") + 1
             original_line = lines[line_num - 1] if line_num <= len(lines) else "printf(...)"
             flux_ir = (
-                f"# printf() → IO_WRITE\n"
-                f"IO_WRITE <format_string>, <args...>"
+                "# printf() → IO_WRITE\n"
+                "IO_WRITE <format_string>, <args...>"
             )
             notes = (
-                f"C printf maps to FLUX IO_WRITE. "
-                f"Format strings are handled by the FLUX I/O subsystem."
+                "C printf maps to FLUX IO_WRITE. "
+                "Format strings are handled by the FLUX I/O subsystem."
             )
             mappings.append(CodeMapping(
                 original=original_line,
@@ -417,20 +417,20 @@ class CReverseEngineer:
             line_num = source[:m.start()].count("\n") + 1
             original_line = lines[line_num - 1] if line_num <= len(lines) else "for (...)"
             flux_ir = (
-                f"# for loop → FIR basic blocks + jumps\n"
-                f"  entry:\n"
-                f"    JMP header\n"
-                f"  header:\n"
-                f"    # condition check\n"
-                f"    BR <cond>, body, exit\n"
-                f"  body:\n"
-                f"    # loop body\n"
-                f"    JMP header\n"
-                f"  exit:"
+                "# for loop → FIR basic blocks + jumps\n"
+                "  entry:\n"
+                "    JMP header\n"
+                "  header:\n"
+                "    # condition check\n"
+                "    BR <cond>, body, exit\n"
+                "  body:\n"
+                "    # loop body\n"
+                "    JMP header\n"
+                "  exit:"
             )
             notes = (
-                f"C for loop maps to FIR basic blocks with header/body/exit structure. "
-                f"Similar to the Python mapping but with explicit init/update blocks."
+                "C for loop maps to FIR basic blocks with header/body/exit structure. "
+                "Similar to the Python mapping but with explicit init/update blocks."
             )
             mappings.append(CodeMapping(
                 original=original_line,
@@ -446,16 +446,16 @@ class CReverseEngineer:
             original_line = lines[line_num - 1] if line_num <= len(lines) else "while (...)"
             if original_line.strip().startswith("while"):
                 flux_ir = (
-                    f"# while loop → FIR basic blocks + jumps\n"
-                    f"  header:\n"
-                    f"    BR <cond>, body, exit\n"
-                    f"  body:\n"
-                    f"    JMP header\n"
-                    f"  exit:"
+                    "# while loop → FIR basic blocks + jumps\n"
+                    "  header:\n"
+                    "    BR <cond>, body, exit\n"
+                    "  body:\n"
+                    "    JMP header\n"
+                    "  exit:"
                 )
                 notes = (
-                    f"C while loop maps to FIR basic blocks. "
-                    f"Header checks condition, body executes, jumps back."
+                    "C while loop maps to FIR basic blocks. "
+                    "Header checks condition, body executes, jumps back."
                 )
                 mappings.append(CodeMapping(
                     original=original_line,

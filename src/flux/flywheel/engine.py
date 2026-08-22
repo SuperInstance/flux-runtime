@@ -469,7 +469,7 @@ class FlywheelEngine:
             # Simulate experiment time based on acceleration factor
             # Higher acceleration = faster experiments
             base_time_ns = 1_000_000  # 1ms base experiment time
-            simulated_time = int(base_time_ns / max(self._acceleration_factor, 0.1))
+            int(base_time_ns / max(self._acceleration_factor, 0.1))
 
             try:
                 # Use the synthesizer's evolution mutator to test

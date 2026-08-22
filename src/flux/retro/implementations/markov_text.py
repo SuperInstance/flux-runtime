@@ -175,7 +175,7 @@ class MarkovChainText:
 
         print(f"\n  Vocabulary: {', '.join(vocab)}")
 
-        print(f"\n  Bigram table:")
+        print("\n  Bigram table:")
         for word_idx in sorted(table.keys()):
             word = vocab[word_idx]
             followers = ", ".join(
@@ -183,7 +183,7 @@ class MarkovChainText:
             )
             print(f"    {word} → {followers}")
 
-        print(f"\n  --- Generation (bytecode-powered word selection) ---\n")
+        print("\n  --- Generation (bytecode-powered word selection) ---\n")
 
         seeds = ["the", "cat", "dog"]
         for seed in seeds:
@@ -212,7 +212,7 @@ class MarkovChainText:
         bc = cls._build_selection_bytecode(best_followers, 5)
         print(f"  Bytecode size: {len(bc)} bytes")
         print(f"  Instructions: {len(bc) // 4} (all 4-byte Format D)")
-        print(f"  Pattern: MOVI + CMP + JL + JE per follower")
+        print("  Pattern: MOVI + CMP + JL + JE per follower")
         print()
 
 

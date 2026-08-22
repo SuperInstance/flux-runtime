@@ -78,8 +78,8 @@ def _build_arithmetic_fir() -> FIRModule:
 
     x = builder._new_value("x", i32)
     y = builder._new_value("y", i32)
-    sum_val = builder.iadd(x, y)
-    diff = builder.isub(x, y)
+    builder.iadd(x, y)
+    builder.isub(x, y)
     prod = builder.imul(x, y)
     builder.ret(prod)
 
@@ -141,7 +141,7 @@ def _run_test(name, fn):
     try:
         fn()
         return True, name, None
-    except Exception as e:
+    except Exception:
         return False, name, traceback.format_exc()
 
 
@@ -305,7 +305,7 @@ def test_optimizer_bytecode_roundtrip():
 
     # Run optimization
     opt = OptimizationPipeline()
-    changes = opt.run(module)
+    opt.run(module)
 
     # Encode to bytecode
     encoder = BytecodeEncoder()
@@ -681,7 +681,7 @@ def test_hot_reload_cycle():
     assert loader._active_calls.get(0, 0) == 0
 
     # GC: load a third version, then GC should keep only active
-    ver3 = loader.load("test_mod", bc_v1, ["main"], source="v3")
+    loader.load("test_mod", bc_v1, ["main"], source="v3")
     # No active calls on ver2, so GC can remove it
     removed = loader.gc("test_mod")
     assert removed >= 0  # May remove old versions

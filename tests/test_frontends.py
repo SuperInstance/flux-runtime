@@ -28,7 +28,7 @@ def run_test(name, fn):
         fn()
         passed += 1
         print(f"  ✓ {name}")
-    except Exception as e:
+    except Exception:
         failed += 1
         print(f"  ✗ {name}")
         traceback.print_exc()

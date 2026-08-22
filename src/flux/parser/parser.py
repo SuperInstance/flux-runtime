@@ -290,7 +290,7 @@ class FluxMDParser:
         lines: list[str],
         start: int,
     ) -> tuple[ListBlock, int]:
-        first_match = _RE_ULIST.match(lines[start]) or _RE_OLIST.match(lines[start])
+        _RE_ULIST.match(lines[start]) or _RE_OLIST.match(lines[start])
         ordered = bool(_RE_OLIST.match(lines[start]))
 
         items: list[ListItem] = []

@@ -84,7 +84,7 @@ class OpenFluxInterpreter:
             # Direct assembly text
             assembly = text
             if self.verbose:
-                print(f"[asm] direct assembly mode")
+                print("[asm] direct assembly mode")
         
         elif self._is_hex_bytecode(text):
             # Direct hex bytecode

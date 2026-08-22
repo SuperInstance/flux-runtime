@@ -180,8 +180,8 @@ class CodeStatistics:
         lines: list[str] = [
             "# FLUX Code Statistics\n",
             "## Overview\n",
-            f"| Metric | Value |",
-            f"|--------|-------|",
+            "| Metric | Value |",
+            "|--------|-------|",
             f"| Total LOC | {self.total_loc():,} |",
             f"| Modules | {self.module_count()} |",
             f"| Test count | {self.test_count():,} |",

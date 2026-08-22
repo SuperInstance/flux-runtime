@@ -242,7 +242,7 @@ def print_fir(module: FIRModule) -> str:
         params = ", ".join(_type_str(t) for t in func.sig.params)
         rets = ", ".join(_type_str(r) for r in func.sig.returns)
         ret_str = f" -> {rets}" if rets else ""
-        lines.append(f"")
+        lines.append("")
         lines.append(f"  function {fname}({params}){ret_str} {{")
 
         for block in func.blocks:

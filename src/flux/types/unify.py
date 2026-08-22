@@ -467,7 +467,7 @@ class TypeUnifier:
             elif base == "Box":
                 if len(arg_types) == 1:
                     return self.ctx.get_ref(arg_types[0])
-                raise ValueError(f"Box expects 1 type argument")
+                raise ValueError("Box expects 1 type argument")
             elif base == "Rc" or base == "Arc":
                 if len(arg_types) == 1:
                     return self.ctx.get_ref(arg_types[0])

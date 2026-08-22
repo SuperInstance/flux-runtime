@@ -328,10 +328,10 @@ def test_bitwise() -> None:
     vm.regs.write_gp(1, 0b1100)  # 12
     vm.regs.write_gp(2, 0b1010)  # 10
     vm.execute()
-    assert vm.regs.read_gp(0) == (0b1100 & 0b1010), f"IAND failed"
-    assert vm.regs.read_gp(3) == (0b1100 | 0b1010), f"IOR failed"
-    assert vm.regs.read_gp(4) == (0b1100 ^ 0b1010), f"IXOR failed"
-    assert vm.regs.read_gp(5) == (~0b1100), f"INOT failed"
+    assert vm.regs.read_gp(0) == (0b1100 & 0b1010), "IAND failed"
+    assert vm.regs.read_gp(3) == (0b1100 | 0b1010), "IOR failed"
+    assert vm.regs.read_gp(4) == (0b1100 ^ 0b1010), "IXOR failed"
+    assert vm.regs.read_gp(5) == (~0b1100), "INOT failed"
 
 
 def test_mov_registers() -> None:

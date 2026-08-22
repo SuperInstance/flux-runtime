@@ -175,7 +175,6 @@ class ElfHeader:
 
         # Section header table offset
         shdr_offset = (current_offset + 15) & ~15
-        shdr_size = ELF64_SECTION_HEADER_SIZE
 
         # Build program headers
         if not self.program_headers:

@@ -172,9 +172,6 @@ class Genome:
     def _capture_modules(self, container: Any) -> None:
         """Recursively capture module container state."""
 
-        heatmap: dict[str, HeatLevel] = {}
-        call_counts: dict[str, int] = {}
-        total_times: dict[str, int] = {}
 
         # Defer to profiler snapshot for heatmap — use empty during capture
         snap = self.modules

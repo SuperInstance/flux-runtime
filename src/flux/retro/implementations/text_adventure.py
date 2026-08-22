@@ -212,7 +212,7 @@ class TextAdventure:
             if inventory:
                 print(f"\n  Inventory: {', '.join(inventory)}")
             else:
-                print(f"\n  Inventory: (empty)")
+                print("\n  Inventory: (empty)")
 
         # ── Automated tour ──────────────────────────────────────────────
         print("\n  --- Automated Tour ---")
@@ -246,13 +246,13 @@ class TextAdventure:
             elif cmd == "inventory":
                 show_inventory()
 
-        print(f"\n  --- Tour Complete ---")
+        print("\n  --- Tour Complete ---")
         print(f"  Final room: {ROOMS[current_room]['name']}")
         print(f"  Items collected: {len(inventory)}")
         print(f"  Inventory: {', '.join(inventory) if inventory else '(empty)'}")
 
         # Verify bytecode exit check for all rooms/directions
-        print(f"\n  --- Bytecode Exit Validation Verification ---")
+        print("\n  --- Bytecode Exit Validation Verification ---")
         for i, room in enumerate(ROOMS):
             valid = []
             for d in DIR_NAMES:

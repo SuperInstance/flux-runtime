@@ -145,7 +145,7 @@ class SizeofFn(IntrinsicFunction):
         if target_type is None:
             raise ValueError("sizeof() requires a type or typed value")
         # sizeof is computed at compile time; emit a constant call
-        size = _compute_sizeof(target_type)
+        _compute_sizeof(target_type)
         result_type = builder._ctx.get_int(32)
         # Emit call to runtime for dynamic sizeof
         type_tag = Value(id=-1, name=f"__type_{id(target_type)}", type=target_type)

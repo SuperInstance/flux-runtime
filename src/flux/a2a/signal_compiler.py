@@ -275,7 +275,7 @@ class SignalCompiler:
         result_name = op.get("into", f"_log{self._reg_counter}")
         
         if op_name == "not":
-            rs = self._register_map.get(op.get("args", [""])[0], 0)
+            self._register_map.get(op.get("args", [""])[0], 0)
             rd = self._alloc_reg(result_name)
             self._emit_format_b(0x0A, rd, source_line=line)  # NOT
             return
@@ -474,7 +474,7 @@ class SignalCompiler:
     
     def _compile_yield(self, op: dict, line: int):
         """yield: suspend execution"""
-        value_name = op.get("value", "")
+        op.get("value", "")
         cycles = op.get("cycles", 1)
         self._emit(0x15, cycles, source_line=line)  # YIELD (Format C)
     

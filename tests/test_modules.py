@@ -194,7 +194,7 @@ def test_get_by_path_deep():
     """get_by_path resolves deeply nested paths."""
     root = ModuleContainer("root", Granularity.TRAIN)
     car = root.add_child("car1", Granularity.CARRIAGE)
-    lug = car.add_child("luggage_a", Granularity.LUGGAGE)
+    car.add_child("luggage_a", Granularity.LUGGAGE)
     result = root.get_by_path("car1.luggage_a")
     assert result is not None
     assert isinstance(result, ModuleContainer)

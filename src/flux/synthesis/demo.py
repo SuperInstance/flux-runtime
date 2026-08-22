@@ -46,7 +46,7 @@ def run_demo() -> None:
         card = synth.load_module(path, source, language="python")
         print(f"  Loaded: {path} -> {card.name} (v{card.version})")
 
-    print(f"\n  Module tree:")
+    print("\n  Module tree:")
     for line in synth.get_module_tree().split("\n"):
         print(f"    {line}")
     print()

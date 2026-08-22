@@ -122,7 +122,6 @@ class BytecodeValidator:
     ) -> None:
         """Walk instructions in a code range and validate them."""
         pos = start
-        last_opcode: Op | None = None
         has_terminator = False
         instr_offsets: list[int] = []  # for jump target validation
 
@@ -145,7 +144,6 @@ class BytecodeValidator:
                 pos += 1  # skip unknown byte
                 continue
 
-            last_opcode = op
             fmt = get_format(op)
 
             if fmt == "A":

@@ -164,44 +164,44 @@ class Reflection:
         """Render as a readable markdown document for human review."""
         lines = [
             f"# Reflection: {self.target} — Iteration {self.iteration}",
-            f"",
+            "",
             f"**Date:** {self.timestamp}",
             f"**Hypothesis:** {self.hypothesis}",
             f"**Confidence:** {self.confidence:.0%}",
-            f"",
-            f"## Observations",
+            "",
+            "## Observations",
         ]
         for obs in self.observations:
             lines.append(f"- {obs}")
         lines.extend([
-            f"",
-            f"## What Worked",
+            "",
+            "## What Worked",
         ])
         for s in self.successes:
             lines.append(f"- ✓ {s}")
         lines.extend([
-            f"",
-            f"## What Didn't Work",
+            "",
+            "## What Didn't Work",
         ])
         for f in self.failures:
             lines.append(f"- ✗ {f}")
         if self.metric_deltas:
-            lines.extend([f"", f"## Metric Changes"])
+            lines.extend(["", "## Metric Changes"])
             for k, v in self.metric_deltas.items():
                 arrow = "+" if v > 0 else ""
                 lines.append(f"- {k}: {arrow}{v}")
         lines.extend([
-            f"",
-            f"## Next Steps",
+            "",
+            "## Next Steps",
         ])
         for ns in self.next_steps:
             lines.append(f"- → {ns}")
         if self.open_questions:
-            lines.extend([f"", f"## Open Research Questions"])
+            lines.extend(["", "## Open Research Questions"])
             for q in self.open_questions:
                 lines.append(f"- ? {q}")
         if self.raw_notes:
-            lines.extend([f"", f"## Raw Notes", f"", self.raw_notes])
+            lines.extend(["", "## Raw Notes", "", self.raw_notes])
         lines.append("")
         return "\n".join(lines)
 

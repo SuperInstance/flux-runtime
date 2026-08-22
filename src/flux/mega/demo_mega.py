@@ -42,7 +42,7 @@ def run_mega_demo() -> str:
         conductor.synthesizer.record_call("mega_demo.math.divide", duration_ns=1000, calls=2)
 
         # 4. Assess
-        assessment = conductor.assess()
+        conductor.assess()
 
         # 5. Predict
         prediction = conductor.predict("recompile math/add")

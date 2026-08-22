@@ -312,8 +312,8 @@ def run_repl() -> None:
     print(f"{BOLD}{MAGENTA}╚══════════════════════════════════════════════════════════╝{RESET}")
     print()
     print(f"  Type {CYAN}help{RESET} for commands, {CYAN}quit{RESET} to exit.")
-    print(f"  Enter hex bytecode (e.g., '2B 00 03 00 2B 01 04 00 08 00 00 01 80')")
-    print(f"  or expressions (e.g., '3 + 4') to execute.")
+    print("  Enter hex bytecode (e.g., '2B 00 03 00 2B 01 04 00 08 00 00 01 80')")
+    print("  or expressions (e.g., '3 + 4') to execute.")
     print()
     
     while True:

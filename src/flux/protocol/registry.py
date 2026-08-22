@@ -114,7 +114,7 @@ class AgentDescriptor:
 
     def __repr__(self) -> str:
         caps = ",".join(self.capability_names[:3])
-        suffix = f"..." if len(self.capability_names) > 3 else ""
+        suffix = "..." if len(self.capability_names) > 3 else ""
         return f"Agent({self.name}, caps=[{caps}{suffix}])"
 
 

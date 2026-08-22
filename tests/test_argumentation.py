@@ -335,7 +335,7 @@ class TestArgumentationFramework:
         arg_b = Argument(claim="B is true", evidence=["some evidence"], confidence=0.8)
         arg_c = Argument(claim="C is true", evidence=["initial evidence"], confidence=0.7)
 
-        id_a = fw.add_argument(arg_a)
+        fw.add_argument(arg_a)
         id_b = fw.add_argument(arg_b)
         id_c = fw.add_argument(arg_c)
 
@@ -344,7 +344,7 @@ class TestArgumentationFramework:
         fw.support(id_c, arg_b)  # B supports C
 
         # Now C has support from B, which has support from A
-        results = fw.evaluate()
+        fw.evaluate()
 
         # All should have at least some support now
         assert "arg_1" in fw.arguments["arg_1"].evidence[0] or len(fw.arguments["arg_1"].evidence) > 1

@@ -459,7 +459,6 @@ class BytecodeVerifier:
             valid_offsets.add(insn.offset)
 
         # Find all jump targets and verify they land on valid instruction boundaries
-        jump_targets: Set[int] = set()
         for insn in instructions:
             if not insn.is_valid or insn.opcode not in CONTROL_FLOW_OPCODES:
                 continue
@@ -481,7 +480,7 @@ class BytecodeVerifier:
                     if target < 0 or target >= len(bytecode) or target not in valid_offsets:
                         self._add(report, 3, Severity.ERROR, insn.offset, insn.opcode,
                                   f"Jump target 0x{target:04X} invalid (out of bounds or misaligned)",
-                                  f"Adjust immediate to land on valid instruction offset")
+                                  "Adjust immediate to land on valid instruction offset")
 
             if insn.opcode in {0x44, 0xE1, 0x45, 0xE2}:  # JAL, JALL, CALL, CALLL
                 if insn.immediates:
@@ -489,7 +488,7 @@ class BytecodeVerifier:
                     if target < 0 or target >= len(bytecode) or target not in valid_offsets:
                         self._add(report, 3, Severity.ERROR, insn.offset, insn.opcode,
                                   f"Jump/call target 0x{target:04X} invalid (out of bounds or misaligned)",
-                                  f"Adjust immediate to land on valid instruction offset")
+                                  "Adjust immediate to land on valid instruction offset")
 
         # Check that program has at least one HALT or HALT_ERR
         has_halt = any(insn.opcode in (0x00, 0xF0) for insn in instructions if insn.is_valid)
@@ -555,7 +554,6 @@ class BytecodeVerifier:
         self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Verify privileged opcodes have required capabilities."""
-        privileged_categories = {"sensor", "compute"}
 
         privileged_ops = {
             0x10: "SYS (system call)",
@@ -651,7 +649,7 @@ class BytecodeVerifier:
         """Validate memory access patterns for safety."""
         has_malloc = any(i.opcode == 0xD7 for i in instructions if i.is_valid)
         has_free = any(i.opcode == 0xD8 for i in instructions if i.is_valid)
-        has_memcpy = any(i.opcode == 0x4E for i in instructions if i.is_valid)
+        any(i.opcode == 0x4E for i in instructions if i.is_valid)
         has_mprotect = any(i.opcode == 0xD9 for i in instructions if i.is_valid)
 
         # Check for memory allocation without freeing

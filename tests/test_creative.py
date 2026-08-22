@@ -1081,7 +1081,7 @@ class TestCreativeIntegration:
         ca = CellularAutomatonTile(rule=110, width=8, generations=5)
         history = ca.run()
 
-        s = Sonifier()
+        Sonifier()
         # Convert automaton state to musical sequence
         seq = MusicSequence()
         t = 0.0

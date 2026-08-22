@@ -39,9 +39,9 @@ def test_dual_version():
 
 def test_rollback():
     loader = HotLoader()
-    v1 = loader.load("mod1", b"\x01", ["f1"])
+    loader.load("mod1", b"\x01", ["f1"])
     v2 = loader.load("mod1", b"\x02", ["f1"])
-    v3 = loader.load("mod1", b"\x03", ["f1"])
+    loader.load("mod1", b"\x03", ["f1"])
     rolled = loader.rollback("mod1")
     assert rolled is v2
     assert loader.get_active("mod1") is v2

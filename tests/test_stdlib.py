@@ -91,7 +91,7 @@ class TestIntrinsics:
     def test_assert_emits_call(self):
         """AssertFn emits a call instruction to flux.assert."""
         builder, mod, func = make_builder()
-        i32 = builder._ctx.get_int(32)
+        builder._ctx.get_int(32)
         bool_t = builder._ctx.get_bool()
         cond = Value(id=0, name="cond", type=bool_t)
 
@@ -798,7 +798,7 @@ class TestStdlibIntegration:
         """Multiple stdlib functions can be emitted in sequence."""
         builder, mod, func = make_builder()
         i32 = builder._ctx.get_int(32)
-        f32 = builder._ctx.get_float(32)
+        builder._ctx.get_float(32)
         string_t = builder._ctx.get_string()
 
         x = Value(id=0, name="x", type=i32)

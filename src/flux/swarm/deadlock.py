@@ -299,7 +299,7 @@ class DeadlockDetector:
         # Check for livelocks in message history
         if message_log:
             for agent_id in set(msg.sender for msg in message_log):
-                agent_history = [
+                [
                     msg for msg in message_log
                     if msg.sender == agent_id or msg.receiver == agent_id
                 ]

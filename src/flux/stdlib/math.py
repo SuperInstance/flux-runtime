@@ -41,7 +41,7 @@ class MinFn(MathFunction):
             raise ValueError("min() requires 2 arguments")
         a, b = args[0], args[1]
         # Emit: cmp a < b → branch → phi
-        cmp_val = builder.ilt(a, b)
+        builder.ilt(a, b)
         # Emit a conditional selection via branch + merge
         result = builder.call("flux.min", [a, b], return_type=a.type)
         return result
@@ -153,7 +153,7 @@ class SqrtFn(MathFunction):
             The function to add blocks to.
         """
         i32 = builder._ctx.get_int(32)
-        bool_t = builder._ctx.get_bool()
+        builder._ctx.get_bool()
 
         # Create blocks
         loop_header = builder.new_block(func, "sqrt.header")
@@ -178,7 +178,7 @@ class SqrtFn(MathFunction):
         # emit: new_x = (old_x + n/old_x) / 2
         div_result = builder.idiv(n_val, old_x)
         sum_result = builder.iadd(old_x, div_result)
-        new_x = builder.idiv(sum_result, half)
+        builder.idiv(sum_result, half)
         builder.jump("sqrt.header")
 
         # Exit block — result is in new_x
@@ -202,7 +202,7 @@ def emit_clamp_branches(
 
     Returns a placeholder value representing the clamped result in the merge block.
     """
-    bool_t = builder._ctx.get_bool()
+    builder._ctx.get_bool()
     result_type = x.type
 
     # Block: check x < lo
@@ -248,7 +248,6 @@ def emit_lerp_instructions(
 
     Returns the interpolated value.
     """
-    result_type = a.type
     diff = builder.isub(b, a)
     scaled = builder.imul(t, diff)
     result = builder.iadd(a, scaled)

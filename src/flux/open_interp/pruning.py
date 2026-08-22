@@ -26,8 +26,11 @@ Usage:
 
 import os
 import time
-from typing import Dict, List, Set, Tuple
+from typing import TYPE_CHECKING, Dict, List, Set, Tuple
 from dataclasses import dataclass, field
+
+if TYPE_CHECKING:
+    from flux.open_interp.vocabulary import Vocabulary
 from collections import Counter
 
 
@@ -308,13 +311,13 @@ class RuntimeCompiler:
         Compile a pruned vocabulary into a standalone Python file.
         """
         lines = []
-        lines.append(f'"""')
+        lines.append('"""')
         lines.append(f'{name} — Auto-generated FLUX runtime.')
-        lines.append(f'Pruned and compiled from vocabulary entries.')
+        lines.append('Pruned and compiled from vocabulary entries.')
         lines.append(f'Generated: {time.strftime("%Y-%m-%d %H:%M UTC")}')
         lines.append(f'Entries: {len(vocab.entries)}')
-        lines.append(f'Zero dependencies. Copy anywhere.')
-        lines.append(f'"""')
+        lines.append('Zero dependencies. Copy anywhere.')
+        lines.append('"""')
         lines.append('')
         
         # Collect needed opcodes

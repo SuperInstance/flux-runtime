@@ -214,9 +214,9 @@ class FluxReverseEngineer:
         code_map = self.analyze(source, lang)
         lines = [
             "---",
-            f"lang: flux",
+            "lang: flux",
             f"source-lang: {lang}",
-            f"generated-by: reverse-engineer",
+            "generated-by: reverse-engineer",
             f"mappings: {code_map.mapping_count}",
             "---",
             "",
@@ -257,7 +257,7 @@ class FluxReverseEngineer:
                         m.original.strip(),
                         "```",
                         "",
-                        f"**FLUX FIR:**",
+                        "**FLUX FIR:**",
                         "```flux",
                         m.flux_ir.strip(),
                         "```",

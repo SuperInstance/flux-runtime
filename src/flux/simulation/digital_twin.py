@@ -309,13 +309,12 @@ class DigitalTwin:
         best_result: Optional[SimulatedResult] = None
 
         current_genome = Genome.from_dict(self.shadow_genome.to_dict())
-        mutator = SystemMutator()
+        SystemMutator()
 
         for gen in range(generations):
             # Generate synthetic proposals
             proposals = self._generate_synthetic_proposals(current_genome)
 
-            gen_best_fitness = current_genome.fitness_score
             gen_best_result: Optional[SimulatedResult] = None
 
             for proposal in proposals:

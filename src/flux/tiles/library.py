@@ -331,7 +331,7 @@ def _stream_fir_blueprint(
 ) -> dict[str, Value]:
     """Stream: sequential read/write."""
     base = inputs.get("base")
-    offset = inputs.get("offset", None)
+    inputs.get("offset", None)
     if base:
         result = builder.load(_i32, base, params.get("base_offset", 0))
         return {"result": result}
@@ -442,7 +442,7 @@ def _loop_fir_blueprint(
     params: dict[str, Any],
 ) -> dict[str, Value]:
     """Loop: fixed-count iteration."""
-    count = params.get("count", 10)
+    params.get("count", 10)
     body_fn = params.get("body", "_loop_body")
     init = inputs.get("init")
     if init:
@@ -471,7 +471,7 @@ def _while_fir_blueprint(
 ) -> dict[str, Value]:
     """While: condition-based iteration."""
     init = inputs.get("init")
-    cond_fn = params.get("cond", "_while_cond")
+    params.get("cond", "_while_cond")
     body_fn = params.get("body", "_while_body")
     if init:
         result = builder.call(body_fn, [init], _i32)

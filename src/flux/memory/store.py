@@ -270,7 +270,7 @@ class MemoryStore:
         3. If already frozen or expired, delete permanently.
         """
         demoted = 0
-        now = time.time()
+        time.time()
 
         # Decay hot entries
         to_demote_hot = []
