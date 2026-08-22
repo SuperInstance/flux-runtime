@@ -264,10 +264,9 @@ class CostModel:
                 elif isinstance(instr, GetElem):
                     has_getelem = True
                     load_count += 1
-                elif isinstance(instr, (IAdd, ISub)):
-                    # Check if this looks like a loop induction variable
-                    if hasattr(instr.lhs, 'name') and 'i' in getattr(instr.lhs, 'name', '').lower():
-                        has_loop_induction = True
+                elif (isinstance(instr, (IAdd, ISub))) and (hasattr(instr.lhs, 'name') and 'i' in getattr(instr.lhs, 'name', '').lower()):
+                # Check if this looks like a loop induction variable
+                    has_loop_induction = True
 
         if load_count == 0:
             return "none"

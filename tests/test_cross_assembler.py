@@ -166,7 +166,7 @@ def test_macro_ifdef_without_endif_raises():
     pp = MacroPreprocessor()
     try:
         pp.preprocess("#ifdef X\nNOP\n")
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except AsmError as e:
         assert "Unterminated" in str(e)
 
@@ -176,7 +176,7 @@ def test_macro_endif_without_ifdef_raises():
     pp = MacroPreprocessor()
     try:
         pp.preprocess("#endif\n")
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except AsmError as e:
         assert "without" in str(e)
 
@@ -476,7 +476,7 @@ def test_patcher_out_of_bounds():
     patcher = BinaryPatcher(data)
     try:
         patcher.patch_bytes(5, bytes([0xFF]))
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except AsmError as e:
         assert "out of bounds" in str(e).lower()
 
@@ -558,7 +558,7 @@ def test_linker_undefined_symbol():
     linker = FluxLinker()
     try:
         linker.link([obj])
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except AsmError as e:
         assert "Undefined" in str(e)
 
@@ -568,7 +568,7 @@ def test_linker_empty_input():
     linker = FluxLinker()
     try:
         linker.link([])
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except AsmError as e:
         assert "No object files" in str(e)
 

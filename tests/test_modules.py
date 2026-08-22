@@ -636,7 +636,7 @@ def test_namespace_not_found_raises():
     ns = ModuleNamespace()
     try:
         ns.resolve("missing")
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except NameNotFoundError:
         pass
     print("  PASS test_namespace_not_found_raises")
@@ -649,7 +649,7 @@ def test_namespace_resolve_local():
     child = parent.child_scope()
     try:
         child.resolve_local("x")
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except NameNotFoundError:
         pass
     print("  PASS test_namespace_resolve_local")

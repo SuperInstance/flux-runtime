@@ -216,7 +216,7 @@ def test_division_by_zero() -> None:
 
     try:
         vm.execute()
-        assert False, "Expected VMDivisionByZeroError"
+        raise AssertionError("Expected VMDivisionByZeroError")
     except VMDivisionByZeroError as e:
         assert e.opcode == Op.IDIV
         assert e.pc == 0
@@ -393,7 +393,7 @@ def test_memory_region_read_write() -> None:
     # Out of bounds
     try:
         region.read(255, 2)
-        assert False, "Should raise IndexError"
+        raise AssertionError("Should raise IndexError")
     except IndexError:
         pass
 
@@ -448,7 +448,7 @@ def test_unknown_opcode() -> None:
     vm = Interpreter(bytecode, isa="system_a")
     try:
         vm.execute()
-        assert False, "Expected VMInvalidOpcodeError"
+        raise AssertionError("Expected VMInvalidOpcodeError")
     except VMInvalidOpcodeError as e:
         assert e.opcode == 0xFF
         assert e.pc == 0

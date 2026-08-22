@@ -255,7 +255,7 @@ class ContradictionDetector:
             b_parts = re.split(r'\$VAR', pattern_b)
             if len(a_parts) == len(b_parts):
                 # Same number of variable slots — check if literal parts match
-                for ap, bp in zip(a_parts, b_parts):
+                for ap, bp in zip(a_parts, b_parts, strict=False):
                     if ap.strip() and bp.strip() and ap.strip() != bp.strip():
                         return False
                 return True

@@ -453,8 +453,8 @@ class ReactionDiffusionTile(Tile):
         import random
 
         n = self.grid_size
-        U = [[1.0] * n for _ in range(n)]
-        V = [[0.0] * n for _ in range(n)]
+        u = [[1.0] * n for _ in range(n)]
+        v = [[0.0] * n for _ in range(n)]
 
         # Seed the center with V
         center = n // 2
@@ -462,18 +462,18 @@ class ReactionDiffusionTile(Tile):
         for r in range(center - seed_size, center + seed_size):
             for c in range(center - seed_size, center + seed_size):
                 if 0 <= r < n and 0 <= c < n:
-                    U[r][c] = 0.5
-                    V[r][c] = 0.25
+                    u[r][c] = 0.5
+                    v[r][c] = 0.25
                     # Small random perturbation
-                    U[r][c] += random.uniform(-0.01, 0.01)
-                    V[r][c] += random.uniform(-0.01, 0.01)
+                    u[r][c] += random.uniform(-0.01, 0.01)
+                    v[r][c] += random.uniform(-0.01, 0.01)
 
-        return U, V
+        return u, v
 
     def step(
         self,
-        U: list[list[float]],
-        V: list[list[float]],
+        u: list[list[float]],
+        v: list[list[float]],
         dU: float = 0.2,
         dV: float = 0.1,
     ) -> tuple[list[list[float]], list[list[float]]]:
@@ -488,42 +488,42 @@ class ReactionDiffusionTile(Tile):
         Returns:
             (new_U, new_V) grids after one step
         """
-        n = len(U)
+        n = len(u)
         if n == 0:
-            return U, V
+            return u, v
 
-        new_U = [[0.0] * n for _ in range(n)]
-        new_V = [[0.0] * n for _ in range(n)]
+        new_u = [[0.0] * n for _ in range(n)]
+        new_v = [[0.0] * n for _ in range(n)]
 
         for r in range(n):
             for c in range(n):
                 # Compute Laplacian with wrap-around boundaries
-                u = U[r][c]
-                v = V[r][c]
+                cu = u[r][c]
+                cv = v[r][c]
 
-                u_left = U[r][(c - 1) % n]
-                u_right = U[r][(c + 1) % n]
-                u_up = U[(r - 1) % n][c]
-                u_down = U[(r + 1) % n][c]
+                u_left = u[r][(c - 1) % n]
+                u_right = u[r][(c + 1) % n]
+                u_up = u[(r - 1) % n][c]
+                u_down = u[(r + 1) % n][c]
 
-                v_left = V[r][(c - 1) % n]
-                v_right = V[r][(c + 1) % n]
-                v_up = V[(r - 1) % n][c]
-                v_down = V[(r + 1) % n][c]
+                v_left = v[r][(c - 1) % n]
+                v_right = v[r][(c + 1) % n]
+                v_up = v[(r - 1) % n][c]
+                v_down = v[(r + 1) % n][c]
 
-                laplacian_u = u_left + u_right + u_up + u_down - 4.0 * u
-                laplacian_v = v_left + v_right + v_up + v_down - 4.0 * v
+                laplacian_u = u_left + u_right + u_up + u_down - 4.0 * cu
+                laplacian_v = v_left + v_right + v_up + v_down - 4.0 * cv
 
                 # Gray-Scott reaction equations
-                uvv = u * v * v
-                new_U[r][c] = u + dU * laplacian_u - uvv + self.feed_rate * (1.0 - u)
-                new_V[r][c] = v + dV * laplacian_v + uvv - (self.feed_rate + self.kill_rate) * v
+                uvv = cu * cv * cv
+                new_u[r][c] = cu + dU * laplacian_u - uvv + self.feed_rate * (1.0 - cu)
+                new_v[r][c] = cv + dV * laplacian_v + uvv - (self.feed_rate + self.kill_rate) * cv
 
                 # Clamp to valid range
-                new_U[r][c] = max(0.0, min(1.0, new_U[r][c]))
-                new_V[r][c] = max(0.0, min(1.0, new_V[r][c]))
+                new_u[r][c] = max(0.0, min(1.0, new_u[r][c]))
+                new_v[r][c] = max(0.0, min(1.0, new_v[r][c]))
 
-        return new_U, new_V
+        return new_u, new_v
 
     def run(self, preset: str | None = None) -> tuple[list[list[float]], list[list[float]]]:
         """Run the full simulation.
@@ -538,10 +538,10 @@ class ReactionDiffusionTile(Tile):
             self.feed_rate = self.PRESETS[preset]["feed_rate"]
             self.kill_rate = self.PRESETS[preset]["kill_rate"]
 
-        U, V = self.initialize_grid()
+        u, v = self.initialize_grid()
         for _ in range(self.iterations):
-            U, V = self.step(U, V)
-        return U, V
+            u, v = self.step(u, v)
+        return u, v
 
     def grid_stats(self, V: list[list[float]]) -> dict:
         """Compute statistics on a concentration grid.

@@ -81,7 +81,7 @@ def are_compatible(t1: FIRType, t2: FIRType) -> bool:
         if t1.name != t2.name or len(t1.args) != len(t2.args):
             return False
         # Allow TypeVars to match anything
-        for a1, a2 in zip(t1.args, t2.args):
+        for a1, a2 in zip(t1.args, t2.args, strict=False):
             if isinstance(a1, TypeVar) or isinstance(a2, TypeVar):
                 continue  # type vars are universally compatible
             if not are_compatible(a1, a2):
@@ -95,11 +95,11 @@ def are_compatible(t1: FIRType, t2: FIRType) -> bool:
         if len(t1.returns) != len(t2.returns):
             return False
         # Parameters are contravariant
-        for p1, p2 in zip(t1.params, t2.params):
+        for p1, p2 in zip(t1.params, t2.params, strict=False):
             if not are_compatible(p2, p1):  # note: reversed
                 return False
         # Returns are covariant
-        return all(are_compatible(r1, r2) for r1, r2 in zip(t1.returns, t2.returns))
+        return all(are_compatible(r1, r2) for r1, r2 in zip(t1.returns, t2.returns, strict=False))
 
     # TypeVar is compatible with anything
     return bool(isinstance(t1, TypeVar) or isinstance(t2, TypeVar))

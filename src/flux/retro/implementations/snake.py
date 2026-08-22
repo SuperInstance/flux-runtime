@@ -262,10 +262,14 @@ class Snake:
 
         # Preferred directions based on food position
         preferred = []
-        if fr > hr: preferred.append(1)  # down
-        if fr < hr: preferred.append(3)  # up
-        if fc > hc: preferred.append(0)  # right
-        if fc < hc: preferred.append(2)  # left
+        if fr > hr:
+            preferred.append(1)  # down
+        if fr < hr:
+            preferred.append(3)  # up
+        if fc > hc:
+            preferred.append(0)  # right
+        if fc < hc:
+            preferred.append(2)  # left
 
         for d in preferred:
             nr, nc = hr + _DIR_DR[d], hc + _DIR_DC[d]

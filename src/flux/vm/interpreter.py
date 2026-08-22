@@ -1225,10 +1225,14 @@ class Interpreter:
             data = self._fetch_var_data()
             # data: [name_len:u8][name_bytes][size:u32_le][owner_len:u8][owner_bytes]
             idx = 0
-            name_len = data[idx]; idx += 1
-            name = data[idx:idx + name_len].decode('utf-8', errors='replace').rstrip('\x00'); idx += name_len
-            size = struct.unpack_from('<I', data, idx)[0]; idx += 4
-            owner_len = data[idx]; idx += 1
+            name_len = data[idx]
+            idx += 1
+            name = data[idx:idx + name_len].decode('utf-8', errors='replace').rstrip('\x00')
+            idx += name_len
+            size = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
+            owner_len = data[idx]
+            idx += 1
             owner = data[idx:idx + owner_len].decode('utf-8', errors='replace').rstrip('\x00')
             region = self.memory.create_region(name, size, owner)
             # Store region base pointer in R0
@@ -1247,9 +1251,12 @@ class Interpreter:
             data = self._fetch_var_data()
             # [name_len:u8][name][new_owner_len:u8][new_owner]
             idx = 0
-            name_len = data[idx]; idx += 1
-            name = data[idx:idx + name_len].decode('utf-8', errors='replace').rstrip('\x00'); idx += name_len
-            new_owner_len = data[idx]; idx += 1
+            name_len = data[idx]
+            idx += 1
+            name = data[idx:idx + name_len].decode('utf-8', errors='replace').rstrip('\x00')
+            idx += name_len
+            new_owner_len = data[idx]
+            idx += 1
             new_owner = data[idx:idx + new_owner_len].decode('utf-8', errors='replace').rstrip('\x00')
             self.memory.transfer_region(name, new_owner)
             return
@@ -1259,10 +1266,14 @@ class Interpreter:
             data = self._fetch_var_data()
             # [region_name_len:u8][region_name][src_offset:u32][dst_offset:u32][size:u32]
             idx = 0
-            rname_len = data[idx]; idx += 1
-            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00'); idx += rname_len
-            src_off = struct.unpack_from('<I', data, idx)[0]; idx += 4
-            dst_off = struct.unpack_from('<I', data, idx)[0]; idx += 4
+            rname_len = data[idx]
+            idx += 1
+            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00')
+            idx += rname_len
+            src_off = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
+            dst_off = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
             size = struct.unpack_from('<I', data, idx)[0]
             region = self.memory.get_region(rname)
             chunk = region.read(src_off, size)
@@ -1274,10 +1285,14 @@ class Interpreter:
             data = self._fetch_var_data()
             # [region_name_len:u8][region_name][offset:u32][value:u8][size:u32]
             idx = 0
-            rname_len = data[idx]; idx += 1
-            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00'); idx += rname_len
-            offset = struct.unpack_from('<I', data, idx)[0]; idx += 4
-            value = data[idx]; idx += 1
+            rname_len = data[idx]
+            idx += 1
+            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00')
+            idx += rname_len
+            offset = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
+            value = data[idx]
+            idx += 1
             size = struct.unpack_from('<I', data, idx)[0]
             region = self.memory.get_region(rname)
             region.write(offset, bytes([value]) * size)
@@ -1288,10 +1303,14 @@ class Interpreter:
             data = self._fetch_var_data()
             # [region_name_len:u8][region_name][off_a:u32][off_b:u32][size:u32]
             idx = 0
-            rname_len = data[idx]; idx += 1
-            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00'); idx += rname_len
-            off_a = struct.unpack_from('<I', data, idx)[0]; idx += 4
-            off_b = struct.unpack_from('<I', data, idx)[0]; idx += 4
+            rname_len = data[idx]
+            idx += 1
+            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00')
+            idx += rname_len
+            off_a = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
+            off_b = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
             size = struct.unpack_from('<I', data, idx)[0]
             region = self.memory.get_region(rname)
             a = region.read(off_a, size)
@@ -1531,7 +1550,7 @@ class Interpreter:
             vd, vs1 = self._decode_operands_C()
             a = self.regs.read_vec(vd)
             b = self.regs.read_vec(vs1)
-            result = bytes(x + y for x, y in zip(a, b))
+            result = bytes(x + y for x, y in zip(a, b, strict=False))
             self.regs.write_vec(vd, result)
             return
 
@@ -1540,7 +1559,7 @@ class Interpreter:
             vd, vs1 = self._decode_operands_C()
             a = self.regs.read_vec(vd)
             b = self.regs.read_vec(vs1)
-            result = bytes(x - y for x, y in zip(a, b))
+            result = bytes(x - y for x, y in zip(a, b, strict=False))
             self.regs.write_vec(vd, result)
             return
 
@@ -1549,7 +1568,7 @@ class Interpreter:
             vd, vs1 = self._decode_operands_C()
             a = self.regs.read_vec(vd)
             b = self.regs.read_vec(vs1)
-            result = bytes(x * y for x, y in zip(a, b))
+            result = bytes(x * y for x, y in zip(a, b, strict=False))
             self.regs.write_vec(vd, result)
             return
 
@@ -1565,7 +1584,7 @@ class Interpreter:
                     opcode=opcode_byte,
                     pc=start_pc,
                 )
-            result = bytes(int(x / y) for x, y in zip(a, b))
+            result = bytes(int(x / y) for x, y in zip(a, b, strict=False))
             self.regs.write_vec(vd, result)
             return
 

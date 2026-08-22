@@ -89,7 +89,7 @@ class FluxREPL:
         import operator as op
 
         # AST operators for safe evaluation
-        _SAFE_OPS = {
+        _safe_ops = {
             ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
             ast.Div: op.truediv, ast.FloorDiv: op.floordiv,
             ast.Mod: op.mod, ast.Pow: op.pow, ast.LShift: op.lshift,
@@ -107,13 +107,13 @@ class FluxREPL:
             elif isinstance(node, ast.BinOp):
                 left = _safe_eval(node.left)
                 right = _safe_eval(node.right)
-                if type(node.op) in _SAFE_OPS:
-                    return _SAFE_OPS[type(node.op)](left, right)
+                if type(node.op) in _safe_ops:
+                    return _safe_ops[type(node.op)](left, right)
                 raise ValueError(f"Unsupported operator: {type(node.op).__name__}")
             elif isinstance(node, ast.UnaryOp):
                 operand = _safe_eval(node.operand)
-                if type(node.op) in _SAFE_OPS:
-                    return _SAFE_OPS[type(node.op)](operand)
+                if type(node.op) in _safe_ops:
+                    return _safe_ops[type(node.op)](operand)
                 raise ValueError(f"Unsupported unary op: {type(node.op).__name__}")
             else:
                 raise ValueError(f"Disallowed expression node: {type(node).__name__}")

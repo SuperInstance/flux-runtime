@@ -107,7 +107,7 @@ def test_empty_bytecode_raises():
     vm = Interpreter(b"", isa="system_a")
     try:
         vm.execute()
-        assert False, "Expected ValueError for empty bytecode"
+        raise AssertionError("Expected ValueError for empty bytecode")
     except ValueError as e:
         assert "empty" in str(e).lower()
     print("  PASS test_empty_bytecode_raises")
@@ -119,7 +119,7 @@ def test_oversized_bytecode_raises():
     vm = Interpreter(huge, isa="system_a")
     try:
         vm.execute()
-        assert False, "Expected ValueError for oversized bytecode"
+        raise AssertionError("Expected ValueError for oversized bytecode")
     except ValueError as e:
         assert "exceeds" in str(e).lower()
     print("  PASS test_oversized_bytecode_raises")
@@ -142,7 +142,7 @@ def test_cap_require_without_grant_raises():
     vm = Interpreter(bytecode, isa="system_a")
     try:
         vm.execute()
-        assert False, "Expected VMA2AError for ungranted capability"
+        raise AssertionError("Expected VMA2AError for ungranted capability")
     except VMA2AError as e:
         assert "not granted" in str(e)
     print("  PASS test_cap_require_without_grant_raises")
@@ -163,7 +163,7 @@ def test_cap_revoke_then_require_raises():
     vm = Interpreter(bytecode, isa="system_a")
     try:
         vm.execute()
-        assert False, "Expected VMA2AError after revocation"
+        raise AssertionError("Expected VMA2AError after revocation")
     except VMA2AError as e:
         assert "not granted" in str(e)
     print("  PASS test_cap_revoke_then_require_raises")
@@ -188,7 +188,7 @@ def test_nan_capability_match_raises():
     engine = TrustEngine()
     try:
         engine.record_interaction("a", "b", True, 50.0, capability_match=float('nan'))
-        assert False, "Expected ValueError for NaN capability_match"
+        raise AssertionError("Expected ValueError for NaN capability_match")
     except ValueError as e:
         assert "nan" in str(e).lower()
     print("  PASS test_nan_capability_match_raises")
@@ -199,7 +199,7 @@ def test_nan_behavior_signature_raises():
     engine = TrustEngine()
     try:
         engine.record_interaction("a", "b", True, 50.0, behavior_signature=float('nan'))
-        assert False, "Expected ValueError for NaN behavior_signature"
+        raise AssertionError("Expected ValueError for NaN behavior_signature")
     except ValueError as e:
         assert "nan" in str(e).lower()
     print("  PASS test_nan_behavior_signature_raises")
@@ -210,7 +210,7 @@ def test_nan_latency_raises():
     engine = TrustEngine()
     try:
         engine.record_interaction("a", "b", True, float('nan'))
-        assert False, "Expected ValueError for NaN latency_ms"
+        raise AssertionError("Expected ValueError for NaN latency_ms")
     except ValueError as e:
         assert "nan" in str(e).lower()
     print("  PASS test_nan_latency_raises")
@@ -221,7 +221,7 @@ def test_nan_threshold_raises():
     engine = TrustEngine()
     try:
         engine.check_trust("a", "b", float('nan'))
-        assert False, "Expected ValueError for NaN threshold"
+        raise AssertionError("Expected ValueError for NaN threshold")
     except ValueError as e:
         assert "nan" in str(e).lower()
     print("  PASS test_nan_threshold_raises")

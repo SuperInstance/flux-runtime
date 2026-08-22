@@ -669,7 +669,7 @@ class TypeUnifier:
             if len(source.args) == len(target.args):
                 return sum(
                     self.coercion_cost(s, t)
-                    for s, t in zip(source.args, target.args)
+                    for s, t in zip(source.args, target.args, strict=False)
                 )
 
         # Incompatible
@@ -762,7 +762,7 @@ class TypeUnifier:
         if (isinstance(t1, GenericType) and isinstance(t2, GenericType)
                 and t1.name == t2.name and len(t1.args) == len(t2.args)):
             unified_args = []
-            for a1, a2 in zip(t1.args, t2.args):
+            for a1, a2 in zip(t1.args, t2.args, strict=False):
                 ua = self._unify_pair(a1, a2)
                 if ua is None:
                     return None
@@ -816,19 +816,19 @@ def _type_eq(t1: FIRType, t2: FIRType) -> bool:
     if isinstance(t1, FuncType):
         return (len(t1.params) == len(t2.params)
                 and len(t1.returns) == len(t2.returns)
-                and all(_type_eq(a, b) for a, b in zip(t1.params, t2.params))
-                and all(_type_eq(a, b) for a, b in zip(t1.returns, t2.returns)))
+                and all(_type_eq(a, b) for a, b in zip(t1.params, t2.params, strict=False))
+                and all(_type_eq(a, b) for a, b in zip(t1.returns, t2.returns, strict=False)))
     if isinstance(t1, StructType):
         return (t1.name == t2.name
                 and len(t1.fields) == len(t2.fields)
                 and all(
                     n1 == n2 and _type_eq(f1, f2)
-                    for (n1, f1), (n2, f2) in zip(t1.fields, t2.fields)
+                    for (n1, f1), (n2, f2) in zip(t1.fields, t2.fields, strict=False)
                 ))
     if isinstance(t1, GenericType):
         return (t1.name == t2.name
                 and len(t1.args) == len(t2.args)
-                and all(_type_eq(a, b) for a, b in zip(t1.args, t2.args)))
+                and all(_type_eq(a, b) for a, b in zip(t1.args, t2.args, strict=False)))
     if isinstance(t1, TypeVar):
         return t1.name == t2.name
 

@@ -39,12 +39,12 @@ from flux.disasm import (
 
 def _make_flux_binary(code: bytes) -> bytes:
     """Wrap raw bytecode in FLUX binary format."""
-    HEADER_SIZE = 18
+    header_size = 18
     type_table = struct.pack("<H", 0)  # 0 types
     name_pool = b""
     func_table = struct.pack("<III", 0, 0, len(code))
-    code_off = HEADER_SIZE + len(type_table) + len(name_pool) + len(func_table)
-    header = struct.pack("<4sHHHII", b"FLUX", 1, 0, 1, HEADER_SIZE, code_off)
+    code_off = header_size + len(type_table) + len(name_pool) + len(func_table)
+    header = struct.pack("<4sHHHII", b"FLUX", 1, 0, 1, header_size, code_off)
     return header + type_table + name_pool + func_table + code
 
 

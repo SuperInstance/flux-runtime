@@ -390,21 +390,21 @@ def _cmd_hello() -> None:
     import struct as _struct
 
     # ANSI helpers
-    CYAN = "\033[96m"
-    GREEN = "\033[92m"
-    YELLOW = "\033[93m"
-    MAGENTA = "\033[95m"
-    BOLD = "\033[1m"
-    DIM = "\033[2m"
-    RESET = "\033[0m"
+    cyan = "\033[96m"
+    green = "\033[92m"
+    yellow = "\033[93m"
+    magenta = "\033[95m"
+    bold = "\033[1m"
+    dim = "\033[2m"
+    reset = "\033[0m"
 
     print()
-    print(f"{BOLD}{MAGENTA}{'═' * 64}{RESET}")
-    print(f"{BOLD}{MAGENTA}  FLUX Hello World Demo{RESET}")
-    print(f"{BOLD}{MAGENTA}{'═' * 64}{RESET}")
+    print(f"{bold}{magenta}{'═' * 64}{reset}")
+    print(f"{bold}{magenta}  FLUX Hello World Demo{reset}")
+    print(f"{bold}{magenta}{'═' * 64}{reset}")
     print()
-    print(f"  {CYAN}Welcome to the FLUX Virtual Machine!{RESET}")
-    print(f"  Let's compile and run a simple program: {BOLD}3 + 4 = 7{RESET}")
+    print(f"  {cyan}Welcome to the FLUX Virtual Machine!{reset}")
+    print(f"  Let's compile and run a simple program: {bold}3 + 4 = 7{reset}")
     print()
 
     # ── Build raw bytecode: MOVI R0, 3; MOVI R1, 4; IADD R0, R0, R1; HALT
@@ -417,29 +417,29 @@ def _cmd_hello() -> None:
 
     raw_code = movi_r0_3 + movi_r1_4 + iadd + halt
 
-    print(f"  {YELLOW}1. Bytecode Generation{RESET}")
+    print(f"  {yellow}1. Bytecode Generation{reset}")
     print("     Source:  3 + 4 = 7")
     print("     Opcodes: MOVI R0, 3 | MOVI R1, 4 | IADD R0, R0, R1 | HALT")
     print(f"     Bytes:   {' '.join(f'{b:02X}' for b in raw_code)} ({len(raw_code)} bytes)")
     print()
 
     # ── Wrap in FLUX binary format
-    HEADER_SIZE = 18
+    header_size = 18
     type_table = _struct.pack("<H", 0)  # 0 types
     name_pool = b""  # no names
     func_table = _struct.pack("<III", 0, 0, len(raw_code))  # entry=0, size=len
-    code_off = HEADER_SIZE + len(type_table) + len(name_pool) + len(func_table)
-    header = _struct.pack("<4sHHHII", b"FLUX", 1, 0, 1, HEADER_SIZE, code_off)
+    code_off = header_size + len(type_table) + len(name_pool) + len(func_table)
+    header = _struct.pack("<4sHHHII", b"FLUX", 1, 0, 1, header_size, code_off)
     flux_binary = header + type_table + name_pool + func_table + raw_code
 
-    print(f"  {YELLOW}2. FLUX Binary Format{RESET}")
+    print(f"  {yellow}2. FLUX Binary Format{reset}")
     print(f"     Header:  magic={flux_binary[:4]}  version=1  funcs=1  code_off={code_off}")
-    print(f"     Total:   {len(flux_binary)} bytes  (header {HEADER_SIZE} + metadata {code_off - HEADER_SIZE} + code {len(raw_code)})")
+    print(f"     Total:   {len(flux_binary)} bytes  (header {header_size} + metadata {code_off - header_size} + code {len(raw_code)})")
     print()
 
     # ── Extract code section and run
     extracted = _extract_code_section(flux_binary)
-    print(f"  {YELLOW}3. Execution{RESET}")
+    print(f"  {yellow}3. Execution{reset}")
 
     from flux.vm.interpreter import Interpreter
 
@@ -454,7 +454,7 @@ def _cmd_hello() -> None:
     print()
 
     # ── Register dump
-    print(f"  {YELLOW}4. Register File{RESET}")
+    print(f"  {yellow}4. Register File{reset}")
     for i in range(16):
         val = vm.regs.read_gp(i)
         if val != 0:
@@ -464,7 +464,7 @@ def _cmd_hello() -> None:
     print()
 
     # ── Architecture overview
-    print(f"  {YELLOW}5. FLUX Architecture{RESET}")
+    print(f"  {yellow}5. FLUX Architecture{reset}")
     print("     ├─ 64-register file (16 GP, 16 FP, 16 VEC)")
     print("     ├─ 104 opcodes (arithmetic, control flow, memory, A2A)")
     print("     ├─ Variable-length encoding (1-8 bytes per instruction)")
@@ -473,13 +473,13 @@ def _cmd_hello() -> None:
 
     # ── Success message
     if result == 7:
-        print(f"  {GREEN}{BOLD}✓ Success! 3 + 4 = 7 — confirmed by the FLUX VM{RESET}")
+        print(f"  {green}{bold}✓ Success! 3 + 4 = 7 — confirmed by the FLUX VM{reset}")
     else:
-        print(f"  {YELLOW}⚠ Result was {result}, expected 7{RESET}")
+        print(f"  {yellow}⚠ Result was {result}, expected 7{reset}")
     print()
 
-    print(f"  {DIM}Docs: https://github.com/SuperInstance/flux-runtime{RESET}")
-    print(f"  {DIM}Run 'flux --help' for all available commands.{RESET}")
+    print(f"  {dim}Docs: https://github.com/SuperInstance/flux-runtime{reset}")
+    print(f"  {dim}Run 'flux --help' for all available commands.{reset}")
     print()
 
 

@@ -312,7 +312,7 @@ class MacroPreprocessor:
                         hints=[f"Definition: {name}({', '.join(macro.params)})"],
                     )
                 body = macro.body
-                for param, arg in zip(macro.params, args):
+                for param, arg in zip(macro.params, args, strict=False):
                     body = body.replace(param, arg)
                 line = line[:match.start()] + body + line[match.end():]
                 return line

@@ -522,11 +522,11 @@ class CrossAssembler:
             # addresses to relative offsets so the VM's `pc += offset` works.
             # After decoding, the VM's pc points past the instruction, so the
             # offset must be: target - (instr_start + instr_size)
-            _JUMP_MNEMONICS = {
+            _jump_mnemonics = {
                 "JMP", "JZ", "JNZ", "CALL",
                 "JE", "JNE", "JL", "JGE", "JG", "JLE",
             }
-            if mnemonic in _JUMP_MNEMONICS and operands[-1].strip() in labels:
+            if mnemonic in _jump_mnemonics and operands[-1].strip() in labels:
                 imm = imm - instr_offset - op_def.size
 
             if imm < -32768 or imm > 65535:
@@ -582,10 +582,10 @@ class CrossAssembler:
 
         # Jump mnemonics take a PC-relative offset: the unified VM's pc points
         # past the 4-byte instruction, so offset = target - (start + size).
-        _UNIFIED_JUMPS = {"JZ", "JNZ", "JLT", "JGT", "JMP", "CALL", "LOOP"}
+        _unified_jumps = {"JZ", "JNZ", "JLT", "JGT", "JMP", "CALL", "LOOP"}
 
         def _rel_if_label(imm: int) -> int:
-            if mnemonic in _UNIFIED_JUMPS and operands[-1].strip() in labels:
+            if mnemonic in _unified_jumps and operands[-1].strip() in labels:
                 return imm - instr_offset - op_def.size
             return imm
 

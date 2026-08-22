@@ -194,7 +194,7 @@ class TileGraph:
         pat_names = list(pattern._nodes.keys())
 
         for perm in permutations(graph_names, len(pat_names)):
-            mapping = dict(zip(pat_names, perm))
+            mapping = dict(zip(pat_names, perm, strict=False))
             type_match = all(
                 self._nodes[mapping[pn]].tile_type == pattern_types[pn]
                 for pn in pat_names

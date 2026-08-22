@@ -318,7 +318,7 @@ class FluxDebugger(Interpreter):
             )
             flag_changes: dict[str, tuple] = {}
             flag_names = ["zero", "sign", "carry", "overflow"]
-            for i, (old, new) in enumerate(zip(flags_before, flags_after)):
+            for i, (old, new) in enumerate(zip(flags_before, flags_after, strict=False)):
                 if old != new:
                     flag_changes[flag_names[i]] = (old, new)
 

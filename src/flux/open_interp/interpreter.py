@@ -149,10 +149,14 @@ class OpenFluxInterpreter:
         m = re.search(r'(\d+)\s*([+\-*/x÷])\s*(\d+)', text)
         if m:
             a, op, b = int(m.group(1)), m.group(2), int(m.group(3))
-            if op in ('+',): return a + b
-            if op in ('-',): return a - b
-            if op in ('*', 'x'): return a * b
-            if op in ('/', '÷') and b != 0: return int(a / b)
+            if op in ('+',):
+                return a + b
+            if op in ('-',):
+                return a - b
+            if op in ('*', 'x'):
+                return a * b
+            if op in ('/', '÷') and b != 0:
+                return int(a / b)
         return None
 
     def list_vocabulary(self) -> list[str]:

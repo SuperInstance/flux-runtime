@@ -111,17 +111,17 @@ class DeadlockDetector:
         Returns:
             A list of agent IDs forming the cycle, or None if no cycle exists.
         """
-        WHITE, GRAY, BLACK = 0, 1, 2
-        color: dict[str, int] = {node: WHITE for node in self._wait_graph}
+        white, gray, black = 0, 1, 2
+        color: dict[str, int] = {node: white for node in self._wait_graph}
         parent: dict[str, str | None] = {}
 
         def dfs(node: str) -> list[str] | None:
-            color[node] = GRAY
+            color[node] = gray
             for neighbor in self._wait_graph.get(node, set()):
                 if neighbor not in color:
                     # Neighbor not in graph — skip
                     continue
-                if color[neighbor] == GRAY:
+                if color[neighbor] == gray:
                     # Found cycle — reconstruct path
                     cycle = [neighbor, node]
                     curr: str | None = node
@@ -131,16 +131,16 @@ class DeadlockDetector:
                             break
                         cycle.append(curr)
                     return cycle
-                if color[neighbor] == WHITE:
+                if color[neighbor] == white:
                     parent[neighbor] = node
                     result = dfs(neighbor)
                     if result:
                         return result
-            color[node] = BLACK
+            color[node] = black
             return None
 
         for node in list(self._wait_graph.keys()):
-            if color[node] == WHITE:
+            if color[node] == white:
                 result = dfs(node)
                 if result:
                     return result

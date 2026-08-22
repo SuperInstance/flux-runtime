@@ -143,7 +143,7 @@ def test_c_unknown_type_raises():
     u = TypeUnifier()
     try:
         u.from_c("unknown_type_xyz")
-        assert False, "Should have raised ValueError"
+        raise AssertionError("Should have raised ValueError")
     except ValueError:
         pass  # expected
 
@@ -455,7 +455,7 @@ def test_map_type_language_dispatch():
 
     try:
         u.map_type("int", "java")
-        assert False, "Should have raised ValueError"
+        raise AssertionError("Should have raised ValueError")
     except ValueError:
         pass
 
