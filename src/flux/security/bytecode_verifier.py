@@ -472,21 +472,19 @@ class BytecodeVerifier:
                 # We cannot know rs1 at verification time, but we can note it
                 continue
 
-            if insn.opcode in {0x43, 0xE0}:  # JMP, JMPL (relative jumps)
-                if insn.immediates:
-                    target = insn.offset + insn.immediates[0]
-                    if target < 0 or target >= len(bytecode) or target not in valid_offsets:
-                        self._add(report, 3, Severity.ERROR, insn.offset, insn.opcode,
-                                  f"Jump target 0x{target:04X} invalid (out of bounds or misaligned)",
-                                  "Adjust immediate to land on valid instruction offset")
+            if insn.opcode in {0x43, 0xE0} and insn.immediates:  # JMP, JMPL (relative jumps)
+                target = insn.offset + insn.immediates[0]
+                if target < 0 or target >= len(bytecode) or target not in valid_offsets:
+                    self._add(report, 3, Severity.ERROR, insn.offset, insn.opcode,
+                              f"Jump target 0x{target:04X} invalid (out of bounds or misaligned)",
+                              "Adjust immediate to land on valid instruction offset")
 
-            if insn.opcode in {0x44, 0xE1, 0x45, 0xE2}:  # JAL, JALL, CALL, CALLL
-                if insn.immediates:
-                    target = insn.offset + insn.immediates[0]
-                    if target < 0 or target >= len(bytecode) or target not in valid_offsets:
-                        self._add(report, 3, Severity.ERROR, insn.offset, insn.opcode,
-                                  f"Jump/call target 0x{target:04X} invalid (out of bounds or misaligned)",
-                                  "Adjust immediate to land on valid instruction offset")
+            if insn.opcode in {0x44, 0xE1, 0x45, 0xE2} and insn.immediates:  # JAL, JALL, CALL, CALLL
+                target = insn.offset + insn.immediates[0]
+                if target < 0 or target >= len(bytecode) or target not in valid_offsets:
+                    self._add(report, 3, Severity.ERROR, insn.offset, insn.opcode,
+                              f"Jump/call target 0x{target:04X} invalid (out of bounds or misaligned)",
+                              "Adjust immediate to land on valid instruction offset")
 
         # Check that program has at least one HALT or HALT_ERR
         has_halt = any(insn.opcode in (0x00, 0xF0) for insn in instructions if insn.is_valid)
@@ -574,18 +572,16 @@ class BytecodeVerifier:
                               f"Grant SYSTEM capability or remove {name}")
 
             # Check sensor ops (0x80-0x8F)
-            if 0x80 <= insn.opcode <= 0x8F:
-                if "sensor" not in self.capabilities and "io_sensor" not in self.capabilities:
-                    self._add(report, 5, Severity.WARNING, insn.offset, insn.opcode,
-                              f"Sensor opcode 0x{insn.opcode:02X} used without IO_SENSOR capability",
-                              "Grant IO_SENSOR capability or remove sensor operations")
+            if 0x80 <= insn.opcode <= 0x8F and "sensor" not in self.capabilities and "io_sensor" not in self.capabilities:
+                self._add(report, 5, Severity.WARNING, insn.offset, insn.opcode,
+                          f"Sensor opcode 0x{insn.opcode:02X} used without IO_SENSOR capability",
+                          "Grant IO_SENSOR capability or remove sensor operations")
 
             # Check GPU ops
-            if insn.opcode in {0xDB, 0xDC, 0xDD, 0xDE}:
-                if "compute" not in self.capabilities:
-                    self._add(report, 5, Severity.WARNING, insn.offset, insn.opcode,
-                              f"GPU opcode 0x{insn.opcode:02X} used without COMPUTE capability",
-                              "Grant COMPUTE capability or remove GPU operations")
+            if insn.opcode in {0xDB, 0xDC, 0xDD, 0xDE} and "compute" not in self.capabilities:
+                self._add(report, 5, Severity.WARNING, insn.offset, insn.opcode,
+                          f"GPU opcode 0x{insn.opcode:02X} used without COMPUTE capability",
+                          "Grant COMPUTE capability or remove GPU operations")
 
     # ── Pass 6: Dangerous Pattern Detection ───────────────────────────────
 
@@ -610,11 +606,10 @@ class BytecodeVerifier:
                 has_load = True
 
             # Infinite loop detection: LOOP (0x46) with large count
-            if insn.opcode == 0x46 and insn.immediates:
-                if insn.immediates[0] == 0:
-                    self._add(report, 6, Severity.WARNING, insn.offset, insn.opcode,
-                              "LOOP with immediate=0 may cause infinite loop",
-                              "Set a non-zero loop bound")
+            if insn.opcode == 0x46 and insn.immediates and insn.immediates[0] == 0:
+                self._add(report, 6, Severity.WARNING, insn.offset, insn.opcode,
+                          "LOOP with immediate=0 may cause infinite loop",
+                          "Set a non-zero loop bound")
 
             # Unconditional jump backward to self (tight infinite loop)
             if insn.opcode == 0x43 and insn.immediates:
@@ -625,13 +620,13 @@ class BytecodeVerifier:
                               "Add exit condition or use LOOP with bounded count")
 
             # Recursive CALL without apparent base case
-            if insn.opcode in {0x45, 0xE2}:  # CALL, CALLL
-                if insn.immediates and insn.immediates[0] != 0xFFFF:
-                    target = insn.offset + insn.immediates[0]
-                    if target == insn.offset:
-                        self._add(report, 6, Severity.WARNING, insn.offset, insn.opcode,
-                                  "CALL to self detected — unbounded recursive call likely",
-                                  "Add base case check before recursive CALL")
+            if (insn.opcode in {0x45, 0xE2}  # CALL, CALLL
+                    and insn.immediates and insn.immediates[0] != 0xFFFF):
+                target = insn.offset + insn.immediates[0]
+                if target == insn.offset:
+                    self._add(report, 6, Severity.WARNING, insn.offset, insn.opcode,
+                              "CALL to self detected — unbounded recursive call likely",
+                              "Add base case check before recursive CALL")
 
         # Write-execute overlap: program can write to its own code
         if has_store and has_load:
@@ -666,11 +661,11 @@ class BytecodeVerifier:
         for insn in instructions:
             if not insn.is_valid:
                 continue
-            if insn.opcode in {0x4E, 0x4F} and insn.immediates:  # COPY, FILL
-                if insn.immediates[0] == 0:
-                    self._add(report, 7, Severity.INFO, insn.offset, insn.opcode,
-                              "COPY/FILL with length=0 — no-op but wastes encode space",
-                              "Remove or set to actual copy length")
+            if insn.opcode in {0x4E, 0x4F} and insn.immediates and insn.immediates[0] == 0:
+                # COPY, FILL with zero length
+                self._add(report, 7, Severity.INFO, insn.offset, insn.opcode,
+                          "COPY/FILL with length=0 — no-op but wastes encode space",
+                          "Remove or set to actual copy length")
 
 
 # ─── Convenience Functions ────────────────────────────────────────────────────

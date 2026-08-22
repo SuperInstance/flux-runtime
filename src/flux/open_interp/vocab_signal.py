@@ -11,7 +11,7 @@ import os
 import re
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, ClassVar
 
 
 @dataclass
@@ -166,7 +166,7 @@ class RepoSignaler:
     """
 
     # Known dialect patterns mapped to domain specialties
-    DIALECT_PATTERNS = {
+    DIALECT_PATTERNS: ClassVar[dict[str, list[str]]] = {
         "maritime": ["maritime", "naval", "ship", "ocean", "port"],
         "math": ["math", "arithmetic", "algebra", "calculus", "sequence"],
         "loops": ["loop", "iterate", "repeat", "while", "for"],

@@ -126,7 +126,7 @@ class ElfHeader:
         null_section = Section(name="", section_type=SHT_NULL)
 
         # Build string table section
-        all_section_names = [s.name for s in [null_section, code_section, data_section] + self.sections]
+        all_section_names = [s.name for s in [null_section, code_section, data_section, *self.sections]]
         strtab_data = self._build_string_table(all_section_names)
         strtab_section = Section(
             name=".shstrtab",

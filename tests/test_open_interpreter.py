@@ -13,7 +13,7 @@ from flux.open_interpreter import (
 
 # ── Helper Functions ───────────────────────────────────────────────────────────
 
-def assert_success(result: ExecutionResult, expected_result: int = None) -> None:
+def assert_success(result: ExecutionResult, expected_result: int | None = None) -> None:
     """Assert that execution was successful."""
     assert result.success, f"Execution failed: {result.error}"
     if expected_result is not None:

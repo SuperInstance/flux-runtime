@@ -39,7 +39,7 @@ class ObjectFile:
     entry_point: int = 0xFFFFFFFF
 
     @staticmethod
-    def MAGIC() -> bytes:
+    def MAGIC() -> bytes:  # noqa: N802  # named for the file-format magic field it returns
         return b"FLUXOBJ\x00"  # 8 bytes, null-padded for struct alignment
 
     HEADER_FORMAT = "<8sIIIII"  # magic(8) + header_size(4) + code_size(4) + n_symbols(4) + n_relocs(4) + entry(4)

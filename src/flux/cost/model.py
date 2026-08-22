@@ -8,6 +8,7 @@ prediction models.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import ClassVar
 
 from flux.fir.blocks import FIRFunction, FIRModule
 from flux.fir.instructions import (
@@ -87,7 +88,7 @@ class CostModel:
     """
 
     # Base instruction costs (nanoseconds)
-    INSTRUCTION_COSTS: dict[str, float] = {
+    INSTRUCTION_COSTS: ClassVar[dict[str, float]] = {
         # Integer ALU
         "iadd": 0.3, "isub": 0.3, "imul": 0.3, "ineg": 0.3,
         "iand": 0.3, "ior": 0.3, "ixor": 0.3, "ishl": 0.3, "ishr": 0.3,
@@ -116,15 +117,13 @@ class CostModel:
         "tell": 10000.0, "ask": 10000.0, "delegate": 10000.0,
         "trustcheck": 100.0, "caprequire": 100.0,
     }
-
     # Memory hierarchy: (latency_ns, probability_of_accessing_this_level)
-    MEMORY_HIERARCHY: dict[str, tuple[float, float]] = {
+    MEMORY_HIERARCHY: ClassVar[dict[str, tuple[float, float]]] = {
         "L1": (0.5, 0.000032),
         "L2": (3.0, 0.05),
         "L3": (10.0, 0.20),
         "DRAM": (80.0, 0.749968),
     }
-
     # Branch prediction accuracy
     BRANCH_PREDICTION_ACCURACY: float = 0.90
     BRANCH_MISPREDICT_COST_NS: float = 5.0

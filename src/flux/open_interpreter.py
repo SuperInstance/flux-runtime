@@ -312,23 +312,17 @@ class OpenFluxInterpreter:
             if len(parts) == 2:
                 # JMP label
                 target = parts[1].rstrip(',')
-                if target in labels:
-                    # Forward jump: target is ahead, offset is positive
-                    # Backward jump: target is behind, offset is negative
-                    # We can't calculate accurately without knowing current position
-                    # For now, use a placeholder that will be fixed by a second pass
-                    offset = labels[target] - 10  # Rough estimate
-                else:
-                    offset = 0
+                # Forward jump: target is ahead, offset is positive
+                # Backward jump: target is behind, offset is negative
+                # We can't calculate accurately without knowing current position
+                # For now, use a placeholder that will be fixed by a second pass
+                offset = labels[target] - 10 if target in labels else 0  # Rough estimate
                 return struct.pack("<BBh", opcode, 0, offset)
             else:
                 # JZ R0, label
                 reg = self._parse_register(parts[1])
                 target = parts[2].rstrip(',')
-                if target in labels:
-                    offset = labels[target] - 10  # Rough estimate
-                else:
-                    offset = 0
+                offset = labels[target] - 10 if target in labels else 0  # Rough estimate
                 return struct.pack("<BBh", opcode, reg, offset)
 
         elif opcode in {Op.INC, Op.DEC} and len(parts) >= 2:
@@ -397,11 +391,8 @@ class OpenFluxInterpreter:
                 reg = self._parse_register(parts[1])
                 target = parts[2].rstrip(',')
 
-            if target in labels:
-                # Calculate offset: target - after_instruction
-                offset = labels[target] - after_instr_offset
-            else:
-                offset = 0
+            # Offset: unknown-label placeholders are patched by a second pass
+            offset = (labels[target] - after_instr_offset) if target in labels else 0
 
             return struct.pack("<BBh", opcode, reg, offset)
 

@@ -35,8 +35,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-
-from flux.retro.research.session import (
+from flux.retro.research.session import (  # noqa: E402  # requires sys.path setup above
     Reflection,
     ResearchSession,
 )

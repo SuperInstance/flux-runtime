@@ -805,7 +805,7 @@ class DigitalTwin:
 
         # Add an inline optimization if we have modules
         if genome.modules:
-            target = list(genome.modules.keys())[0]
+            target = next(iter(genome.modules.keys()))
             proposals.append(MutationProposal(
                 strategy=MutationStrategy.INLINE_OPTIMIZATION,
                 target=target,

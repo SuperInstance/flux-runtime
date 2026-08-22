@@ -942,7 +942,7 @@ class TestNegotiator:
             capabilities=[],
             trust_level=0.6,
         )
-        neg.accept_offer(list(neg._offers.keys())[0], "bob")
+        neg.accept_offer(next(iter(neg._offers.keys())), "bob")
 
         assert neg.get_trust_level("alice", "bob") == 0.6
 
@@ -952,7 +952,7 @@ class TestNegotiator:
         assert not neg.has_agreement("alice", "bob")
 
         neg.create_offer(agent_name="alice", capabilities=[])
-        neg.accept_offer(list(neg._offers.keys())[0], "bob")
+        neg.accept_offer(next(iter(neg._offers.keys())), "bob")
 
         assert neg.has_agreement("alice", "bob")
         assert neg.has_agreement("bob", "alice")

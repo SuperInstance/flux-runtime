@@ -244,7 +244,7 @@ def _collect_free_vars(ty: FIRType) -> set[str]:
         for _, f in ty.fields:
             result |= _collect_free_vars(f)
 
-    elif isinstance(ty, (ArrayType, VectorType)) or isinstance(ty, RefType):
+    elif isinstance(ty, (ArrayType, VectorType, RefType)):
         result |= _collect_free_vars(ty.element)
 
     return result

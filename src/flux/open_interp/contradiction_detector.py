@@ -277,7 +277,7 @@ class ContradictionDetector:
         def dfs(node: str, path_list: list[str]) -> bool:
             if node in path:
                 cycle_start = path_list.index(node)
-                cycle = path_list[cycle_start:] + [node]
+                cycle = [*path_list[cycle_start:], node]
                 issues.append(Contradiction(
                     severity=Severity.CRITICAL,
                     entry_a=node,

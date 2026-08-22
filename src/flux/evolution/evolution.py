@@ -22,6 +22,7 @@ The evolution loop:
 
 from __future__ import annotations
 
+import contextlib
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -231,10 +232,9 @@ class EvolutionEngine:
             report.patterns_discovered += step.patterns_found
 
             # Check convergence
-            if gen > 0 and step.record and not step.record.is_improvement:
-                if step.record.fitness_delta >= -self._convergence_threshold:
-                    # Converged — no significant improvement
-                    break
+            if gen > 0 and step.record and not step.record.is_improvement and step.record.fitness_delta >= -self._convergence_threshold:
+                # Converged — no significant improvement
+                break
 
         # Final state
         final_genome = Genome()
@@ -367,10 +367,8 @@ class EvolutionEngine:
         # Capture module calls from profiler before
         calls_before = set(self.profiler.call_counts.keys())
 
-        try:
-            workload()
-        except Exception:
-            pass  # Don't let workload errors stop evolution
+        with contextlib.suppress(Exception):
+            workload()  # workload errors must not stop evolution
 
         elapsed = time.monotonic_ns() - start
 

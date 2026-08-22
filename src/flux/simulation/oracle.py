@@ -431,7 +431,7 @@ class DecisionOracle:
         if best_action.startswith("recompile:"):
             alternatives.append("wait")
             if genome.tiles:
-                alternatives.append(f"replace_tile:{list(genome.tiles.keys())[0]}")
+                alternatives.append(f"replace_tile:{next(iter(genome.tiles.keys()))}")
         elif best_action.startswith("replace_tile:"):
             alternatives.append("wait")
 

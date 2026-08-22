@@ -323,35 +323,35 @@ class Interpreter:
 
     # ── Decode helpers ─────────────────────────────────────────────────────
 
-    def _decode_operands_A(self) -> tuple:
+    def _decode_operands_A(self) -> tuple:  # noqa: N802  # operand-format decode family (Format A)
         """No operands (Format A)."""
         return ()
 
-    def _decode_operands_B(self) -> tuple[int]:
+    def _decode_operands_B(self) -> tuple[int]:  # noqa: N802  # operand-format decode family (Format B)
         """One register (Format B)."""
         reg = self._fetch_u8()
         return (reg,)
 
-    def _decode_operands_C(self) -> tuple[int, int]:
+    def _decode_operands_C(self) -> tuple[int, int]:  # noqa: N802  # operand-format decode family (Format C)
         """Two registers: rd, rs1 (Format C)."""
         rd = self._fetch_u8()
         rs1 = self._fetch_u8()
         return (rd, rs1)
 
-    def _decode_operands_D(self) -> tuple[int, int]:
+    def _decode_operands_D(self) -> tuple[int, int]:  # noqa: N802  # operand-format decode family (Format D)
         """Register + signed i16 offset (Format D)."""
         rs1 = self._fetch_u8()
         offset = self._fetch_i16()
         return (rs1, offset)
 
-    def _decode_operands_E(self) -> tuple[int, int, int]:
+    def _decode_operands_E(self) -> tuple[int, int, int]:  # noqa: N802  # operand-format decode family (Format E)
         """Three registers: rd, rs1, rs2 (Format E)."""
         rd = self._fetch_u8()
         rs1 = self._fetch_u8()
         rs2 = self._fetch_u8()
         return (rd, rs1, rs2)
 
-    def _decode_operands_MOVI(self) -> tuple[int, int]:
+    def _decode_operands_MOVI(self) -> tuple[int, int]:  # noqa: N802  # operand-format decode family (MOVI format)
         """Register + signed i16 immediate (MOVI format)."""
         reg = self._fetch_u8()
         imm = self._fetch_i16()

@@ -329,16 +329,16 @@ class LiveCodingSession:
                 self._active_tiles[record.tile_name] = instance
                 self._active_tile_params[record.tile_name] = record.params_after
 
-        elif record.action == "remove":
-            if record.tile_name in self._active_tiles:
-                del self._active_tiles[record.tile_name]
-                self._active_tile_params.pop(record.tile_name, None)
+        elif record.action == "remove" and record.tile_name in self._active_tiles:
+            del self._active_tiles[record.tile_name]
+            self._active_tile_params.pop(record.tile_name, None)
 
-        elif record.action == "modify":
-            if record.tile_name in self._active_tiles and record.tile_ref is not None:
-                instance = record.tile_ref.instantiate(**record.params_after)
-                self._active_tiles[record.tile_name] = instance
-                self._active_tile_params[record.tile_name] = record.params_after
+        elif (record.action == "modify"
+                and record.tile_name in self._active_tiles
+                and record.tile_ref is not None):
+            instance = record.tile_ref.instantiate(**record.params_after)
+            self._active_tiles[record.tile_name] = instance
+            self._active_tile_params[record.tile_name] = record.params_after
 
         self._undo_stack.append(record)
         self._total_changes += 1

@@ -243,7 +243,7 @@ class TilingInterpreter:
         except Exception as e:
             return SandboxResult(success=False, error=str(e))
 
-    def list_tiles(self, level: int = None) -> list[dict]:
+    def list_tiles(self, level: int | None = None) -> list[dict]:
         """List all tiles, optionally filtered by level."""
         tiles = list(self.tiles.values())
         if level is not None:

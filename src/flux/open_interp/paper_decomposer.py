@@ -27,7 +27,7 @@ from .decomposer import DecomposedVocabulary
 
 class PaperSection:
     """A section extracted from a paper."""
-    def __init__(self, title: str, level: int, content: str, formulas: list[str] = None):
+    def __init__(self, title: str, level: int, content: str, formulas: list[str] | None = None):
         self.title = title
         self.level = level
         self.content = content

@@ -10,6 +10,7 @@ from __future__ import annotations
 import math
 import random
 from dataclasses import dataclass
+from typing import ClassVar
 
 # ── Bandit Strategy ──────────────────────────────────────────────────────────
 
@@ -79,7 +80,7 @@ class MutationBandit:
     - Update based on actual outcome
     """
 
-    STRATEGIES = [
+    STRATEGIES: ClassVar[list[str]] = [
         "recompile_language",
         "fuse_pattern",
         "replace_tile",

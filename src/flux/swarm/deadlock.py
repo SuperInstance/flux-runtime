@@ -254,7 +254,7 @@ class DeadlockDetector:
 
         return DeadlockResolution(
             description=(
-                f"Deadlock detected in cycle: {' → '.join(cycle + [cycle[0]])}. "
+                f"Deadlock detected in cycle: {' → '.join([*cycle, cycle[0]])}. "
                 f"Agent '{yield_agent}' should yield to break the cycle."
             ),
             yield_agent=yield_agent,

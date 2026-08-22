@@ -10,7 +10,7 @@ This is where Cocapn IP becomes operational code.
 import hashlib
 import time
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, ClassVar
 
 
 @dataclass
@@ -82,7 +82,7 @@ class PaperBridge:
     _last_confidence: float | None = None
 
     # Rate tracking
-    _rate_history: list[tuple] = []
+    _rate_history: ClassVar[list[tuple]] = []
 
     def confidence_cascade(self, value: float, deadband: float = 0.1) -> ConfidenceResult:
         """

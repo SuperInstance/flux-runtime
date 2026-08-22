@@ -97,7 +97,7 @@ class MarkovChainText:
         a.jmp("done")
 
         a.label("found")
-        a.movi(5, f_idx)
+        a.movi(5, _f_idx)
 
         a.label("done")
         a.halt()

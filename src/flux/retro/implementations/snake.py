@@ -246,7 +246,7 @@ class Snake:
             "score": score,
             "alive": alive,
             "steps": len(log),
-            "snake_length": len(snake) if alive else len(snake),
+            "snake_length": len(snake),
         }
 
     def _place_food(self, grid: bytearray) -> tuple[int, int]:
@@ -273,22 +273,19 @@ class Snake:
 
         for d in preferred:
             nr, nc = hr + _DIR_DR[d], hc + _DIR_DC[d]
-            if 0 <= nr < _GRID and 0 <= nc < _GRID:
-                if grid[nr * _GRID + nc] not in (1, 3):
-                    return d
+            if 0 <= nr < _GRID and 0 <= nc < _GRID and grid[nr * _GRID + nc] not in (1, 3):
+                return d
 
         # Try current direction
         nr, nc = hr + _DIR_DR[current_dir], hc + _DIR_DC[current_dir]
-        if 0 <= nr < _GRID and 0 <= nc < _GRID:
-            if grid[nr * _GRID + nc] not in (1, 3):
-                return current_dir
+        if 0 <= nr < _GRID and 0 <= nc < _GRID and grid[nr * _GRID + nc] not in (1, 3):
+            return current_dir
 
         # Try any valid direction
         for d in range(4):
             nr, nc = hr + _DIR_DR[d], hc + _DIR_DC[d]
-            if 0 <= nr < _GRID and 0 <= nc < _GRID:
-                if grid[nr * _GRID + nc] not in (1, 3):
-                    return d
+            if 0 <= nr < _GRID and 0 <= nc < _GRID and grid[nr * _GRID + nc] not in (1, 3):
+                return d
 
         return current_dir  # no valid move
 
@@ -324,7 +321,7 @@ class Snake:
 
         # Show key frames
         log = result["log"]
-        frames = [0] + list(range(4, len(log), 5)) + [len(log) - 1]
+        frames = [0, *list(range(4, len(log), 5)), len(log) - 1]
         frames = sorted(set(f for f in frames if f < len(log)))
 
         dir_names = {0: "→", 1: "↓", 2: "←", 3: "↑"}

@@ -728,8 +728,8 @@ def test_to_dict_deep():
     """to_dict handles deep nesting."""
     root = ModuleContainer("T", Granularity.TRAIN)
     c = root.add_child("C", Granularity.CARRIAGE)
-    l = c.add_child("L", Granularity.LUGGAGE)
-    l.load_card("card_a", "hello")
+    lug = c.add_child("L", Granularity.LUGGAGE)
+    lug.load_card("card_a", "hello")
     d = root.to_dict()
     assert "L" in d["children"]["C"]["children"]
     assert "card_a" in d["children"]["C"]["children"]["L"]["cards"]

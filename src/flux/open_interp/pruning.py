@@ -190,11 +190,10 @@ class VocabularyPruner:
             for entry in vocab.entries:
                 # Only keep simple primitives, no loops
                 tags = set(t.lower() for t in entry.tags)
-                if "loop" not in tags and "control-flow" not in tags:
-                    if tracker.get_call_count(entry.name) >= 1:
-                        pruned.entries.append(entry)
-                        if len(pruned.entries) >= 20:
-                            break
+                if "loop" not in tags and "control-flow" not in tags and tracker.get_call_count(entry.name) >= 1:
+                    pruned.entries.append(entry)
+                    if len(pruned.entries) >= 20:
+                        break
             return pruned
 
         elif target == "edge":

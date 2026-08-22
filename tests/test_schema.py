@@ -47,7 +47,7 @@ class TestArchitectureSchema:
     def test_core_layers_present(self):
         """All core pipeline layers must be present."""
         arch = get_architecture_schema()
-        layer_ids = {l["id"] for l in arch["layers"]}
+        layer_ids = {layer["id"] for layer in arch["layers"]}
         required = [
             "L0_PARSER", "L1_FIR", "L2_BYTECODE", "L3_VM",
             "L2_OPTIMIZER", "L2_JIT", "L3_COMPILER", "L4_PIPELINE",
@@ -59,7 +59,7 @@ class TestArchitectureSchema:
     def test_extension_layers_present(self):
         """All extension layers must be present."""
         arch = get_architecture_schema()
-        layer_ids = {l["id"] for l in arch["layers"]}
+        layer_ids = {layer["id"] for layer in arch["layers"]}
         required = [
             "EXT_MODULES", "EXT_ADAPTIVE", "EXT_TILES", "EXT_EVOLUTION",
             "EXT_FLYWHEEL", "EXT_SWARM", "EXT_MEMORY", "EXT_SIMULATION",
@@ -605,7 +605,7 @@ class TestSchemaLoading:
 
     def test_architecture_query_layer(self):
         arch = get_architecture_schema()
-        vm_layer = next(l for l in arch["layers"] if l["id"] == "L3_VM")
+        vm_layer = next(layer for layer in arch["layers"] if layer["id"] == "L3_VM")
         assert "Interpreter" in vm_layer["name"]
 
     def test_opcode_query_expensive(self):

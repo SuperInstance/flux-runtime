@@ -660,7 +660,7 @@ class CrossAssembler:
             raise AsmError(
                 message=f"Cannot evaluate expression: {expr}",
                 kind=AsmErrorKind.INVALID_OPERAND,
-            )
+            ) from None  # eval() failure detail is noise; message is self-describing
 
     @staticmethod
     def _parse_int(s: str) -> int:

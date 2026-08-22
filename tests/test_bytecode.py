@@ -385,18 +385,18 @@ def test_encode_module():
     assert func_names == {"add", "noop", "ping_agent"}, f"Unexpected function names: {func_names}"
 
     # Verify 'add' function has IADD + RET
-    add_func = [f for f in funcs if f.name == "add"][0]
+    add_func = next(f for f in funcs if f.name == "add")
     opcodes = [i.opcode for i in add_func.instructions]
     assert Op.IADD in opcodes, "add function should contain IADD"
     assert Op.RET in opcodes, "add function should contain RET"
 
     # Verify 'noop' function has just RET
-    noop_func = [f for f in funcs if f.name == "noop"][0]
+    noop_func = next(f for f in funcs if f.name == "noop")
     assert len(noop_func.instructions) >= 1
     assert noop_func.instructions[-1].opcode == Op.RET
 
     # Verify 'ping_agent' has TELL + RET
-    ping_func = [f for f in funcs if f.name == "ping_agent"][0]
+    ping_func = next(f for f in funcs if f.name == "ping_agent")
     opcodes = [i.opcode for i in ping_func.instructions]
     assert Op.TELL in opcodes, "ping_agent should contain TELL"
     assert Op.RET in opcodes, "ping_agent should contain RET"

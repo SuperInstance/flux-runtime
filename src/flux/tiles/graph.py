@@ -181,8 +181,8 @@ class TileGraph:
 
         # For single-node patterns
         if len(pattern._nodes) == 1:
-            pat_name = list(pattern._nodes.keys())[0]
-            pat_type = list(pattern_types.values())[0]
+            pat_name = next(iter(pattern._nodes.keys()))
+            pat_type = next(iter(pattern_types.values()))
             for g_name, g_inst in self._nodes.items():
                 if g_inst.tile_type == pat_type:
                     matches.append({pat_name: g_name})

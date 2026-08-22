@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, ClassVar
 
 from flux.cost.model import CostModel
 
@@ -101,7 +101,7 @@ class PerformancePredictor:
     """
 
     # Speed factors for different languages
-    SPEED_FACTORS: dict[str, float] = {
+    SPEED_FACTORS: ClassVar[dict[str, float]] = {
         "python": 1.0,
         "typescript": 2.0,
         "csharp": 4.0,
@@ -109,9 +109,8 @@ class PerformancePredictor:
         "c_simd": 16.0,
         "rust": 10.0,
     }
-
     # Base execution times per language (nanoseconds for typical function call)
-    BASE_TIMES_NS: dict[str, float] = {
+    BASE_TIMES_NS: ClassVar[dict[str, float]] = {
         "python": 10000.0,
         "typescript": 5000.0,
         "csharp": 2500.0,
@@ -119,7 +118,6 @@ class PerformancePredictor:
         "c_simd": 625.0,
         "rust": 1000.0,
     }
-
     def __init__(self, cost_model: CostModel, memory_store: MemoryStore | None = None) -> None:
         self.cost_model = cost_model
         self.store = memory_store or MemoryStore()

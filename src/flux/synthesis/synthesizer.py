@@ -395,7 +395,9 @@ class FluxSynthesizer:
         Returns:
             EvolutionReport for the single step.
         """
-        from flux.evolution.evolution import EvolutionReport as ER
+        from flux.evolution.evolution import (
+            EvolutionReport as ER,  # noqa: N817  # deliberate short alias
+        )
 
         step = self.evolution.step(
             module_root=self.root,

@@ -8,6 +8,7 @@ memory hierarchy energy models.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import ClassVar
 
 from flux.cost.model import CostModel
 from flux.fir.blocks import FIRFunction
@@ -79,7 +80,7 @@ class EnergyModel(CostModel):
     """
 
     # Energy costs per instruction (nanojoules)
-    ENERGY_COSTS: dict[str, float] = {
+    ENERGY_COSTS: ClassVar[dict[str, float]] = {
         # Integer ALU
         "iadd": 0.1, "isub": 0.1, "imul": 0.1, "ineg": 0.1,
         "iand": 0.1, "ior": 0.1, "ixor": 0.1, "ishl": 0.1, "ishr": 0.1,
@@ -108,15 +109,13 @@ class EnergyModel(CostModel):
         "tell": 5000.0, "ask": 5000.0, "delegate": 5000.0,
         "trustcheck": 50.0, "caprequire": 50.0,
     }
-
     # Memory hierarchy energy (nanojoules per access)
-    MEMORY_ENERGY: dict[str, tuple[float, float]] = {
+    MEMORY_ENERGY: ClassVar[dict[str, tuple[float, float]]] = {
         "L1": (0.2, 0.000032),
         "L2": (1.0, 0.05),
         "L3": (5.0, 0.20),
         "DRAM": (25.0, 0.749968),
     }
-
     def _energy_cost(self, instr: Instruction) -> tuple[float, str]:
         """Return (energy_nj, category) for a single instruction."""
         opcode = instr.opcode

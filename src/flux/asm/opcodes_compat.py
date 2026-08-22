@@ -33,7 +33,7 @@ def parse_register(s: str, loc: object | None = None) -> int:
             raise AsmError(
                 message=f"Invalid register: {s}",
                 kind=AsmErrorKind.UNKNOWN_REGISTER,
-            )
+            ) from None
     else:
         try:
             val = int(s)
@@ -41,7 +41,7 @@ def parse_register(s: str, loc: object | None = None) -> int:
             raise AsmError(
                 message=f"Invalid register: {s}",
                 kind=AsmErrorKind.UNKNOWN_REGISTER,
-            )
+            ) from None
     if not (0 <= val <= 63):
         raise AsmError(
             message=f"Register {val} out of range (0-63)",

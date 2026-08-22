@@ -9,7 +9,7 @@ Provides generative tiles that interpret rules into computation:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from flux.tiles.tile import Tile, TileType
 
@@ -117,7 +117,7 @@ class CellularAutomatonTile(Tile):
     """
 
     # Named rules
-    NAMED_RULES = {
+    NAMED_RULES: ClassVar[dict[str, int]] = {
         "rule30": 30,
         "rule110": 110,
         "rule90": 90,
@@ -245,7 +245,7 @@ class CellularAutomatonTile(Tile):
 class FractalTile(Tile):
     """Common fractals as tiles: Mandelbrot, Julia, Sierpinski, Koch."""
 
-    SUPPORTED_TYPES = {"mandelbrot", "julia", "sierpinski", "koch"}
+    SUPPORTED_TYPES: ClassVar[set[str]] = {"mandelbrot", "julia", "sierpinski", "koch"}
 
     def __init__(
         self,
@@ -409,7 +409,7 @@ class ReactionDiffusionTile(Tile):
     """
 
     # Named parameter presets
-    PRESETS = {
+    PRESETS: ClassVar[dict[str, dict[str, float]]] = {
         "spots": {"feed_rate": 0.035, "kill_rate": 0.065},
         "stripes": {"feed_rate": 0.025, "kill_rate": 0.06},
         "spirals": {"feed_rate": 0.014, "kill_rate": 0.054},
@@ -474,8 +474,8 @@ class ReactionDiffusionTile(Tile):
         self,
         u: list[list[float]],
         v: list[list[float]],
-        dU: float = 0.2,
-        dV: float = 0.1,
+        dU: float = 0.2,  # noqa: N803  # Gray-Scott diffusion-rate notation (∂U)
+        dV: float = 0.1,  # noqa: N803  # Gray-Scott diffusion-rate notation (∂V)
     ) -> tuple[list[list[float]], list[list[float]]]:
         """Advance one step of the Gray-Scott model.
 
@@ -543,7 +543,7 @@ class ReactionDiffusionTile(Tile):
             u, v = self.step(u, v)
         return u, v
 
-    def grid_stats(self, V: list[list[float]]) -> dict:
+    def grid_stats(self, V: list[list[float]]) -> dict:  # noqa: N803  # V = Gray-Scott reagent concentration
         """Compute statistics on a concentration grid.
 
         Returns:

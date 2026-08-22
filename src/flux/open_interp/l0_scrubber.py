@@ -15,6 +15,7 @@ The scrubber prevents vocabulary bloat and maintains the integrity of the L0 lay
 
 import re
 from dataclasses import dataclass
+from typing import ClassVar
 
 
 @dataclass
@@ -51,10 +52,10 @@ class L0Scrubber:
     Any candidate primitive must survive challenges against these.
     """
 
-    L0_PRIMITIVES = ['self', 'other', 'possible', 'true', 'cause', 'value', 'agreement']
+    L0_PRIMITIVES: ClassVar[list[str]] = ['self', 'other', 'possible', 'true', 'cause', 'value', 'agreement']
 
     # Semantic patterns for each primitive (simplified pattern matching)
-    SEMANTIC_PATTERNS = {
+    SEMANTIC_PATTERNS: ClassVar[dict[str, list[str]]] = {
         'self': [
             r'\b(I|me|my|myself|agent|this\s+system)\b',
             r'\b(internal|subjective|first-person)\b',

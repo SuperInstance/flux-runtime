@@ -78,7 +78,8 @@ class TestEdgeProfiler:
         with tempfile.NamedTemporaryFile(suffix=".py", delete=False, mode='w') as f:
             path = f.name
         profiler.generate_standalone(vocab, path)
-        content = open(path).read()
+        with open(path) as f:
+            content = f.read()
         assert "VOCAB" in content
         assert "lookup" in content
         os.unlink(path)

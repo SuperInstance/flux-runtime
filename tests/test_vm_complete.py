@@ -1034,7 +1034,7 @@ class TestSystemOpcodes:
         vm = _make_vm(bc)
         vm.execute()
         assert vm.regs.read_gp(0) == 0  # success
-        assert vm._resources.get(1) == True
+        assert vm._resources.get(1)
 
     def test_resource_release(self):
         """RESOURCE_RELEASE: release a resource."""
@@ -1043,7 +1043,7 @@ class TestSystemOpcodes:
         vm._resources[1] = True  # pre-acquire
         vm.execute()
         assert vm.regs.read_gp(0) == 0  # success
-        assert vm._resources.get(1) == False
+        assert not vm._resources.get(1)
 
     def test_debug_break(self):
         """DEBUG_BREAK: triggers callback."""

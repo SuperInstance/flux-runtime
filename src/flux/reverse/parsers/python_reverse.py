@@ -232,7 +232,7 @@ class PythonReverseEngineer:
                 continue  # Skip nested function defs (top-level only)
             if isinstance(child_node, ast.Expr) and isinstance(child_node.value, ast.Call):
                 self._visit_call_expr(child_node.value, mappings, source)
-            elif isinstance(child_node, ast.For) or isinstance(child_node, ast.While):
+            elif isinstance(child_node, (ast.For, ast.While)):
                 self._visit_loop(child_node, mappings, source)
             elif isinstance(child_node, ast.Try):
                 self._visit_try(child_node, mappings, source)

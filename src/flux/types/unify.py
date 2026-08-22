@@ -609,7 +609,7 @@ class TypeUnifier:
         """
         # Identity
         if source == target or (isinstance(source, FIRType) and isinstance(target, FIRType)
-                                and type(source) == type(target)
+                                and type(source) is type(target)
                                 and _type_eq(source, target)):
             return 0
 
@@ -665,12 +665,12 @@ class TypeUnifier:
 
         # Generic types with same name
         if (isinstance(source, GenericType) and isinstance(target, GenericType)
-                and source.name == target.name):
-            if len(source.args) == len(target.args):
-                return sum(
-                    self.coercion_cost(s, t)
-                    for s, t in zip(source.args, target.args, strict=False)
-                )
+                and source.name == target.name
+                and len(source.args) == len(target.args)):
+            return sum(
+                self.coercion_cost(s, t)
+                for s, t in zip(source.args, target.args, strict=False)
+            )
 
         # Incompatible
         return 100
@@ -798,7 +798,7 @@ class TypeUnifier:
 
 def _type_eq(t1: FIRType, t2: FIRType) -> bool:
     """Deep equality check for FIR types."""
-    if type(t1) != type(t2):
+    if type(t1) is not type(t2):
         return False
 
     if isinstance(t1, IntType):

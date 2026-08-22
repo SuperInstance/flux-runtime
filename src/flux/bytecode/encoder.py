@@ -304,7 +304,7 @@ class BytecodeEncoder:
 
     # ── Instruction encoding ─────────────────────────────────────────────
 
-    def _encode_instruction(self, instr: Instruction, instr_to_result: dict[object, int] = None) -> bytes:
+    def _encode_instruction(self, instr: Instruction, instr_to_result: dict[object, int] | None = None) -> bytes:
         """Encode one FIR instruction to bytecode."""
         op_name = instr.opcode
 

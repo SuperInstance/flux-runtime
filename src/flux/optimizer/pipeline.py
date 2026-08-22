@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..fir.blocks import FIRModule
 
+from typing import ClassVar
+
 from .passes import (
     ConstantFoldingPass,
     DeadCodeEliminationPass,
@@ -17,7 +19,7 @@ from .passes import (
 class OptimizationPipeline:
     """Configurable sequence of optimization passes with fixed-point iteration."""
 
-    DEFAULT_PASSES = [
+    DEFAULT_PASSES: ClassVar[list] = [
         ConstantFoldingPass,
         DeadCodeEliminationPass,
         InlineFunctionsPass,

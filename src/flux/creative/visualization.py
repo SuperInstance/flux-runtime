@@ -250,14 +250,12 @@ class ExecutionVisualizer:
         # Draw stacked bar
         bar_width = 60
         bar_parts = []
-        color_idx = 0
         block_chars = "█▓▓░░"
 
-        for _cat, count in sorted_cats:
+        for color_idx, (_cat, count) in enumerate(sorted_cats):
             block_w = max(1, int(count / total * bar_width))
             ch = block_chars[color_idx % len(block_chars)]
             bar_parts.append(f"{ch * block_w}")
-            color_idx += 1
 
         full_bar = "".join(bar_parts)[:bar_width]
         lines.append(f"  {full_bar}")

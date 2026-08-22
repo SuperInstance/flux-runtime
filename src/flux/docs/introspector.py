@@ -375,7 +375,7 @@ def _cyclomatic_complexity(node: ast.AST) -> int:
             complexity += 1
         elif isinstance(child, (ast.BoolOp,)):
             complexity += len(child.values) - 1
-        elif isinstance(child, ast.IfExp) or isinstance(child, ast.comprehension):  # ternary
+        elif isinstance(child, (ast.IfExp, ast.comprehension)):  # ternary
             complexity += 1
         # and/or in boolean ops already handled above
     return complexity

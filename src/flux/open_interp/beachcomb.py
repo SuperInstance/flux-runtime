@@ -416,7 +416,7 @@ class Beachcomber:
                     "title": title,
                     "url": issue.get('html_url', ''),
                     "author": issue.get('user', {}).get('login', ''),
-                    "labels": [l.get('name', '') for l in issue.get('labels', [])],
+                    "labels": [label.get('name', '') for label in issue.get('labels', [])],
                 })
                 seen.add(num)
 

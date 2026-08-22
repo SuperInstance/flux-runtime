@@ -405,7 +405,7 @@ class FluxMDParser:
                         if next_node.level <= node.level:
                             break
                     # Collect body nodes
-                    if isinstance(next_node, (CodeBlock, FluxCodeBlock, DataBlock, NativeBlock)) or isinstance(next_node, Paragraph):
+                    if isinstance(next_node, (CodeBlock, FluxCodeBlock, DataBlock, NativeBlock, Paragraph)):
                         directive.body.append(next_node)
                         i += 1
                     else:

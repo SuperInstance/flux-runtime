@@ -333,7 +333,7 @@ class PythonFrontendCompiler:
         # Generic for loop (while-like)
         self._compile_while(func, ast.While(
             test=ast.Constant(value=True),
-            body=stmt.body + [ast.Break()],
+            body=[*stmt.body, ast.Break()],
             orelse=[],
         ))
 
@@ -531,9 +531,8 @@ class PythonFrontendCompiler:
             return self._make_const(0, self._ctx.get_unit())
 
         # Handle int() and float() casts
-        if isinstance(node.func, ast.Name) and node.func.id in ("int", "float"):
-            if node.args:
-                return self._compile_expr(func, node.args[0])
+        if isinstance(node.func, ast.Name) and node.func.id in ("int", "float") and node.args:
+            return self._compile_expr(func, node.args[0])
 
         # Regular call
         func_name = node.func.id if isinstance(node.func, ast.Name) else "unknown"

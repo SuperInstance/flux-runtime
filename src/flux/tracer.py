@@ -46,7 +46,7 @@ from __future__ import annotations
 
 import json
 import time
-from typing import Any
+from typing import Any, ClassVar
 
 from flux.bytecode.opcodes import Op
 from flux.disasm import FluxDisassembler
@@ -272,7 +272,7 @@ class ConservationLedger:
     - System / resource:   3 units
     - SIMD:                4 units
     """
-    CATEGORY_WEIGHTS = {
+    CATEGORY_WEIGHTS: ClassVar[dict[str, int]] = {
         "arithmetic": 1,
         "comparison": 1,
         "control_flow": 1,

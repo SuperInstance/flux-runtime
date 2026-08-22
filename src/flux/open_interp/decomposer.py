@@ -133,8 +133,8 @@ class Decomposer:
         """Decompose a Python module into vocabulary patterns."""
         try:
             mod = importlib.import_module(module_name)
-        except ImportError:
-            raise ValueError(f"Cannot import module: {module_name}")
+        except ImportError as err:
+            raise ValueError(f"Cannot import module: {module_name}") from err
 
         entries = []
 

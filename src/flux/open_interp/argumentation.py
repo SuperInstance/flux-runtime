@@ -285,7 +285,7 @@ class VocabArbitration:
 
             if len(accepted) == 1:
                 # Clear winner
-                winner_arg = list(accepted.values())[0]
+                winner_arg = next(iter(accepted.values()))
                 winner_name = winner_arg.proponent
                 winning_bytecode = interp1.bytecode if winner_name == interp1.agent else interp2.bytecode
                 status = f"{winner_name} wins"

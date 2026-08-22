@@ -309,7 +309,7 @@ class TrustEngine:
         if mean_lat == 0.0:
             return 1.0
 
-        variance = sum((l - mean_lat) ** 2 for l in latencies) / len(latencies)
+        variance = sum((lat - mean_lat) ** 2 for lat in latencies) / len(latencies)
         stdev = math.sqrt(variance)
         cv = stdev / mean_lat  # coefficient of variation
 

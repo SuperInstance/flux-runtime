@@ -11,7 +11,9 @@ See memory/flux-ab-truth-2026-08-21.md and memory/flux-ab-plan-2026-08-21.md.
 """
 
 import os
+import struct as _struct
 import sys
+import zlib as _zlib
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 sys.path.insert(0, os.path.dirname(__file__))
@@ -20,6 +22,7 @@ import pytest
 from test_conformance import TEST_VECTORS
 
 from flux.a2a.signal_compiler import SignalCompiler
+from flux.asm.cross_assembler import CrossAssembler
 from flux.vm.interpreter import Interpreter, VMInvalidOpcodeError
 
 CONCRETE_VECTORS = [v for v in TEST_VECTORS if v["bytecode"] is not None]
@@ -156,11 +159,6 @@ def test_unified_unknown_opcode_raises_cleanly():
 # unified interpreter, asserting SEMANTICS (register values, payloads, control
 # flow) — not just dispatch or byte presence.
 # ═════════════════════════════════════════════════════════════════════════════
-
-import struct as _struct
-import zlib as _zlib
-
-from flux.asm.cross_assembler import CrossAssembler
 
 
 def _intern(name: str) -> int:

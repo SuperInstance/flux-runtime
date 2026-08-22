@@ -541,7 +541,8 @@ def _compile_python_fallback(source: str) -> bytes:
 
     from flux.bytecode.opcodes import Op
 
-    lines = [l.strip() for l in source.strip().splitlines() if l.strip() and not l.strip().startswith("#")]
+    lines = [raw.strip() for raw in source.strip().splitlines()
+             if raw.strip() and not raw.strip().startswith("#")]
     if not lines:
         return _compile_raw_bytecode()
 

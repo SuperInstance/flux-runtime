@@ -580,11 +580,11 @@ class TestVocabArbitration:
         framework = result['frameworks']['add']
 
         # Add some evidence to agent1's argument
-        agent1_arg = [arg for arg in framework.arguments.values() if arg.proponent == "Agent1"][0]
+        agent1_arg = next(arg for arg in framework.arguments.values() if arg.proponent == "Agent1")
         agent1_arg.add_evidence("Performance benchmark shows BYTECODE1 is faster")
 
         # Add multiple strong objections to agent2's argument
-        agent2_arg = [arg for arg in framework.arguments.values() if arg.proponent == "Agent2"][0]
+        agent2_arg = next(arg for arg in framework.arguments.values() if arg.proponent == "Agent2")
         objection1 = Argument(
             claim="BYTECODE2 has security vulnerability",
             confidence=1.0
@@ -605,8 +605,8 @@ class TestVocabArbitration:
         results = framework.evaluate()
 
         # Agent1 should now have an advantage
-        agent1_id = [id for id, arg in framework.arguments.items() if arg.proponent == "Agent1"][0]
-        agent2_id = [id for id, arg in framework.arguments.items() if arg.proponent == "Agent2"][0]
+        agent1_id = next(id for id, arg in framework.arguments.items() if arg.proponent == "Agent1")
+        agent2_id = next(id for id, arg in framework.arguments.items() if arg.proponent == "Agent2")
 
         # Agent1 should be accepted (has support + 2 evidence), Agent2 should be rejected
         # Agent1: support = 1 (initial) + 1 (evidence) = 2, objections = 0 -> ratio = inf -> accepted
