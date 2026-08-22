@@ -15,11 +15,10 @@ from collections import deque
 
 sys.path.insert(0, "src")
 
+from flux.a2a.coordinator import AgentCoordinator
 from flux.a2a.messages import A2AMessage
 from flux.a2a.transport import LocalTransport
-from flux.a2a.trust import TrustEngine, InteractionRecord
-from flux.a2a.coordinator import AgentCoordinator
-
+from flux.a2a.trust import InteractionRecord, TrustEngine
 
 # ── Helpers ───────────────────────────────────────────────────────────────
 

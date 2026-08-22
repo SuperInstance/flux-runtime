@@ -18,7 +18,6 @@ Usage:
 """
 
 import re
-from typing import List, Dict
 from dataclasses import dataclass
 from enum import Enum
 
@@ -35,22 +34,22 @@ class Contradiction:
     severity: Severity
     entry_a: str           # Name of first entry
     entry_b: str           # Name of second entry (or "new" for validation)
-    conflict_type: str     # "pattern_overlap", "register_collision", "tag_inconsistency", 
+    conflict_type: str     # "pattern_overlap", "register_collision", "tag_inconsistency",
                            # "dependency_cycle", "semantic_drift", "duplicate_pattern"
     description: str
     suggestion: str = ""
 
 
-@dataclass 
+@dataclass
 class ScanReport:
     """Result of a contradiction scan."""
     total_entries: int
-    issues: List[Contradiction]
+    issues: list[Contradiction]
     critical_count: int = 0
     warning_count: int = 0
     info_count: int = 0
     clean: bool = True
-    
+
     def __post_init__(self):
         self.critical_count = sum(1 for i in self.issues if i.severity == Severity.CRITICAL)
         self.warning_count = sum(1 for i in self.issues if i.severity == Severity.WARNING)
@@ -70,21 +69,21 @@ class ContradictionDetector:
     5. Semantic drift — same name, different meaning across versions
     6. Pattern subset — one pattern completely contains another
     """
-    
+
     def __init__(self):
-        self._pattern_cache: Dict[str, str] = {}
-    
+        self._pattern_cache: dict[str, str] = {}
+
     def scan(self, vocab) -> ScanReport:
         """Scan an entire vocabulary for contradictions."""
         issues = []
         entries = vocab.entries if hasattr(vocab, 'entries') else vocab
-        names_seen: Dict[str, List[int]] = {}
-        patterns_seen: Dict[str, List[int]] = {}
-        
+        names_seen: dict[str, list[int]] = {}
+        patterns_seen: dict[str, list[int]] = {}
+
         for i, entry in enumerate(entries):
             name = getattr(entry, 'name', f'entry_{i}')
             pattern = getattr(entry, 'pattern', '')
-            
+
             # Check duplicate names
             if name in names_seen:
                 issues.append(Contradiction(
@@ -96,7 +95,7 @@ class ContradictionDetector:
                     suggestion="Rename one entry or merge definitions"
                 ))
             names_seen.setdefault(name, []).append(i)
-            
+
             # Check pattern overlaps
             pattern_normalized = self._normalize_pattern(pattern)
             for existing_pattern, existing_indices in patterns_seen.items():
@@ -112,10 +111,10 @@ class ContradictionDetector:
                             suggestion="Make patterns more specific or add precedence rules"
                         ))
             patterns_seen.setdefault(pattern_normalized, []).append(i)
-            
+
             # Check result register collisions
             getattr(entry, 'result_reg', 0)
-            
+
             # Check self-dependency
             depends = getattr(entry, 'depends', [])
             if name in depends:
@@ -127,19 +126,19 @@ class ContradictionDetector:
                     description=f"Entry '{name}' depends on itself",
                     suggestion="Remove self-reference from depends list"
                 ))
-        
+
         # Check for dependency cycles
         cycle_issues = self._detect_cycles(entries)
         issues.extend(cycle_issues)
-        
+
         return ScanReport(total_entries=len(entries), issues=issues)
-    
+
     def diff(self, vocab_before, vocab_after) -> ScanReport:
         """Find contradictions introduced by changes between two versions."""
         entries_before = {getattr(e, 'name', ''): e for e in (vocab_before.entries if hasattr(vocab_before, 'entries') else vocab_before)}
         entries_after = {getattr(e, 'name', ''): e for e in (vocab_after.entries if hasattr(vocab_after, 'entries') else vocab_after)}
         issues = []
-        
+
         # Check for changed definitions (semantic drift)
         for name, after_entry in entries_after.items():
             if name in entries_before:
@@ -155,7 +154,7 @@ class ContradictionDetector:
                         description=f"Pattern changed: '{before_pattern}' → '{after_pattern}'",
                         suggestion="If intentional, increment version. If not, revert."
                     ))
-                
+
                 before_asm = getattr(before_entry, 'bytecode_template', '')
                 after_asm = getattr(after_entry, 'bytecode_template', '')
                 if before_asm != after_asm:
@@ -167,7 +166,7 @@ class ContradictionDetector:
                         description=f"Bytecode template changed for '{name}'",
                         suggestion="Verify the new template produces correct results"
                     ))
-        
+
         # Check for removed entries that others depend on
         for name in set(entries_before.keys()) - set(entries_after.keys()):
             for other_name, other_entry in entries_after.items():
@@ -181,13 +180,13 @@ class ContradictionDetector:
                         description=f"'{other_name}' depends on removed entry '{name}'",
                         suggestion=f"Remove '{name}' from {other_name}'s depends or keep '{name}'"
                     ))
-        
+
         # Run full scan on the new version too
         new_issues = self.scan(vocab_after)
         issues.extend(new_issues.issues)
-        
+
         return ScanReport(total_entries=len(entries_after), issues=issues)
-    
+
     def validate(self, entry, existing_vocab) -> ScanReport:
         """Validate a single new entry against existing vocabulary."""
         issues = []
@@ -195,11 +194,11 @@ class ContradictionDetector:
         name = getattr(entry, 'name', 'new')
         pattern = getattr(entry, 'pattern', '')
         pattern_normalized = self._normalize_pattern(pattern)
-        
+
         for existing in entries:
             existing_name = getattr(existing, 'name', '')
             existing_pattern = getattr(existing, 'pattern', '')
-            
+
             # Same name
             if name == existing_name:
                 issues.append(Contradiction(
@@ -210,7 +209,7 @@ class ContradictionDetector:
                     description=f"Entry '{name}' already exists",
                     suggestion="Use a different name or update existing entry"
                 ))
-            
+
             # Pattern conflict
             existing_normalized = self._normalize_pattern(existing_pattern)
             if self._patterns_conflict(pattern_normalized, existing_normalized):
@@ -222,7 +221,7 @@ class ContradictionDetector:
                     description=f"New pattern '{pattern}' conflicts with '{existing_pattern}'",
                     suggestion="Make the pattern more specific"
                 ))
-            
+
             # Check if new entry depends on something that doesn't exist
             depends = getattr(entry, 'depends', [])
             all_names = {getattr(e, 'name', '') for e in entries}
@@ -236,15 +235,15 @@ class ContradictionDetector:
                         description=f"Depends on '{dep}' which doesn't exist in vocabulary",
                         suggestion="Add the dependency or remove the reference"
                     ))
-        
+
         return ScanReport(total_entries=len(list(entries)) + 1, issues=issues)
-    
+
     def _normalize_pattern(self, pattern: str) -> str:
         """Normalize a pattern for comparison."""
         # Remove variable names, keep structure
         normalized = re.sub(r'\$\w+', '$VAR', pattern)
         return normalized.strip().lower()
-    
+
     def _patterns_conflict(self, pattern_a: str, pattern_b: str) -> bool:
         """Check if two patterns could match the same input."""
         if pattern_a == pattern_b:
@@ -261,8 +260,8 @@ class ContradictionDetector:
                         return False
                 return True
         return False
-    
-    def _detect_cycles(self, entries) -> List[Contradiction]:
+
+    def _detect_cycles(self, entries) -> list[Contradiction]:
         """Detect circular dependencies in entries."""
         issues = []
         graph = {}
@@ -270,12 +269,12 @@ class ContradictionDetector:
             name = getattr(entry, 'name', '')
             depends = getattr(entry, 'depends', [])
             graph[name] = depends
-        
+
         # DFS cycle detection
         visited = set()
         path = set()
-        
-        def dfs(node: str, path_list: List[str]) -> bool:
+
+        def dfs(node: str, path_list: list[str]) -> bool:
             if node in path:
                 cycle_start = path_list.index(node)
                 cycle = path_list[cycle_start:] + [node]
@@ -290,21 +289,21 @@ class ContradictionDetector:
                 return True
             if node in visited:
                 return False
-            
+
             visited.add(node)
             path.add(node)
             path_list.append(node)
-            
+
             for dep in graph.get(node, []):
                 if dep in graph:
                     dfs(dep, path_list)
-            
+
             path.discard(node)
             path_list.pop()
             return False
-        
+
         for node in graph:
             if node not in visited:
                 dfs(node, [])
-        
+
         return issues

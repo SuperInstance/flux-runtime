@@ -7,14 +7,15 @@ to VM syscalls or built-in operations.
 
 from __future__ import annotations
 
-from typing import Optional
-
+from flux.fir.builder import FIRBuilder
 from flux.fir.types import (
-    FIRType, IntType, BoolType, UnitType, StringType,
+    BoolType,
+    FIRType,
+    IntType,
+    StringType,
+    UnitType,
 )
 from flux.fir.values import Value
-from flux.fir.builder import FIRBuilder
-
 
 # ── Base ────────────────────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ class IntrinsicFunction:
         builder: FIRBuilder,
         args: list[Value],
         **kwargs,
-    ) -> Optional[Value]:
+    ) -> Value | None:
         """Emit FIR instructions for this intrinsic.
 
         Parameters
@@ -137,7 +138,7 @@ class SizeofFn(IntrinsicFunction):
         self,
         builder: FIRBuilder,
         args: list[Value],
-        target_type: Optional[FIRType] = None,
+        target_type: FIRType | None = None,
         **kwargs,
     ) -> Value:
         if target_type is None and len(args) > 0:
@@ -166,7 +167,7 @@ class AlignofFn(IntrinsicFunction):
         self,
         builder: FIRBuilder,
         args: list[Value],
-        target_type: Optional[FIRType] = None,
+        target_type: FIRType | None = None,
         **kwargs,
     ) -> Value:
         if target_type is None and len(args) > 0:

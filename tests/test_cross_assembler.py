@@ -8,18 +8,18 @@
 # tests/test_dual_mode_equivalence.py.
 
 import sys
+
 sys.path.insert(0, "src")
 
 import json
 import struct
 
-from flux.asm.errors import AsmError, AsmErrorKind, SourceLocation, make_error
-from flux.asm.macros import MacroPreprocessor
-from flux.asm.cross_assembler import CrossAssembler, OutputFormat
-from flux.asm.linker import FluxLinker, ObjectFile
 from flux.asm.binary_patcher import BinaryPatcher
+from flux.asm.cross_assembler import CrossAssembler, OutputFormat
 from flux.asm.elf_header import ElfHeader
-
+from flux.asm.errors import AsmError, AsmErrorKind, SourceLocation, make_error
+from flux.asm.linker import FluxLinker, ObjectFile
+from flux.asm.macros import MacroPreprocessor
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Error tests

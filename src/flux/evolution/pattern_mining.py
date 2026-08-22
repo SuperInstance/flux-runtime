@@ -14,7 +14,6 @@ from typing import Any
 
 from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
 
-
 # ── Trace Types ───────────────────────────────────────────────────────────────
 
 @dataclass

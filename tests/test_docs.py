@@ -14,19 +14,18 @@ import os
 
 import pytest
 
+from flux.docs.generator import DocumentationGenerator
 from flux.docs.introspector import (
-    CodeIntrospector,
-    ModuleInfo,
     APIDeclaration,
+    CodeIntrospector,
     ComplexityMetrics,
+    ModuleInfo,
 )
 from flux.docs.renderer import (
-    MarkdownRenderer,
     AsciiRenderer,
+    MarkdownRenderer,
 )
 from flux.docs.stats import CodeStatistics
-from flux.docs.generator import DocumentationGenerator
-
 
 REPO_PATH = os.path.join(os.path.dirname(__file__), "..")
 

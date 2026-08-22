@@ -1,7 +1,6 @@
 """System Architecture Schema — describes the full FLUX layer hierarchy."""
 
 from __future__ import annotations
-from typing import Optional
 
 FLUX_ARCHITECTURE: dict = {
     "name": "FLUX",
@@ -452,7 +451,7 @@ def get_architecture_schema() -> dict:
     return FLUX_ARCHITECTURE
 
 
-def get_layer_by_id(layer_id: str) -> Optional[dict]:
+def get_layer_by_id(layer_id: str) -> dict | None:
     """Look up a single architecture layer by its ID."""
     for layer in FLUX_ARCHITECTURE["layers"]:
         if layer["id"] == layer_id:

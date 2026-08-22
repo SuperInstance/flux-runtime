@@ -11,7 +11,6 @@ from __future__ import annotations
 import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -251,7 +250,7 @@ class ExecutionTracer:
 
     def get_function_profile(
         self, func_name: str
-    ) -> Optional[FunctionProfile]:
+    ) -> FunctionProfile | None:
         """Get the profile for a specific function.
 
         Returns:

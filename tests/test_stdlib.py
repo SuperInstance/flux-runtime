@@ -9,36 +9,57 @@ Covers:
 """
 
 import sys
+
 import pytest
 
 sys.path.insert(0, "src")
 
-from flux.fir.types import TypeContext, IntType, StringType
-from flux.fir.values import Value
 from flux.fir.builder import FIRBuilder
-from flux.fir.instructions import Call, Unreachable, GetField
-
-from flux.stdlib.intrinsics import (
-    PrintFn, AssertFn, PanicFn,
-    SizeofFn, AlignofFn, TypeOfFn, STDLIB_INTRINSICS,
+from flux.fir.instructions import Call, GetField, Unreachable
+from flux.fir.types import IntType, StringType, TypeContext
+from flux.fir.values import Value
+from flux.stdlib.agents import (
+    STDLIB_AGENTS,
+    AgentRegistryImpl,
+    MessageQueueImpl,
+    TaskSchedulerImpl,
 )
 from flux.stdlib.collections import (
-    ListImpl, MapImpl, SetImpl, QueueImpl, StackImpl,
     STDLIB_COLLECTIONS,
+    ListImpl,
+    MapImpl,
+    QueueImpl,
+    SetImpl,
+    StackImpl,
+)
+from flux.stdlib.intrinsics import (
+    STDLIB_INTRINSICS,
+    AlignofFn,
+    AssertFn,
+    PanicFn,
+    PrintFn,
+    SizeofFn,
+    TypeOfFn,
 )
 from flux.stdlib.math import (
-    MinFn, MaxFn, AbsFn, ClampFn, LerpFn, SqrtFn,
-    STDLIB_MATH, emit_lerp_instructions,
+    STDLIB_MATH,
+    AbsFn,
+    ClampFn,
+    LerpFn,
+    MaxFn,
+    MinFn,
+    SqrtFn,
+    emit_lerp_instructions,
 )
 from flux.stdlib.strings import (
-    ConcatFn, SubstringFn, SplitFn, JoinFn,
-    LengthFn, FormatFn, STDLIB_STRINGS,
+    STDLIB_STRINGS,
+    ConcatFn,
+    FormatFn,
+    JoinFn,
+    LengthFn,
+    SplitFn,
+    SubstringFn,
 )
-from flux.stdlib.agents import (
-    AgentRegistryImpl, MessageQueueImpl, TaskSchedulerImpl,
-    STDLIB_AGENTS,
-)
-
 
 # ── Helpers ─────────────────────────────────────────────────────────────────
 

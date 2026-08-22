@@ -20,7 +20,6 @@ from __future__ import annotations
 import struct
 import uuid
 from dataclasses import dataclass
-from typing import Optional
 
 # Header format: <16s16s8sBBIIH  = 16+16+8+1+1+4+4+2 = 52
 _HEADER_STRUCT = struct.Struct("<16s16s8sBBIIH")
@@ -61,7 +60,7 @@ class A2AMessage:
     sender: uuid.UUID
     receiver: uuid.UUID
     conversation_id: uuid.UUID
-    in_reply_to: Optional[uuid.UUID]
+    in_reply_to: uuid.UUID | None
     message_type: int
     priority: int
     trust_token: int

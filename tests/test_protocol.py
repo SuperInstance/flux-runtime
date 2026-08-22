@@ -15,27 +15,40 @@ Covers:
 
 import sys
 import time
+
 import pytest
 
 sys.path.insert(0, "src")
 
-from flux.protocol.message import (
-    MessageKind, MessageEnvelope, MessageId,
-    Request, Response, Event, Error,
-)
 from flux.protocol.channel import (
-    DirectChannel, BroadcastChannel, TopicChannel,
+    BroadcastChannel,
+    DirectChannel,
+    TopicChannel,
 )
-from flux.protocol.registry import (
-    AgentDescriptor, CapabilityDescriptor, AgentRegistry,
+from flux.protocol.message import (
+    Error,
+    Event,
+    MessageEnvelope,
+    MessageId,
+    MessageKind,
+    Request,
+    Response,
 )
 from flux.protocol.negotiation import (
-    NegotiationState, CapabilityOffer, TrustHandshake, Negotiator,
+    CapabilityOffer,
+    NegotiationState,
+    Negotiator,
+    TrustHandshake,
+)
+from flux.protocol.registry import (
+    AgentDescriptor,
+    AgentRegistry,
+    CapabilityDescriptor,
 )
 from flux.protocol.serialization import (
-    BinaryMessageCodec, HEADER_SIZE,
+    HEADER_SIZE,
+    BinaryMessageCodec,
 )
-
 
 # ════════════════════════════════════════════════════════════════════════════
 # Message Tests

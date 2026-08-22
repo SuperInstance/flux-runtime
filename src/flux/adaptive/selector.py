@@ -15,10 +15,8 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
-from typing import Optional
 
 from .profiler import AdaptiveProfiler, HeatLevel
-
 
 # ── Language Profiles ───────────────────────────────────────────────────
 
@@ -117,7 +115,7 @@ LANGUAGES: dict[str, LanguageProfile] = {
 class SelectionEvent:
     """Record of a language selection decision."""
     module_path: str
-    old_language: Optional[str]
+    old_language: str | None
     new_language: str
     heat_level: HeatLevel
     reason: str
@@ -133,7 +131,7 @@ class LanguageRecommendation:
     """Recommended language for a module."""
     module_path: str
     recommended_language: str
-    current_language: Optional[str]
+    current_language: str | None
     heat_level: HeatLevel
     speed_score: float
     expressiveness_score: float

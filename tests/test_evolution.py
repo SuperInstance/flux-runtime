@@ -11,43 +11,42 @@ Tests cover:
 
 import pytest
 
-from flux.evolution.genome import (
-    Genome,
-    ModuleSnapshot,
-    TileSnapshot,
-    OptimizationRecord,
-    MutationStrategy,
-)
-from flux.evolution.pattern_mining import (
-    PatternMiner,
-    ExecutionTrace,
-    DiscoveredPattern,
-    TileSuggestion,
-)
-from flux.evolution.mutator import (
-    SystemMutator,
-    MutationProposal,
-    MutationResult,
-)
-from flux.evolution.validator import (
-    CorrectnessValidator,
-    RegressionReport,
-)
+from flux.adaptive.profiler import AdaptiveProfiler
+from flux.adaptive.selector import AdaptiveSelector
 from flux.evolution.evolution import (
     EvolutionEngine,
     EvolutionRecord,
     EvolutionReport,
     EvolutionStep,
 )
-from flux.adaptive.profiler import AdaptiveProfiler
-from flux.adaptive.selector import AdaptiveSelector
+from flux.evolution.genome import (
+    Genome,
+    ModuleSnapshot,
+    MutationStrategy,
+    OptimizationRecord,
+    TileSnapshot,
+)
+from flux.evolution.mutator import (
+    MutationProposal,
+    MutationResult,
+    SystemMutator,
+)
+from flux.evolution.pattern_mining import (
+    DiscoveredPattern,
+    ExecutionTrace,
+    PatternMiner,
+    TileSuggestion,
+)
+from flux.evolution.validator import (
+    CorrectnessValidator,
+    RegressionReport,
+)
+from flux.fir.types import TypeContext
 from flux.modules.container import ModuleContainer
 from flux.modules.granularity import Granularity
+from flux.tiles.ports import PortDirection, TilePort
 from flux.tiles.registry import TileRegistry
 from flux.tiles.tile import Tile, TileType
-from flux.tiles.ports import TilePort, PortDirection
-from flux.fir.types import TypeContext
-
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 

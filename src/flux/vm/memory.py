@@ -10,14 +10,13 @@ from __future__ import annotations
 
 import struct
 
-
 # ── Memory Region ──────────────────────────────────────────────────────────
 
 
 class MemoryRegion:
     """A contiguous block of memory with ownership semantics."""
 
-    __slots__ = ("name", "data", "size", "owner", "borrowers")
+    __slots__ = ("borrowers", "data", "name", "owner", "size")
 
     def __init__(self, name: str, size: int, owner: str = "") -> None:
         self.name = name

@@ -14,7 +14,6 @@ The scrubber prevents vocabulary bloat and maintains the integrity of the L0 lay
 """
 
 import re
-from typing import List, Tuple
 from dataclasses import dataclass
 
 
@@ -25,8 +24,8 @@ class ScrubReport:
     definition: str                          # Definition/description of the candidate
     passed: bool                            # Whether the candidate passed all challenges
     can_tile: bool                          # True if it's just a composition of existing primitives
-    conflicts: List[str]                    # List of conflicts with existing primitives
-    challenges: List[str]                   # Edge-case semantic challenges generated
+    conflicts: list[str]                    # List of conflicts with existing primitives
+    challenges: list[str]                   # Edge-case semantic challenges generated
     recommendation: str                     # 'accept', 'reject', 'needs-refinement'
     reasoning: str = ""                     # Detailed reasoning for the recommendation
     semantic_overlap_score: float = 0.0     # 0-1 score of semantic overlap with existing primitives
@@ -230,7 +229,7 @@ class L0Scrubber:
 
         return False
 
-    def _check_conflicts(self, name: str, definition: str) -> List[str]:
+    def _check_conflicts(self, name: str, definition: str) -> list[str]:
         """
         Check if the candidate conflicts with existing L0 primitives.
 
@@ -293,7 +292,7 @@ class L0Scrubber:
 
         return conflicts
 
-    def _generate_challenges(self, name: str, definition: str) -> List[str]:
+    def _generate_challenges(self, name: str, definition: str) -> list[str]:
         """
         Generate edge-case semantic challenges for the candidate.
 
@@ -417,7 +416,7 @@ class L0Scrubber:
 
         return report
 
-    def batch_challenge(self, candidates: List[Tuple[str, str]]) -> List[ScrubReport]:
+    def batch_challenge(self, candidates: list[tuple[str, str]]) -> list[ScrubReport]:
         """
         Challenge multiple candidate primitives in batch.
 

@@ -8,10 +8,9 @@ from __future__ import annotations
 
 import struct
 from dataclasses import dataclass, field
-from typing import Optional
 
-from flux.fir.types import TypeContext
 from flux.fir.blocks import FIRModule
+from flux.fir.types import TypeContext
 
 
 @dataclass
@@ -41,13 +40,13 @@ class PipelineResult:
     """
 
     source: str = ""
-    module: Optional[FIRModule] = None
-    optimized_module: Optional[FIRModule] = None
-    bytecode: Optional[bytes] = None
-    code_section: Optional[bytes] = None
+    module: FIRModule | None = None
+    optimized_module: FIRModule | None = None
+    bytecode: bytes | None = None
+    code_section: bytes | None = None
     cycles: int = 0
     halted: bool = False
-    registers: Optional[dict[int, int]] = None
+    registers: dict[int, int] | None = None
     errors: list[str] = field(default_factory=list)
 
     @property

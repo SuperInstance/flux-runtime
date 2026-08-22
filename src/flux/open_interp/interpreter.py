@@ -13,11 +13,10 @@ API: OpenFluxInterpreter().run("factorial of 7") → 5040
 import os
 import re
 import sys
-from typing import Optional, List
 
-from .vocabulary import Vocabulary
 from .assembler import assemble_text
-from .sandbox import SandboxVM, SandboxResult
+from .sandbox import SandboxResult, SandboxVM
+from .vocabulary import Vocabulary
 
 
 class OpenFluxInterpreter:
@@ -28,29 +27,29 @@ class OpenFluxInterpreter:
     then executes in a sandbox. Agents can load custom vocabularies to teach
     it domain-specific words.
     """
-    
-    def __init__(self, vocab_paths: Optional[List[str]] = None):
+
+    def __init__(self, vocab_paths: list[str] | None = None):
         self.vocab = Vocabulary()
         self.verbose = False
-        
+
         # Load core vocabularies
         core_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'vocabularies', 'core')
         math_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'vocabularies', 'math')
         loops_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'vocabularies', 'loops')
-        
+
         for p in [core_path, math_path, loops_path]:
             if os.path.isdir(p):
                 self.vocab.load_folder(p)
-        
+
         # Load additional paths
         if vocab_paths:
             for p in vocab_paths:
                 self.vocab.load_folder(p)
-    
+
     def load_vocabulary(self, path: str):
         """Load a vocabulary folder. Agents call this to teach new words."""
         self.vocab.load_folder(path)
-    
+
     def run(self, text: str, result_reg: int = 0, max_cycles: int = 1_000_000) -> SandboxResult:
         """
         Main entry point: text → bytecode → execution → result.
@@ -65,27 +64,27 @@ class OpenFluxInterpreter:
         """
         # Step 1: Try vocabulary match
         match = self.vocab.find_match(text)
-        
+
         if match:
             entry, groups = match
             # Substitute captured groups into the assembly template
             assembly = entry.bytecode_template
             for key, val in groups.items():
                 assembly = assembly.replace(f'${{{key}}}', val)
-            
+
             result_reg = entry.result_reg
-            
+
             if self.verbose:
                 print(f"[vocab] matched: {entry.name}")
                 print(f"[vocab] groups: {groups}")
                 print(f"[vocab] assembly:\n{assembly}")
-        
+
         elif self._is_assembly(text):
             # Direct assembly text
             assembly = text
             if self.verbose:
                 print("[asm] direct assembly mode")
-        
+
         elif self._is_hex_bytecode(text):
             # Direct hex bytecode
             hex_str = text.strip().replace(' ', '').replace('0x', '')
@@ -93,7 +92,7 @@ class OpenFluxInterpreter:
             if self.verbose:
                 print(f"[hex] direct bytecode mode ({len(bytecode)} bytes)")
             return self._execute(bytecode, result_reg, max_cycles)
-        
+
         else:
             # Try inline math
             math_result = self._try_inline_math(text)
@@ -105,21 +104,21 @@ class OpenFluxInterpreter:
                     result_value=math_result,
                     result_reg=0,
                 )
-            
+
             return SandboxResult(
                 success=False,
                 error=f"No vocabulary match for: {text[:100]}",
             )
-        
+
         # Step 2: Assemble
         try:
             bytecode = assemble_text(assembly)
         except Exception as e:
             return SandboxResult(success=False, error=f"Assembly error: {e}")
-        
+
         # Step 3: Execute in sandbox
         return self._execute(bytecode, result_reg, max_cycles)
-    
+
     def _execute(self, bytecode: bytes, result_reg: int, max_cycles: int) -> SandboxResult:
         """Execute bytecode in sandbox."""
         vm = SandboxVM(bytecode, max_cycles)
@@ -127,7 +126,7 @@ class OpenFluxInterpreter:
         result = vm.result(result_reg)
         result.bytecode_hex = ' '.join(f'{b:02X}' for b in bytecode)
         return result
-    
+
     def _is_assembly(self, text: str) -> bool:
         """Check if text looks like FLUX assembly."""
         lines = text.strip().split('\n')
@@ -138,13 +137,13 @@ class OpenFluxInterpreter:
             if first_word in mnemonics:
                 return True
         return False
-    
+
     def _is_hex_bytecode(self, text: str) -> bool:
         """Check if text is hex bytecode like '2B 00 07 00 80'."""
         cleaned = text.strip().replace(' ', '').replace('0x', '').replace(',', '')
         return bool(re.match(r'^[0-9a-fA-F]+$', cleaned)) and len(cleaned) % 2 == 0 and len(cleaned) >= 4
-    
-    def _try_inline_math(self, text: str) -> Optional[int]:
+
+    def _try_inline_math(self, text: str) -> int | None:
         """Try to evaluate simple inline math like '3 + 4' or '10 * 5'."""
         # "what is X op Y"
         m = re.search(r'(\d+)\s*([+\-*/×÷])\s*(\d+)', text)
@@ -155,11 +154,11 @@ class OpenFluxInterpreter:
             if op in ('*', '×'): return a * b
             if op in ('/', '÷') and b != 0: return int(a / b)
         return None
-    
-    def list_vocabulary(self) -> List[str]:
+
+    def list_vocabulary(self) -> list[str]:
         """List all loaded vocabulary patterns."""
         return self.vocab.list_words()
-    
+
     def interactive(self):
         """Start interactive mode (like OpenInterpreter)."""
         print("╔══════════════════════════════════════════════════╗")
@@ -169,14 +168,14 @@ class OpenFluxInterpreter:
         print("╚══════════════════════════════════════════════════╝")
         print(f"\n  Loaded {len(self.vocab.entries)} vocabulary patterns")
         print(f"  Loaded {len(self.vocab.templates)} templates\n")
-        
+
         while True:
             try:
                 text = input("flux> ").strip()
             except (EOFError, KeyboardInterrupt):
                 print("\nbye")
                 break
-            
+
             if not text:
                 continue
             if text in ('quit', 'exit', 'q'):
@@ -194,10 +193,10 @@ class OpenFluxInterpreter:
                 self.load_vocabulary(path)
                 print(f"  Loaded vocabulary from {path}")
                 continue
-            
+
             # Execute
             result = self.run(text)
-            
+
             if result.success:
                 print(f"  ✓ Result: R{result.result_reg} = {result.result_value}")
                 print(f"    Cycles: {result.cycles} | Bytes: {len(result.bytecode_hex.split())}")
@@ -210,7 +209,7 @@ class OpenFluxInterpreter:
             else:
                 print(f"  ✗ {result.error}")
             print()
-    
+
     def _print_help(self):
         print("""
   Commands:
@@ -238,10 +237,10 @@ def main():
     parser.add_argument('--vocab', action='append', help='Additional vocabulary folder')
     parser.add_argument('-i', '--interactive', action='store_true')
     args = parser.parse_args()
-    
+
     interp = OpenFluxInterpreter(vocab_paths=args.vocab or [])
     interp.verbose = args.verbose
-    
+
     if args.input:
         result = interp.run(args.input)
         if result.success:

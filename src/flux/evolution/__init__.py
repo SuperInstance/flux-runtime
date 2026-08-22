@@ -8,39 +8,39 @@ The evolution engine ties together:
 - Evolution Engine (the main loop orchestrating everything)
 """
 
-from .genome import (
-    Genome,
-    GenomeDiff,
-    ModuleSnapshot,
-    TileSnapshot,
-    ProfilerSnapshot,
-    OptimizationRecord,
-    MutationStrategy,
-)
-from .pattern_mining import (
-    PatternMiner,
-    ExecutionTrace,
-    DiscoveredPattern,
-    TileSuggestion,
-)
-from .mutator import (
-    SystemMutator,
-    MutationProposal,
-    MutationResult,
-    MutationRecord,
-)
-from .validator import (
-    CorrectnessValidator,
-    TestCase,
-    TestResult,
-    ValidationResult,
-    RegressionReport,
-)
 from .evolution import (
     EvolutionEngine,
     EvolutionRecord,
     EvolutionReport,
     EvolutionStep,
+)
+from .genome import (
+    Genome,
+    GenomeDiff,
+    ModuleSnapshot,
+    MutationStrategy,
+    OptimizationRecord,
+    ProfilerSnapshot,
+    TileSnapshot,
+)
+from .mutator import (
+    MutationProposal,
+    MutationRecord,
+    MutationResult,
+    SystemMutator,
+)
+from .pattern_mining import (
+    DiscoveredPattern,
+    ExecutionTrace,
+    PatternMiner,
+    TileSuggestion,
+)
+from .validator import (
+    CorrectnessValidator,
+    RegressionReport,
+    TestCase,
+    TestResult,
+    ValidationResult,
 )
 
 __all__ = [

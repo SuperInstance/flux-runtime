@@ -7,10 +7,8 @@ register state afterwards.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional
-
 import uuid
+from dataclasses import dataclass, field
 
 from flux.vm.interpreter import Interpreter
 
@@ -54,9 +52,9 @@ class Agent:
     def __init__(self, config: AgentConfig) -> None:
         self.config = config
         self.id: str = str(uuid.uuid4())[:8]
-        self.bytecode: Optional[bytes] = None
-        self.interpreter: Optional[Interpreter] = None
-        self.last_result: Optional[int] = None  # cycle count
+        self.bytecode: bytes | None = None
+        self.interpreter: Interpreter | None = None
+        self.last_result: int | None = None  # cycle count
 
     # ── Lifecycle ──────────────────────────────────────────────────────────
 

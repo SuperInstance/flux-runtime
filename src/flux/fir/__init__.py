@@ -10,57 +10,96 @@ Core IR layer for the FLUX bytecode system. Provides:
 - Printer for human-readable output
 """
 
-from .types import (
-    FIRType,
-    IntType,
-    FloatType,
-    BoolType,
-    UnitType,
-    StringType,
-    RefType,
-    ArrayType,
-    VectorType,
-    FuncType,
-    StructType,
-    EnumType,
-    RegionType,
-    CapabilityType,
-    AgentType,
-    TrustType,
-    TypeContext,
-)
-
-from .values import Value
-
+from .blocks import FIRBlock, FIRFunction, FIRModule
+from .builder import FIRBuilder
 from .instructions import (
-    Instruction,
+    Alloca,
+    Ask,
+    Bitcast,
+    Branch,
+    Call,
+    CapRequire,
+    Delegate,
+    FAdd,
+    FDiv,
+    FEq,
+    FExt,
+    FGe,
+    FGt,
+    FLe,
+    FLt,
+    FMul,
+    FNeg,
+    FSub,
+    FTrunc,
+    GetElem,
+    GetField,
     # Arithmetic
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
+    IAdd,
     # Bitwise
-    IAnd, IOr, IXor, IShl, IShr, INot,
+    IAnd,
+    IDiv,
     # Comparison
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
+    IEq,
+    IGe,
+    IGt,
+    ILe,
+    ILt,
+    IMod,
+    IMul,
+    INe,
+    INeg,
+    INot,
+    Instruction,
+    IOr,
+    IShl,
+    IShr,
+    ISub,
     # Conversion
-    ITrunc, ZExt, SExt, FTrunc, FExt, Bitcast,
-    # Memory
-    Load, Store, Alloca, GetField, SetField, GetElem, SetElem, MemCopy, MemSet,
+    ITrunc,
+    IXor,
     # Control flow
-    Jump, Branch, Switch, Call, Return, Unreachable,
+    Jump,
+    # Memory
+    Load,
+    MemCopy,
+    MemSet,
+    Return,
+    SetElem,
+    SetField,
+    SExt,
+    Store,
+    Switch,
     # A2A
-    Tell, Ask, Delegate, TrustCheck, CapRequire,
+    Tell,
+    TrustCheck,
+    Unreachable,
+    ZExt,
     # Helpers
     is_terminator,
 )
-
-from .blocks import FIRBlock, FIRFunction, FIRModule
-
-from .builder import FIRBuilder
-
-from .validator import FIRValidator
-
 from .printer import print_fir
+from .types import (
+    AgentType,
+    ArrayType,
+    BoolType,
+    CapabilityType,
+    EnumType,
+    FIRType,
+    FloatType,
+    FuncType,
+    IntType,
+    RefType,
+    RegionType,
+    StringType,
+    StructType,
+    TrustType,
+    TypeContext,
+    UnitType,
+    VectorType,
+)
+from .validator import FIRValidator
+from .values import Value
 
 __all__ = [
     # Types

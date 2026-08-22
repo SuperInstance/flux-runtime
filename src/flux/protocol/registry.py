@@ -9,8 +9,7 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
-
+from typing import Any
 
 # ── Capability descriptor ───────────────────────────────────────────────────
 
@@ -76,9 +75,9 @@ class AgentDescriptor:
 
     name: str
     agent_id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    capabilities: Set[CapabilityDescriptor] = field(default_factory=set)
-    endpoints: Dict[str, str] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    capabilities: set[CapabilityDescriptor] = field(default_factory=set)
+    endpoints: dict[str, str] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     registered_at: float = field(default_factory=time.time)
     last_seen: float = field(default_factory=time.time)
     status: str = "active"
@@ -91,7 +90,7 @@ class AgentDescriptor:
         """Check if the agent offers a capability by name."""
         return any(c.name == name for c in self.capabilities)
 
-    def get_capability(self, name: str) -> Optional[CapabilityDescriptor]:
+    def get_capability(self, name: str) -> CapabilityDescriptor | None:
         """Look up a capability by name, or None if not found."""
         for c in self.capabilities:
             if c.name == name:
@@ -103,7 +102,7 @@ class AgentDescriptor:
         self.last_seen = time.time()
 
     @property
-    def capability_names(self) -> List[str]:
+    def capability_names(self) -> list[str]:
         """Return a sorted list of capability names."""
         return sorted(c.name for c in self.capabilities)
 
@@ -132,7 +131,7 @@ class AgentRegistry:
     """
 
     def __init__(self, heartbeat_timeout: float = 300.0) -> None:
-        self._agents: Dict[str, AgentDescriptor] = {}
+        self._agents: dict[str, AgentDescriptor] = {}
         self._heartbeat_timeout = heartbeat_timeout
 
     # ── Registration ────────────────────────────────────────────────────
@@ -141,15 +140,15 @@ class AgentRegistry:
         """Register an agent with the registry."""
         self._agents[descriptor.name] = descriptor
 
-    def unregister(self, name: str) -> Optional[AgentDescriptor]:
+    def unregister(self, name: str) -> AgentDescriptor | None:
         """Unregister an agent by name.  Returns the removed descriptor."""
         return self._agents.pop(name, None)
 
-    def get(self, name: str) -> Optional[AgentDescriptor]:
+    def get(self, name: str) -> AgentDescriptor | None:
         """Look up an agent by name."""
         return self._agents.get(name)
 
-    def get_by_id(self, agent_id: str) -> Optional[AgentDescriptor]:
+    def get_by_id(self, agent_id: str) -> AgentDescriptor | None:
         """Look up an agent by its unique ID."""
         for desc in self._agents.values():
             if desc.agent_id == agent_id:
@@ -158,14 +157,14 @@ class AgentRegistry:
 
     # ── Listing ─────────────────────────────────────────────────────────
 
-    def list_agents(self, status: Optional[str] = None) -> List[AgentDescriptor]:
+    def list_agents(self, status: str | None = None) -> list[AgentDescriptor]:
         """List all agents, optionally filtered by status."""
         agents = list(self._agents.values())
         if status is not None:
             agents = [a for a in agents if a.status == status]
         return agents
 
-    def list_all_names(self) -> List[str]:
+    def list_all_names(self) -> list[str]:
         """Return a list of all registered agent names."""
         return list(self._agents.keys())
 
@@ -176,7 +175,7 @@ class AgentRegistry:
 
     # ── Capability-based lookup ─────────────────────────────────────────
 
-    def find_by_capability(self, capability_name: str) -> List[AgentDescriptor]:
+    def find_by_capability(self, capability_name: str) -> list[AgentDescriptor]:
         """Find all agents that offer a given capability."""
         return [
             desc for desc in self._agents.values()
@@ -184,8 +183,8 @@ class AgentRegistry:
         ]
 
     def find_by_capabilities(
-        self, capability_names: List[str]
-    ) -> List[AgentDescriptor]:
+        self, capability_names: list[str]
+    ) -> list[AgentDescriptor]:
         """Find all agents that offer ALL of the given capabilities."""
         cap_set = set(capability_names)
         return [
@@ -193,7 +192,7 @@ class AgentRegistry:
             if cap_set.issubset(set(desc.capability_names))
         ]
 
-    def route(self, capability_name: str) -> Optional[AgentDescriptor]:
+    def route(self, capability_name: str) -> AgentDescriptor | None:
         """Find the best agent to handle a capability.
 
         Strategy: pick the active agent with the most recent heartbeat.
@@ -215,7 +214,7 @@ class AgentRegistry:
         desc.heartbeat()
         return True
 
-    def expire_stale(self) -> List[str]:
+    def expire_stale(self) -> list[str]:
         """Mark agents with expired heartbeats as offline.
 
         Returns a list of names that were marked offline.
@@ -234,9 +233,9 @@ class AgentRegistry:
         """Remove all registered agents."""
         self._agents.clear()
 
-    def all_capabilities(self) -> Set[str]:
+    def all_capabilities(self) -> set[str]:
         """Return the union of all capability names across all agents."""
-        caps: Set[str] = set()
+        caps: set[str] = set()
         for desc in self._agents.values():
             caps.update(desc.capability_names)
         return caps

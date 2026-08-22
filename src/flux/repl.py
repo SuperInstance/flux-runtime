@@ -3,13 +3,13 @@ FLUX REPL — Interactive Read-Eval-Print Loop for the FLUX runtime.
 """
 from __future__ import annotations
 
-import struct
 import shlex
-from typing import Optional, Dict, Any, List
-
-from flux.vm.interpreter import Interpreter, VMError
-from flux.a2a.messages import A2AMessage
+import struct
 import uuid
+from typing import Any
+
+from flux.a2a.messages import A2AMessage
+from flux.vm.interpreter import Interpreter, VMError
 
 # ANSI color codes
 CYAN = "\033[96m"
@@ -25,13 +25,13 @@ RESET = "\033[0m"
 
 class FluxREPL:
     """Interactive REPL for FLUX bytecode execution."""
-    
+
     def __init__(self, memory_size: int = 4096):
-        self.vm: Optional[Interpreter] = None
+        self.vm: Interpreter | None = None
         self.memory_size = memory_size
-        self.history: List[str] = []
+        self.history: list[str] = []
         self._init_vm()
-        
+
     def _init_vm(self) -> None:
         """Initialize or reset the VM with empty bytecode."""
         # Start with just a HALT instruction
@@ -42,7 +42,7 @@ class FluxREPL:
         self.vm.pc = 0
         self.vm.halted = False
         self.vm.cycle_count = 0
-        
+
     def _assemble_hex(self, hex_str: str) -> bytes:
         """Convert space-separated hex bytes to bytes."""
         hex_str = hex_str.strip()
@@ -57,16 +57,16 @@ class FluxREPL:
                 part = part[2:]
             byte_list.append(int(part, 16))
         return bytes(byte_list)
-    
-    def execute_hex(self, hex_input: str) -> Dict[str, Any]:
+
+    def execute_hex(self, hex_input: str) -> dict[str, Any]:
         """Execute hex bytecode and return result."""
         bytecode = self._assemble_hex(hex_input)
         if not bytecode:
             return {"error": "Empty bytecode"}
-        
+
         # Save current VM state
         old_regs = [self.vm.regs.read_gp(i) for i in range(16)] if self.vm else []
-        
+
         # Create new VM with the bytecode
         self.vm = Interpreter(bytecode, memory_size=self.memory_size, isa="system_a")
         try:
@@ -82,12 +82,12 @@ class FluxREPL:
             }
         except (VMError, IndexError) as e:
             return {"error": str(e)}
-    
-    def execute_expr(self, expr: str) -> Dict[str, Any]:
+
+    def execute_expr(self, expr: str) -> dict[str, Any]:
         """Compile and execute a simple expression using AST (no eval)."""
         import ast
         import operator as op
-        
+
         # AST operators for safe evaluation
         _SAFE_OPS = {
             ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
@@ -97,7 +97,7 @@ class FluxREPL:
             ast.BitXor: op.xor, ast.USub: op.neg, ast.UAdd: op.pos,
             ast.Invert: op.invert,
         }
-        
+
         def _safe_eval(node):
             """Recursively evaluate an AST node — no exec, no builtins."""
             if isinstance(node, ast.Constant):
@@ -117,22 +117,23 @@ class FluxREPL:
                 raise ValueError(f"Unsupported unary op: {type(node.op).__name__}")
             else:
                 raise ValueError(f"Disallowed expression node: {type(node).__name__}")
-        
+
         try:
             tree = ast.parse(expr, mode="eval")
             result = _safe_eval(tree.body)
             if isinstance(result, (int, float)):
                 # Generate MOVI R0, result; HALT
-                from flux.bytecode.opcodes import Op
                 import struct
-                
+
+                from flux.bytecode.opcodes import Op
+
                 # For integers within 16-bit signed range
                 if isinstance(result, int) and -32768 <= result <= 32767:
                     bytecode = struct.pack("<BBh", Op.MOVI, 0, int(result)) + bytes([Op.HALT])
                 else:
                     # Default to 0
                     bytecode = struct.pack("<BBh", Op.MOVI, 0, 0) + bytes([Op.HALT])
-                
+
                 # Execute
                 old_regs = [self.vm.regs.read_gp(i) for i in range(16)] if self.vm else []
                 self.vm = Interpreter(bytecode, memory_size=self.memory_size, isa="system_a")
@@ -149,12 +150,12 @@ class FluxREPL:
                 return {"error": f"Expression must evaluate to a number, got {type(result)}"}
         except Exception as e:
             return {"error": f"Expression evaluation failed: {e}"}
-    
+
     def show_registers(self) -> str:
         """Return formatted register dump."""
         if not self.vm:
             return "No VM initialized"
-        
+
         lines = []
         lines.append(f"{BOLD}{CYAN}General Purpose Registers:{RESET}")
         for i in range(16):
@@ -165,31 +166,31 @@ class FluxREPL:
                 lines.append(f"  R{i:2d} = {GREEN}{val:>12}{RESET}{suffix}")
             else:
                 lines.append(f"  R{i:2d} = {DIM}{val:>12}{RESET}")
-        
+
         # Show FP registers if any are non-zero
         fp_nonzero = False
         for i in range(16):
             if self.vm.regs.read_fp(i) != 0.0:
                 fp_nonzero = True
                 break
-        
+
         if fp_nonzero:
             lines.append(f"\n{BOLD}{CYAN}Floating Point Registers:{RESET}")
             for i in range(16):
                 val = self.vm.regs.read_fp(i)
                 if val != 0.0:
                     lines.append(f"  F{i:2d} = {GREEN}{val:>12.6f}{RESET}")
-        
+
         return "\n".join(lines)
-    
+
     def memory_dump(self, start: int = 0, length: int = 64) -> str:
         """Return hex dump of memory."""
         if not self.vm:
             return "No VM initialized"
-        
+
         lines = []
         lines.append(f"{BOLD}{CYAN}Memory dump from 0x{start:04x} to 0x{start+length:04x}:{RESET}")
-        
+
         for offset in range(start, start + length, 16):
             chunk = b''
             for i in range(16):
@@ -204,21 +205,21 @@ class FluxREPL:
                         chunk += b'?'
                 else:
                     break
-            
+
             hex_part = " ".join(f"{b:02x}" for b in chunk)
             ascii_part = "".join(chr(b) if 32 <= b < 127 else "." for b in chunk)
             lines.append(f"  0x{offset:04x}: {hex_part:<48}  {ascii_part}")
-        
+
         return "\n".join(lines)
-    
-    def compile_and_run_c(self, c_code: str) -> Dict[str, Any]:
+
+    def compile_and_run_c(self, c_code: str) -> dict[str, Any]:
         """Compile C code to bytecode and run it."""
         try:
             # Try to import C frontend
             from flux.frontend.c_frontend import CFrontendCompiler
             compiler = CFrontendCompiler()
             bytecode = compiler.compile(c_code)
-            
+
             old_regs = [self.vm.regs.read_gp(i) for i in range(16)] if self.vm else []
             self.vm = Interpreter(bytecode, memory_size=self.memory_size, isa="system_a")
             cycles = self.vm.execute()
@@ -234,8 +235,8 @@ class FluxREPL:
             return {"error": "C frontend not available"}
         except Exception as e:
             return {"error": f"C compilation failed: {e}"}
-    
-    def send_a2a_message(self, receiver: str, payload: str) -> Dict[str, Any]:
+
+    def send_a2a_message(self, receiver: str, payload: str) -> dict[str, Any]:
         """Send an A2A message."""
         try:
             # Create a message
@@ -254,13 +255,13 @@ class FluxREPL:
             }
         except Exception as e:
             return {"error": f"A2A message failed: {e}"}
-    
+
     def disassemble(self, hex_str: str) -> str:
         """Disassemble hex bytecode to human-readable instructions."""
         bytecode = self._assemble_hex(hex_str)
         if not bytecode:
             return "Empty bytecode"
-        
+
         # Simple disassembler
         from flux.bytecode.opcodes import Op
         lines = []
@@ -272,7 +273,7 @@ class FluxREPL:
                 if not name.startswith('_') and value == opcode:
                     op_name = name
                     break
-            
+
             # Basic instruction length detection
             if opcode in [Op.MOVI, Op.LDI, Op.STORE]:
                 if i + 3 <= len(bytecode):
@@ -299,14 +300,14 @@ class FluxREPL:
             else:
                 lines.append(f"  0x{i:04x}: {op_name} (0x{opcode:02x})")
                 i += 1
-        
+
         return f"{BOLD}{CYAN}Disassembly:{RESET}\n" + "\n".join(lines)
 
 
 def run_repl() -> None:
     """Run the interactive REPL."""
     repl = FluxREPL()
-    
+
     print(f"{BOLD}{MAGENTA}╔══════════════════════════════════════════════════════════╗{RESET}")
     print(f"{BOLD}{MAGENTA}║                 FLUX REPL v1.0                          ║{RESET}")
     print(f"{BOLD}{MAGENTA}╚══════════════════════════════════════════════════════════╝{RESET}")
@@ -315,7 +316,7 @@ def run_repl() -> None:
     print("  Enter hex bytecode (e.g., '2B 00 03 00 2B 01 04 00 08 00 00 01 80')")
     print("  or expressions (e.g., '3 + 4') to execute.")
     print()
-    
+
     while True:
         try:
             # Read input
@@ -324,13 +325,13 @@ def run_repl() -> None:
             except EOFError:
                 print()
                 break
-            
+
             if not line:
                 continue
-            
+
             # Add to history
             repl.history.append(line)
-            
+
             # Parse command
             if line.lower() == 'quit' or line.lower() == 'exit':
                 print(f"{YELLOW}Goodbye!{RESET}")
@@ -391,14 +392,14 @@ def run_repl() -> None:
                     # Try as expression
                     result = repl.execute_expr(line)
                     handle_result(result)
-                    
+
         except KeyboardInterrupt:
             print(f"\n{YELLOW}Interrupted. Type 'quit' to exit.{RESET}")
         except Exception as e:
             print(f"{RED}Error: {e}{RESET}")
 
 
-def handle_result(result: Dict[str, Any]) -> None:
+def handle_result(result: dict[str, Any]) -> None:
     """Print execution result."""
     if "error" in result:
         print(f"{RED}Error: {result['error']}{RESET}")

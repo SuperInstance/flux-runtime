@@ -12,23 +12,23 @@ Covers:
 
 import os
 import tempfile
+
 import pytest
 
 from flux.reverse.code_map import (
-    CodeMapping,
     CodeMap,
+    CodeMapping,
     ConstructType,
     Difficulty,
-    MigrationStep,
     MigrationPlan,
+    MigrationStep,
 )
 from flux.reverse.engineer import (
     FluxReverseEngineer,
     UnsupportedLanguageError,
 )
-from flux.reverse.parsers.python_reverse import PythonReverseEngineer
 from flux.reverse.parsers.c_reverse import CReverseEngineer
-
+from flux.reverse.parsers.python_reverse import PythonReverseEngineer
 
 # ======================================================================
 # CodeMapping Tests

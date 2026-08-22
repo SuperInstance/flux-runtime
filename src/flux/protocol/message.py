@@ -16,8 +16,7 @@ import enum
 import time
 import uuid
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
-
+from typing import Any
 
 # ── Message kind enum ───────────────────────────────────────────────────────
 
@@ -92,8 +91,8 @@ class MessageEnvelope:
     conversation_id: str = ""
     timestamp: float = field(default_factory=time.time)
     kind: MessageKind = MessageKind.EVENT
-    payload: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    payload: dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.conversation_id:
@@ -111,7 +110,7 @@ class MessageEnvelope:
     def is_error(self) -> bool:
         return self.kind == MessageKind.ERROR
 
-    def reply(self, payload: Dict[str, Any], **metadata) -> MessageEnvelope:
+    def reply(self, payload: dict[str, Any], **metadata) -> MessageEnvelope:
         """Create a response envelope replying to this message."""
         return MessageEnvelope(
             sender=self.receiver,
@@ -137,7 +136,7 @@ class MessageEnvelope:
             error_details=details,
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize to a plain dictionary."""
         return {
             "id": self.id.to_bytes().hex(),
@@ -182,7 +181,7 @@ class Request(MessageEnvelope):
         sender: str,
         receiver: str,
         method: str,
-        payload: Optional[Dict[str, Any]] = None,
+        payload: dict[str, Any] | None = None,
         timeout_ms: int = 0,
         **metadata,
     ) -> Request:
@@ -220,7 +219,7 @@ class Response(MessageEnvelope):
     def create(
         cls,
         request: MessageEnvelope,
-        payload: Optional[Dict[str, Any]] = None,
+        payload: dict[str, Any] | None = None,
         success: bool = True,
         **metadata,
     ) -> Response:
@@ -259,7 +258,7 @@ class Event(MessageEnvelope):
         cls,
         sender: str,
         event_type: str,
-        payload: Optional[Dict[str, Any]] = None,
+        payload: dict[str, Any] | None = None,
         receiver: str = "",
         **metadata,
     ) -> Event:

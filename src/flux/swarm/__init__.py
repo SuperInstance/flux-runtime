@@ -9,21 +9,11 @@ This package provides:
 """
 
 from .agent import (
-    FluxAgent,
+    AgentResult,
     AgentRole,
     AgentTask,
-    AgentResult,
+    FluxAgent,
     TrustProfile,
-)
-from .topology import (
-    SwarmTopology,
-    Topology,
-)
-from .swarm import (
-    Swarm,
-    SwarmReport,
-    SwarmEvolutionReport,
-    TopologyChange,
 )
 from .deadlock import (
     DeadlockDetector,
@@ -34,6 +24,16 @@ from .deadlock import (
 from .message_bus import (
     AgentMessage,
     MessageBus,
+)
+from .swarm import (
+    Swarm,
+    SwarmEvolutionReport,
+    SwarmReport,
+    TopologyChange,
+)
+from .topology import (
+    SwarmTopology,
+    Topology,
 )
 
 __all__ = [

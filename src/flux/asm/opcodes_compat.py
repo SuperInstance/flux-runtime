@@ -7,7 +7,6 @@ Uses the authoritative opcodes from flux.bytecode.opcodes.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 from .errors import AsmError, AsmErrorKind
 
@@ -24,7 +23,7 @@ class OpcodeDef:
     description: str = ""
 
 
-def parse_register(s: str, loc: Optional[object] = None) -> int:
+def parse_register(s: str, loc: object | None = None) -> int:
     """Parse a register name like 'R0', 'R15', 'r3', or bare number -> int."""
     s = s.strip()
     if s.upper().startswith("R"):

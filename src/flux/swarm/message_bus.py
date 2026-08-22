@@ -13,8 +13,6 @@ import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Optional
-
 
 # ── Message Types ─────────────────────────────────────────────────────────
 
@@ -33,8 +31,8 @@ class AgentMessage:
         priority: Delivery priority (0–15, higher = more urgent).
     """
     sender: str
-    receiver: Optional[str] = None
-    topic: Optional[str] = None
+    receiver: str | None = None
+    topic: str | None = None
     msg_type: str = "request"
     payload: dict = field(default_factory=dict)
     conversation_id: str = ""

@@ -10,11 +10,21 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 from flux.fir.types import (
-    FIRType, TypeContext, IntType, FloatType, BoolType, UnitType,
-    StringType, RefType, ArrayType, VectorType, FuncType, StructType,
+    ArrayType,
+    BoolType,
+    FIRType,
+    FloatType,
+    FuncType,
+    IntType,
+    RefType,
+    StringType,
+    StructType,
+    TypeContext,
+    UnitType,
+    VectorType,
 )
 from flux.types.generic import GenericType, TypeVar
 
@@ -151,7 +161,7 @@ class TypeUnifier:
             If None, a new one is created.
     """
 
-    def __init__(self, ctx: Optional[TypeContext] = None) -> None:
+    def __init__(self, ctx: TypeContext | None = None) -> None:
         self.ctx = ctx or TypeContext()
         self._coercion_rules: list[CoercionRule] = []
 
@@ -681,7 +691,7 @@ class TypeUnifier:
         # Implicit coercions: widening (cost 1) and identity (cost 0)
         return cost <= 1
 
-    def unify(self, *types: FIRType) -> Optional[FIRType]:
+    def unify(self, *types: FIRType) -> FIRType | None:
         """Unify multiple types into a single common type.
 
         Finds the least general type that all input types can be
@@ -705,7 +715,7 @@ class TypeUnifier:
                 return None
         return result
 
-    def _unify_pair(self, t1: FIRType, t2: FIRType) -> Optional[FIRType]:
+    def _unify_pair(self, t1: FIRType, t2: FIRType) -> FIRType | None:
         """Unify two types, finding their least upper bound."""
         if _type_eq(t1, t2):
             return t1

@@ -24,10 +24,10 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
-import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -37,10 +37,9 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 
 from flux.retro.research.session import (
-    ResearchSession,
     Reflection,
+    ResearchSession,
 )
-
 
 # ── Game Definitions ─────────────────────────────────────────────────────────
 

@@ -1,10 +1,10 @@
 """Hot code loader — BEAM-inspired dual-version module loading."""
 
 from __future__ import annotations
+
 import hashlib
 import time
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -16,7 +16,7 @@ class ModuleVersion:
     function_names: list[str]
     timestamp: float
     source_hash: str
-    parent_version_id: Optional[int] = None
+    parent_version_id: int | None = None
 
     @classmethod
     def create(
@@ -25,7 +25,7 @@ class ModuleVersion:
         bytecode: bytes,
         function_names: list[str],
         source: str = "",
-        parent: Optional[ModuleVersion] = None,
+        parent: ModuleVersion | None = None,
     ) -> ModuleVersion:
         return cls(
             version_id=version_id,
@@ -56,7 +56,7 @@ class HotLoader:
         source: str = "",
     ) -> ModuleVersion:
         """Load a new version. Old version stays for existing calls."""
-        if name in self._modules and self._modules[name]:
+        if self._modules.get(name):
             parent = self._modules[name][-1]
         else:
             parent = None

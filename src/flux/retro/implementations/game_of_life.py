@@ -17,6 +17,7 @@ Python orchestrates multiple generations, swaps buffers, and renders.
 from __future__ import annotations
 
 from flux.vm.interpreter import Interpreter
+
 from ._builder import BytecodeBuilder
 
 _GRID = 8

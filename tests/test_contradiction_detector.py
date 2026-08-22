@@ -1,12 +1,12 @@
 """Tests for ContradictionDetector — the vocabulary immune system."""
 
-import sys, os
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from flux.open_interp.contradiction_detector import (
-    ContradictionDetector, Severity
-)
-from flux.open_interp.vocabulary import Vocabulary, VocabEntry
+from flux.open_interp.contradiction_detector import ContradictionDetector, Severity
+from flux.open_interp.vocabulary import VocabEntry, Vocabulary
 
 
 def _make_entry(name, pattern, result_reg=0, depends=None, bytecode="MOVI R0, 0; HALT"):
@@ -25,7 +25,7 @@ def _make_entry(name, pattern, result_reg=0, depends=None, bytecode="MOVI R0, 0;
 class TestDuplicateDetection:
     def setup_method(self):
         self.detector = ContradictionDetector()
-    
+
     def test_clean_vocab(self):
         vocab = Vocabulary()
         vocab.entries = [
@@ -36,7 +36,7 @@ class TestDuplicateDetection:
         report = self.detector.scan(vocab)
         assert report.clean
         assert report.total_entries == 3
-    
+
     def test_duplicate_name(self):
         vocab = Vocabulary()
         vocab.entries = [
@@ -46,7 +46,7 @@ class TestDuplicateDetection:
         report = self.detector.scan(vocab)
         assert not report.clean
         assert any(i.conflict_type == "duplicate_name" for i in report.issues)
-    
+
     def test_pattern_overlap(self):
         vocab = Vocabulary()
         vocab.entries = [
@@ -60,7 +60,7 @@ class TestDuplicateDetection:
 class TestDependencyCycles:
     def setup_method(self):
         self.detector = ContradictionDetector()
-    
+
     def test_self_dependency(self):
         vocab = Vocabulary()
         vocab.entries = [
@@ -68,7 +68,7 @@ class TestDependencyCycles:
         ]
         report = self.detector.scan(vocab)
         assert any(i.conflict_type == "dependency_cycle" for i in report.issues)
-    
+
     def test_circular_dependency(self):
         vocab = Vocabulary()
         vocab.entries = [
@@ -78,7 +78,7 @@ class TestDependencyCycles:
         ]
         report = self.detector.scan(vocab)
         assert any(i.conflict_type == "dependency_cycle" for i in report.issues)
-    
+
     def test_no_cycle_valid_deps(self):
         vocab = Vocabulary()
         vocab.entries = [
@@ -100,17 +100,17 @@ class TestValidation:
             _make_entry("add", "compute $a + $b"),
             _make_entry("mul", "compute $a * $b"),
         ]
-    
+
     def test_valid_new_entry(self):
         entry = _make_entry("div", "compute $a / $b")
         report = self.detector.validate(entry, self.vocab)
         assert report.clean
-    
+
     def test_duplicate_name_rejected(self):
         entry = _make_entry("add", "addition of $a and $b")
         report = self.detector.validate(entry, self.vocab)
         assert any(i.conflict_type == "duplicate_name" for i in report.issues)
-    
+
     def test_missing_dependency_warned(self):
         entry = _make_entry("avg", "average of $a and $b", depends=["nonexistent"])
         report = self.detector.validate(entry, self.vocab)
@@ -126,13 +126,13 @@ class TestDiff:
             _make_entry("mul", "compute $a * $b"),
             _make_entry("old", "old pattern"),
         ]
-    
+
     def test_no_changes(self):
         report = self.detector.diff(self.before, self.before)
         # Should find no critical changes
         critical = [i for i in report.issues if i.severity == Severity.CRITICAL]
         assert len(critical) == 0
-    
+
     def test_removed_entry_breaks_dependency(self):
         after = Vocabulary()
         after.entries = [
@@ -142,7 +142,7 @@ class TestDiff:
         ]
         report = self.detector.diff(self.before, after)
         assert any(i.conflict_type == "broken_dependency" for i in report.issues)
-    
+
     def test_pattern_change_detected(self):
         after = Vocabulary()
         after.entries = [

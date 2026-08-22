@@ -45,9 +45,9 @@ Usage::
 
 from __future__ import annotations
 
+import argparse
 import struct
 import sys
-import argparse
 
 # Import get_instruction_color for debugger output
 try:
@@ -486,7 +486,7 @@ def _cmd_compile(args: argparse.Namespace) -> None:
     """Handle the ``compile`` subcommand."""
     from flux.compiler.pipeline import FluxCompiler
 
-    with open(args.input, "r") as f:
+    with open(args.input) as f:
         source = f.read()
 
     lang = _infer_lang(args.input, args.lang)
@@ -537,6 +537,7 @@ def _compile_python_fallback(source: str) -> bytes:
     and generates raw MOVI/IADD/ISUB/IMUL/IDIV/HALT bytecode.
     """
     import struct
+
     from flux.bytecode.opcodes import Op
 
     lines = [l.strip() for l in source.strip().splitlines() if l.strip() and not l.strip().startswith("#")]
@@ -616,8 +617,9 @@ def _cmd_test() -> None:
 
 def _cmd_version() -> None:
     """Handle the ``version`` subcommand."""
-    import flux
     import platform
+
+    import flux
 
     version = getattr(flux, "__version__", "0.1.0")
     print(f"FLUX v{version}")
@@ -768,6 +770,7 @@ def _cmd_playground() -> None:
 def _cmd_migrate(args: argparse.Namespace) -> None:
     """Handle the ``migrate`` subcommand."""
     from pathlib import Path
+
     from flux.migrate import FluxMigrator
 
     input_path = Path(args.input)
@@ -833,8 +836,9 @@ def _cmd_disasm(args: argparse.Namespace) -> None:
 
 def _cmd_debug(args: argparse.Namespace) -> None:
     """Handle the ``debug`` subcommand — interactive debugger."""
-    from flux.debugger import FluxDebugger
     import cmd
+
+    from flux.debugger import FluxDebugger
 
     with open(args.input, "rb") as f:
         bytecode = f.read()
@@ -1034,8 +1038,9 @@ def _cmd_open() -> None:
 def _cmd_run_md(args: argparse.Namespace) -> None:
     """Handle the ``run-md`` subcommand — run markdown file with FLUX code."""
     try:
-        from flux.open_interpreter import run_markdown_file
         import json
+
+        from flux.open_interpreter import run_markdown_file
     except ImportError as e:
         print(f"Error: cannot import flux.open_interpreter — {e}", file=sys.stderr)
         sys.exit(1)

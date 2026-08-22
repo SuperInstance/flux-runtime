@@ -11,10 +11,9 @@ Supports:
 
 from __future__ import annotations
 
-import re
 import os
+import re
 from dataclasses import dataclass, field
-from typing import Optional
 
 from .errors import AsmError, AsmErrorKind, SourceLocation
 
@@ -33,8 +32,8 @@ class MacroPreprocessor:
 
     def __init__(
         self,
-        include_paths: Optional[list[str]] = None,
-        defines: Optional[dict[str, str]] = None,
+        include_paths: list[str] | None = None,
+        defines: dict[str, str] | None = None,
     ):
         self.include_paths = include_paths or ["."]
         self.macros: dict[str, MacroDefinition] = {}
@@ -48,7 +47,7 @@ class MacroPreprocessor:
         # Conditional stack: list of (name_or_None, is_active, was_active)
         # is_active: current block should be emitted
         # was_active: any block in this #ifdef/#endif group was active
-        self._cond_stack: list[tuple[Optional[str], bool, bool]] = []
+        self._cond_stack: list[tuple[str | None, bool, bool]] = []
         self._included_files: set[str] = set()  # prevent circular includes
 
     @property
@@ -268,9 +267,9 @@ class MacroPreprocessor:
 
         # Read and recursively preprocess the included file
         try:
-            with open(resolved, "r", encoding="utf-8") as f:
+            with open(resolved, encoding="utf-8") as f:
                 included_source = f.read()
-        except IOError as e:
+        except OSError as e:
             raise AsmError(
                 message=f"Cannot include file '{include_name}': {e}",
                 kind=AsmErrorKind.INCLUDE_ERROR,
@@ -327,7 +326,7 @@ def make_error(
     line: int = 0,
     column: int = 0,
     source_line: str = "",
-    hints: Optional[list[str]] = None,
+    hints: list[str] | None = None,
 ) -> AsmError:
     """Import-compatible convenience factory."""
     from .errors import make_error as _make_error

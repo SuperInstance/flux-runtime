@@ -2,16 +2,15 @@
 
 import os
 import shutil
-import time
 import tempfile
+import time
 
 import pytest
 
-from flux.memory.store import MemoryStore, MemoryEntry
-from flux.memory.experience import Experience, ExperienceRecorder, GeneralizedRule
 from flux.memory.bandit import MutationBandit, StrategyStats
+from flux.memory.experience import Experience, ExperienceRecorder, GeneralizedRule
 from flux.memory.learning import LearningRateAdapter, LearningState
-
+from flux.memory.store import MemoryEntry, MemoryStore
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 

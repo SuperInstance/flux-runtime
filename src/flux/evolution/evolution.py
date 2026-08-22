@@ -23,16 +23,17 @@ The evolution loop:
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Optional, Any, Callable
+from typing import Any
 
-from .genome import Genome
-from .pattern_mining import PatternMiner, ExecutionTrace
-from .mutator import SystemMutator, MutationRecord
-from .validator import CorrectnessValidator, ValidationResult
 from flux.adaptive.profiler import AdaptiveProfiler
 from flux.adaptive.selector import AdaptiveSelector
 
+from .genome import Genome
+from .mutator import MutationRecord, SystemMutator
+from .pattern_mining import ExecutionTrace, PatternMiner
+from .validator import CorrectnessValidator, ValidationResult
 
 # ── Record Types ───────────────────────────────────────────────────────────────
 
@@ -47,7 +48,7 @@ class EvolutionRecord:
     mutations_committed: int
     mutations_failed: int
     patterns_found: int
-    validation_result: Optional[ValidationResult] = None
+    validation_result: ValidationResult | None = None
     elapsed_ns: int = 0
     timestamp: float = 0.0
 
@@ -129,7 +130,7 @@ class EvolutionStep:
     mutations_committed: int
     patterns_found: int
     time_ns: int = 0
-    record: Optional[EvolutionRecord] = None
+    record: EvolutionRecord | None = None
 
     @property
     def improved(self) -> bool:
@@ -161,9 +162,9 @@ class EvolutionEngine:
 
     def __init__(
         self,
-        profiler: Optional[AdaptiveProfiler] = None,
-        selector: Optional[AdaptiveSelector] = None,
-        validator: Optional[CorrectnessValidator] = None,
+        profiler: AdaptiveProfiler | None = None,
+        selector: AdaptiveSelector | None = None,
+        validator: CorrectnessValidator | None = None,
         max_generations: int = 100,
         convergence_threshold: float = 0.001,
     ) -> None:
@@ -186,7 +187,7 @@ class EvolutionEngine:
         tile_registry: Any,
         workloads: list[Callable[[], None]],
         max_generations: int = 10,
-        validation_fn: Optional[Callable[[Genome], bool]] = None,
+        validation_fn: Callable[[Genome], bool] | None = None,
     ) -> EvolutionReport:
         """Run the evolution loop for N generations.
 
@@ -250,8 +251,8 @@ class EvolutionEngine:
         self,
         module_root: Any,
         tile_registry: Any,
-        workload: Optional[Callable[[], None]] = None,
-        validation_fn: Optional[Callable[[Genome], bool]] = None,
+        workload: Callable[[], None] | None = None,
+        validation_fn: Callable[[Genome], bool] | None = None,
     ) -> EvolutionStep:
         """Run one evolution step: capture → profile → mine → propose → evaluate → commit.
 
@@ -289,7 +290,7 @@ class EvolutionEngine:
         mutations_committed = 0
         mutations_failed = 0
         fitness_after = fitness_before
-        validation_result: Optional[ValidationResult] = None
+        validation_result: ValidationResult | None = None
 
         for proposal in proposals:
             result = self.mutator.apply_mutation(

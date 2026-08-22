@@ -7,11 +7,8 @@ queues, and task scheduling.  These build on top of the A2A primitives
 
 from __future__ import annotations
 
-from typing import Optional
-
-from flux.fir.values import Value
 from flux.fir.builder import FIRBuilder
-
+from flux.fir.values import Value
 
 # ── Base ────────────────────────────────────────────────────────────────────
 
@@ -22,7 +19,7 @@ class AgentFunction:
     name: str = ""
     description: str = ""
 
-    def emit(self, builder: FIRBuilder, args: list[Value]) -> Optional[Value]:
+    def emit(self, builder: FIRBuilder, args: list[Value]) -> Value | None:
         """Emit FIR instructions for this agent function."""
         raise NotImplementedError
 
@@ -97,7 +94,7 @@ class MessageQueueImpl(AgentFunction):
         builder: FIRBuilder,
         target: Value,
         message: Value,
-        priority: Optional[Value] = None,
+        priority: Value | None = None,
     ) -> Value:
         """Send a message to a target agent.
 
@@ -110,7 +107,7 @@ class MessageQueueImpl(AgentFunction):
         result = builder.call("flux.mq_send", args, return_type=bool_t)
         return result
 
-    def emit_receive(self, builder: FIRBuilder, timeout_ms: Optional[Value] = None) -> Value:
+    def emit_receive(self, builder: FIRBuilder, timeout_ms: Value | None = None) -> Value:
         """Receive the next message from the queue.
 
         Returns the message payload as a string.
@@ -163,7 +160,7 @@ class TaskSchedulerImpl(AgentFunction):
         builder: FIRBuilder,
         agent_name: Value,
         task_data: Value,
-        priority: Optional[Value] = None,
+        priority: Value | None = None,
     ) -> Value:
         """Schedule a task for an agent.
 
@@ -203,7 +200,7 @@ class TaskSchedulerImpl(AgentFunction):
         result = builder.call("flux.task_result", [task_id], return_type=string_t)
         return result
 
-    def emit_wait(self, builder: FIRBuilder, task_id: Value, timeout_ms: Optional[Value] = None) -> Value:
+    def emit_wait(self, builder: FIRBuilder, task_id: Value, timeout_ms: Value | None = None) -> Value:
         """Wait for a task to complete, with optional timeout.
 
         Returns the status code.

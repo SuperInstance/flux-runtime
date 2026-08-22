@@ -5,47 +5,47 @@ when invoked through a :class:`FIRBuilder`.  This lets the compiler inline stdli
 operations at the IR level before lowering to bytecode.
 """
 
-from .intrinsics import (
-    IntrinsicFunction,
-    PrintFn,
-    AssertFn,
-    PanicFn,
-    SizeofFn,
-    AlignofFn,
-    TypeOfFn,
-    STDLIB_INTRINSICS,
-)
-from .collections import (
-    ListImpl,
-    MapImpl,
-    SetImpl,
-    QueueImpl,
-    StackImpl,
-    STDLIB_COLLECTIONS,
-)
-from .math import (
-    MinFn,
-    MaxFn,
-    AbsFn,
-    ClampFn,
-    LerpFn,
-    SqrtFn,
-    STDLIB_MATH,
-)
-from .strings import (
-    ConcatFn,
-    SubstringFn,
-    SplitFn,
-    JoinFn,
-    LengthFn,
-    FormatFn,
-    STDLIB_STRINGS,
-)
 from .agents import (
+    STDLIB_AGENTS,
     AgentRegistryImpl,
     MessageQueueImpl,
     TaskSchedulerImpl,
-    STDLIB_AGENTS,
+)
+from .collections import (
+    STDLIB_COLLECTIONS,
+    ListImpl,
+    MapImpl,
+    QueueImpl,
+    SetImpl,
+    StackImpl,
+)
+from .intrinsics import (
+    STDLIB_INTRINSICS,
+    AlignofFn,
+    AssertFn,
+    IntrinsicFunction,
+    PanicFn,
+    PrintFn,
+    SizeofFn,
+    TypeOfFn,
+)
+from .math import (
+    STDLIB_MATH,
+    AbsFn,
+    ClampFn,
+    LerpFn,
+    MaxFn,
+    MinFn,
+    SqrtFn,
+)
+from .strings import (
+    STDLIB_STRINGS,
+    ConcatFn,
+    FormatFn,
+    JoinFn,
+    LengthFn,
+    SplitFn,
+    SubstringFn,
 )
 
 __all__ = [

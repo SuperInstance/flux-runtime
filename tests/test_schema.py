@@ -2,11 +2,14 @@
 
 import json
 
-
 from flux.schema.architecture import (
     get_architecture_schema,
     get_layer_by_id,
     get_module_dependencies,
+)
+from flux.schema.builder_schema import (
+    get_builder_schema,
+    get_open_questions,
 )
 from flux.schema.opcode_schema import (
     get_opcode_schema,
@@ -17,11 +20,6 @@ from flux.schema.tile_schema import (
     get_tile_library_schema,
     search_tiles,
 )
-from flux.schema.builder_schema import (
-    get_builder_schema,
-    get_open_questions,
-)
-
 
 # ══════════════════════════════════════════════════════════════════════════
 # Architecture Schema
@@ -595,10 +593,10 @@ class TestSchemaLoading:
     def test_import_from_package(self):
         from flux.schema import (
             get_architecture_schema,
-            get_opcode_schema,
-            get_tile_library_schema,
             get_builder_schema,
+            get_opcode_schema,
             get_open_questions,
+            get_tile_library_schema,
         )
         assert callable(get_architecture_schema)
         assert callable(get_opcode_schema)

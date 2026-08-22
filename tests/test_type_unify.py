@@ -6,29 +6,36 @@ import traceback
 sys.path.insert(0, "src")
 
 from flux.fir.types import (
-    TypeContext, IntType, FloatType, BoolType, UnitType, StringType,
-    RefType, ArrayType, FuncType, StructType,
+    ArrayType,
+    BoolType,
+    FloatType,
+    FuncType,
+    IntType,
+    RefType,
+    StringType,
+    StructType,
+    TypeContext,
+    UnitType,
 )
-from flux.types.unify import TypeUnifier, _type_eq
 from flux.types.compat import (
     are_compatible,
     coercion_cost,
-    least_upper_bound,
     compatibility_report,
+    least_upper_bound,
 )
 from flux.types.generic import (
-    TypeVar,
     GenericType,
     TypeScheme,
-    make_vec,
+    TypeVar,
+    _collect_free_vars,
+    _substitute,
     make_map,
     make_option,
     make_result,
     make_scheme,
-    _substitute,
-    _collect_free_vars,
+    make_vec,
 )
-
+from flux.types.unify import TypeUnifier, _type_eq
 
 passed = 0
 failed = 0

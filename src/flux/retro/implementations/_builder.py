@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import struct
+
 from flux.bytecode.opcodes import Op
 
 

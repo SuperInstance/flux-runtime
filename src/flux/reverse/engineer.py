@@ -6,16 +6,14 @@ code in any supported language and mapping it to FLUX FIR equivalents.
 
 from __future__ import annotations
 
-
 from flux.reverse.code_map import (
     CodeMap,
     ConstructType,
-    MigrationStep,
     MigrationPlan,
+    MigrationStep,
 )
-from flux.reverse.parsers.python_reverse import PythonReverseEngineer
 from flux.reverse.parsers.c_reverse import CReverseEngineer
-
+from flux.reverse.parsers.python_reverse import PythonReverseEngineer
 
 # Map of supported languages to their reverse engineers
 _ENGINES = {
@@ -122,7 +120,7 @@ class FluxReverseEngineer:
             raise FileNotFoundError(f"File not found: {filepath}")
 
         lang = self._detect_language(filepath)
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             source = f.read()
 
         return self.analyze(source, lang)

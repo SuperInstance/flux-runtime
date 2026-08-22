@@ -1,23 +1,67 @@
 """FIR Builder — convenience API for constructing FIR with SSA invariants."""
 
 from __future__ import annotations
-from typing import Optional
 
+from .blocks import FIRBlock, FIRFunction, FIRModule
+from .instructions import (
+    Alloca,
+    Ask,
+    Bitcast,
+    Branch,
+    Call,
+    CapRequire,
+    Delegate,
+    FAdd,
+    FDiv,
+    FEq,
+    FExt,
+    FGe,
+    FGt,
+    FLe,
+    FLt,
+    FMul,
+    FNeg,
+    FSub,
+    FTrunc,
+    GetElem,
+    GetField,
+    IAdd,
+    IAnd,
+    IDiv,
+    IEq,
+    IGe,
+    IGt,
+    ILe,
+    ILt,
+    IMod,
+    IMul,
+    INe,
+    INeg,
+    INot,
+    Instruction,
+    IOr,
+    IShl,
+    IShr,
+    ISub,
+    ITrunc,
+    IXor,
+    Jump,
+    Load,
+    MemCopy,
+    MemSet,
+    Return,
+    SetElem,
+    SetField,
+    SExt,
+    Store,
+    Switch,
+    Tell,
+    TrustCheck,
+    Unreachable,
+    ZExt,
+)
 from .types import FIRType, TypeContext
 from .values import Value
-from .instructions import (
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IAnd, IOr, IXor, IShl, IShr, INot,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-    ITrunc, ZExt, SExt, FTrunc, FExt, Bitcast,
-    Load, Store, Alloca, GetField, SetField, GetElem, SetElem, MemCopy, MemSet,
-    Jump, Branch, Switch, Call, Return, Unreachable,
-    Tell, Ask, Delegate, TrustCheck, CapRequire,
-    Instruction,
-)
-from .blocks import FIRModule, FIRFunction, FIRBlock
 
 
 class FIRBuilder:
@@ -26,7 +70,7 @@ class FIRBuilder:
     def __init__(self, type_ctx: TypeContext):
         self._ctx = type_ctx
         self._next_value_id: int = 0
-        self._current_block: Optional[FIRBlock] = None
+        self._current_block: FIRBlock | None = None
 
     # ── Module / Function / Block creation ──────────────────────────────
 

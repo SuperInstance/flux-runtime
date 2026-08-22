@@ -30,8 +30,6 @@ import math
 import time
 from collections import deque
 from dataclasses import dataclass, field
-from typing import Deque, Dict, Optional, Tuple
-
 
 # ── Interaction Record ────────────────────────────────────────────────────
 
@@ -83,7 +81,7 @@ class AgentProfile:
     """
 
     agent_id: str
-    history: Deque[InteractionRecord] = field(
+    history: deque[InteractionRecord] = field(
         default_factory=lambda: deque(maxlen=1000)
     )
 
@@ -118,7 +116,7 @@ class TrustEngine:
     NEUTRAL_TRUST: float = 0.5
 
     def __init__(self) -> None:
-        self._profiles: Dict[Tuple[str, str], AgentProfile] = {}
+        self._profiles: dict[tuple[str, str], AgentProfile] = {}
 
     # ── Public API ────────────────────────────────────────────────────────
 
@@ -237,7 +235,7 @@ class TrustEngine:
 
     # ── Profile access ────────────────────────────────────────────────────
 
-    def get_profile(self, agent_a: str, agent_b: str) -> Optional[AgentProfile]:
+    def get_profile(self, agent_a: str, agent_b: str) -> AgentProfile | None:
         """Return the profile, or ``None`` if it doesn't exist."""
         return self._profiles.get(self._make_key(agent_a, agent_b))
 
@@ -249,7 +247,7 @@ class TrustEngine:
         return self._profiles[key]
 
     @staticmethod
-    def _make_key(a: str, b: str) -> Tuple[str, str]:
+    def _make_key(a: str, b: str) -> tuple[str, str]:
         return (a, b)
 
     # ── Dimension computations ────────────────────────────────────────────

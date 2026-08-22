@@ -10,20 +10,19 @@ from __future__ import annotations
 import random
 import time
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Any
 
 from flux.cost.model import CostModel
 from flux.evolution.genome import (
     Genome,
-    MutationStrategy,
     ModuleSnapshot,
+    MutationStrategy,
     TileSnapshot,
 )
 from flux.evolution.mutator import (
     MutationProposal,
     SystemMutator,
 )
-
 
 # ── Data Types ──────────────────────────────────────────────────────────
 
@@ -84,7 +83,7 @@ class SimulatedEvolutionReport:
     mutations_accepted: int = 0
     mutations_rejected: int = 0
     per_generation_fitness: list[float] = field(default_factory=list)
-    best_mutation: Optional[SimulatedResult] = None
+    best_mutation: SimulatedResult | None = None
     survival_rate: float = 1.0
 
     @property
@@ -127,7 +126,7 @@ class ChaosReport:
     system_failed: int = 0
     survival_rate: float = 1.0
     faults: list[ChaosFault] = field(default_factory=list)
-    worst_fault: Optional[ChaosFault] = None
+    worst_fault: ChaosFault | None = None
     avg_recovery_time_ms: float = 0.0
     resilience_score: float = 1.0  # 0.0 = fragile, 1.0 = bulletproof
 
@@ -152,7 +151,7 @@ class TwinReport:
     accurate_predictions: int = 0
     recent_accuracy_trend: str = "stable"  # "improving", "stable", "degrading"
     chaos_survival_rate: float = 1.0
-    last_chaos_report: Optional[ChaosReport] = None
+    last_chaos_report: ChaosReport | None = None
     uptime_s: float = 0.0
 
 
@@ -208,7 +207,7 @@ class DigitalTwin:
         self._prediction_log: list[PredictionRecord] = []
         self._drift_history: list[float] = []
         self._created_at: float = time.time()
-        self._last_chaos_report: Optional[ChaosReport] = None
+        self._last_chaos_report: ChaosReport | None = None
 
     # ── Shadow Capture ──────────────────────────────────────────────────
 
@@ -306,7 +305,7 @@ class DigitalTwin:
         mutations_simulated = 0
         mutations_accepted = 0
         mutations_rejected = 0
-        best_result: Optional[SimulatedResult] = None
+        best_result: SimulatedResult | None = None
 
         current_genome = Genome.from_dict(self.shadow_genome.to_dict())
         SystemMutator()
@@ -315,7 +314,7 @@ class DigitalTwin:
             # Generate synthetic proposals
             proposals = self._generate_synthetic_proposals(current_genome)
 
-            gen_best_result: Optional[SimulatedResult] = None
+            gen_best_result: SimulatedResult | None = None
 
             for proposal in proposals:
                 mutations_simulated += 1

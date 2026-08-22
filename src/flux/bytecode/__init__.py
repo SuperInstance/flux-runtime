@@ -7,15 +7,15 @@ Provides:
 - BytecodeValidator: validates bytecode structural integrity
 """
 
-from .opcodes import Op, get_format, instruction_size
-from .encoder import BytecodeEncoder
 from .decoder import (
     BytecodeDecoder,
-    DecodedInstruction,
     DecodedFunction,
+    DecodedInstruction,
     DecodedModule,
     DecodedType,
 )
+from .encoder import BytecodeEncoder
+from .opcodes import Op, get_format, instruction_size
 from .validator import BytecodeValidator
 
 __all__ = [

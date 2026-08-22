@@ -1,7 +1,9 @@
 """Tests for Marine Physics opcodes (PHY_ABSORB through PHY_REFRAC)."""
 
-import pytest
 import math
+
+import pytest
+
 from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
 

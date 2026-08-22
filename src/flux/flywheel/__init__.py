@@ -21,18 +21,18 @@ from .engine import (
     FlywheelPhase,
 )
 from .hypothesis import (
-    Hypothesis,
-    ExperimentResult,
     ExperimentOutcome,
-    ObservationData,
-    LearnedInsights,
+    ExperimentResult,
     FlywheelRecord,
     FlywheelReport,
+    Hypothesis,
     IntegrationReport,
+    LearnedInsights,
+    ObservationData,
 )
 from .knowledge import (
-    KnowledgeBase,
     GeneralizedRule,
+    KnowledgeBase,
 )
 from .metrics import (
     FlywheelMetrics,

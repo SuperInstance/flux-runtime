@@ -29,13 +29,12 @@ Usage:
 """
 
 import ast
-import inspect
 import importlib
-import re
+import inspect
 import os
-from typing import Optional, List, Dict, Any
+import re
 from dataclasses import dataclass, field
-
+from typing import Any
 
 # ─── FLUX-ese Grammar ──────────────────────────────────────────────────────
 #
@@ -58,23 +57,23 @@ class FunctionProfile:
     """Profile of a function extracted from source code."""
     name: str
     module: str
-    args: List[Dict[str, Any]] = field(default_factory=list)
+    args: list[dict[str, Any]] = field(default_factory=list)
     returns: str = "unknown"
     docstring: str = ""
     body_summary: str = ""
     complexity: str = "simple"  # simple, moderate, complex
     category: str = ""  # math, data, string, io, etc.
-    natural_patterns: List[str] = field(default_factory=list)
+    natural_patterns: list[str] = field(default_factory=list)
     flux_asm: str = ""
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
 
 @dataclass
 class DecomposedVocabulary:
     """A vocabulary decomposed from source code."""
     module_name: str
-    entries: List[Dict] = field(default_factory=list)
-    metadata: Dict = field(default_factory=dict)
+    entries: list[dict] = field(default_factory=list)
+    metadata: dict = field(default_factory=dict)
 
     def save(self, path: str):
         """Save as .fluxvocab file."""
@@ -119,7 +118,7 @@ class Decomposer:
     """
 
     def __init__(self):
-        self.profiles: List[FunctionProfile] = []
+        self.profiles: list[FunctionProfile] = []
         self._type_map = {
             int: "number", float: "number", str: "text",
             list: "list", dict: "map", bool: "boolean",
@@ -166,7 +165,7 @@ class Decomposer:
 
     def decompose_file(self, filepath: str) -> DecomposedVocabulary:
         """Decompose a Python source file into vocabulary patterns."""
-        with open(filepath, 'r') as f:
+        with open(filepath) as f:
             source = f.read()
 
         tree = ast.parse(source)
@@ -208,7 +207,7 @@ class Decomposer:
             entries=entries,
         )
 
-    def _profile_function(self, name: str, func: callable, module: str) -> Optional[FunctionProfile]:
+    def _profile_function(self, name: str, func: callable, module: str) -> FunctionProfile | None:
         """Profile a live function."""
         try:
             sig = inspect.signature(func)
@@ -243,7 +242,7 @@ class Decomposer:
             category=self._categorize(name, doc, args),
         )
 
-    def _profile_builtin(self, name: str, func: callable, module: str, doc: str) -> Optional[FunctionProfile]:
+    def _profile_builtin(self, name: str, func: callable, module: str, doc: str) -> FunctionProfile | None:
         """Profile a built-in function using docs and name inference."""
         # Parse docstring for parameter info
         # Common patterns: "func(x, /, ...)" or "func(x, y, /, ...)"
@@ -281,7 +280,7 @@ class Decomposer:
             category=self._categorize(name, doc, args),
         )
 
-    def _profile_ast_function(self, node: ast.FunctionDef, module: str, source: str) -> Optional[FunctionProfile]:
+    def _profile_ast_function(self, node: ast.FunctionDef, module: str, source: str) -> FunctionProfile | None:
         """Profile a function from AST."""
         args = []
         for arg in node.args.args:
@@ -325,7 +324,7 @@ class Decomposer:
             return default.value
         return None
 
-    def _categorize(self, name: str, doc: str, args: List[dict]) -> str:
+    def _categorize(self, name: str, doc: str, args: list[dict]) -> str:
         """Categorize a function by its name and context."""
         name_lower = name.lower()
         doc.lower()
@@ -361,7 +360,7 @@ class Decomposer:
 
         return "general"
 
-    def _profile_to_vocab(self, profile: FunctionProfile) -> List[Dict]:
+    def _profile_to_vocab(self, profile: FunctionProfile) -> list[dict]:
         """Convert a function profile to vocabulary entries."""
         entries = []
         args = profile.args
@@ -379,7 +378,7 @@ class Decomposer:
 
         return entries
 
-    def _math_vocab(self, profile: FunctionProfile) -> List[Dict]:
+    def _math_vocab(self, profile: FunctionProfile) -> list[dict]:
         """Generate vocabulary for math functions."""
         entries = []
         name = profile.name
@@ -435,7 +434,7 @@ class Decomposer:
 
         return entries
 
-    def _predicate_vocab(self, profile: FunctionProfile) -> List[Dict]:
+    def _predicate_vocab(self, profile: FunctionProfile) -> list[dict]:
         """Generate vocabulary for predicate/check functions."""
         entries = []
         name = profile.name
@@ -463,7 +462,7 @@ class Decomposer:
 
         return entries
 
-    def _data_vocab(self, profile: FunctionProfile) -> List[Dict]:
+    def _data_vocab(self, profile: FunctionProfile) -> list[dict]:
         """Generate vocabulary for data manipulation functions."""
         entries = []
         name = profile.name
@@ -484,7 +483,7 @@ class Decomposer:
 
         return entries
 
-    def _generic_vocab(self, profile: FunctionProfile) -> List[Dict]:
+    def _generic_vocab(self, profile: FunctionProfile) -> list[dict]:
         """Generate vocabulary for general functions."""
         entries = []
         name = profile.name
@@ -548,7 +547,7 @@ class NativeBridge:
     """
 
     def __init__(self):
-        self._functions: Dict[str, dict] = {}
+        self._functions: dict[str, dict] = {}
 
     def register_vocabulary(self, vocab: DecomposedVocabulary):
         """Register all native-call entries from a vocabulary."""
@@ -617,7 +616,7 @@ class NativeBridge:
 
                 # Handle different arg shapes
                 arg_values = list(parsed.values())
-                
+
                 # Check if function is variadic (*args) - flatten lists
                 import inspect as _ins
                 try:
@@ -625,7 +624,7 @@ class NativeBridge:
                     _variadic = any(p.kind == _ins.Parameter.VAR_POSITIONAL for p in _sig.parameters.values())
                 except (ValueError, TypeError):
                     _variadic = False
-                
+
                 if _variadic:
                     # Flatten all args into a single list
                     flat = []
@@ -635,16 +634,16 @@ class NativeBridge:
                         else:
                             flat.append(v)
                     return fn(*flat)
-                
+
                 # Variadic: single list arg
                 if len(arg_values) == 1 and isinstance(arg_values[0], list):
                     return fn(*arg_values[0])
-                
+
                 return fn(*arg_values)
 
         raise ValueError(f"No matching function for: {text}")
 
-    def list_functions(self) -> List[str]:
+    def list_functions(self) -> list[str]:
         """List all registered functions with their patterns."""
         return [f"{e['pattern']:40s} → {e['python_fn']}" for e in self._functions.values()]
 

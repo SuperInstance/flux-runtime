@@ -14,6 +14,10 @@ import time
 
 import pytest
 
+from flux.adaptive.compiler_bridge import (
+    CompilerBridge,
+    LanguageCompiler,
+)
 from flux.adaptive.profiler import (
     AdaptiveProfiler,
     HeatLevel,
@@ -24,11 +28,6 @@ from flux.adaptive.selector import (
     AdaptiveSelector,
     SelectionEvent,
 )
-from flux.adaptive.compiler_bridge import (
-    CompilerBridge,
-    LanguageCompiler,
-)
-
 
 # ═══════════════════════════════════════════════════════════════════════
 # Profiler Tests

@@ -7,24 +7,24 @@ This package provides:
 - LearningRateAdapter: Adapts exploration rate based on improvement signals
 """
 
-from .store import (
-    MemoryStore,
-    MemoryEntry,
-    MemoryStats,
-    TIER_ORDER,
+from .bandit import (
+    MutationBandit,
+    StrategyStats,
 )
 from .experience import (
     Experience,
     ExperienceRecorder,
     GeneralizedRule,
 )
-from .bandit import (
-    MutationBandit,
-    StrategyStats,
-)
 from .learning import (
     LearningRateAdapter,
     LearningState,
+)
+from .store import (
+    TIER_ORDER,
+    MemoryEntry,
+    MemoryStats,
+    MemoryStore,
 )
 
 __all__ = [

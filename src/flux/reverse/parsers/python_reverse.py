@@ -7,15 +7,14 @@ Uses the ast module to introspectively analyze Python source.
 from __future__ import annotations
 
 import ast
-from typing import Optional
 
 from flux.reverse.code_map import (
-    CodeMapping,
     CodeMap,
+    CodeMapping,
     ConstructType,
     Difficulty,
-    MigrationStep,
     MigrationPlan,
+    MigrationStep,
 )
 
 
@@ -233,9 +232,7 @@ class PythonReverseEngineer:
                 continue  # Skip nested function defs (top-level only)
             if isinstance(child_node, ast.Expr) and isinstance(child_node.value, ast.Call):
                 self._visit_call_expr(child_node.value, mappings, source)
-            elif isinstance(child_node, ast.For):
-                self._visit_loop(child_node, mappings, source)
-            elif isinstance(child_node, ast.While):
+            elif isinstance(child_node, ast.For) or isinstance(child_node, ast.While):
                 self._visit_loop(child_node, mappings, source)
             elif isinstance(child_node, ast.Try):
                 self._visit_try(child_node, mappings, source)
@@ -634,7 +631,7 @@ class PythonReverseEngineer:
     # ── Helpers ────────────────────────────────────────────────────────
 
     @staticmethod
-    def _annotation_str(annotation: Optional[ast.expr]) -> str:
+    def _annotation_str(annotation: ast.expr | None) -> str:
         if annotation is None:
             return "i32"
         if isinstance(annotation, ast.Name):

@@ -1,7 +1,8 @@
 """ModuleNamespace — isolated namespace for module containers."""
 
 from __future__ import annotations
-from typing import Any, Optional
+
+from typing import Any
 
 
 class NameNotFoundError(KeyError):
@@ -19,7 +20,7 @@ class ModuleNamespace:
 
     __slots__ = ("_bindings", "_parent")
 
-    def __init__(self, parent: Optional[ModuleNamespace] = None) -> None:
+    def __init__(self, parent: ModuleNamespace | None = None) -> None:
         self._bindings: dict[str, Any] = {}
         self._parent = parent
 

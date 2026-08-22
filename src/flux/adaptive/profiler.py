@@ -13,8 +13,6 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import Optional
-
 
 # ── Heat Classification ─────────────────────────────────────────────────
 
@@ -394,7 +392,7 @@ class AdaptiveProfiler:
         self._sample_counter = 0
         self._active_samples.clear()
 
-    def get_module_stats(self, module_path: str) -> Optional[dict]:
+    def get_module_stats(self, module_path: str) -> dict | None:
         """Get detailed stats for a single module.
 
         Args:

@@ -1,23 +1,33 @@
 """Tests for FLUX bytecode encoder, decoder, and validator."""
 
 import sys
+
 sys.path.insert(0, "src")
 
 import struct
 
-from flux.fir.types import TypeContext
-from flux.fir.values import Value
-from flux.fir.instructions import (
-    IAdd, ISub, IMul, INeg, Jump, Branch, Tell, Ask, TrustCheck, FAdd, FDiv, Unreachable,
-)
+from flux.bytecode.decoder import BytecodeDecoder
+from flux.bytecode.encoder import HEADER_SIZE, MAGIC, VERSION, BytecodeEncoder
+from flux.bytecode.opcodes import Op
+from flux.bytecode.validator import BytecodeValidator
 from flux.fir.blocks import FIRModule
 from flux.fir.builder import FIRBuilder
-
-from flux.bytecode.opcodes import Op
-from flux.bytecode.encoder import BytecodeEncoder, MAGIC, VERSION, HEADER_SIZE
-from flux.bytecode.decoder import BytecodeDecoder
-from flux.bytecode.validator import BytecodeValidator
-
+from flux.fir.instructions import (
+    Ask,
+    Branch,
+    FAdd,
+    FDiv,
+    IAdd,
+    IMul,
+    INeg,
+    ISub,
+    Jump,
+    Tell,
+    TrustCheck,
+    Unreachable,
+)
+from flux.fir.types import TypeContext
+from flux.fir.values import Value
 
 # ── Helpers ────────────────────────────────────────────────────────────────
 

@@ -1,9 +1,11 @@
 """Hot code reload tests."""
 
-import sys, os
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from flux.reload.hot_loader import ModuleVersion, HotLoader
+from flux.reload.hot_loader import HotLoader, ModuleVersion
 
 
 def test_version_creation():

@@ -5,22 +5,39 @@ import traceback
 
 sys.path.insert(0, "src")
 
-from flux.fir.types import (
-    TypeContext, IntType, FloatType, BoolType, UnitType, StringType,
-    RefType, ArrayType, VectorType, FuncType, StructType, EnumType,
-    RegionType, CapabilityType, AgentType, TrustType,
-)
-from flux.fir.values import Value
-from flux.fir.instructions import (
-    IAdd, Call, Return, Jump, Branch,
-    Store, is_terminator,
-    Alloca,
-)
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
+from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
 from flux.fir.builder import FIRBuilder
-from flux.fir.validator import FIRValidator
+from flux.fir.instructions import (
+    Alloca,
+    Branch,
+    Call,
+    IAdd,
+    Jump,
+    Return,
+    Store,
+    is_terminator,
+)
 from flux.fir.printer import print_fir
-
+from flux.fir.types import (
+    AgentType,
+    ArrayType,
+    BoolType,
+    CapabilityType,
+    EnumType,
+    FloatType,
+    FuncType,
+    IntType,
+    RefType,
+    RegionType,
+    StringType,
+    StructType,
+    TrustType,
+    TypeContext,
+    UnitType,
+    VectorType,
+)
+from flux.fir.validator import FIRValidator
+from flux.fir.values import Value
 
 passed = 0
 failed = 0

@@ -8,19 +8,24 @@ This package provides:
 - ``primitives`` — Rich protocol primitives (Branch, Fork, CoIterate, Discuss, Synthesize, Reflect)
 """
 
-from flux.a2a.messages import A2AMessage
-from flux.a2a.transport import LocalTransport
-from flux.a2a.trust import InteractionRecord, AgentProfile, TrustEngine
 from flux.a2a.coordinator import AgentCoordinator
+from flux.a2a.messages import A2AMessage
 from flux.a2a.primitives import (
-    BranchPrimitive, BranchBody,
-    ForkPrimitive, ForkInherit, ForkMutation,
+    BranchBody,
+    BranchPrimitive,
     CoIteratePrimitive,
-    DiscussPrimitive, Participant,
-    SynthesizePrimitive, SynthesisSource,
+    DiscussPrimitive,
+    ForkInherit,
+    ForkMutation,
+    ForkPrimitive,
+    Participant,
     ReflectPrimitive,
+    SynthesisSource,
+    SynthesizePrimitive,
     parse_primitive,
 )
+from flux.a2a.transport import LocalTransport
+from flux.a2a.trust import AgentProfile, InteractionRecord, TrustEngine
 
 __all__ = [
     # Messages

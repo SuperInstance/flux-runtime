@@ -9,10 +9,8 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 from .message_bus import AgentMessage
-
 
 # ── Types ──────────────────────────────────────────────────────────────────
 
@@ -105,7 +103,7 @@ class DeadlockDetector:
 
     # ── Deadlock Detection ─────────────────────────────────────────────
 
-    def detect_cycle(self) -> Optional[list[str]]:
+    def detect_cycle(self) -> list[str] | None:
         """Find a cycle in the wait graph (deadlock).
 
         Uses DFS-based three-color cycle detection.
@@ -115,9 +113,9 @@ class DeadlockDetector:
         """
         WHITE, GRAY, BLACK = 0, 1, 2
         color: dict[str, int] = {node: WHITE for node in self._wait_graph}
-        parent: dict[str, Optional[str]] = {}
+        parent: dict[str, str | None] = {}
 
-        def dfs(node: str) -> Optional[list[str]]:
+        def dfs(node: str) -> list[str] | None:
             color[node] = GRAY
             for neighbor in self._wait_graph.get(node, set()):
                 if neighbor not in color:
@@ -126,7 +124,7 @@ class DeadlockDetector:
                 if color[neighbor] == GRAY:
                     # Found cycle — reconstruct path
                     cycle = [neighbor, node]
-                    curr: Optional[str] = node
+                    curr: str | None = node
                     while curr is not None and curr != neighbor:
                         curr = parent.get(curr)
                         if curr is None:
@@ -221,9 +219,7 @@ class DeadlockDetector:
             if (
                 prev.sender == agent_a and prev.receiver == agent_b
                 and curr.sender == agent_b and curr.receiver == agent_a
-            ):
-                alternations += 1
-            elif (
+            ) or (
                 prev.sender == agent_b and prev.receiver == agent_a
                 and curr.sender == agent_a and curr.receiver == agent_b
             ):
@@ -272,7 +268,7 @@ class DeadlockDetector:
     # ── Comprehensive Check ────────────────────────────────────────────
 
     def check_deadlocks(
-        self, message_log: Optional[list[AgentMessage]] = None
+        self, message_log: list[AgentMessage] | None = None
     ) -> list[DeadlockReport]:
         """Run comprehensive deadlock and livelock detection.
 

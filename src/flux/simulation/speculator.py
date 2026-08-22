@@ -15,15 +15,14 @@ from __future__ import annotations
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Any
 
 from flux.evolution.mutator import (
     MutationProposal,
 )
-from flux.flywheel.hypothesis import Hypothesis, ExperimentResult, ExperimentOutcome
+from flux.flywheel.hypothesis import ExperimentOutcome, ExperimentResult, Hypothesis
 
 from .digital_twin import DigitalTwin, SimulatedResult
-
 
 # ── Data Types ──────────────────────────────────────────────────────────
 
@@ -33,9 +32,9 @@ class SpeculationResult:
     hypotheses_evaluated: int = 0
     simulations_run: int = 0
     real_executions_run: int = 0
-    best_hypothesis: Optional[Hypothesis] = None
-    best_simulated: Optional[SimulatedResult] = None
-    best_result: Optional[ExperimentResult] = None
+    best_hypothesis: Hypothesis | None = None
+    best_simulated: SimulatedResult | None = None
+    best_result: ExperimentResult | None = None
     total_speedup: float = 1.0
     confidence: float = 0.0
     elapsed_ms: float = 0.0
@@ -276,7 +275,7 @@ class SpeculativeEngine:
 
     def _select_best(
         self, results: list[ExperimentResult]
-    ) -> Optional[ExperimentResult]:
+    ) -> ExperimentResult | None:
         """Select the best result from the executed results.
 
         Priority: SUCCESS > INCONCLUSIVE > FAILURE

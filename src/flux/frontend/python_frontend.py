@@ -8,12 +8,14 @@ from __future__ import annotations
 
 import ast
 
+from flux.fir.blocks import FIRFunction, FIRModule
+from flux.fir.builder import FIRBuilder
 from flux.fir.types import (
-    TypeContext, FIRType, FloatType,
+    FIRType,
+    FloatType,
+    TypeContext,
 )
 from flux.fir.values import Value
-from flux.fir.builder import FIRBuilder
-from flux.fir.blocks import FIRModule, FIRFunction
 
 
 class PythonFrontendCompiler:

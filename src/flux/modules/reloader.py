@@ -10,9 +10,8 @@ import asyncio
 import time
 from dataclasses import dataclass
 
-from .granularity import Granularity, get_granularity_meta
 from .container import ModuleContainer, ReloadResult
-
+from .granularity import Granularity, get_granularity_meta
 
 # ── Event / Result types ────────────────────────────────────────────────────
 

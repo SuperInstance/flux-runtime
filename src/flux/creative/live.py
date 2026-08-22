@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from flux.tiles.tile import Tile, TileInstance
 
@@ -30,7 +30,7 @@ class ChangeRecord:
     tile_name: str
     params_before: dict = field(default_factory=dict)
     params_after: dict = field(default_factory=dict)
-    tile_ref: Optional[Tile] = None
+    tile_ref: Tile | None = None
 
     def __repr__(self) -> str:
         return (
@@ -278,7 +278,7 @@ class LiveCodingSession:
         self._redo_stack.clear()
         self._total_changes += 1
 
-    def undo(self) -> Optional[ChangeRecord]:
+    def undo(self) -> ChangeRecord | None:
         """Undo the last change.
 
         Returns:
@@ -313,7 +313,7 @@ class LiveCodingSession:
         self._total_changes = max(0, self._total_changes - 1)
         return record
 
-    def redo(self) -> Optional[ChangeRecord]:
+    def redo(self) -> ChangeRecord | None:
         """Redo the last undone change.
 
         Returns:

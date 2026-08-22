@@ -18,7 +18,6 @@ register file indexed by rd.
 """
 
 from enum import IntEnum
-from typing import List, Tuple
 
 
 class Format(IntEnum):
@@ -45,7 +44,7 @@ class Opcode(IntEnum):
     NOP = 0x01
     RET = 0x02
     IRET = 0x03       # Interrupt return
-    
+
     # Format B (2 bytes) — Single register
     INC = 0x08        # rd = rd + 1
     DEC = 0x09        # rd = rd - 1
@@ -55,11 +54,11 @@ class Opcode(IntEnum):
     POP = 0x0D        # pop rd
     CONF_LOAD = 0x0E  # Load confidence from register
     CONF_STORE = 0x0F # Store confidence to register
-    
+
     # Format C (2 bytes) — Immediate only
     SYS = 0x10        # System call with imm8 code
     STRIPCONF = 0x17  # Strip confidence from next N ops (JetsonClaw1's request)
-    
+
     # Format D (3 bytes) — Register + 8-bit immediate
     MOVI = 0x18       # rd = imm8 (sign-extended)
     ADDI = 0x19       # rd = rd + imm8
@@ -69,7 +68,7 @@ class Opcode(IntEnum):
     XORI = 0x1D       # rd = rd ^ imm8
     SHLI = 0x1E       # rd = rd << imm8
     SHRI = 0x1F       # rd = rd >> imm8
-    
+
     # Format E (4 bytes) — 3-register arithmetic
     ADD = 0x20        # rd = rs1 + rs2
     SUB = 0x21        # rd = rs1 - rs2
@@ -87,7 +86,7 @@ class Opcode(IntEnum):
     CMP_LT = 0x2D     # rd = (rs1 < rs2) ? 1 : 0
     CMP_GT = 0x2E     # rd = (rs1 > rs2) ? 1 : 0
     CMP_NE = 0x2F     # rd = (rs1 != rs2) ? 1 : 0
-    
+
     # Format E (4 bytes) — Float arithmetic
     FADD = 0x30       # rd = f(rs1) + f(rs2)
     FSUB = 0x31       # rd = f(rs1) - f(rs2)
@@ -97,31 +96,31 @@ class Opcode(IntEnum):
     FMAX = 0x35       # rd = fmax(rs1, rs2)
     FTOI = 0x36       # rd = int(rs1)
     ITOF = 0x37       # rd = float(rs1)
-    
+
     # Format E (4 bytes) — Memory
     LOAD = 0x38       # rd = mem[rs1 + rs2]
     STORE = 0x39      # mem[rs1 + rs2] = rd
     MOV = 0x3A        # rd = rs1 (rs2 ignored)
     SWP = 0x3B        # swap(rd, rs1)
-    
+
     # Format E (4 bytes) — Control flow
     JZ = 0x3C         # if rd == 0: pc += rs1 (rs2 = offset high)
     JNZ = 0x3D        # if rd != 0: pc += rs1
     JLT = 0x3E        # if rd < 0: pc += rs1
     JGT = 0x3F        # if rd > 0: pc += rs1
-    
+
     # Format F (4 bytes) — Register + 16-bit immediate
     MOVI16 = 0x40     # rd = imm16
     ADDI16 = 0x41     # rd = rd + imm16
     SUBI16 = 0x42     # rd = rd - imm16
     JMP = 0x43        # pc += imm16 (relative jump)
     JAL = 0x44        # rd = pc; pc += imm16 (jump and link)
-    
+
     # Format G (5 bytes) — Register + register + 16-bit offset
     LOADOFF = 0x48    # rd = mem[rs1 + imm16]
     STOREOFF = 0x49   # mem[rs1 + imm16] = rd
     LOADI = 0x4A      # Load immediate from address
-    
+
     # Confidence-aware variants (same formats, bit 6 set)
     CONF_ADD = 0x60   # Format E: rd, crd = rs1 + rs2, min(crs1, crs2)
     CONF_SUB = 0x61
@@ -196,13 +195,13 @@ def encode_format_g(opcode: int, rd: int, rs1: int, imm16: int) -> bytes:
     return bytes([opcode & 0xFF, rd & 0xFF, rs1 & 0xFF, (imm16 >> 8) & 0xFF, imm16 & 0xFF])
 
 
-def decode_instruction(data: bytes) -> Tuple[int, dict]:
+def decode_instruction(data: bytes) -> tuple[int, dict]:
     """Decode an instruction from bytes. Returns (opcode, fields)."""
     if not data:
         raise ValueError("Empty data")
-    
+
     opcode = data[0]
-    
+
     # Dispatch by opcode range (not format enum, since B and C overlap)
     if opcode <= 0x03:  # Format A
         return opcode, {"format": "A", "size": 1}
@@ -230,7 +229,7 @@ def decode_instruction(data: bytes) -> Tuple[int, dict]:
         return opcode, {"format": "unknown", "size": 1}
 
 
-def opcode_table() -> List[dict]:
+def opcode_table() -> list[dict]:
     """Generate the complete opcode reference table."""
     table = []
     for name, val in sorted(Opcode.__members__.items(), key=lambda x: int(x[1])):

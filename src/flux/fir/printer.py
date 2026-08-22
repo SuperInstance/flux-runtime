@@ -2,17 +2,29 @@
 
 from __future__ import annotations
 
-from .types import (
-    FIRType, IntType, FloatType, BoolType, UnitType, StringType,
-    RefType, ArrayType, VectorType, FuncType, StructType, EnumType,
-    RegionType, CapabilityType, AgentType, TrustType,
-)
-from .values import Value
+from .blocks import FIRModule
 from .instructions import (
     Instruction,
 )
-from .blocks import FIRModule
-
+from .types import (
+    AgentType,
+    ArrayType,
+    BoolType,
+    CapabilityType,
+    EnumType,
+    FIRType,
+    FloatType,
+    FuncType,
+    IntType,
+    RefType,
+    RegionType,
+    StringType,
+    StructType,
+    TrustType,
+    UnitType,
+    VectorType,
+)
+from .values import Value
 
 # ── Type rendering ──────────────────────────────────────────────────────────
 

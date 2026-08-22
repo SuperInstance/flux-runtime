@@ -1,6 +1,7 @@
 """Sandboxed execution environment for FLUX agents."""
 
 from __future__ import annotations
+
 from .capabilities import CapabilityRegistry
 from .resource_limits import ResourceLimits, ResourceMonitor
 

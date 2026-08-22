@@ -26,16 +26,16 @@ class EthicallyWeightedArgument:
     transparency: TransparencyLevel
     consent_quality: float = 1.0  # 0=coerced, 1=freely given
     power_asymmetry: float = 0.0  # 0=equal parties, 1=extreme imbalance
-    
+
     @property
     def ethical_confidence(self) -> float:
         """Confidence adjusted for ethical factors."""
         transparency_factor = self.transparency.value
         consent_factor = self.consent_quality
         power_factor = 1.0 - (self.power_asymmetry * 0.3)  # Max 30% penalty
-        
+
         return self.base_confidence * transparency_factor * consent_factor * power_factor
-    
+
     @property
     def penalty_explanation(self) -> str:
         reasons = []

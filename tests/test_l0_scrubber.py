@@ -1,12 +1,11 @@
 """Tests for L0Scrubber — the L0 Constitutional Scrubber."""
 
-import sys
 import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from flux.open_interp.l0_scrubber import (
-    L0Scrubber, ScrubReport, scrub_primitive
-)
+from flux.open_interp.l0_scrubber import L0Scrubber, ScrubReport, scrub_primitive
 
 
 class TestL0Primitives:
@@ -16,7 +15,7 @@ class TestL0Primitives:
         """Test that all 7 L0 primitives are defined."""
         scrubber = L0Scrubber()
         expected = ['self', 'other', 'possible', 'true', 'cause', 'value', 'agreement']
-        assert scrubber.L0_PRIMITIVES == expected
+        assert expected == scrubber.L0_PRIMITIVES
 
     def test_l0_primitives_lowercase(self):
         """Test that L0 primitives are lowercase for comparison."""

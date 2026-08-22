@@ -22,13 +22,12 @@ from __future__ import annotations
 
 import math
 import struct
-from typing import Callable, Optional
+from collections.abc import Callable
 
 from flux.bytecode.opcodes import Op
 from flux.bytecode.opcodes_unified import UnifiedOp
 from flux.vm.memory import MemoryManager
 from flux.vm.registers import RegisterFile
-
 
 # ── Exceptions ─────────────────────────────────────────────────────────────
 
@@ -36,7 +35,7 @@ from flux.vm.registers import RegisterFile
 class VMError(Exception):
     """Base exception for all VM runtime errors."""
 
-    def __init__(self, message: str, opcode: Optional[int] = None, pc: Optional[int] = None):
+    def __init__(self, message: str, opcode: int | None = None, pc: int | None = None):
         super().__init__(message)
         self.message = message
         self.opcode = opcode
@@ -145,11 +144,11 @@ class Interpreter:
         self._flag_overflow = False  # set when signed overflow
 
         # I/O callbacks
-        self._io_read_cb: Optional[Callable] = None
-        self._io_write_cb: Optional[Callable] = None
+        self._io_read_cb: Callable | None = None
+        self._io_write_cb: Callable | None = None
 
         # A2A handler (plugin/callback for A2A opcodes)
-        self._a2a_handler: Optional[Callable] = None
+        self._a2a_handler: Callable | None = None
 
         # Box table for BOX/UNBOX/CHECK_TYPE
         self._box_table: list[tuple[int, object]] = []  # (type_tag, value)

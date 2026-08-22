@@ -1,8 +1,8 @@
 """Tile Library Schema — machine-readable schema for all 34 built-in tiles."""
 
 from __future__ import annotations
-from typing import Any, Optional
 
+from typing import Any
 
 # Complete tile library schema derived from flux/tiles/library.py
 _TILES: list[dict[str, Any]] = [
@@ -608,7 +608,7 @@ def get_tile_library_schema() -> dict[str, dict[str, Any]]:
 
 def search_tiles(
     query: str,
-    tile_type: Optional[str] = None,
+    tile_type: str | None = None,
     min_abstraction: int = 0,
     max_abstraction: int = 10,
 ) -> list[dict[str, Any]]:

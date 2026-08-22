@@ -10,29 +10,29 @@ Modules:
 - visualization: ASCII and colored text visualizations of tile graphs and traces
 """
 
-from .sonification import (
-    Sonifier,
-    MusicSequence,
-    MusicEvent,
-    ExecutionEvent,
-)
 from .generative import (
-    LSystemTile,
     CellularAutomatonTile,
     FractalTile,
+    LSystemTile,
     ReactionDiffusionTile,
 )
 from .live import (
+    BeatResult,
+    ChangeRecord,
     LiveCodingSession,
     PerformanceState,
-    ChangeRecord,
-    VersionRecord,
-    BeatResult,
     Recording,
+    VersionRecord,
+)
+from .sonification import (
+    ExecutionEvent,
+    MusicEvent,
+    MusicSequence,
+    Sonifier,
 )
 from .visualization import (
-    TileGraphVisualizer,
     ExecutionVisualizer,
+    TileGraphVisualizer,
 )
 
 __all__ = [

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from .values import Value
+from .blocks import FIRBlock, FIRFunction, FIRModule
 from .instructions import Instruction, is_terminator
-from .blocks import FIRModule, FIRFunction, FIRBlock
+from .values import Value
 
 
 class FIRValidationError:
@@ -122,7 +122,7 @@ class FIRValidator:
         """Check that all block target references point to existing blocks."""
         errors: list[str] = []
 
-        from .instructions import Jump, Branch, Switch
+        from .instructions import Branch, Jump, Switch
 
         if isinstance(instr, Jump):
             if instr.target_block not in block_labels:

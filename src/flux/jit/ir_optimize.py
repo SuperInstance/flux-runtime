@@ -8,14 +8,19 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
-from dataclasses import replace, is_dataclass
-from typing import Optional, Any
+from dataclasses import is_dataclass, replace
+from typing import Any
 
-from flux.fir.values import Value
-from flux.fir.instructions import (
-    Instruction, Jump, Branch, Switch, Call, Return,
-)
 from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
+from flux.fir.instructions import (
+    Branch,
+    Call,
+    Instruction,
+    Jump,
+    Return,
+    Switch,
+)
+from flux.fir.values import Value
 
 logger = logging.getLogger(__name__)
 
@@ -227,7 +232,7 @@ def _get_block_successors(block: FIRBlock) -> list[str]:
 
 def const_fold_pass(
     module: FIRModule,
-    known_constants: Optional[dict[int, Any]] = None,
+    known_constants: dict[int, Any] | None = None,
 ) -> int:
     """Fold constant expressions and propagate known values.
 
@@ -301,7 +306,7 @@ def _compute_result_id(
     block: FIRBlock,
     instr: Instruction,
     new_instructions_so_far: list[Instruction],
-) -> Optional[int]:
+) -> int | None:
     """Compute the canonical value ID for an instruction's result.
 
     Follows the builder convention: params are numbered first (per block,
@@ -405,7 +410,7 @@ def _inline_single_block_call(
     callee: FIRFunction,
     call_args: list[Value],
     value_id_offset: int,
-) -> Optional[list[Instruction]]:
+) -> list[Instruction] | None:
     """Inline a single-block callee at a call site.
 
     Creates a copy of the callee's instructions (excluding Return) with

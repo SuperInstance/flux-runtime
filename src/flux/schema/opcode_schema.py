@@ -1,6 +1,7 @@
 """Complete Opcode Reference — machine-readable schema for all 104 FLUX opcodes."""
 
 from __future__ import annotations
+
 from typing import Any
 
 # Build the full opcode reference from the canonical Op enum and format sets.

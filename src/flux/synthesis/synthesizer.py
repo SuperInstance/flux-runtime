@@ -20,31 +20,30 @@ Usage:
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable, Optional
 
-from flux.modules.granularity import Granularity
-from flux.modules.card import ModuleCard
-from flux.modules.container import ModuleContainer, ReloadResult
-from flux.modules.reloader import FractalReloader
 from flux.adaptive.profiler import (
     AdaptiveProfiler,
-    HeatLevel,
     BottleneckReport,
+    HeatLevel,
 )
 from flux.adaptive.selector import (
     AdaptiveSelector,
     LanguageRecommendation,
 )
-from flux.tiles.registry import default_registry
-from flux.evolution.genome import Genome
-from flux.evolution.pattern_mining import PatternMiner
-from flux.evolution.validator import CorrectnessValidator
 from flux.evolution.evolution import (
     EvolutionEngine,
     EvolutionReport,
 )
-
+from flux.evolution.genome import Genome
+from flux.evolution.pattern_mining import PatternMiner
+from flux.evolution.validator import CorrectnessValidator
+from flux.modules.card import ModuleCard
+from flux.modules.container import ModuleContainer, ReloadResult
+from flux.modules.granularity import Granularity
+from flux.modules.reloader import FractalReloader
+from flux.tiles.registry import default_registry
 
 # ── Result types ────────────────────────────────────────────────────────────
 
@@ -168,7 +167,7 @@ class FluxSynthesizer:
 
         return card
 
-    def get_module(self, path: str) -> Optional[ModuleCard]:
+    def get_module(self, path: str) -> ModuleCard | None:
         """Get a module card by slash-separated path.
 
         Args:
@@ -190,7 +189,7 @@ class FluxSynthesizer:
 
         return current.cards.get(parts[-1])
 
-    def get_container(self, path: str) -> Optional[ModuleContainer]:
+    def get_container(self, path: str) -> ModuleContainer | None:
         """Get a container by slash-separated path.
 
         Args:
@@ -322,7 +321,7 @@ class FluxSynthesizer:
         """
         return self.selector.select_all()
 
-    def get_recommendation(self, module_path: str) -> Optional[LanguageRecommendation]:
+    def get_recommendation(self, module_path: str) -> LanguageRecommendation | None:
         """Get language recommendation for a single module.
 
         Args:
@@ -339,7 +338,7 @@ class FluxSynthesizer:
     def evolve(
         self,
         generations: int = 5,
-        validation_fn: Optional[Callable[[Genome], bool]] = None,
+        validation_fn: Callable[[Genome], bool] | None = None,
     ) -> EvolutionReport:
         """Run the self-evolution loop.
 
@@ -384,8 +383,8 @@ class FluxSynthesizer:
 
     def evolve_step(
         self,
-        workload: Optional[Callable[[], None]] = None,
-        validation_fn: Optional[Callable[[Genome], bool]] = None,
+        workload: Callable[[], None] | None = None,
+        validation_fn: Callable[[Genome], bool] | None = None,
     ) -> EvolutionReport:
         """Run a single evolution step.
 

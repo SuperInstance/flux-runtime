@@ -1,6 +1,7 @@
 """FIR optimization passes."""
 
 from __future__ import annotations
+
 import logging
 from typing import TYPE_CHECKING
 
@@ -86,10 +87,10 @@ class InlineFunctionsPass(OptimizationPass):
             total = sum(len(b.instructions) for b in func.blocks)
             if total < 20:
                 small_funcs[name] = func
-        
+
         if not small_funcs:
             return 0
-        
+
         # Find CALL instructions and inline
         for func in module.functions.values():
             for block in func.blocks:

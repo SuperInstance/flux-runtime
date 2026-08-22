@@ -19,13 +19,13 @@ This is the "tiling fine-tuning" Casey described:
   markdowns so good and compilers so well-tuned that inference is rarely needed
 """
 
-import re
 import os
-from typing import Optional, List, Dict
+import re
 from dataclasses import dataclass, field
-from .vocabulary import Vocabulary
+
 from .assembler import assemble_text
-from .sandbox import SandboxVM, SandboxResult
+from .sandbox import SandboxResult, SandboxVM
+from .vocabulary import Vocabulary
 
 
 @dataclass
@@ -43,12 +43,12 @@ class Tile:
     result_reg: int = 0
     description: str = ""
     level: int = 0  # 0=primitive, 1=uses level-0 tiles, etc.
-    depends: List[str] = field(default_factory=list)  # Names of tiles this depends on
-    tags: List[str] = field(default_factory=list)
-    
+    depends: list[str] = field(default_factory=list)  # Names of tiles this depends on
+    tags: list[str] = field(default_factory=list)
+
     # Compiled
     _regex = None
-    
+
     def compile(self):
         parts = re.split(r'(\$\w+)', self.pattern)
         regex_parts = []
@@ -58,23 +58,23 @@ class Tile:
             else:
                 regex_parts.append(re.escape(p))
         self._regex = re.compile(''.join(regex_parts), re.IGNORECASE)
-    
-    def match(self, text: str) -> Optional[Dict[str, str]]:
+
+    def match(self, text: str) -> dict[str, str] | None:
         if self._regex is None:
             self.compile()
         m = self._regex.search(text)
         return m.groupdict() if m else None
 
 
-@dataclass  
+@dataclass
 class TileResult:
     """Result of a tile execution."""
-    value: Optional[int] = None
+    value: int | None = None
     success: bool = False
     cycles: int = 0
-    tiles_used: List[str] = field(default_factory=list)
+    tiles_used: list[str] = field(default_factory=list)
     level: int = 0
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class TilingInterpreter:
@@ -89,21 +89,21 @@ class TilingInterpreter:
     The key insight: higher-level tiles don't need more bytecode.
     They just arrange existing bytecode in more sophisticated ways.
     """
-    
+
     def __init__(self):
-        self.tiles: Dict[str, Tile] = {}
+        self.tiles: dict[str, Tile] = {}
         self.base_vocab = Vocabulary()
         self._load_base()
-    
+
     def _load_base(self):
         """Load level-0 base vocabulary."""
         core_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'vocabularies', 'core')
         math_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'vocabularies', 'math')
-        
+
         for p in [core_path, math_path]:
             if os.path.isdir(p):
                 self.base_vocab.load_folder(p)
-        
+
         # Register level-0 tiles from base vocab entries
         for entry in self.base_vocab.entries:
             tile = Tile(
@@ -117,12 +117,12 @@ class TilingInterpreter:
             )
             tile.compile()
             self.tiles[entry.name] = tile
-    
+
     def add_tile(self, tile: Tile):
         """Register a new tile."""
         tile.compile()
         self.tiles[tile.name] = tile
-    
+
     def run(self, text: str) -> TileResult:
         """
         Execute natural language text through the tiling system.
@@ -135,12 +135,12 @@ class TilingInterpreter:
             self.tiles.values(),
             key=lambda t: (-t.level, -len(t.depends))
         )
-        
+
         for tile in sorted_tiles:
             groups = tile.match(text)
             if groups is not None:
                 return self._execute_tile(tile, groups)
-        
+
         # Try base vocabulary
         match = self.base_vocab.find_match(text)
         if match:
@@ -156,29 +156,29 @@ class TilingInterpreter:
                 tiles_used=[entry.name],
                 level=0,
             )
-        
+
         # Try inline math
         m = re.search(r'(\d+)\s*([+\-*/×÷])\s*(\d+)', text)
         if m:
             a, op, b = int(m.group(1)), m.group(2), int(m.group(3))
             ops = {'+': a+b, '-': a-b, '*': a*b, '×': a*b, '/': int(a/b), '÷': int(a/b)}
             return TileResult(value=ops.get(op, 0), success=True, tiles_used=['inline_math'], level=0)
-        
+
         return TileResult(success=False, error=f"No tile match: {text[:60]}")
-    
-    def _execute_tile(self, tile: Tile, groups: Dict[str, str]) -> TileResult:
+
+    def _execute_tile(self, tile: Tile, groups: dict[str, str]) -> TileResult:
         """Execute a tile, resolving tile references if present."""
         template = tile.template
-        
+
         # Substitute captured groups
         for k, v in groups.items():
             template = template.replace(f'${{{k}}}', v)
-        
+
         # Check if template references other tiles
         tile_refs = re.findall(r'@(\w+)', template)
         if tile_refs:
             return self._execute_composed_tile(tile, template, groups, tile_refs)
-        
+
         # Direct bytecode execution
         result = self._run_bytecode(template, tile.result_reg)
         return TileResult(
@@ -188,9 +188,9 @@ class TilingInterpreter:
             tiles_used=[tile.name],
             level=tile.level,
         )
-    
-    def _execute_composed_tile(self, tile: Tile, template: str, 
-                                groups: Dict[str, str], refs: List[str]) -> TileResult:
+
+    def _execute_composed_tile(self, tile: Tile, template: str,
+                                groups: dict[str, str], refs: list[str]) -> TileResult:
         """
         Execute a tile that composes other tiles.
         
@@ -201,11 +201,11 @@ class TilingInterpreter:
         results_chain = []
         total_cycles = 0
         tiles_used = [tile.name]
-        
+
         # Resolve @references
         resolved = template
         last_value = 0
-        
+
         for ref in refs:
             if ref in self.tiles:
                 ref_tile = self.tiles[ref]
@@ -215,10 +215,10 @@ class TilingInterpreter:
                     total_cycles += ref_result.cycles
                     tiles_used.append(ref_tile.name)
                     results_chain.append(last_value)
-        
+
         # If the template still has @refs, just run what we can
         re.sub(r'@\w+\([^)]*\)', str(last_value), resolved)
-        
+
         return TileResult(
             value=last_value,
             success=True,
@@ -226,7 +226,7 @@ class TilingInterpreter:
             tiles_used=tiles_used,
             level=tile.level,
         )
-    
+
     def _run_bytecode(self, asm: str, result_reg: int) -> SandboxResult:
         """Assemble and execute bytecode in sandbox."""
         try:
@@ -242,16 +242,16 @@ class TilingInterpreter:
             )
         except Exception as e:
             return SandboxResult(success=False, error=str(e))
-    
-    def list_tiles(self, level: int = None) -> List[Dict]:
+
+    def list_tiles(self, level: int = None) -> list[dict]:
         """List all tiles, optionally filtered by level."""
         tiles = list(self.tiles.values())
         if level is not None:
             tiles = [t for t in tiles if t.level == level]
-        return [{"name": t.name, "pattern": t.pattern, "level": t.level, 
+        return [{"name": t.name, "pattern": t.pattern, "level": t.level,
                  "depends": t.depends, "desc": t.description[:60]} for t in tiles]
-    
-    def tile_graph(self) -> Dict[str, List[str]]:
+
+    def tile_graph(self) -> dict[str, list[str]]:
         """Return the dependency graph of tiles."""
         return {name: tile.depends for name, tile in self.tiles.items() if tile.depends}
 
@@ -266,7 +266,7 @@ def build_default_tiling() -> TilingInterpreter:
     Level 3: Decision-making (safe-to-proceed, recommend)
     """
     interp = TilingInterpreter()
-    
+
     # Level 1: Compositions of level-0 primitives
     interp.add_tile(Tile(
         name="average",
@@ -278,7 +278,7 @@ def build_default_tiling() -> TilingInterpreter:
         depends=["addition", "division"],
         tags=["math", "composition"],
     ))
-    
+
     interp.add_tile(Tile(
         name="percentage",
         pattern="$val is what percent of $total",
@@ -289,7 +289,7 @@ def build_default_tiling() -> TilingInterpreter:
         depends=["multiplication", "division"],
         tags=["math", "percentage"],
     ))
-    
+
     interp.add_tile(Tile(
         name="triple",
         pattern="triple $a",
@@ -300,7 +300,7 @@ def build_default_tiling() -> TilingInterpreter:
         depends=["addition"],
         tags=["math"],
     ))
-    
+
     # Level 2: Domain concepts
     interp.add_tile(Tile(
         name="in-range",
@@ -312,7 +312,7 @@ def build_default_tiling() -> TilingInterpreter:
         depends=["comparison"],
         tags=["check", "range"],
     ))
-    
+
     interp.add_tile(Tile(
         name="difference",
         pattern="difference between $a and $b",
@@ -323,5 +323,5 @@ def build_default_tiling() -> TilingInterpreter:
         depends=["subtraction"],
         tags=["math"],
     ))
-    
+
     return interp

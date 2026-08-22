@@ -23,7 +23,7 @@ class EdgeConstraints:
     no_float: bool = False      # Integer-only device?
     arch: str = "arm64"         # Target architecture
     has_gpu: bool = False       # GPU available?
-    
+
     # Jetson Super Orin Nano defaults
     @classmethod
     def jetson_orin(cls) -> 'EdgeConstraints':
@@ -36,7 +36,7 @@ class EdgeConstraints:
             arch="arm64",
             has_gpu=True,  # Jetson has CUDA
         )
-    
+
     @classmethod
     def embedded_minimal(cls) -> 'EdgeConstraints':
         return cls(
@@ -57,36 +57,36 @@ class EdgeProfiler:
     Takes a full vocabulary and hardware constraints, outputs
     a pruned profile with only what fits.
     """
-    
+
     def __init__(self, constraints: EdgeConstraints):
         self.constraints = constraints
-    
+
     def profile(self, vocab) -> dict:
         """Generate an edge profile from a full vocabulary."""
         entries = vocab.entries if hasattr(vocab, 'entries') else vocab
-        
+
         # Categorize entries
         essential = []  # Must have (compute, store, halt)
         useful = []     # Nice to have (math, logic)
         luxury = []     # Only if space (domain-specific)
-        
+
         for entry in entries:
             name = getattr(entry, 'name', '')
             tags = getattr(entry, 'tags', [])
             pattern = getattr(entry, 'pattern', '')
-            
+
             # Skip if pattern too long
             if len(pattern) > self.constraints.max_pattern_len:
                 continue
-            
+
             # Skip loops if constrained
             if self.constraints.no_loops and 'loop' in str(tags):
                 continue
-            
+
             # Skip float ops if constrained
             if self.constraints.no_float and any(t in str(tags) for t in ['float', 'decimal']):
                 continue
-            
+
             # Categorize
             if any(t in str(tags) for t in ['essential', 'core', 'primitive']):
                 essential.append(name)
@@ -94,7 +94,7 @@ class EdgeProfiler:
                 useful.append(name)
             else:
                 luxury.append(name)
-        
+
         # Fit within budget
         budget = self.constraints.max_vocab
         selected = essential[:budget]
@@ -104,10 +104,10 @@ class EdgeProfiler:
             remaining = budget - len(selected)
         if remaining > 0:
             selected.extend(luxury[:remaining])
-        
+
         # Estimate memory
         estimated_ram = len(selected) * 2  # ~2KB per entry
-        
+
         return {
             "constraints": {
                 "arch": self.constraints.arch,
@@ -122,12 +122,12 @@ class EdgeProfiler:
             "fits": estimated_ram < self.constraints.max_ram_mb * 1024,
             "pruning_ratio": len(selected) / len(entries) if entries else 1.0,
         }
-    
+
     def generate_standalone(self, vocab, output_path: str) -> str:
         """Generate a standalone Python file with only the selected vocabulary."""
         profile = self.profile(vocab)
         selected_names = set(profile["selected"])
-        
+
         lines = [
             '"""',
             'FLUX Edge Runtime — auto-generated',
@@ -139,7 +139,7 @@ class EdgeProfiler:
             '',
             'VOCAB = {}',
         ]
-        
+
         entries = vocab.entries if hasattr(vocab, 'entries') else vocab
         for entry in entries:
             name = getattr(entry, 'name', '')
@@ -147,7 +147,7 @@ class EdgeProfiler:
                 pattern = getattr(entry, 'pattern', '')
                 bytecode = getattr(entry, 'bytecode_template', '')
                 lines.append(f'VOCAB["{name}"] = {{"pattern": "{pattern}", "bytecode": "{bytecode}"}}')
-        
+
         lines.append('')
         lines.append('def lookup(text):')
         lines.append('    for name, entry in VOCAB.items():')
@@ -159,9 +159,9 @@ class EdgeProfiler:
         lines.append('    import sys')
         lines.append('    name, entry = lookup(" ".join(sys.argv[1:]))')
         lines.append('    print(f"Matched: {name}" if name else "No match")')
-        
+
         output = '\n'.join(lines)
         with open(output_path, 'w') as f:
             f.write(output)
-        
+
         return output_path

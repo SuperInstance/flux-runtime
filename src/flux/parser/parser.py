@@ -9,19 +9,19 @@ import re
 from typing import Any
 
 from .nodes import (
+    AgentDirective,
     CodeBlock,
     DataBlock,
     FluxCodeBlock,
     FluxModule,
     FluxTypeError,
     Heading,
-    ListItem,
     ListBlock,
+    ListItem,
     LocatedNode,
     NativeBlock,
     Paragraph,
     SourceSpan,
-    AgentDirective,
 )
 
 # ---------------------------------------------------------------------------
@@ -48,7 +48,7 @@ _RE_AGENT_KIND = re.compile(r"^##\s+(agent|fn)\s*[:\s]", re.IGNORECASE)
 _DATA_LANGS = frozenset({"json", "yaml", "toml", "yml"})
 
 # Language tags that indicate a FLUX code block
-_FLUX_LANGS = frozenset({"flux", "flux-type", "flux-type", "fluxfn"})
+_FLUX_LANGS = frozenset({"flux", "flux-type", "fluxfn"})
 
 
 # ---------------------------------------------------------------------------
@@ -405,10 +405,7 @@ class FluxMDParser:
                         if next_node.level <= node.level:
                             break
                     # Collect body nodes
-                    if isinstance(next_node, (CodeBlock, FluxCodeBlock, DataBlock, NativeBlock)):
-                        directive.body.append(next_node)
-                        i += 1
-                    elif isinstance(next_node, Paragraph):
+                    if isinstance(next_node, (CodeBlock, FluxCodeBlock, DataBlock, NativeBlock)) or isinstance(next_node, Paragraph):
                         directive.body.append(next_node)
                         i += 1
                     else:

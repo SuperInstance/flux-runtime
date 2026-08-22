@@ -6,8 +6,8 @@ objection/sustained mechanics. This provides Dung-style argumentation semantics
 for resolving vocabulary conflicts between autonomous agents.
 """
 
-from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -18,8 +18,8 @@ class Argument:
     and possible objections (counter-arguments).
     """
     claim: str  # The vocabulary interpretation being argued
-    evidence: List[str] = field(default_factory=list)  # Supporting reasons
-    objections: List['Argument'] = field(default_factory=list)  # Counter-arguments
+    evidence: list[str] = field(default_factory=list)  # Supporting reasons
+    objections: list['Argument'] = field(default_factory=list)  # Counter-arguments
     confidence: float = 1.0  # 0-1, weight of this argument
     proponent: str = ""  # Agent name making the argument
 
@@ -59,7 +59,7 @@ class ArgumentationFramework:
     """
 
     def __init__(self):
-        self.arguments: Dict[str, Argument] = {}
+        self.arguments: dict[str, Argument] = {}
         self._next_id = 0
 
     def add_argument(self, arg: Argument) -> str:
@@ -108,7 +108,7 @@ class ArgumentationFramework:
         self.arguments[claim_id].add_evidence(f"Supported by {support_id}: {support.claim}")
         return support_id
 
-    def evaluate(self) -> Dict[str, str]:
+    def evaluate(self) -> dict[str, str]:
         """Evaluate all arguments and determine their status.
 
         Evaluation rules:
@@ -145,17 +145,17 @@ class ArgumentationFramework:
 
         return results
 
-    def get_accepted(self) -> Dict[str, Argument]:
+    def get_accepted(self) -> dict[str, Argument]:
         """Get all accepted arguments."""
         results = self.evaluate()
         return {arg_id: self.arguments[arg_id] for arg_id, status in results.items() if status == 'accepted'}
 
-    def get_rejected(self) -> Dict[str, Argument]:
+    def get_rejected(self) -> dict[str, Argument]:
         """Get all rejected arguments."""
         results = self.evaluate()
         return {arg_id: self.arguments[arg_id] for arg_id, status in results.items() if status == 'rejected'}
 
-    def get_undecided(self) -> Dict[str, Argument]:
+    def get_undecided(self) -> dict[str, Argument]:
         """Get all undecided arguments."""
         results = self.evaluate()
         return {arg_id: self.arguments[arg_id] for arg_id, status in results.items() if status == 'undecided'}
@@ -192,11 +192,11 @@ class VocabArbitration:
     """
 
     def __init__(self):
-        self.frameworks: Dict[str, ArgumentationFramework] = {}
+        self.frameworks: dict[str, ArgumentationFramework] = {}
 
     def find_conflicts(self,
-                      agent1_interpretations: List[VocabInterpretation],
-                      agent2_interpretations: List[VocabInterpretation]) -> List[Tuple[VocabInterpretation, VocabInterpretation]]:
+                      agent1_interpretations: list[VocabInterpretation],
+                      agent2_interpretations: list[VocabInterpretation]) -> list[tuple[VocabInterpretation, VocabInterpretation]]:
         """Find conflicts between two sets of vocabulary interpretations.
 
         A conflict exists when both agents interpret the same pattern
@@ -249,10 +249,10 @@ class VocabArbitration:
         return fw
 
     def resolve(self,
-                agent1_interpretations: List[VocabInterpretation],
-                agent2_interpretations: List[VocabInterpretation],
+                agent1_interpretations: list[VocabInterpretation],
+                agent2_interpretations: list[VocabInterpretation],
                 agent1_name: str = "Agent1",
-                agent2_name: str = "Agent2") -> Dict[str, Any]:
+                agent2_name: str = "Agent2") -> dict[str, Any]:
         """Resolve vocabulary conflicts between two agents.
 
         Args:

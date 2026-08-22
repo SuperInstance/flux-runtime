@@ -1,6 +1,7 @@
 """Tile Graph — directed acyclic graph of connected tile instances."""
 
 from __future__ import annotations
+
 from collections import deque
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
@@ -8,10 +9,10 @@ from typing import TYPE_CHECKING
 from .tile import Tile, TileInstance
 
 if TYPE_CHECKING:
+    from ..fir.blocks import FIRModule
+    from ..fir.builder import FIRBuilder
     from ..fir.types import TypeContext
     from ..fir.values import Value
-    from ..fir.builder import FIRBuilder
-    from ..fir.blocks import FIRModule
 
 
 @dataclass

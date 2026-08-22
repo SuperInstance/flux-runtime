@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List
 
 
 @dataclass
@@ -30,7 +29,7 @@ class MigrationReport:
 
     input_path: Path
     output_dir: Path
-    files: List[MigratedFile] = field(default_factory=list)
+    files: list[MigratedFile] = field(default_factory=list)
     start_time: float = 0.0
     end_time: float = 0.0
 

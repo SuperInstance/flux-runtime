@@ -16,6 +16,11 @@ from .architecture import (
     get_layer_by_id,
     get_module_dependencies,
 )
+from .builder_schema import (
+    FLUX_BUILDER_SCHEMA,
+    get_builder_schema,
+    get_open_questions,
+)
 from .opcode_schema import (
     get_opcode_schema,
     get_opcodes_by_category,
@@ -24,11 +29,6 @@ from .opcode_schema import (
 from .tile_schema import (
     get_tile_library_schema,
     search_tiles,
-)
-from .builder_schema import (
-    FLUX_BUILDER_SCHEMA,
-    get_builder_schema,
-    get_open_questions,
 )
 
 __all__ = [

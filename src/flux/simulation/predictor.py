@@ -8,10 +8,9 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Any
 
 from flux.cost.model import CostModel
-
 
 # ── Memory Store (dict-based fallback) ─────────────────────────────────
 
@@ -50,7 +49,7 @@ class MemoryStore:
         entry.setdefault("timestamp", time.time())
         self._history.append(entry)
 
-    def get_history(self, key: Optional[str] = None) -> list[dict[str, Any]]:
+    def get_history(self, key: str | None = None) -> list[dict[str, Any]]:
         """Get history entries, optionally filtered by a key presence."""
         if key is None:
             return list(self._history)
@@ -121,7 +120,7 @@ class PerformancePredictor:
         "rust": 1000.0,
     }
 
-    def __init__(self, cost_model: CostModel, memory_store: Optional[MemoryStore] = None) -> None:
+    def __init__(self, cost_model: CostModel, memory_store: MemoryStore | None = None) -> None:
         self.cost_model = cost_model
         self.store = memory_store or MemoryStore()
 
@@ -211,9 +210,7 @@ class PerformancePredictor:
             return "HEAT"
         elif fraction < 0.5:
             return "HOT"
-        elif fraction > 0.8:
-            return "COOL"
-        elif call_count <= 1:
+        elif fraction > 0.8 or call_count <= 1:
             return "COOL"
         else:
             return "WARM"

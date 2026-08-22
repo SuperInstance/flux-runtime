@@ -7,11 +7,11 @@ captures baselines, and detects regressions when mutations are applied.
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 from .genome import Genome
-
 
 # ── Types ─────────────────────────────────────────────────────────────────────
 

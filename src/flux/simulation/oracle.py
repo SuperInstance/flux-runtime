@@ -10,15 +10,13 @@ The oracle answers questions like:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 from flux.evolution.genome import MutationStrategy
 from flux.evolution.mutator import MutationProposal, SystemMutator
 from flux.flywheel.knowledge import KnowledgeBase
 
-from .predictor import PerformancePredictor
 from .digital_twin import DigitalTwin
-
+from .predictor import PerformancePredictor
 
 # ── Data Types ──────────────────────────────────────────────────────────
 
@@ -76,7 +74,7 @@ class OracleRecommendation:
     reasoning: str = ""
     alternative_actions: list[str] = field(default_factory=list)
     time_to_implement_ms: float = 0.0
-    roi_estimate: Optional[ROIEstimate] = None
+    roi_estimate: ROIEstimate | None = None
 
 
 # ── Language Cost Data ──────────────────────────────────────────────────
@@ -108,7 +106,7 @@ class DecisionOracle:
         predictor: PerformancePredictor,
         twin: DigitalTwin,
         knowledge: KnowledgeBase,
-        mutator: Optional[SystemMutator] = None,
+        mutator: SystemMutator | None = None,
     ) -> None:
         self.predictor = predictor
         self.twin = twin
@@ -347,7 +345,7 @@ class DecisionOracle:
         best_confidence = 0.0
         best_risk = 0.5
         best_reasoning = ""
-        best_roi: Optional[ROIEstimate] = None
+        best_roi: ROIEstimate | None = None
 
         for mod_path, snap in genome.modules.items():
             heat = snap.heat_level

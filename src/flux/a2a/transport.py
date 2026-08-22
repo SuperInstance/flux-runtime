@@ -10,11 +10,10 @@ A2A protocol layer.
 
 from __future__ import annotations
 
+import uuid
 from collections import deque
-from typing import Deque
 
 from flux.a2a.messages import A2AMessage
-import uuid
 
 
 class LocalTransport:
@@ -25,7 +24,7 @@ class LocalTransport:
     """
 
     def __init__(self) -> None:
-        self._mailboxes: dict[uuid.UUID, Deque[A2AMessage]] = {}
+        self._mailboxes: dict[uuid.UUID, deque[A2AMessage]] = {}
 
     # ── Registration ──────────────────────────────────────────────────────
 

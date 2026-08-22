@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from flux.cost.model import CostModel
 from flux.fir.blocks import FIRFunction
 from flux.fir.instructions import Instruction
-from flux.cost.model import CostModel
 
 
 @dataclass
@@ -141,9 +141,7 @@ class EnergyModel(CostModel):
             return base_energy, "branch"
         elif opcode == "call":
             return base_energy, "call"
-        elif opcode in ("tell", "ask", "delegate"):
-            return base_energy, "a2a"
-        elif opcode in ("trustcheck", "caprequire"):
+        elif opcode in ("tell", "ask", "delegate") or opcode in ("trustcheck", "caprequire"):
             return base_energy, "a2a"
         elif opcode == "return":
             return base_energy, "branch"

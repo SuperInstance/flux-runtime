@@ -10,9 +10,9 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import sys
 import time
-import argparse
 from pathlib import Path  # noqa: F401
 
 # ── ANSI Helpers ──────────────────────────────────────────────────────────────
@@ -176,8 +176,10 @@ def main() -> None:
         return
 
     if args.research:
+        from flux.retro.research.reflection import (
+            Reflection,  # type: ignore  # noqa: F401
+        )
         from flux.retro.research.session import ResearchSession  # noqa: F401
-        from flux.retro.research.reflection import Reflection  # type: ignore  # noqa: F401
         sub("Research Mode — Tracking with Seeds & Metrics")
 
     if args.game:

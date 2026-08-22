@@ -15,8 +15,6 @@ Special ABI aliases:
 
 from __future__ import annotations
 
-from typing import Optional
-
 
 class RegisterFile:
     """64-register file: R0-R15 (general), F0-F15 (float), V0-V15 (vector)."""
@@ -35,7 +33,7 @@ class RegisterFile:
     def __init__(self) -> None:
         self._gp: list[int] = [0] * self.GP_COUNT       # integers
         self._fp: list[float] = [0.0] * self.FP_COUNT    # floats
-        self._vec: list[Optional[bytearray]] = [None] * self.VEC_COUNT  # SIMD 128-bit
+        self._vec: list[bytearray | None] = [None] * self.VEC_COUNT  # SIMD 128-bit
 
     # ── General-purpose registers ──────────────────────────────────────────
 

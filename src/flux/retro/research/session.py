@@ -15,11 +15,10 @@ import hashlib
 import json
 import time
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
-
+from typing import Any
 
 # ── Directory Layout ─────────────────────────────────────────────────────────
 # retro/research/
@@ -220,9 +219,9 @@ class Iteration:
     ended_at: str = ""
     hypothesis: str = ""
     approach: str = ""  # "raw_bytecode", "fir_builder", "pipeline", "hybrid"
-    metrics_before: Optional[MetricSnapshot] = None
-    metrics_after: Optional[MetricSnapshot] = None
-    reflection: Optional[Reflection] = None
+    metrics_before: MetricSnapshot | None = None
+    metrics_after: MetricSnapshot | None = None
+    reflection: Reflection | None = None
     artifacts: list[str] = field(default_factory=list)  # paths to saved files
     status: str = "in_progress"  # "in_progress", "completed", "failed", "skipped"
     error: str = ""
@@ -308,7 +307,7 @@ class ResearchSession:
         self.seed_dir = seed_dir or _default_seed_dir()
         self.reflection_dir = reflection_dir or _default_reflection_dir()
 
-        self._current_iteration: Optional[Iteration] = None
+        self._current_iteration: Iteration | None = None
         self._iterations: list[Iteration] = []
         self._config: dict = {}
 

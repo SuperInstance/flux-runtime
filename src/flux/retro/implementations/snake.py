@@ -16,7 +16,9 @@ Python orchestrates the game loop and renders the display.
 from __future__ import annotations
 
 import random
+
 from flux.vm.interpreter import Interpreter
+
 from ._builder import BytecodeBuilder
 
 _GRID = 8

@@ -1,13 +1,14 @@
 """Tile Library — built-in tile definitions for all categories."""
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
 
+from ..fir.builder import FIRBuilder
 from ..fir.types import TypeContext
 from ..fir.values import Value
-from ..fir.builder import FIRBuilder
+from .ports import PortDirection, TilePort
 from .tile import Tile, TileType
-from .ports import TilePort, PortDirection
 
 if TYPE_CHECKING:
     pass
@@ -331,7 +332,7 @@ def _stream_fir_blueprint(
 ) -> dict[str, Value]:
     """Stream: sequential read/write."""
     base = inputs.get("base")
-    inputs.get("offset", None)
+    inputs.get("offset")
     if base:
         result = builder.load(_i32, base, params.get("base_offset", 0))
         return {"result": result}

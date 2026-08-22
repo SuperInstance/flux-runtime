@@ -9,11 +9,12 @@ Covers:
 """
 
 import pytest
+
 from flux.open_interp.argumentation import (
     Argument,
     ArgumentationFramework,
+    VocabArbitration,
     VocabInterpretation,
-    VocabArbitration
 )
 
 

@@ -23,16 +23,15 @@ import re
 import struct
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
+from .errors import AsmError, AsmErrorKind, SourceLocation
+from .macros import MacroPreprocessor
 from .opcodes_compat import (
     OPCODE_DEFS,
     UNIFIED_OPCODE_DEFS,
     OpcodeDef,
     parse_register,
 )
-from .errors import AsmError, AsmErrorKind, SourceLocation
-from .macros import MacroPreprocessor
 
 
 class OutputFormat(Enum):
@@ -97,8 +96,8 @@ class CrossAssembler:
 
     def __init__(
         self,
-        include_paths: Optional[list[str]] = None,
-        defines: Optional[dict[str, str]] = None,
+        include_paths: list[str] | None = None,
+        defines: dict[str, str] | None = None,
         origin: int = 0,
         preprocess: bool = True,
         target: str = "system_a",
@@ -205,9 +204,9 @@ class CrossAssembler:
     ) -> AssemblyResult:
         """Assemble a source file."""
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 source = f.read()
-        except IOError as e:
+        except OSError as e:
             err = AsmError(
                 message=f"Cannot read file '{path}': {e}",
                 kind=AsmErrorKind.IO_ERROR,

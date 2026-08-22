@@ -19,9 +19,9 @@ Encoding reference:
 # tests/test_conformance_unified.py, tests/test_toolchain_unified.py, and
 # tests/test_dual_mode_equivalence.py.
 
+import os
 import struct
 import sys
-import os
 
 # Ensure the project source root is on sys.path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -29,12 +29,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import (
     Interpreter,
-    VMInvalidOpcodeError,
     VMDivisionByZeroError,
+    VMInvalidOpcodeError,
 )
+from flux.vm.memory import MemoryManager, MemoryRegion
 from flux.vm.registers import RegisterFile
-from flux.vm.memory import MemoryRegion, MemoryManager
-
 
 # ── Helper ─────────────────────────────────────────────────────────────────
 

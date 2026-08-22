@@ -7,16 +7,19 @@
 # tests/test_conformance_unified.py, tests/test_toolchain_unified.py, and
 # tests/test_dual_mode_equivalence.py.
 
+import os
 import struct
-import sys, os, time
+import sys
+import time
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from flux.security.capabilities import CapabilityToken, CapabilityRegistry, Permission
+from flux.a2a.trust import TrustEngine
+from flux.bytecode.opcodes import Op
+from flux.security.capabilities import CapabilityRegistry, CapabilityToken, Permission
 from flux.security.resource_limits import ResourceLimits, ResourceMonitor
 from flux.security.sandbox import SandboxManager
 from flux.vm.interpreter import Interpreter, VMA2AError
-from flux.bytecode.opcodes import Op
-from flux.a2a.trust import TrustEngine
 
 
 def _make_format_g(data: bytes) -> bytes:

@@ -9,7 +9,6 @@ Provides the backend for the EVOLVE opcode in the FLUX VM.
 import hashlib
 import time
 from dataclasses import dataclass, field
-from typing import Optional
 
 
 @dataclass
@@ -80,7 +79,7 @@ class EvolutionEngine:
         new_val = behavior.value + delta
         return max(behavior.min_val, min(behavior.max_val, new_val))
 
-    def cycle(self, fitness: float, timestamp: Optional[int] = None) -> int:
+    def cycle(self, fitness: float, timestamp: int | None = None) -> int:
         """Run one evolution cycle. Returns generation number."""
         ts = timestamp or int(time.time() * 1000)
         snapshot = {}

@@ -16,8 +16,8 @@ Register layout (bytecode exit-validator)
 from __future__ import annotations
 
 from flux.vm.interpreter import Interpreter
-from ._asm import Assembler
 
+from ._asm import Assembler
 
 # ── Room definitions ─────────────────────────────────────────────────────
 

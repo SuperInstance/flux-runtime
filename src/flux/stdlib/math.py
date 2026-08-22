@@ -7,11 +7,8 @@ like sqrt use iterative approximation sequences.
 
 from __future__ import annotations
 
-from typing import Optional
-
-from flux.fir.values import Value
 from flux.fir.builder import FIRBuilder
-
+from flux.fir.values import Value
 
 # ── Base ────────────────────────────────────────────────────────────────────
 
@@ -22,7 +19,7 @@ class MathFunction:
     name: str = ""
     description: str = ""
 
-    def emit(self, builder: FIRBuilder, args: list[Value]) -> Optional[Value]:
+    def emit(self, builder: FIRBuilder, args: list[Value]) -> Value | None:
         """Emit FIR instructions for this math function."""
         raise NotImplementedError
 

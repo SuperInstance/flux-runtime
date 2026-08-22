@@ -6,7 +6,6 @@ import ast
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -78,7 +77,7 @@ class CodeIntrospector:
 
     # ── Per-module info ────────────────────────────────────────────────
 
-    def get_module_info(self, module_path: str) -> Optional[ModuleInfo]:
+    def get_module_info(self, module_path: str) -> ModuleInfo | None:
         """Get detailed info about a single module file."""
         path = Path(module_path)
         if not path.is_file():
@@ -377,9 +376,7 @@ def _cyclomatic_complexity(node: ast.AST) -> int:
             complexity += 1
         elif isinstance(child, (ast.BoolOp,)):
             complexity += len(child.values) - 1
-        elif isinstance(child, ast.IfExp):  # ternary
-            complexity += 1
-        elif isinstance(child, ast.comprehension):
+        elif isinstance(child, ast.IfExp) or isinstance(child, ast.comprehension):  # ternary
             complexity += 1
         # and/or in boolean ops already handled above
     return complexity

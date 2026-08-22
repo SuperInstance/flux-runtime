@@ -10,8 +10,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from flux.tiles.graph import TileGraph
     from flux.creative.sonification import ExecutionEvent
+    from flux.tiles.graph import TileGraph
 
 
 # ── Heat color helpers ──────────────────────────────────────────────────────

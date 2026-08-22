@@ -61,7 +61,6 @@ Total: 256 opcode slots, ~200 defined, ~56 reserved for future expansion.
 """
 
 from dataclasses import dataclass
-from typing import List
 
 
 class FormatType(str):
@@ -86,22 +85,22 @@ class OpcodeDef:
     source: str  # oracle1, jetsonclaw1, babel, converged
     confidence: bool = False
     reserved: bool = False
-    
+
     def byte_size(self) -> int:
         sizes = {"A": 1, "B": 2, "C": 2, "D": 3, "E": 4, "F": 4, "G": 5}
         return sizes.get(self.format, 1)
 
 
-def build_unified_isa() -> List[OpcodeDef]:
+def build_unified_isa() -> list[OpcodeDef]:
     """Build the complete unified opcode table."""
     ops = []
-    
+
     def op(code, mnem, fmt, operands, desc, cat, src, conf=False, reserved=False):
         ops.append(OpcodeDef(code, mnem, fmt, operands, desc, cat, src, confidence=conf, reserved=reserved))
-    
+
     def reserved(code, fmt="A"):
         ops.append(OpcodeDef(code, f"RESERVED_{code:02X}", fmt, "-", "Reserved for future use", "reserved", "none", reserved=True))
-    
+
     # ═══════════════════════════════════════════
     # 0x00-0x03: Format A — System Control
     # ═══════════════════════════════════════════
@@ -109,7 +108,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x01, "NOP",    "A", "-",         "No operation (pipeline sync)",             "system",   "converged")
     op(0x02, "RET",    "A", "-",         "Return from subroutine",                  "system",   "oracle1")
     op(0x03, "IRET",   "A", "-",         "Return from interrupt handler",            "system",   "jetsonclaw1")
-    
+
     # ═══════════════════════════════════════════
     # 0x04-0x07: Format A — Interrupt/Debug
     # ═══════════════════════════════════════════
@@ -117,7 +116,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x05, "WFI",    "A", "-",         "Wait for interrupt (low-power idle)",      "system",   "jetsonclaw1")
     op(0x06, "RESET",  "A", "-",         "Soft reset of register file",              "system",   "jetsonclaw1")
     op(0x07, "SYN",    "A", "-",         "Memory barrier / synchronize",             "system",   "jetsonclaw1")
-    
+
     # ═══════════════════════════════════════════
     # 0x08-0x0F: Format B — Single Register
     # ═══════════════════════════════════════════
@@ -129,7 +128,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x0D, "POP",    "B", "rd",        "Pop stack into rd",                       "stack",    "converged")
     op(0x0E, "CONF_LD","B", "rd",        "Load confidence register rd to accumulator", "confidence", "converged")
     op(0x0F, "CONF_ST","B", "rd",        "Store confidence accumulator to register rd", "confidence", "converged")
-    
+
     # ═══════════════════════════════════════════
     # 0x10-0x17: Format C — Immediate Only
     # ═══════════════════════════════════════════
@@ -141,7 +140,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x15, "YIELD",  "C", "imm8",      "Yield execution for imm8 cycles",         "concurrency", "converged")
     op(0x16, "CACHE",  "C", "imm8",      "Cache control (flush/invalidate by imm8)", "system",   "jetsonclaw1")
     op(0x17, "STRIPCF","C", "imm8",      "Strip confidence from next imm8 ops",      "confidence", "jetsonclaw1")
-    
+
     # ═══════════════════════════════════════════
     # 0x18-0x1F: Format D — Register + Imm8
     # ═══════════════════════════════════════════
@@ -153,7 +152,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x1D, "XORI",   "D", "rd, imm8",  "rd = rd ^ imm8",                          "logic",    "converged")
     op(0x1E, "SHLI",   "D", "rd, imm8",  "rd = rd << imm8",                         "shift",    "converged")
     op(0x1F, "SHRI",   "D", "rd, imm8",  "rd = rd >> imm8",                         "shift",    "converged")
-    
+
     # ═══════════════════════════════════════════
     # 0x20-0x2F: Format E — Integer Arithmetic
     # ═══════════════════════════════════════════
@@ -173,7 +172,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x2D, "CMP_LT", "E", "rd, rs1, rs2", "rd = (rs1 < rs2) ? 1 : 0",             "compare",  "converged")
     op(0x2E, "CMP_GT", "E", "rd, rs1, rs2", "rd = (rs1 > rs2) ? 1 : 0",             "compare",  "converged")
     op(0x2F, "CMP_NE", "E", "rd, rs1, rs2", "rd = (rs1 != rs2) ? 1 : 0",            "compare",  "converged")
-    
+
     # ═══════════════════════════════════════════
     # 0x30-0x3F: Format E — Float, Memory, Control
     # ═══════════════════════════════════════════
@@ -197,7 +196,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x3D, "JNZ",    "F", "rd, imm16",  "if rd != 0: pc += imm16",              "control",  "converged")
     op(0x3E, "JLT",    "F", "rd, imm16",  "if rd < 0: pc += imm16",               "control",  "converged")
     op(0x3F, "JGT",    "F", "rd, imm16",  "if rd > 0: pc += imm16",               "control",  "converged")
-    
+
     # ═══════════════════════════════════════════
     # 0x40-0x47: Format F — Register + Imm16
     # ═══════════════════════════════════════════
@@ -209,7 +208,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x45, "CALL",   "F", "rd, imm16",  "push(pc); pc = rd + imm16",              "control",  "jetsonclaw1")
     op(0x46, "LOOP",   "F", "rd, imm16",  "rd--; if rd > 0: pc -= imm16",           "control",  "jetsonclaw1")
     op(0x47, "SELECT", "F", "rd, imm16",  "pc += imm16 * rd (computed jump)",       "control",  "oracle1")
-    
+
     # ═══════════════════════════════════════════
     # 0x48-0x4F: Format G — Register + Register + Imm16
     # ═══════════════════════════════════════════
@@ -221,7 +220,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x4D, "LEAVE",  "G", "rd, rs1, imm16", "sp += imm16; pop regs; rd=ret",      "stack",    "jetsonclaw1")
     op(0x4E, "COPY",   "G", "rd, rs1, imm16", "memcpy(rd, rs1, imm16)",              "memory",   "jetsonclaw1")
     op(0x4F, "FILL",   "G", "rd, rs1, imm16", "memset(rd, rs1, imm16)",              "memory",   "jetsonclaw1")
-    
+
     # ═══════════════════════════════════════════
     # 0x50-0x5F: Format E — Agent-to-Agent (Fleet Ops)
     # ═══════════════════════════════════════════
@@ -241,7 +240,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x5D, "DISCOV", "E", "rd, rs1, rs2", "Discover fleet agents, list→rd",         "a2a",      "oracle1")
     op(0x5E, "STATUS", "E", "rd, rs1, rs2", "Query agent rs1 status, result→rd",      "a2a",      "converged")
     op(0x5F, "HEARTBT","E", "rd, rs1, rs2", "Emit heartbeat, load→rd",                "a2a",      "converged")
-    
+
     # ═══════════════════════════════════════════
     # 0x60-0x6F: Format E — Confidence-Aware Variants
     # ═══════════════════════════════════════════
@@ -261,7 +260,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x6D, "C_CALIB","E", "rd, rs1, rs2", "Calibrate confidence against ground truth", "confidence", "converged", conf=True)
     op(0x6E, "C_EXPLY","E", "rd, rs1, rs2", "Apply confidence to control flow weight","confidence", "oracle1", conf=True)
     op(0x6F, "C_VOTE", "E", "rd, rs1, rs2", "Weighted vote: crd = sum(crs*crs_i)/Σ", "confidence", "converged", conf=True)
-    
+
     # ═══════════════════════════════════════════
     # 0x70-0x7F: Format E — Viewpoint Operations (Babel Reserved)
     # ═══════════════════════════════════════════
@@ -281,7 +280,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x7D, "V_CLASS","E", "rd, rs1, rs2", "Classifier→type mapping",                "viewpoint", "babel")
     op(0x7E, "V_INFL", "E", "rd, rs1, rs2", "Inflection→control flow mapping",       "viewpoint", "babel")
     op(0x7F, "V_PRAGMA","E","rd, rs1, rs2", "Pragmatic context switch",               "viewpoint", "babel")
-    
+
     # ═══════════════════════════════════════════
     # 0x80-0x8F: Format E — Biology/Sensor Ops (JetsonClaw1)
     # ═══════════════════════════════════════════
@@ -301,7 +300,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x8D, "SPI",    "E", "rd, rs1, rs2", "SPI: send rd, receive→rd, cs=rs1",      "sensor",   "jetsonclaw1")
     op(0x8E, "UART",   "E", "rd, rs1, rs2", "UART: send rd bytes from buf rs1",      "sensor",   "jetsonclaw1")
     op(0x8F, "CANBUS", "E", "rd, rs1, rs2", "CAN bus: send rd with ID rs1",          "sensor",   "jetsonclaw1")
-    
+
     # ═══════════════════════════════════════════
     # 0x90-0x9F: Format E — Extended Math/Crypto
     # ═══════════════════════════════════════════
@@ -321,7 +320,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0x9D, "FSQRT",  "E", "rd, rs1, -",  "rd = fsqrt(rs1)",                        "float",    "oracle1")
     op(0x9E, "FSIN",   "E", "rd, rs1, -",  "rd = sin(rs1)",                          "float",    "oracle1")
     op(0x9F, "FCOS",   "E", "rd, rs1, -",  "rd = cos(rs1)",                          "float",    "oracle1")
-    
+
     # ═══════════════════════════════════════════
     # 0xA0-0xAF: Format D — String/Collection Ops
     # ═══════════════════════════════════════════
@@ -341,7 +340,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0xAD, "ENCRYPT","E", "rd, rs1, rs2","rd = encrypt rs1 with key rs2",           "crypto",     "converged")
     op(0xAE, "DECRYPT","E", "rd, rs1, rs2","rd = decrypt rs1 with key rs2",           "crypto",     "converged")
     op(0xAF, "KEYGEN", "E", "rd, rs1, rs2","rd = generate keypair, pub→rs1 priv→rs2", "crypto",     "converged")
-    
+
     # ═══════════════════════════════════════════
     # 0xB0-0xBF: Format E — Vector/SIMD
     # ═══════════════════════════════════════════
@@ -361,7 +360,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0xBD, "VMERGE", "E", "rd, rs1, rs2","Merge vectors by mask rs2",               "vector",   "jetsonclaw1")
     op(0xBE, "VCONF",  "E", "rd, rs1, rs2","Vector confidence propagation",            "vector",   "jetsonclaw1")
     op(0xBF, "VSELECT","E", "rd, rs1, rs2","Conditional select by confidence mask",    "vector",   "jetsonclaw1")
-    
+
     # ═══════════════════════════════════════════
     # 0xC0-0xCF: Format E — Tensor/Neural
     # ═══════════════════════════════════════════
@@ -381,7 +380,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0xCD, "TTOKEN", "E", "rd, rs1, rs2","Tokenize: text rs1, vocab rs2→rd",        "tensor",   "oracle1")
     op(0xCE, "TDETOK", "E", "rd, rs1, rs2","Detokenize: tokens rs1, vocab rs2→rd",    "tensor",   "oracle1")
     op(0xCF, "TQUANT", "E", "rd, rs1, rs2","Quantize: fp32 rs1 → int8, scale rs2",    "tensor",   "jetsonclaw1")
-    
+
     # ═══════════════════════════════════════════
     # 0xD0-0xDF: Format G — Extended Memory/Mapped I/O
     # ═══════════════════════════════════════════
@@ -401,7 +400,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0xDD, "GPU_EX","G", "rd, rs1, imm16","GPU: execute kernel rd, grid rs1, block imm16","compute","jetsonclaw1")
     op(0xDE, "GPU_SYNC","G","rd, rs1, imm16","GPU: synchronize device imm16",          "compute",  "jetsonclaw1")
     op(0xDF, "RESERVED_DF","G","-", "Reserved", "reserved", "none", reserved=True)
-    
+
     # ═══════════════════════════════════════════
     # 0xE0-0xEF: Format F — Long Jumps/Calls
     # ═══════════════════════════════════════════
@@ -421,7 +420,7 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0xED, "RESERVED_ED","F","-",       "Reserved", "reserved", "none", reserved=True)
     op(0xEE, "RESERVED_EE","F","-",       "Reserved", "reserved", "none", reserved=True)
     op(0xEF, "RESERVED_EF","F","-",       "Reserved", "reserved", "none", reserved=True)
-    
+
     # ═══════════════════════════════════════════
     # 0xF0-0xFF: Format A — Extended System/Debug
     # ═══════════════════════════════════════════
@@ -441,15 +440,15 @@ def build_unified_isa() -> List[OpcodeDef]:
     op(0xFD, "RESERVED_FD","A","-",       "Reserved", "reserved", "none", reserved=True)
     op(0xFE, "RESERVED_FE","A","-",       "Reserved", "reserved", "none", reserved=True)
     op(0xFF, "ILLEGAL","A", "-",          "Illegal instruction trap",                   "system",   "converged")
-    
+
     return ops
 
 
-def isa_stats(ops: List[OpcodeDef]) -> dict:
+def isa_stats(ops: list[OpcodeDef]) -> dict:
     """Generate statistics about the unified ISA."""
     defined = [o for o in ops if not o.reserved]
     reserved = [o for o in ops if o.reserved]
-    
+
     by_format = {}
     by_category = {}
     by_source = {}
@@ -457,7 +456,7 @@ def isa_stats(ops: List[OpcodeDef]) -> dict:
         by_format[o.format] = by_format.get(o.format, 0) + 1
         by_category[o.category] = by_category.get(o.category, 0) + 1
         by_source[o.source] = by_source.get(o.source, 0) + 1
-    
+
     return {
         "total_slots": len(ops),
         "defined": len(defined),
@@ -469,7 +468,7 @@ def isa_stats(ops: List[OpcodeDef]) -> dict:
     }
 
 
-def isa_markdown_table(ops: List[OpcodeDef]) -> str:
+def isa_markdown_table(ops: list[OpcodeDef]) -> str:
     """Generate a markdown table of all opcodes."""
     lines = [
         "# FLUX Unified ISA — Complete Opcode Table\n",
@@ -480,7 +479,7 @@ def isa_markdown_table(ops: List[OpcodeDef]) -> str:
         conf = " 🔒" if o.confidence else ""
         src = {"oracle1": "🔮", "jetsonclaw1": "⚡", "babel": "🌐", "converged": "✅", "none": "—"}.get(o.source, "?")
         lines.append(f"| 0x{o.opcode:02X} | {o.mnemonic}{conf} | {o.format} | {o.operands} | {o.category} | {src} | {o.description} |")
-    
+
     stats = isa_stats(ops)
     lines.append(f"\n**Total:** {stats['defined']} defined, {stats['reserved']} reserved = {stats['total_slots']} slots")
     lines.append(f"**Confidence ops:** {stats['confidence_ops']}")

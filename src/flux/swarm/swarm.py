@@ -13,8 +13,9 @@ The Swarm ties together:
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+from typing import Any
 
 from .agent import (
     AgentRole,
@@ -23,7 +24,6 @@ from .agent import (
 from .deadlock import DeadlockDetector, DeadlockReport
 from .message_bus import AgentMessage, MessageBus
 from .topology import Topology
-
 
 # ── Report Types ───────────────────────────────────────────────────────────
 
@@ -123,7 +123,7 @@ class Swarm:
 
         return agent
 
-    def despawn(self, agent_id: str) -> Optional[FluxAgent]:
+    def despawn(self, agent_id: str) -> FluxAgent | None:
         """Remove an agent from the swarm.
 
         Args:
@@ -144,7 +144,7 @@ class Swarm:
 
         return agent
 
-    def get_agent(self, agent_id: str) -> Optional[FluxAgent]:
+    def get_agent(self, agent_id: str) -> FluxAgent | None:
         """Get an agent by ID.
 
         Args:
@@ -231,7 +231,7 @@ class Swarm:
         coordinator_id: str,
         reducer: Callable[[list[Any]], Any],
         timeout: float = 30.0,
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """Collect results from all agents and reduce.
 
         Each agent contributes its current stats. The reducer function

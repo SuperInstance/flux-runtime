@@ -26,8 +26,8 @@ Usage:
 
 import os
 import time
-from typing import TYPE_CHECKING, Dict, List, Set, Tuple
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from flux.open_interp.vocabulary import Vocabulary
@@ -41,7 +41,7 @@ class UsageStats:
     call_count: int
     last_used: float  # timestamp
     first_used: float
-    dependents: List[str] = field(default_factory=list)  # entries that depend on this
+    dependents: list[str] = field(default_factory=list)  # entries that depend on this
 
 
 class UsageTracker:
@@ -51,12 +51,12 @@ class UsageTracker:
     Agents mark entries as used during their normal operation.
     The tracker records frequency, recency, and dependency information.
     """
-    
+
     def __init__(self):
-        self._usage: Dict[str, int] = Counter()
-        self._first_seen: Dict[str, float] = {}
-        self._last_seen: Dict[str, float] = {}
-    
+        self._usage: dict[str, int] = Counter()
+        self._first_seen: dict[str, float] = {}
+        self._last_seen: dict[str, float] = {}
+
     def mark_used(self, entry_name: str) -> None:
         """Record that a vocabulary entry was used."""
         now = time.time()
@@ -64,12 +64,12 @@ class UsageTracker:
         if entry_name not in self._first_seen:
             self._first_seen[entry_name] = now
         self._last_seen[entry_name] = now
-    
+
     def get_call_count(self, entry_name: str) -> int:
         """Get the number of times an entry was used."""
         return self._usage.get(entry_name, 0)
-    
-    def get_usage_stats(self) -> Dict[str, UsageStats]:
+
+    def get_usage_stats(self) -> dict[str, UsageStats]:
         """Get detailed usage statistics for all tracked entries."""
         stats = {}
         for name in self._usage:
@@ -80,21 +80,21 @@ class UsageTracker:
                 first_used=self._first_seen.get(name, 0),
             )
         return stats
-    
-    def get_most_used(self, n: int = 10) -> List[Tuple[str, int]]:
+
+    def get_most_used(self, n: int = 10) -> list[tuple[str, int]]:
         """Get the top-N most used entries."""
         return self._usage.most_common(n)
-    
-    def get_unused(self, all_names: List[str]) -> List[str]:
+
+    def get_unused(self, all_names: list[str]) -> list[str]:
         """Get entries that were never used."""
         return [n for n in all_names if n not in self._usage]
-    
+
     def reset(self) -> None:
         """Clear all usage data."""
         self._usage.clear()
         self._first_seen.clear()
         self._last_seen.clear()
-    
+
     def to_dict(self) -> dict:
         """Serialize usage data."""
         return {
@@ -102,7 +102,7 @@ class UsageTracker:
             "first_seen": self._first_seen,
             "last_seen": self._last_seen,
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict) -> 'UsageTracker':
         """Deserialize usage data."""
@@ -118,9 +118,9 @@ class PruneReport:
     """Report from a pruning operation."""
     original_count: int
     pruned_count: int
-    removed: List[str]
-    kept: List[str]
-    warnings: List[str]
+    removed: list[str]
+    kept: list[str]
+    warnings: list[str]
     savings_percent: float
 
 
@@ -133,45 +133,45 @@ class VocabularyPruner:
     2. By size: keep top-N most used entries
     3. By dependency: keep entries and their transitive dependencies
     """
-    
+
     def prune(self, vocab, tracker: UsageTracker, min_calls: int = 1) -> 'Vocabulary':
         """
         Prune vocabulary to only entries with min_calls or more uses.
         Also keeps any entries that are dependencies of kept entries.
         """
         from .vocabulary import Vocabulary
-        
+
         # Find entries that meet the threshold
         kept_names = set()
         for entry in vocab.entries:
             if tracker.get_call_count(entry.name) >= min_calls:
                 kept_names.add(entry.name)
-        
+
         # Expand to include dependencies
         kept_names = self._expand_dependencies(vocab, kept_names)
-        
+
         # Build pruned vocabulary
         pruned = Vocabulary()
         for entry in vocab.entries:
             if entry.name in kept_names:
                 pruned.entries.append(entry)
-        
+
         return pruned
-    
+
     def prune_to_size(self, vocab, tracker: UsageTracker, max_entries: int = 100) -> 'Vocabulary':
         """Keep only the top-N most used entries plus their dependencies."""
         most_used = tracker.get_most_used(max_entries)
         kept_names = {name for name, _ in most_used}
         kept_names = self._expand_dependencies(vocab, kept_names)
-        
+
         from .vocabulary import Vocabulary
         pruned = Vocabulary()
         for entry in vocab.entries:
             if entry.name in kept_names:
                 pruned.entries.append(entry)
-        
+
         return pruned
-    
+
     def prune_for_hardware(self, vocab, tracker: UsageTracker,
                            target: str = "embedded") -> 'Vocabulary':
         """
@@ -184,7 +184,7 @@ class VocabularyPruner:
         - "gpu": only compute-heavy entries (no I/O patterns)
         """
         from .vocabulary import Vocabulary
-        
+
         if target == "embedded":
             pruned = Vocabulary()
             for entry in vocab.entries:
@@ -196,10 +196,10 @@ class VocabularyPruner:
                         if len(pruned.entries) >= 20:
                             break
             return pruned
-        
+
         elif target == "edge":
             return self.prune_to_size(vocab, tracker, max_entries=50)
-        
+
         elif target == "gpu":
             pruned = Vocabulary()
             compute_tags = {"math", "compute", "arithmetic", "matrix", "tensor"}
@@ -208,22 +208,22 @@ class VocabularyPruner:
                 if tags & compute_tags:
                     pruned.entries.append(entry)
             return pruned
-        
+
         else:  # server
             return self.prune(vocab, tracker, min_calls=1)
-    
+
     def dead_code_report(self, vocab, tracker: UsageTracker) -> PruneReport:
         """Generate a report on unused vocabulary entries."""
         kept = []
         removed = []
         warnings = []
-        
+
         for entry in vocab.entries:
             if tracker.get_call_count(entry.name) > 0:
                 kept.append(entry.name)
             else:
                 removed.append(entry.name)
-        
+
         # Check if any kept entry depends on a removed entry
         removed_set = set(removed)
         kept_set = set(kept)
@@ -234,10 +234,10 @@ class VocabularyPruner:
                         warnings.append(
                             f"⚠ {entry.name} depends on {dep} which is unused"
                         )
-        
+
         original = len(vocab.entries)
         savings = (len(removed) / original * 100) if original > 0 else 0
-        
+
         return PruneReport(
             original_count=original,
             pruned_count=len(kept),
@@ -246,13 +246,13 @@ class VocabularyPruner:
             warnings=warnings,
             savings_percent=round(savings, 1),
         )
-    
-    def _expand_dependencies(self, vocab, kept_names: Set[str]) -> Set[str]:
+
+    def _expand_dependencies(self, vocab, kept_names: set[str]) -> set[str]:
         """Expand kept set to include transitive dependencies."""
         name_to_deps = {}
         for entry in vocab.entries:
             name_to_deps[entry.name] = getattr(entry, 'depends', [])
-        
+
         changed = True
         while changed:
             changed = False
@@ -261,20 +261,20 @@ class VocabularyPruner:
                     if dep not in kept_names:
                         kept_names.add(dep)
                         changed = True
-        
+
         return kept_names
-    
-    def dependency_check(self, vocab, removed_names: List[str]) -> List[str]:
+
+    def dependency_check(self, vocab, removed_names: list[str]) -> list[str]:
         """Check if any remaining entry depends on a removed entry."""
         removed_set = set(removed_names)
         warnings = []
-        
+
         for entry in vocab.entries:
             if entry.name not in removed_set:
                 for dep in getattr(entry, 'depends', []):
                     if dep in removed_set:
                         warnings.append(f"{entry.name} → {dep}")
-        
+
         return warnings
 
 
@@ -290,7 +290,7 @@ class RuntimeCompiler:
     
     Zero dependencies. Copy it to any agent's repo and it works.
     """
-    
+
     # Opcode set
     OP_MOVI = 0x2B
     OP_IADD = 0x08
@@ -305,7 +305,7 @@ class RuntimeCompiler:
     OP_HALT = 0x80
     OP_NOP = 0x00
     OP_MOV = 0x01
-    
+
     def compile(self, vocab, output_path: str, name: str = "CustomFlux") -> str:
         """
         Compile a pruned vocabulary into a standalone Python file.
@@ -319,38 +319,38 @@ class RuntimeCompiler:
         lines.append('Zero dependencies. Copy anywhere.')
         lines.append('"""')
         lines.append('')
-        
+
         # Collect needed opcodes
         needed_ops = self._scan_opcodes(vocab)
-        
+
         # Inline VM
         lines.append('# === VM ===')
         lines.append(self._generate_vm(needed_ops))
         lines.append('')
-        
+
         # Inline assembler
         lines.append('# === Assembler ===')
         lines.append(self._generate_assembler())
         lines.append('')
-        
+
         # Vocabulary entries
         lines.append('# === Vocabulary ===')
         lines.append(self._generate_vocabulary(vocab))
         lines.append('')
-        
+
         # Interpreter
         lines.append('# === Interpreter ===')
         lines.append(self._generate_interpreter(vocab, name))
-        
+
         # Write file
         content = '\n'.join(lines)
         os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
         with open(output_path, 'w') as f:
             f.write(content)
-        
+
         return content
-    
-    def _scan_opcodes(self, vocab) -> Set[int]:
+
+    def _scan_opcodes(self, vocab) -> set[int]:
         """Scan vocabulary entries to find which opcodes are needed."""
         ops = set()
         op_names = {
@@ -369,8 +369,8 @@ class RuntimeCompiler:
         ops.add(self.OP_HALT)
         ops.add(self.OP_MOVI)
         return ops
-    
-    def _generate_vm(self, needed_ops: Set[int]) -> str:
+
+    def _generate_vm(self, needed_ops: set[int]) -> str:
         """Generate a minimal VM with only needed opcodes."""
         return '''class FluxVM:
     """Minimal bytecode VM."""
@@ -419,7 +419,7 @@ class RuntimeCompiler:
                     self.pc = self.pc + off
             elif op == 0x80: self.halted = True
         return self.gp[0]'''
-    
+
     def _generate_assembler(self) -> str:
         """Generate a simple assembler."""
         return '''def assemble(text: str) -> bytes:
@@ -459,7 +459,7 @@ class RuntimeCompiler:
             else:
                 bytecode.extend([0, 0, 0])
     return bytes(bytecode)'''
-    
+
     def _generate_vocabulary(self, vocab) -> str:
         """Generate vocabulary pattern list."""
         lines = ['VOCAB = [']
@@ -472,7 +472,7 @@ class RuntimeCompiler:
             lines.append(f"    {{'name': {name_json}, 'pattern': {pattern_json}, 'template': {template_json}, 'result_reg': {result_reg}}},")
         lines.append(']')
         return '\n'.join(lines)
-    
+
     def _generate_interpreter(self, vocab, name: str) -> str:
         """Generate the interpreter with run() function."""
         interp_code = (

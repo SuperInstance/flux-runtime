@@ -27,8 +27,6 @@ from __future__ import annotations
 import struct
 from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import Optional, List, Dict, Set, Tuple
-
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -86,7 +84,7 @@ class VerificationReport:
     program_hash: str = ""
     program_size: int = 0
     instruction_count: int = 0
-    pass_results: Dict[int, List[VerificationFinding]] = field(default_factory=dict)
+    pass_results: dict[int, list[VerificationFinding]] = field(default_factory=dict)
     passes_completed: int = 0
     is_valid: bool = False
     error_count: int = 0
@@ -124,7 +122,7 @@ class VerificationReport:
 
 # Maps opcode -> (format_letter, byte_size, num_register_operands)
 # Format sizes: A=1, B=2, C=2, D=3, E=4, F=4, G=5
-OPCODE_FORMATS: Dict[int, Tuple[str, int, int]] = {}
+OPCODE_FORMATS: dict[int, tuple[str, int, int]] = {}
 
 # Format A: 0x00-0x03, 0x04-0x07, 0xF0-0xFF
 # Format B: 0x08-0x0F
@@ -226,8 +224,8 @@ class DecodedInstruction:
     format: str = "?"
     offset: int = 0
     size: int = 1
-    registers: List[int] = field(default_factory=list)
-    immediates: List[int] = field(default_factory=list)
+    registers: list[int] = field(default_factory=list)
+    immediates: list[int] = field(default_factory=list)
     is_valid: bool = True
     error: str = ""
 
@@ -282,7 +280,7 @@ def decode_instruction(bytecode: bytes, offset: int) -> DecodedInstruction:
     )
 
 
-def decode_all(bytecode: bytes) -> List[DecodedInstruction]:
+def decode_all(bytecode: bytes) -> list[DecodedInstruction]:
     """Decode all instructions in a bytecode program."""
     instructions = []
     offset = 0
@@ -311,7 +309,7 @@ class BytecodeVerifier:
     def __init__(
         self,
         policy: VerifierPolicy = VerifierPolicy.STANDARD,
-        capabilities: Optional[set] = None,
+        capabilities: set | None = None,
         max_stack: int = MAX_STACK_DEPTH,
         max_program_size: int = MAX_PROGRAM_SIZE,
     ):
@@ -400,7 +398,7 @@ class BytecodeVerifier:
     # ── Pass 1: Structural Integrity ──────────────────────────────────────
 
     def _pass_structural_integrity(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Validate instruction encoding and format compliance."""
         for insn in instructions:
@@ -433,7 +431,7 @@ class BytecodeVerifier:
     # ── Pass 2: Register Validation ───────────────────────────────────────
 
     def _pass_register_validation(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Validate all register operands are within valid range."""
         for insn in instructions:
@@ -448,12 +446,12 @@ class BytecodeVerifier:
     # ── Pass 3: Control Flow Analysis ─────────────────────────────────────
 
     def _pass_control_flow(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Verify control flow: every path leads to HALT, no dangling jumps."""
         # Build offset -> instruction index map
-        offset_to_idx: Dict[int, int] = {}
-        valid_offsets: Set[int] = set()
+        offset_to_idx: dict[int, int] = {}
+        valid_offsets: set[int] = set()
         for i, insn in enumerate(instructions):
             offset_to_idx[insn.offset] = i
             valid_offsets.add(insn.offset)
@@ -500,7 +498,7 @@ class BytecodeVerifier:
     # ── Pass 4: Stack Safety ──────────────────────────────────────────────
 
     def _pass_stack_safety(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Analyze PUSH/POP balance and maximum stack depth."""
         stack_depth = 0
@@ -551,7 +549,7 @@ class BytecodeVerifier:
     # ── Pass 5: Capability Enforcement ────────────────────────────────────
 
     def _pass_capability_enforcement(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Verify privileged opcodes have required capabilities."""
 
@@ -592,12 +590,12 @@ class BytecodeVerifier:
     # ── Pass 6: Dangerous Pattern Detection ───────────────────────────────
 
     def _pass_dangerous_patterns(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Detect potentially dangerous bytecode patterns."""
         has_store = False
         has_load = False
-        store_addrs: List[int] = []
+        store_addrs: list[int] = []
 
         for insn in instructions:
             if not insn.is_valid:
@@ -644,7 +642,7 @@ class BytecodeVerifier:
     # ── Pass 7: Memory Safety ─────────────────────────────────────────────
 
     def _pass_memory_safety(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Validate memory access patterns for safety."""
         has_malloc = any(i.opcode == 0xD7 for i in instructions if i.is_valid)
@@ -678,7 +676,7 @@ class BytecodeVerifier:
 # ─── Convenience Functions ────────────────────────────────────────────────────
 
 def verify(bytecode: bytes, policy: VerifierPolicy = VerifierPolicy.STANDARD,
-           capabilities: Optional[set] = None) -> VerificationReport:
+           capabilities: set | None = None) -> VerificationReport:
     """Verify FLUX bytecode with default settings."""
     verifier = BytecodeVerifier(policy=policy, capabilities=capabilities)
     return verifier.verify(bytecode)
@@ -691,7 +689,7 @@ def verify_hex(hex_str: str, **kwargs) -> VerificationReport:
     return verify(bytecode, **kwargs)
 
 
-def is_safe(bytecode: bytes, capabilities: Optional[set] = None) -> bool:
+def is_safe(bytecode: bytes, capabilities: set | None = None) -> bool:
     """Quick check: is this bytecode safe to execute?"""
     report = verify(bytecode, VerifierPolicy.STANDARD, capabilities)
     return report.is_valid

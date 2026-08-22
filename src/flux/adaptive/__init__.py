@@ -17,25 +17,25 @@ Usage:
     print(rec.recommended_language)  # e.g. "c_simd"
 """
 
-from .profiler import (
-    AdaptiveProfiler,
-    HeatLevel,
-    ProfileSample,
-    SampleHandle,
-    BottleneckEntry,
-    BottleneckReport,
-)
-from .selector import (
-    LanguageProfile,
-    LANGUAGES,
-    AdaptiveSelector,
-    SelectionEvent,
-    LanguageRecommendation,
-)
 from .compiler_bridge import (
     CompilerBridge,
     LanguageCompiler,
     RecompileResult,
+)
+from .profiler import (
+    AdaptiveProfiler,
+    BottleneckEntry,
+    BottleneckReport,
+    HeatLevel,
+    ProfileSample,
+    SampleHandle,
+)
+from .selector import (
+    LANGUAGES,
+    AdaptiveSelector,
+    LanguageProfile,
+    LanguageRecommendation,
+    SelectionEvent,
 )
 
 __all__ = [

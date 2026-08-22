@@ -17,6 +17,7 @@ Register layout
 from __future__ import annotations
 
 from flux.vm.interpreter import Interpreter
+
 from ._asm import Assembler
 
 
@@ -176,9 +177,7 @@ class Pong:
             for x in range(32):
                 if x == bx and y == by:
                     row += "o"
-                elif x == 0 and lp <= y < lp + 3:
-                    row += "|"
-                elif x == 31 and rp <= y < rp + 3:
+                elif (x == 0 and lp <= y < lp + 3) or (x == 31 and rp <= y < rp + 3):
                     row += "|"
                 elif x == 15:
                     row += "."

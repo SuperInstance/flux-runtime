@@ -9,9 +9,9 @@
   FLUX.MD → parse → compile → bytecode verification
 """
 
+import os
 import struct
 import sys
-import os
 import traceback
 
 # Ensure the project source root is on sys.path
@@ -21,7 +21,6 @@ from flux.bytecode.opcodes import Op
 from flux.compiler.pipeline import FluxCompiler
 from flux.runtime.agent import Agent, AgentConfig
 from flux.runtime.agent_runtime import AgentRuntime
-
 
 passed = 0
 failed = 0

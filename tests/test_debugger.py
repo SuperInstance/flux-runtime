@@ -16,25 +16,24 @@ Tests for the FluxDisassembler and FluxDebugger classes, including:
 # tests/test_conformance_unified.py, tests/test_toolchain_unified.py, and
 # tests/test_dual_mode_equivalence.py.
 
+import os
 import struct
 import sys
-import os
 
 # Ensure the project source root is on sys.path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from flux.bytecode.opcodes import Op
+from flux.debugger import (
+    FluxDebugger,
+    StepResult,
+)
 from flux.disasm import (
     FluxDisassembler,
     disassemble,
     disassemble_to_dict,
     disassemble_to_json,
 )
-from flux.debugger import (
-    FluxDebugger,
-    StepResult,
-)
-
 
 # ── Helper functions ─────────────────────────────────────────────────────────
 

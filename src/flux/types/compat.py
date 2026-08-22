@@ -7,11 +7,18 @@ upper bound (common supertype) of two types.
 
 from __future__ import annotations
 
-from typing import Optional
-
 from flux.fir.types import (
-    FIRType, IntType, FloatType, BoolType, UnitType, StringType,
-    RefType, ArrayType, VectorType, FuncType, TypeContext,
+    ArrayType,
+    BoolType,
+    FIRType,
+    FloatType,
+    FuncType,
+    IntType,
+    RefType,
+    StringType,
+    TypeContext,
+    UnitType,
+    VectorType,
 )
 from flux.types.generic import GenericType, TypeVar
 from flux.types.unify import TypeUnifier, _type_eq
@@ -104,7 +111,7 @@ def are_compatible(t1: FIRType, t2: FIRType) -> bool:
     return False
 
 
-def coercion_cost(t1: FIRType, t2: FIRType, ctx: Optional[TypeContext] = None) -> int:
+def coercion_cost(t1: FIRType, t2: FIRType, ctx: TypeContext | None = None) -> int:
     """Compute the cost of coercing from t1 to t2.
 
     Cost scale:
@@ -133,8 +140,8 @@ def coercion_cost(t1: FIRType, t2: FIRType, ctx: Optional[TypeContext] = None) -
 def least_upper_bound(
     t1: FIRType,
     t2: FIRType,
-    ctx: Optional[TypeContext] = None,
-) -> Optional[FIRType]:
+    ctx: TypeContext | None = None,
+) -> FIRType | None:
     """Find the least upper bound (common supertype) of two types.
 
     The LUB is the most specific type that both t1 and t2 can be

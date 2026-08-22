@@ -22,26 +22,26 @@ better at reading the room.
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from enum import Enum
-from typing import Optional, Any, Callable
+from typing import Any
 
+from flux.evolution.genome import Genome, MutationStrategy
 from flux.synthesis.synthesizer import FluxSynthesizer
-from flux.evolution.genome import MutationStrategy, Genome
 
 from .hypothesis import (
-    Hypothesis,
-    ExperimentResult,
     ExperimentOutcome,
-    ObservationData,
-    LearnedInsights,
+    ExperimentResult,
     FlywheelRecord,
     FlywheelReport,
+    Hypothesis,
     IntegrationReport,
+    LearnedInsights,
+    ObservationData,
 )
 from .knowledge import KnowledgeBase
 from .metrics import FlywheelMetrics
-
 
 # ── Flywheel Phase ─────────────────────────────────────────────────────
 
@@ -99,13 +99,13 @@ class FlywheelEngine:
         self._acceleration_curve: list[tuple[int, float]] = []
 
         # Current revolution state
-        self._current_observation: Optional[ObservationData] = None
-        self._current_insights: Optional[LearnedInsights] = None
+        self._current_observation: ObservationData | None = None
+        self._current_insights: LearnedInsights | None = None
         self._current_hypotheses: list[Hypothesis] = []
         self._current_results: list[ExperimentResult] = []
 
         # Validation function (can be set externally)
-        self._validation_fn: Optional[Callable[[Genome], bool]] = None
+        self._validation_fn: Callable[[Genome], bool] | None = None
 
     # ── Main Entry Point ────────────────────────────────────────────────
 
@@ -725,7 +725,7 @@ class FlywheelEngine:
         return list(self._history)
 
     def set_validation_fn(
-        self, fn: Optional[Callable[[Genome], bool]]
+        self, fn: Callable[[Genome], bool] | None
     ) -> None:
         """Set a custom validation function for experiments.
 

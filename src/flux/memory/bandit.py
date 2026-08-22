@@ -10,8 +10,6 @@ from __future__ import annotations
 import math
 import random
 from dataclasses import dataclass
-from typing import Optional
-
 
 # ── Bandit Strategy ──────────────────────────────────────────────────────────
 
@@ -89,7 +87,7 @@ class MutationBandit:
         "inline_optimization",
     ]
 
-    def __init__(self, strategies: Optional[list[str]] = None, seed: Optional[int] = None):
+    def __init__(self, strategies: list[str] | None = None, seed: int | None = None):
         """Initialize the bandit with strategy arms.
 
         Args:
@@ -256,7 +254,7 @@ class MutationBandit:
         """Total number of trials across all strategies (excluding priors)."""
         return sum(stats.total - 2 for stats in self._stats.values())
 
-    def get_stats(self, strategy: str) -> Optional[StrategyStats]:
+    def get_stats(self, strategy: str) -> StrategyStats | None:
         """Get statistics for a specific strategy."""
         return self._stats.get(strategy)
 

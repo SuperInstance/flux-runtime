@@ -6,9 +6,8 @@ and error kind for precise diagnostics during assembly.
 
 from __future__ import annotations
 
-from enum import Enum
 from dataclasses import dataclass, field
-from typing import Optional
+from enum import Enum
 
 
 class AsmErrorKind(Enum):
@@ -101,7 +100,7 @@ def make_error(
     line: int = 0,
     column: int = 0,
     source_line: str = "",
-    hints: Optional[list[str]] = None,
+    hints: list[str] | None = None,
 ) -> AsmError:
     """Convenience factory for creating AsmError instances."""
     return AsmError(

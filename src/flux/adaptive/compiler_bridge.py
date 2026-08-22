@@ -13,7 +13,6 @@ from __future__ import annotations
 import hashlib
 import logging
 from dataclasses import dataclass, field
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +26,8 @@ class RecompileResult:
     from_lang: str
     to_lang: str
     source_hash: str = ""
-    bytecode: Optional[bytes] = None
-    error: Optional[str] = None
+    bytecode: bytes | None = None
+    error: str | None = None
     warnings: list[str] = field(default_factory=list)
     compilation_time_ns: int = 0
 
@@ -89,7 +88,7 @@ class CompilerBridge:
         """
         self._compilers.pop(lang, None)
 
-    def get_compiler(self, lang: str) -> Optional[LanguageCompiler]:
+    def get_compiler(self, lang: str) -> LanguageCompiler | None:
         """Get the registered compiler for a language.
 
         Args:
@@ -165,9 +164,9 @@ class CompilerBridge:
 
         # Build FIR module via the compiler pipeline
         try:
-            from flux.fir.types import TypeContext
-            from flux.fir.builder import FIRBuilder
             from flux.bytecode.encoder import BytecodeEncoder
+            from flux.fir.builder import FIRBuilder
+            from flux.fir.types import TypeContext
 
             actual_ctx = ctx if ctx is not None else TypeContext()
             builder = FIRBuilder(actual_ctx)

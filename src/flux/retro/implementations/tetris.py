@@ -23,6 +23,7 @@ Register layout
 from __future__ import annotations
 
 from flux.vm.interpreter import Interpreter
+
 from ._asm import Assembler
 
 

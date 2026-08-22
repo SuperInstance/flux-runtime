@@ -1,20 +1,20 @@
 """FLUX Self-Documentation System — generates documentation by introspecting the codebase."""
 
+from .generator import (
+    DocumentationGenerator,
+)
 from .introspector import (
-    CodeIntrospector,
-    ModuleInfo,
     APIDeclaration,
+    CodeIntrospector,
     ComplexityMetrics,
+    ModuleInfo,
 )
 from .renderer import (
-    MarkdownRenderer,
     AsciiRenderer,
+    MarkdownRenderer,
 )
 from .stats import (
     CodeStatistics,
-)
-from .generator import (
-    DocumentationGenerator,
 )
 
 __all__ = [

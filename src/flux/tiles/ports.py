@@ -1,9 +1,10 @@
 """Tile Ports — typed connection points on a tile."""
 
 from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..fir.types import FIRType
@@ -30,7 +31,7 @@ class TilePort:
     name: str
     direction: PortDirection
     type_fir: FIRType
-    shape: Optional[tuple] = None
+    shape: tuple | None = None
 
     def compatible_with(self, other: TilePort) -> bool:
         """Can data flow from this port to the other?

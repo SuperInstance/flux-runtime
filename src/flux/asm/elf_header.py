@@ -9,9 +9,6 @@ from __future__ import annotations
 import struct
 import time
 from dataclasses import dataclass, field
-from typing import Optional
-
-
 
 # FLUX ELF constants
 FLUX_MAGIC = b"\x7fFLUX"
@@ -92,7 +89,7 @@ class ElfHeader:
     symbols: dict[str, int] = field(default_factory=dict)
 
     # Metadata
-    build_timestamp: Optional[float] = None
+    build_timestamp: float | None = None
     source_filename: str = ""
     linker_version: str = "1.0"
 

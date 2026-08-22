@@ -2,35 +2,34 @@
 
 import pytest
 
-from flux.creative.sonification import (
-    Sonifier,
-    MusicSequence,
-    MusicEvent,
-    ExecutionEvent,
-)
 from flux.creative.generative import (
-    LSystemTile,
     CellularAutomatonTile,
     FractalTile,
+    LSystemTile,
     ReactionDiffusionTile,
 )
 from flux.creative.live import (
+    BeatResult,
+    ChangeRecord,
     LiveCodingSession,
     PerformanceState,
-    ChangeRecord,
-    VersionRecord,
-    BeatResult,
     Recording,
+    VersionRecord,
+)
+from flux.creative.sonification import (
+    ExecutionEvent,
+    MusicEvent,
+    MusicSequence,
+    Sonifier,
 )
 from flux.creative.visualization import (
-    TileGraphVisualizer,
-    ExecutionVisualizer,
-    HEAT_COLORS,
     HEAT_CHARS,
+    HEAT_COLORS,
+    ExecutionVisualizer,
+    TileGraphVisualizer,
 )
-from flux.tiles.tile import Tile, TileType
 from flux.tiles.graph import TileGraph
-
+from flux.tiles.tile import Tile, TileType
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Sonifier Tests

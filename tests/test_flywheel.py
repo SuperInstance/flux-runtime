@@ -9,30 +9,30 @@ Tests are organized by module:
 """
 
 import time
+
 import pytest
 
-from flux.synthesis import FluxSynthesizer
 from flux.evolution.genome import MutationStrategy
-from flux.flywheel.hypothesis import (
-    Hypothesis,
-    ExperimentResult,
-    ExperimentOutcome,
-    ObservationData,
-    LearnedInsights,
-    FlywheelRecord,
-    FlywheelReport,
-    IntegrationReport,
-)
-from flux.flywheel.knowledge import (
-    KnowledgeBase,
-    GeneralizedRule,
-)
-from flux.flywheel.metrics import FlywheelMetrics
 from flux.flywheel.engine import (
     FlywheelEngine,
     FlywheelPhase,
 )
-
+from flux.flywheel.hypothesis import (
+    ExperimentOutcome,
+    ExperimentResult,
+    FlywheelRecord,
+    FlywheelReport,
+    Hypothesis,
+    IntegrationReport,
+    LearnedInsights,
+    ObservationData,
+)
+from flux.flywheel.knowledge import (
+    GeneralizedRule,
+    KnowledgeBase,
+)
+from flux.flywheel.metrics import FlywheelMetrics
+from flux.synthesis import FluxSynthesizer
 
 # ── Fixtures ───────────────────────────────────────────────────────────
 

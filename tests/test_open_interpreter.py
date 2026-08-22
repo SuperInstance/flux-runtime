@@ -5,12 +5,11 @@ and A2A agent communication patterns.
 """
 
 from flux.open_interpreter import (
+    ExecutionResult,
     OpenFluxInterpreter,
     interpret,
     run_markdown_file,
-    ExecutionResult,
 )
-
 
 # ── Helper Functions ───────────────────────────────────────────────────────────
 

@@ -22,12 +22,12 @@ Usage:
 """
 
 import re
-from typing import List
+
 from .vocabulary import Vocabulary
 
 
 def compile_interpreter(
-    vocab_folders: List[str],
+    vocab_folders: list[str],
     output: str,
     class_name: str = "CustomFlux",
     description: str = "",
@@ -47,7 +47,7 @@ def compile_interpreter(
     vocab = Vocabulary()
     for folder in vocab_folders:
         vocab.load_folder(folder)
-    
+
     lines = []
     lines.append('"""')
     lines.append(f'{class_name} — Domain-Specific FLUX Runtime')
@@ -62,7 +62,7 @@ def compile_interpreter(
     lines.append('import struct')
     lines.append('from typing import Optional, Dict, List')
     lines.append('')
-    
+
     # SandboxVM inline (no external deps)
     lines.append('# Sandbox VM (inline — no dependencies)')
     lines.append('class _VM:')
@@ -94,7 +94,7 @@ def compile_interpreter(
     lines.append('        except: pass')
     lines.append('        return self')
     lines.append('')
-    
+
     # Assembler inline
     lines.append('def _asm(text):')
     lines.append('    bc=bytearray()')
@@ -113,7 +113,7 @@ def compile_interpreter(
     lines.append('        elif mn in ("MOVI","JNZ","JZ"): bc.append(op); bc.append(int(p[1][1:])); bc.extend(struct.pack("<h",int(p[2])))')
     lines.append('    return bytes(bc)')
     lines.append('')
-    
+
     # Result class
     lines.append('class Result:')
     lines.append('    def __init__(self, success=True, value=None, cycles=0, error=None):')
@@ -121,7 +121,7 @@ def compile_interpreter(
     lines.append('    def __repr__(self):')
     lines.append('        return f"Result({self.value})" if self.success else f"Error({self.error})"')
     lines.append('')
-    
+
     # Main class header + __init__ with pattern registrations
     lines.append(f'class {class_name}:')
     lines.append(f'    """Domain-specific FLUX runtime with {len(vocab.entries)} vocabulary patterns."""')
@@ -129,19 +129,19 @@ def compile_interpreter(
     lines.append('    def __init__(self):')
     lines.append('        import re')
     lines.append('        self._patterns = []')
-    
+
     # Generate methods and collect init registrations
     method_names = set()
     method_lines = []  # method definitions (go after __init__)
     init_lines = []   # pattern registrations (go inside __init__)
-    
+
     for i, entry in enumerate(vocab.entries):
         safe_name = re.sub(r'[^a-z0-9_]', '_', entry.name.lower())
         safe_name = re.sub(r'_+', '_', safe_name).strip('_')
         if not safe_name or safe_name in method_names:
             safe_name = f"word_{i}"
         method_names.add(safe_name)
-        
+
         # Method definition
         method_lines.append('    ')
         method_lines.append(f'    def {safe_name}(self, **kwargs):')
@@ -152,7 +152,7 @@ def compile_interpreter(
         method_lines.append('        bc = _asm(asm)')
         method_lines.append('        vm = _VM(bc).execute()')
         method_lines.append(f'        return Result(success=vm.halted, value=vm.gp[{entry.result_reg}], cycles=vm.cycles)')
-        
+
         # Pattern registration (inside __init__)
         # Build regex same way as vocabulary.py: split on $var, escape literals
         vparts = re.split(r'(\$\w+)', entry.pattern)
@@ -164,13 +164,13 @@ def compile_interpreter(
                 rparts.append(re.escape(vp))
         regex_str = ''.join(rparts)
         init_lines.append(f'        self._patterns.append((re.compile(r"{regex_str}", re.IGNORECASE), self.{safe_name}))')
-    
+
     # Write __init__ body (registrations), then methods
     for il in init_lines:
         lines.append(il)
     for ml in method_lines:
         lines.append(ml)
-    
+
     # run() method — auto-match
     lines.append('    ')
     lines.append('    def run(self, text: str) -> Result:')
@@ -180,10 +180,10 @@ def compile_interpreter(
     lines.append('            if m:')
     lines.append('                return method(**{k: v for k, v in m.groupdict().items() if v is not None})')
     lines.append('        return Result(success=False, error=f"No match for: {text[:80]}")')
-    
+
     # Write the file
     content = '\n'.join(lines)
     with open(output, 'w') as f:
         f.write(content)
-    
+
     return output

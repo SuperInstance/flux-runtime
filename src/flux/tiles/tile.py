@@ -1,15 +1,17 @@
 """Tile Core — the Tile abstraction, TileInstance, CompositeTile, ParallelTile."""
 
 from __future__ import annotations
+
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from .ports import TilePort
 
 if TYPE_CHECKING:
-    from ..fir.values import Value
     from ..fir.builder import FIRBuilder
+    from ..fir.values import Value
 
 
 class TileType(Enum):

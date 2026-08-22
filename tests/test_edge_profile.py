@@ -1,8 +1,11 @@
 """Tests for Edge Profile — I2I collaboration test case."""
-import sys, os, tempfile
+import os
+import sys
+import tempfile
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from flux.open_interp.edge_profile import EdgeProfiler, EdgeConstraints
+from flux.open_interp.edge_profile import EdgeConstraints, EdgeProfiler
 from flux.open_interp.vocabulary import Vocabulary
 
 
@@ -13,13 +16,13 @@ class TestEdgeConstraints:
         assert c.has_gpu is True
         assert c.max_ram_mb == 512
         assert c.max_vocab == 50
-    
+
     def test_embedded_minimal(self):
         c = EdgeConstraints.embedded_minimal()
         assert c.no_loops is True
         assert c.no_float is True
         assert c.max_vocab == 20
-    
+
     def test_custom(self):
         c = EdgeConstraints(max_ram_mb=256, max_vocab=30, arch="riscv")
         assert c.arch == "riscv"
@@ -50,25 +53,25 @@ class TestEdgeProfiler:
                 tags=tags,
             ))
         return vocab
-    
+
     def test_profile_fits_budget(self):
         profiler = EdgeProfiler(EdgeConstraints(max_vocab=5))
         profile = profiler.profile(self._make_vocab())
         assert profile["selected_count"] <= 5
-    
+
     def test_essential_first(self):
         profiler = EdgeProfiler(EdgeConstraints(max_vocab=3))
         profile = profiler.profile(self._make_vocab())
         assert "compute" in profile["selected"]
         assert "store" in profile["selected"]
-    
+
     def test_jetson_profile(self):
         profiler = EdgeProfiler(EdgeConstraints.jetson_orin())
         profile = profiler.profile(self._make_vocab())
         assert profile["selected_count"] <= 50
         assert profile["constraints"]["arch"] == "arm64"
         assert profile["constraints"]["has_gpu"] is True
-    
+
     def test_generate_standalone(self):
         profiler = EdgeProfiler(EdgeConstraints(max_vocab=5))
         vocab = self._make_vocab()

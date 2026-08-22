@@ -15,7 +15,6 @@ to avoid import-time side effects and keep test collection fast.
 
 from __future__ import annotations
 
-
 import pytest
 
 

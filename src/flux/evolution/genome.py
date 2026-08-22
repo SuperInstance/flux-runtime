@@ -16,10 +16,8 @@ from typing import Any
 
 from flux.adaptive.profiler import (
     AdaptiveProfiler,
-    HeatLevel,
 )
 from flux.adaptive.selector import AdaptiveSelector
-
 
 # ── Snapshot Types ────────────────────────────────────────────────────────────
 

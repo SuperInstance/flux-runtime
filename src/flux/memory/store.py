@@ -14,13 +14,12 @@ The forgetting curve (Ebbinghaus-inspired):
 
 from __future__ import annotations
 
+import gzip
 import json
 import os
 import time
-import gzip
-from dataclasses import dataclass, asdict
-from typing import Any, Optional
-
+from dataclasses import asdict, dataclass
+from typing import Any
 
 # ── Data Structures ──────────────────────────────────────────────────────────
 
@@ -180,7 +179,7 @@ class MemoryStore:
         elif tier == "frozen":
             self._save_frozen_entry(key, value)
 
-    def retrieve(self, key: str) -> Optional[Any]:
+    def retrieve(self, key: str) -> Any | None:
         """Search hot → warm → cold → frozen for a key.
 
         Returns the value if found, None otherwise.
@@ -349,7 +348,7 @@ class MemoryStore:
         with gzip.open(filepath, "wt", encoding="utf-8") as f:
             json.dump(data, f)
 
-    def _load_frozen_entry(self, key: str) -> Optional[Any]:
+    def _load_frozen_entry(self, key: str) -> Any | None:
         """Load a single entry from frozen storage."""
         safe_key = self._safe_filename(key)
         filepath = os.path.join(self._frozen_path, f"{safe_key}.json.gz")
@@ -558,7 +557,7 @@ class MemoryStore:
         if not os.path.exists(path):
             return {}
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 data = json.load(f)
             return {
                 key: MemoryEntry.from_dict(entry)

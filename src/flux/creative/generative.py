@@ -14,8 +14,8 @@ from typing import TYPE_CHECKING
 from flux.tiles.tile import Tile, TileType
 
 if TYPE_CHECKING:
-    from flux.fir.values import Value
     from flux.fir.builder import FIRBuilder
+    from flux.fir.values import Value
 
 
 # ── L-System Tile ───────────────────────────────────────────────────────────
@@ -105,7 +105,7 @@ class LSystemTile(Tile):
         len(expanded)
 
         # Return a representation of the expansion
-        return {"result": inputs.get("input", None) if inputs else None}
+        return {"result": inputs.get("input") if inputs else None}
 
 
 # ── Cellular Automaton Tile ─────────────────────────────────────────────────
@@ -237,7 +237,7 @@ class CellularAutomatonTile(Tile):
         # Run the automaton and return summary
         history = self.run()
         sum(sum(row) for row in history)
-        return {"result": inputs.get("input", None) if inputs else None}
+        return {"result": inputs.get("input") if inputs else None}
 
 
 # ── Fractal Tile ────────────────────────────────────────────────────────────
@@ -390,7 +390,7 @@ class FractalTile(Tile):
         inputs: dict[str, Value],
     ) -> dict[str, Value]:
         """Emit FIR for fractal computation."""
-        return {"result": inputs.get("input", None) if inputs else None}
+        return {"result": inputs.get("input") if inputs else None}
 
 
 # ── Reaction-Diffusion Tile ─────────────────────────────────────────────────
@@ -567,4 +567,4 @@ class ReactionDiffusionTile(Tile):
         inputs: dict[str, Value],
     ) -> dict[str, Value]:
         """Emit FIR for reaction-diffusion simulation."""
-        return {"result": inputs.get("input", None) if inputs else None}
+        return {"result": inputs.get("input") if inputs else None}

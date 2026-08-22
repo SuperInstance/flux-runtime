@@ -9,22 +9,22 @@ Provides:
 - ElfHeader: ELF-like header generation for executables
 """
 
-from .errors import AsmError, AsmErrorKind
-from .macros import MacroPreprocessor
-from .cross_assembler import CrossAssembler, OutputFormat, AssemblyResult
-from .linker import FluxLinker, ObjectFile
 from .binary_patcher import BinaryPatcher
+from .cross_assembler import AssemblyResult, CrossAssembler, OutputFormat
 from .elf_header import ElfHeader
+from .errors import AsmError, AsmErrorKind
+from .linker import FluxLinker, ObjectFile
+from .macros import MacroPreprocessor
 
 __all__ = [
     "AsmError",
     "AsmErrorKind",
-    "MacroPreprocessor",
-    "CrossAssembler",
-    "OutputFormat",
     "AssemblyResult",
-    "FluxLinker",
-    "ObjectFile",
     "BinaryPatcher",
+    "CrossAssembler",
     "ElfHeader",
+    "FluxLinker",
+    "MacroPreprocessor",
+    "ObjectFile",
+    "OutputFormat",
 ]

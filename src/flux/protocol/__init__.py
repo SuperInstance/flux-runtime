@@ -12,35 +12,35 @@ A2A message format.  It introduces:
 - **Message serialization** to/from bytecode-compatible binary format.
 """
 
-from .message import (
-    MessageKind,
-    MessageEnvelope,
-    Request,
-    Response,
-    Event,
-    Error,
-    MessageId,
-)
 from .channel import (
+    BroadcastChannel,
     Channel,
     DirectChannel,
-    BroadcastChannel,
     TopicChannel,
+)
+from .message import (
+    Error,
+    Event,
+    MessageEnvelope,
+    MessageId,
+    MessageKind,
+    Request,
+    Response,
+)
+from .negotiation import (
+    CapabilityOffer,
+    NegotiationState,
+    Negotiator,
+    TrustHandshake,
 )
 from .registry import (
     AgentDescriptor,
-    CapabilityDescriptor,
     AgentRegistry,
-)
-from .negotiation import (
-    NegotiationState,
-    CapabilityOffer,
-    TrustHandshake,
-    Negotiator,
+    CapabilityDescriptor,
 )
 from .serialization import (
-    MessageSerializer,
     BinaryMessageCodec,
+    MessageSerializer,
 )
 
 __all__ = [

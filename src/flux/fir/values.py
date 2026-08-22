@@ -1,6 +1,7 @@
 """FIR SSA Values — each value is defined by exactly one instruction."""
 
 from __future__ import annotations
+
 from dataclasses import dataclass
 
 from .types import FIRType

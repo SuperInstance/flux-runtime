@@ -10,9 +10,9 @@ Covers:
 - Comprehensive swarm report
 """
 
-import pytest
 import time
 
+import pytest
 
 # ── FluxAgent Tests ─────────────────────────────────────────────────────────
 
@@ -20,7 +20,7 @@ class TestFluxAgentCreation:
     """Test FluxAgent instantiation and basic properties."""
 
     def test_create_default_agent(self):
-        from flux.swarm.agent import FluxAgent, AgentRole
+        from flux.swarm.agent import AgentRole, FluxAgent
         agent = FluxAgent(agent_id="test-agent")
         assert agent.agent_id == "test-agent"
         assert agent.role == AgentRole.GENERAL
@@ -28,20 +28,20 @@ class TestFluxAgentCreation:
         assert agent.total_tasks == 0
 
     def test_create_agent_with_role(self):
-        from flux.swarm.agent import FluxAgent, AgentRole
+        from flux.swarm.agent import AgentRole, FluxAgent
         agent = FluxAgent(agent_id="compute-1", role=AgentRole.SPECIALIST_COMPUTE)
         assert agent.role == AgentRole.SPECIALIST_COMPUTE
 
     def test_agent_has_module_container(self):
-        from flux.swarm.agent import FluxAgent
         from flux.modules.container import ModuleContainer
+        from flux.swarm.agent import FluxAgent
         agent = FluxAgent(agent_id="mod-test")
         assert isinstance(agent.module_container, ModuleContainer)
         assert agent.module_container.name == "mod-test"
 
     def test_agent_has_profiler(self):
-        from flux.swarm.agent import FluxAgent
         from flux.adaptive.profiler import AdaptiveProfiler
+        from flux.swarm.agent import FluxAgent
         agent = FluxAgent(agent_id="prof-test")
         assert isinstance(agent.profiler, AdaptiveProfiler)
 
@@ -88,12 +88,12 @@ class TestAgentSpecialization:
     """Test agent role determination from profiling."""
 
     def test_specialize_general_no_data(self):
-        from flux.swarm.agent import FluxAgent, AgentRole
+        from flux.swarm.agent import AgentRole, FluxAgent
         agent = FluxAgent(agent_id="gen-no-data")
         assert agent.specialize() == AgentRole.GENERAL
 
     def test_specialize_compute(self):
-        from flux.swarm.agent import FluxAgent, AgentRole, AgentTask
+        from flux.swarm.agent import AgentRole, AgentTask, FluxAgent
         agent = FluxAgent(agent_id="comp-specialist")
         for i in range(20):
             agent.execute_task(AgentTask(task_id=f"c{i}", task_type="compute"))
@@ -101,7 +101,7 @@ class TestAgentSpecialization:
         assert agent.specialize() == AgentRole.SPECIALIST_COMPUTE
 
     def test_specialize_coordinator(self):
-        from flux.swarm.agent import FluxAgent, AgentRole, AgentTask
+        from flux.swarm.agent import AgentRole, AgentTask, FluxAgent
         agent = FluxAgent(agent_id="coord-specialist")
         for i in range(20):
             agent.execute_task(AgentTask(task_id=f"r{i}", task_type="route"))
@@ -109,7 +109,7 @@ class TestAgentSpecialization:
         assert agent.specialize() == AgentRole.SPECIALIST_COORDINATOR
 
     def test_specialize_explorer(self):
-        from flux.swarm.agent import FluxAgent, AgentRole, AgentTask
+        from flux.swarm.agent import AgentRole, AgentTask, FluxAgent
         agent = FluxAgent(agent_id="exp-specialist")
         for i in range(10):
             agent.execute_task(AgentTask(task_id=f"e{i}", task_type="explore"))
@@ -118,7 +118,7 @@ class TestAgentSpecialization:
         assert agent.specialize() == AgentRole.SPECIALIST_EXPLORER
 
     def test_specialize_memory(self):
-        from flux.swarm.agent import FluxAgent, AgentRole, AgentTask
+        from flux.swarm.agent import AgentRole, AgentTask, FluxAgent
         agent = FluxAgent(agent_id="mem-specialist")
         for i in range(20):
             agent.execute_task(AgentTask(task_id=f"st{i}", task_type="store"))
@@ -126,7 +126,7 @@ class TestAgentSpecialization:
         assert agent.specialize() == AgentRole.SPECIALIST_MEMORY
 
     def test_specialize_io(self):
-        from flux.swarm.agent import FluxAgent, AgentRole, AgentTask
+        from flux.swarm.agent import AgentRole, AgentTask, FluxAgent
         agent = FluxAgent(agent_id="io-specialist")
         for i in range(20):
             agent.execute_task(AgentTask(task_id=f"wr{i}", task_type="write"))
@@ -134,7 +134,7 @@ class TestAgentSpecialization:
         assert agent.specialize() == AgentRole.SPECIALIST_IO
 
     def test_apply_specialization(self):
-        from flux.swarm.agent import FluxAgent, AgentRole, AgentTask
+        from flux.swarm.agent import AgentRole, AgentTask, FluxAgent
         agent = FluxAgent(agent_id="apply-spec")
         for i in range(20):
             agent.execute_task(AgentTask(task_id=f"c{i}", task_type="compute"))
@@ -143,7 +143,7 @@ class TestAgentSpecialization:
         assert agent.role == AgentRole.SPECIALIST_COMPUTE
 
     def test_evolve(self):
-        from flux.swarm.agent import FluxAgent, AgentTask
+        from flux.swarm.agent import AgentTask, FluxAgent
         agent = FluxAgent(agent_id="evolve-test")
         for i in range(10):
             agent.execute_task(AgentTask(task_id=f"c{i}", task_type="compute"))
@@ -157,7 +157,7 @@ class TestAgentTaskExecution:
     """Test agent task execution."""
 
     def test_execute_task_success(self):
-        from flux.swarm.agent import FluxAgent, AgentTask
+        from flux.swarm.agent import AgentTask, FluxAgent
         agent = FluxAgent(agent_id="task-ok")
         result = agent.execute_task(AgentTask(task_id="t1", task_type="compute"))
         assert result.success is True
@@ -165,7 +165,7 @@ class TestAgentTaskExecution:
         assert result.duration_ns >= 0
 
     def test_execute_multiple_tasks(self):
-        from flux.swarm.agent import FluxAgent, AgentTask
+        from flux.swarm.agent import AgentTask, FluxAgent
         agent = FluxAgent(agent_id="task-multi")
         for i in range(5):
             agent.execute_task(AgentTask(task_id=f"t{i}", task_type="compute"))
@@ -270,7 +270,7 @@ class TestTopologyCreation:
     """Test topology creation via factory methods."""
 
     def test_create_hierarchical(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology.hierarchical("orch", ["w1", "w2", "w3"])
         assert topo.type == SwarmTopology.HIERARCHICAL
         assert len(topo.agents) == 4
@@ -278,7 +278,7 @@ class TestTopologyCreation:
         assert topo.degree("w1") == 1
 
     def test_create_flat_mesh(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology.flat_mesh(["a", "b", "c", "d"])
         assert topo.type == SwarmTopology.FLAT_MESH
         assert topo.edge_count == 6  # 4 choose 2
@@ -286,7 +286,7 @@ class TestTopologyCreation:
             assert topo.degree(agent) == 3
 
     def test_create_star(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology.star("hub", ["s1", "s2", "s3", "s4"])
         assert topo.type == SwarmTopology.STAR
         assert topo.degree("hub") == 4
@@ -294,7 +294,7 @@ class TestTopologyCreation:
         assert topo.edge_count == 4
 
     def test_create_ring(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology.ring(["a", "b", "c", "d"])
         assert topo.type == SwarmTopology.RING
         assert topo.edge_count == 4
@@ -302,14 +302,14 @@ class TestTopologyCreation:
             assert topo.degree(agent) == 2
 
     def test_create_ring_single_agent(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology.ring(["only"])
         assert topo.type == SwarmTopology.RING
         assert len(topo.agents) == 1
         assert topo.edge_count == 0
 
     def test_create_blackboard(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology.blackboard(["a", "b", "c"])
         assert topo.type == SwarmTopology.BLACKBOARD
         assert topo.edge_count == 3
@@ -321,7 +321,7 @@ class TestTopologyConnections:
     """Test topology connection management."""
 
     def test_connect(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology(SwarmTopology.FLAT_MESH)
         topo.add_agent("a")
         topo.add_agent("b")
@@ -331,7 +331,7 @@ class TestTopologyConnections:
         assert topo.edge_count == 1
 
     def test_disconnect(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology(SwarmTopology.FLAT_MESH)
         topo.add_agent("a")
         topo.add_agent("b")
@@ -341,14 +341,14 @@ class TestTopologyConnections:
         assert topo.edge_count == 0
 
     def test_no_self_loop(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology(SwarmTopology.FLAT_MESH)
         topo.add_agent("a")
         topo.connect("a", "a")
         assert topo.edge_count == 0
 
     def test_neighbors(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology(SwarmTopology.FLAT_MESH)
         topo.add_agent("a")
         topo.add_agent("b")
@@ -400,7 +400,7 @@ class TestTopologyRouting:
         assert path == ["hub"]
 
     def test_shortest_path_no_connection(self):
-        from flux.swarm.topology import Topology, SwarmTopology
+        from flux.swarm.topology import SwarmTopology, Topology
         topo = Topology(SwarmTopology.FLAT_MESH)
         topo.add_agent("a")
         topo.add_agent("b")
@@ -545,7 +545,7 @@ class TestSwarmManagement:
         assert swarm.agent_count == 0
 
     def test_spawn_agent(self):
-        from flux.swarm import Swarm, Topology, FluxAgent
+        from flux.swarm import FluxAgent, Swarm, Topology
         topo = Topology.hierarchical("orch", [])
         swarm = Swarm(name="test", topology=topo)
         agent = swarm.spawn("worker-1")
@@ -584,7 +584,7 @@ class TestSwarmMessaging:
     """Test Swarm broadcast and scatter."""
 
     def test_broadcast_to_neighbors(self):
-        from flux.swarm import Swarm, Topology, AgentMessage
+        from flux.swarm import AgentMessage, Swarm, Topology
         topo = Topology.hierarchical("orch", ["w1", "w2"])
         swarm = Swarm(name="test", topology=topo)
         swarm.spawn("orch")
@@ -602,7 +602,7 @@ class TestSwarmMessaging:
         assert len(msgs_w2) == 1
 
     def test_broadcast_from_unknown(self):
-        from flux.swarm import Swarm, Topology, AgentMessage
+        from flux.swarm import AgentMessage, Swarm, Topology
         topo = Topology.star("hub", ["s1"])
         swarm = Swarm(name="test", topology=topo)
         swarm.spawn("hub")
@@ -612,7 +612,7 @@ class TestSwarmMessaging:
         assert count == 0
 
     def test_scatter_to_targets(self):
-        from flux.swarm import Swarm, Topology, AgentMessage
+        from flux.swarm import AgentMessage, Swarm, Topology
         topo = Topology.flat_mesh(["a", "b", "c"])
         swarm = Swarm(name="test", topology=topo)
         swarm.spawn("a")
@@ -624,7 +624,7 @@ class TestSwarmMessaging:
         assert count == 2
 
     def test_scatter_excludes_sender(self):
-        from flux.swarm import Swarm, Topology, AgentMessage
+        from flux.swarm import AgentMessage, Swarm, Topology
         topo = Topology.flat_mesh(["a", "b"])
         swarm = Swarm(name="test", topology=topo)
         swarm.spawn("a")
@@ -851,7 +851,7 @@ class TestSwarmEvolution:
     """Test swarm-wide evolution."""
 
     def test_evolve_swarm_basic(self):
-        from flux.swarm import Swarm, Topology, AgentRole, AgentTask
+        from flux.swarm import AgentRole, AgentTask, Swarm, Topology
         topo = Topology.hierarchical("orch", ["w1", "w2"])
         swarm = Swarm(name="test", topology=topo)
         swarm.spawn("orch", AgentRole.GENERAL)
@@ -868,7 +868,7 @@ class TestSwarmEvolution:
         assert report.agents_evolved == 3
 
     def test_evolve_records_role_changes(self):
-        from flux.swarm import Swarm, Topology, AgentRole, AgentTask
+        from flux.swarm import AgentRole, AgentTask, Swarm, Topology
         topo = Topology.flat_mesh(["a"])
         swarm = Swarm(name="test", topology=topo)
         agent = swarm.spawn("a", AgentRole.GENERAL)
@@ -919,7 +919,7 @@ class TestSwarmReport:
     """Test comprehensive swarm report."""
 
     def test_swarm_report_basic(self):
-        from flux.swarm import Swarm, Topology, AgentRole, AgentTask
+        from flux.swarm import AgentRole, AgentTask, Swarm, Topology
         topo = Topology.hierarchical("orch", ["w1"])
         swarm = Swarm(name="report-test", topology=topo)
         swarm.spawn("orch", AgentRole.SPECIALIST_COORDINATOR)
@@ -998,8 +998,11 @@ class TestSwarmIntegration:
 
     def test_full_swarm_lifecycle(self):
         from flux.swarm import (
-            Swarm, Topology, AgentRole,
-            AgentTask, AgentMessage,
+            AgentMessage,
+            AgentRole,
+            AgentTask,
+            Swarm,
+            Topology,
         )
         # Create swarm with hierarchical topology
         topo = Topology.hierarchical("orch", ["w1", "w2", "w3"])
@@ -1078,7 +1081,7 @@ class TestSwarmIntegration:
         assert sub3_msgs[0].payload["level"] == "warn"
 
     def test_ring_pipeline(self):
-        from flux.swarm import Swarm, Topology, AgentMessage
+        from flux.swarm import AgentMessage, Swarm, Topology
         agents = ["stage-1", "stage-2", "stage-3", "stage-4"]
         topo = Topology.ring(agents)
         swarm = Swarm(name="pipeline", topology=topo)
@@ -1097,7 +1100,7 @@ class TestSwarmIntegration:
             assert len(msgs) == 1
 
     def test_star_hub_routing(self):
-        from flux.swarm import Swarm, Topology, AgentMessage
+        from flux.swarm import AgentMessage, Swarm, Topology
         topo = Topology.star("hub", ["s1", "s2", "s3"])
         swarm = Swarm(name="star-test", topology=topo)
         swarm.spawn("hub")

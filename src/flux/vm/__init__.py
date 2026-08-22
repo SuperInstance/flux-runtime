@@ -9,16 +9,16 @@ directly on raw bytes. It provides:
 - **VM Errors**: Typed exception hierarchy for debugging
 """
 
-from .registers import RegisterFile
-from .memory import MemoryRegion, MemoryManager
 from .interpreter import (
+    Interpreter,
+    VMDivisionByZeroError,
     VMError,
     VMHaltError,
-    VMStackOverflowError,
     VMInvalidOpcodeError,
-    VMDivisionByZeroError,
-    Interpreter,
+    VMStackOverflowError,
 )
+from .memory import MemoryManager, MemoryRegion
+from .registers import RegisterFile
 
 __all__ = [
     # Registers

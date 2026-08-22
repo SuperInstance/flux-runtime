@@ -13,6 +13,7 @@ Python handles the AI (minimax) and game orchestration.
 from __future__ import annotations
 
 from flux.vm.interpreter import Interpreter
+
 from ._builder import BytecodeBuilder
 
 # Board memory layout

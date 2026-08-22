@@ -21,7 +21,6 @@ from flux.tiles.registry import TileRegistry
 
 from .message_bus import AgentMessage
 
-
 # ── Agent Role ─────────────────────────────────────────────────────────────
 
 class AgentRole(Enum):

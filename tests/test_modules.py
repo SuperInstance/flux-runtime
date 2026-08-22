@@ -1,20 +1,19 @@
 """Tests for the nested module system — fractal hot-reload hierarchy."""
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
+from flux.fir.types import TypeContext
+from flux.modules.card import ModuleCard
+from flux.modules.container import ModuleContainer, ReloadResult
 from flux.modules.granularity import (
     Granularity,
     get_granularity_meta,
 )
-from flux.modules.card import ModuleCard
-from flux.modules.container import ModuleContainer, ReloadResult
-from flux.modules.reloader import FractalReloader, ReloadEvent
 from flux.modules.namespace import ModuleNamespace, NameNotFoundError
-from flux.fir.types import TypeContext
-
+from flux.modules.reloader import FractalReloader, ReloadEvent
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Granularity tests

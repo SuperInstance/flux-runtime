@@ -10,13 +10,13 @@ Every iteration is tracked with:
 The full log is saved to research_log.jsonl for ML reflection.
 """
 
-from .session import ResearchSession, Iteration, Reflection
 from .metrics import Metrics, MetricSnapshot
+from .session import Iteration, Reflection, ResearchSession
 
 __all__ = [
-    "ResearchSession",
     "Iteration",
-    "Reflection",
-    "Metrics",
     "MetricSnapshot",
+    "Metrics",
+    "Reflection",
+    "ResearchSession",
 ]

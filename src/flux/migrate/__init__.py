@@ -5,6 +5,6 @@ source files into structured FLUX.MD documents ready for the FLUX pipeline.
 """
 
 from flux.migrate.migrator import FluxMigrator
-from flux.migrate.report import MigrationReport, MigratedFile
+from flux.migrate.report import MigratedFile, MigrationReport
 
-__all__ = ["FluxMigrator", "MigrationReport", "MigratedFile"]
+__all__ = ["FluxMigrator", "MigratedFile", "MigrationReport"]

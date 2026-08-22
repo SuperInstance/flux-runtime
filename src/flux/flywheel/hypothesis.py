@@ -18,7 +18,6 @@ from typing import Any
 
 from flux.evolution.genome import MutationStrategy
 
-
 # ── Experiment Outcome ──────────────────────────────────────────────────
 
 class ExperimentOutcome(Enum):

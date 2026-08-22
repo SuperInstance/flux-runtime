@@ -11,7 +11,11 @@ from dataclasses import dataclass, field
 
 from flux.fir.blocks import FIRFunction, FIRModule
 from flux.fir.instructions import (
-    Instruction, IAdd, ISub, Load, GetElem,
+    GetElem,
+    IAdd,
+    Instruction,
+    ISub,
+    Load,
 )
 
 
@@ -150,9 +154,7 @@ class CostModel:
             return self._branch_cost(), "branch"
         elif opcode == "call":
             return base_cost, "call"
-        elif opcode in ("tell", "ask", "delegate"):
-            return base_cost, "a2a"
-        elif opcode in ("trustcheck", "caprequire"):
+        elif opcode in ("tell", "ask", "delegate") or opcode in ("trustcheck", "caprequire"):
             return base_cost, "a2a"
         elif opcode in ("itrunc", "zext", "sext", "ftrunc", "fext", "bitcast"):
             return base_cost, "alu"

@@ -5,13 +5,13 @@ Allows FLUX agents to signal their available vocabularies, compare capabilities,
 and negotiate compatible communication protocols.
 """
 
+import hashlib
+import json
 import os
 import re
-import json
-import hashlib
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
+from typing import Any
 
 
 @dataclass
@@ -44,8 +44,8 @@ class VocabManifest:
 
     def __init__(self, agent_name: str):
         self.agent_name = agent_name
-        self.vocabularies: List[VocabInfo] = []
-        self.tombstones: List[Tombstone] = []
+        self.vocabularies: list[VocabInfo] = []
+        self.tombstones: list[Tombstone] = []
 
     def add_vocabulary(self, name: str, pattern_count: int, version: str = "1.0.0", content: str = ""):
         """Add a vocabulary to the manifest."""
@@ -62,7 +62,7 @@ class VocabManifest:
             reason=reason
         ))
 
-    def generate(self) -> Dict[str, Any]:
+    def generate(self) -> dict[str, Any]:
         """
         Generate manifest summary as a dictionary.
 
@@ -101,7 +101,7 @@ class VocabManifest:
         Returns:
             VocabManifest instance.
         """
-        with open(path, 'r') as f:
+        with open(path) as f:
             data = json.load(f)
 
         manifest = cls(agent_name=data["agent_name"])
@@ -124,7 +124,7 @@ class VocabCompatibility:
     """
 
     @staticmethod
-    def compare(manifest_a: VocabManifest, manifest_b: VocabManifest) -> Dict[str, Any]:
+    def compare(manifest_a: VocabManifest, manifest_b: VocabManifest) -> dict[str, Any]:
         """
         Compare two manifests and return compatibility metrics.
 
@@ -204,7 +204,7 @@ class RepoSignaler:
         return manifest
 
     @staticmethod
-    def _parse_vocab_file(path: str) -> Optional[VocabInfo]:
+    def _parse_vocab_file(path: str) -> VocabInfo | None:
         """
         Parse a vocabulary file and extract pattern count.
 
@@ -215,7 +215,7 @@ class RepoSignaler:
             VocabInfo with pattern count and hash, or None if parse fails.
         """
         try:
-            with open(path, 'r') as f:
+            with open(path) as f:
                 content = f.read()
 
             # Count patterns

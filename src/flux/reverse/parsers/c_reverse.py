@@ -10,14 +10,13 @@ import re
 from dataclasses import dataclass
 
 from flux.reverse.code_map import (
-    CodeMapping,
     CodeMap,
+    CodeMapping,
     ConstructType,
     Difficulty,
-    MigrationStep,
     MigrationPlan,
+    MigrationStep,
 )
-
 
 # ── Regex patterns for C construct detection ────────────────────────────────
 

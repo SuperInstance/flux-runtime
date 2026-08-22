@@ -6,6 +6,7 @@ Each level represents a different scale of module containment:
 """
 
 from __future__ import annotations
+
 from enum import Enum
 
 
@@ -38,7 +39,7 @@ class GranularityMeta:
         typical_size: Expected byte range for content at this level (min, max).
     """
 
-    __slots__ = ("granularity", "reload_cost", "isolation", "typical_size")
+    __slots__ = ("granularity", "isolation", "reload_cost", "typical_size")
 
     def __init__(
         self,

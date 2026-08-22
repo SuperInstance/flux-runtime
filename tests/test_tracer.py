@@ -8,19 +8,18 @@ produces known register state (R0=13, R1=100, R2=15, R3=5, R4=5040,
 R5=42, R6=42, R7=14).
 """
 
+import json
+import os
 import struct
 import sys
-import os
-import json
 
 # Ensure the project source root is on sys.path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from flux.bytecode.opcodes import Op
-from flux.tracer import FluxTracer, ConservationLedger
-from flux.profiler import FluxProfiler
 from flux.debugger import FluxDebugger
-
+from flux.profiler import FluxProfiler
+from flux.tracer import ConservationLedger, FluxTracer
 
 # ── Helper ─────────────────────────────────────────────────────────────────
 

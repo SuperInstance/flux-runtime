@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .introspector import ModuleInfo, APIDeclaration
+from .introspector import APIDeclaration, ModuleInfo
 
 
 class MarkdownRenderer:

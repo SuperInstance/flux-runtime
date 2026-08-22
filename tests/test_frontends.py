@@ -11,12 +11,10 @@ import traceback
 
 sys.path.insert(0, "src")
 
+from flux.compiler.pipeline import FluxCompiler
 from flux.fir.blocks import FIRModule
-
 from flux.frontend.c_frontend import CFrontendCompiler
 from flux.frontend.python_frontend import PythonFrontendCompiler
-from flux.compiler.pipeline import FluxCompiler
-
 
 passed = 0
 failed = 0

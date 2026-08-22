@@ -1,5 +1,7 @@
 """Tests for Signal → FLUX Bytecode Compiler."""
-import sys, os
+import os
+import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from flux.a2a.signal_compiler import SignalCompiler
@@ -12,13 +14,13 @@ class TestSignalLet:
         assert result.success
         assert 0x18 in result.bytecode  # MOVI
         assert "x" in result.register_map
-    
+
     def test_let_large(self):
         c = SignalCompiler()
         result = c.compile({"ops": [{"op": "let", "name": "big", "value": 1000}]})
         assert result.success
         assert 0x40 in result.bytecode  # MOVI16
-    
+
     def test_let_negative(self):
         c = SignalCompiler()
         result = c.compile({"ops": [{"op": "let", "name": "neg", "value": -5}]})
@@ -36,7 +38,7 @@ class TestSignalArithmetic:
         ]})
         assert result.success
         assert 0x20 in result.bytecode  # ADD
-    
+
     def test_multiply(self):
         c = SignalCompiler()
         result = c.compile({"ops": [
@@ -46,7 +48,7 @@ class TestSignalArithmetic:
         ]})
         assert result.success
         assert 0x22 in result.bytecode  # MUL
-    
+
     def test_chain_add(self):
         c = SignalCompiler()
         result = c.compile({"ops": [
@@ -80,7 +82,7 @@ class TestSignalA2A:
         ]})
         assert result.success
         assert 0x50 in result.bytecode  # TELL
-    
+
     def test_ask(self):
         c = SignalCompiler()
         result = c.compile({"ops": [
@@ -88,7 +90,7 @@ class TestSignalA2A:
         ]})
         assert result.success
         assert 0x51 in result.bytecode  # ASK
-    
+
     def test_broadcast(self):
         c = SignalCompiler()
         result = c.compile({"ops": [
@@ -96,7 +98,7 @@ class TestSignalA2A:
         ]})
         assert result.success
         assert 0x53 in result.bytecode  # BCAST
-    
+
     def test_delegate(self):
         c = SignalCompiler()
         result = c.compile({"ops": [
@@ -117,7 +119,7 @@ class TestSignalControlFlow:
         ]})
         assert result.success
         assert 0x3C in result.bytecode  # JZ
-    
+
     def test_if_else(self):
         c = SignalCompiler()
         result = c.compile({"ops": [
@@ -129,7 +131,7 @@ class TestSignalControlFlow:
             ]},
         ]})
         assert result.success
-    
+
     def test_loop(self):
         c = SignalCompiler()
         result = c.compile({"ops": [
@@ -153,7 +155,7 @@ class TestSignalConcurrency:
         assert result.success
         assert 0x58 in result.bytecode  # FORK
         assert 0x59 in result.bytecode  # JOIN
-    
+
     def test_merge(self):
         c = SignalCompiler()
         result = c.compile({"ops": [
@@ -172,7 +174,7 @@ class TestSignalConfidence:
         ]})
         assert result.success
         assert 0x69 in result.bytecode  # C_THRESH
-    
+
     def test_yield(self):
         c = SignalCompiler()
         result = c.compile({"ops": [
@@ -180,7 +182,7 @@ class TestSignalConfidence:
         ]})
         assert result.success
         assert 0x15 in result.bytecode  # YIELD
-    
+
     def test_await(self):
         c = SignalCompiler()
         result = c.compile({"ops": [
@@ -206,7 +208,7 @@ class TestSignalPrograms:
         assert 0x53 in result.bytecode  # BCAST
         assert 0x5B in result.bytecode  # AWAIT
         assert result.bytecode[-1] == 0x00  # HALT
-    
+
     def test_compute_and_report(self):
         """Compute results and tell another agent."""
         c = SignalCompiler()
@@ -222,17 +224,17 @@ class TestSignalPrograms:
         assert result.success
         assert 0x20 in result.bytecode  # ADD
         assert 0x50 in result.bytecode  # TELL
-    
+
     def test_json_string_compile(self):
         c = SignalCompiler()
         result = c.compile_string('{"ops": [{"op": "let", "name": "x", "value": 1}]}')
         assert result.success
-    
+
     def test_invalid_json(self):
         c = SignalCompiler()
         result = c.compile_string("{invalid}")
         assert not result.success
-    
+
     def test_unknown_op(self):
         c = SignalCompiler()
         result = c.compile({"ops": [{"op": "fly_to_moon"}]})
@@ -250,7 +252,7 @@ class TestSignalRegisterAllocation:
         ]})
         assert result.success
         assert result.register_map["x"] == result.register_map["x"]
-    
+
     def test_register_map_complete(self):
         c = SignalCompiler()
         result = c.compile({"ops": [

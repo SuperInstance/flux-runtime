@@ -6,15 +6,15 @@ Provides:
   - PipelineDebugger: Step-by-step execution tracing and debugging utilities
 """
 
+from .debug import PipelineDebugger, disassemble_bytecode, print_fir_module
 from .e2e import FluxPipeline, PipelineResult
 from .polyglot import PolyglotCompiler
-from .debug import PipelineDebugger, disassemble_bytecode, print_fir_module
 
 __all__ = [
     "FluxPipeline",
+    "PipelineDebugger",
     "PipelineResult",
     "PolyglotCompiler",
-    "PipelineDebugger",
     "disassemble_bytecode",
     "print_fir_module",
 ]

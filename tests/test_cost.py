@@ -1,15 +1,28 @@
 """Tests for the FLUX cost model and energy estimation."""
 
 
+from flux.cost.energy import EnergyEstimate, EnergyModel
+from flux.cost.model import CostEstimate, CostModel
+from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
+from flux.fir.instructions import (
+    Ask,
+    Branch,
+    Call,
+    FAdd,
+    FDiv,
+    GetElem,
+    IAdd,
+    IDiv,
+    IMul,
+    ISub,
+    Jump,
+    Load,
+    Return,
+    Store,
+    Tell,
+)
 from flux.fir.types import TypeContext
 from flux.fir.values import Value
-from flux.fir.instructions import (
-    IAdd, ISub, IMul, IDiv, FAdd, FDiv, Load, Store, GetElem, Jump, Branch, Call, Return, Tell, Ask,
-)
-from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
-from flux.cost.model import CostModel, CostEstimate
-from flux.cost.energy import EnergyModel, EnergyEstimate
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────
 

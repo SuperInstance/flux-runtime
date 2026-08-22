@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 from .introspector import CodeIntrospector
-from .renderer import MarkdownRenderer, AsciiRenderer
+from .renderer import AsciiRenderer, MarkdownRenderer
 from .stats import CodeStatistics
 
 

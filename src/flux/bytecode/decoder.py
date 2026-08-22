@@ -10,7 +10,6 @@ from dataclasses import dataclass, field
 
 from .opcodes import Op, get_format
 
-
 # ── Decoded data structures ──────────────────────────────────────────────────
 
 @dataclass

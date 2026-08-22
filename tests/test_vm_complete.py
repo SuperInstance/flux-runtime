@@ -8,11 +8,14 @@
 # tests/test_dual_mode_equivalence.py.
 
 import struct
+
 import pytest
 
 from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import (
-    Interpreter, VMTypeError, VMDivisionByZeroError,
+    Interpreter,
+    VMDivisionByZeroError,
+    VMTypeError,
 )
 
 

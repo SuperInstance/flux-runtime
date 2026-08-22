@@ -19,13 +19,14 @@ from flux.vm.interpreter import Interpreter
 # Import the simulator
 sys.path.insert(0, "examples")
 from flux_fleet_sim import (
-    FleetSimulator, Agent,
-    NAVIGATOR_BYTECODE,
-    WEATHER_SCOUT_BYTECODE,
-    FISH_FINDER_BYTECODE,
-    SUPPLY_MANAGER_BYTECODE,
     CAPTAIN_BYTECODE,
+    FISH_FINDER_BYTECODE,
+    NAVIGATOR_BYTECODE,
     SPECIES,
+    SUPPLY_MANAGER_BYTECODE,
+    WEATHER_SCOUT_BYTECODE,
+    Agent,
+    FleetSimulator,
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────

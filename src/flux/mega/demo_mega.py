@@ -7,8 +7,8 @@ Run this to verify the entire system works as one cohesive machine:
 
 from __future__ import annotations
 
-import tempfile
 import os
+import tempfile
 
 from flux.mega.conductor import GrandConductor
 from flux.swarm.agent import AgentRole

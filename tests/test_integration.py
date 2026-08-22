@@ -6,36 +6,38 @@
   protocol messages, hot reload, stdlib intrinsics.
 """
 
+import os
 import struct
 import sys
-import os
 import traceback
 
 # Ensure the project source root is on sys.path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
+from flux.bytecode.decoder import BytecodeDecoder
+from flux.bytecode.encoder import BytecodeEncoder
 from flux.bytecode.opcodes import Op
-from flux.fir.types import TypeContext, IntType, FloatType
+from flux.compiler.pipeline import FluxCompiler
 from flux.fir.blocks import FIRModule
 from flux.fir.builder import FIRBuilder
 from flux.fir.instructions import (
     Call,
 )
-from flux.bytecode.encoder import BytecodeEncoder
-from flux.bytecode.decoder import BytecodeDecoder
-from flux.compiler.pipeline import FluxCompiler
+from flux.fir.types import FloatType, IntType, TypeContext
 from flux.optimizer.pipeline import OptimizationPipeline
-from flux.types.unify import TypeUnifier
+from flux.pipeline.e2e import FluxPipeline
+from flux.pipeline.polyglot import PolyglotCompiler, PolyglotSource
 from flux.protocol.message import (
-    MessageKind, Request, Response, Event,
+    Event,
+    MessageKind,
+    Request,
+    Response,
 )
 from flux.protocol.serialization import BinaryMessageCodec
 from flux.reload.hot_loader import HotLoader
 from flux.stdlib.intrinsics import STDLIB_INTRINSICS
-from flux.pipeline.e2e import FluxPipeline
-from flux.pipeline.polyglot import PolyglotCompiler, PolyglotSource
+from flux.types.unify import TypeUnifier
 from flux.vm.interpreter import Interpreter
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 

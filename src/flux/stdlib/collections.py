@@ -8,14 +8,12 @@ the FIR memory model.
 
 from __future__ import annotations
 
-from typing import Optional
-
+from flux.fir.builder import FIRBuilder
 from flux.fir.types import (
-    FIRType, TypeContext,
+    FIRType,
+    TypeContext,
 )
 from flux.fir.values import Value
-from flux.fir.builder import FIRBuilder
-
 
 # ── Base ────────────────────────────────────────────────────────────────────
 
@@ -46,7 +44,7 @@ class CollectionImpl:
         """Emit instructions to append an item to the collection."""
         raise NotImplementedError
 
-    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Optional[Value]:
+    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Value | None:
         """Emit instructions to remove and return an item."""
         raise NotImplementedError
 
@@ -115,7 +113,7 @@ class ListImpl(CollectionImpl):
             SetField(self_val, "len", self.FIELD_LEN, new_len)
         )
 
-    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Optional[Value]:
+    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Value | None:
         i32 = builder._ctx.get_int(32)
         len_val = self.emit_len(builder, self_val)
         # Decrement len
@@ -183,7 +181,7 @@ class MapImpl(CollectionImpl):
         builder._ctx.get_int(32)
         builder.call("flux.map_insert", [self_val, item], return_type=None)
 
-    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Optional[Value]:
+    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Value | None:
         i32 = builder._ctx.get_int(32)
         builder.call("flux.map_remove_last", [self_val], return_type=i32)
         return Value(id=builder._next_value_id, name="map_pop_result", type=i32)
@@ -238,7 +236,7 @@ class SetImpl(CollectionImpl):
         builder._ctx.get_int(32)
         builder.call("flux.set_insert", [self_val, item], return_type=None)
 
-    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Optional[Value]:
+    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Value | None:
         i32 = builder._ctx.get_int(32)
         builder.call("flux.set_remove", [self_val], return_type=i32)
         return Value(id=builder._next_value_id, name="set_pop_result", type=i32)
@@ -299,7 +297,7 @@ class QueueImpl(CollectionImpl):
         builder._ctx.get_int(32)
         builder.call("flux.queue_enqueue", [self_val, item], return_type=None)
 
-    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Optional[Value]:
+    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Value | None:
         i32 = builder._ctx.get_int(32)
         builder.call("flux.queue_dequeue", [self_val], return_type=i32)
         return Value(id=builder._next_value_id, name="queue_dequeue_result", type=i32)
@@ -354,7 +352,7 @@ class StackImpl(CollectionImpl):
         builder._ctx.get_int(32)
         builder.call("flux.stack_push", [self_val, item], return_type=None)
 
-    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Optional[Value]:
+    def emit_pop(self, builder: FIRBuilder, self_val: Value) -> Value | None:
         i32 = builder._ctx.get_int(32)
         builder.call("flux.stack_pop", [self_val], return_type=i32)
         return Value(id=builder._next_value_id, name="stack_pop_result", type=i32)
