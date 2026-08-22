@@ -3,11 +3,9 @@
 from __future__ import annotations
 
 import ast
-import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -71,7 +69,7 @@ class CodeIntrospector:
             return modules
 
         for py_file in sorted(flux_dir.rglob("*.py")):
-            rel = py_file.relative_to(flux_dir)
+            py_file.relative_to(flux_dir)
             info = self.get_module_info(str(py_file))
             if info is not None:
                 modules.append(info)
@@ -79,7 +77,7 @@ class CodeIntrospector:
 
     # ── Per-module info ────────────────────────────────────────────────
 
-    def get_module_info(self, module_path: str) -> Optional[ModuleInfo]:
+    def get_module_info(self, module_path: str) -> ModuleInfo | None:
         """Get detailed info about a single module file."""
         path = Path(module_path)
         if not path.is_file():
@@ -216,9 +214,8 @@ class CodeIntrospector:
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     deps.append(alias.name)
-            elif isinstance(node, ast.ImportFrom):
-                if node.module:
-                    deps.append(node.module)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                deps.append(node.module)
         return deps
 
     # ── Complexity ─────────────────────────────────────────────────────
@@ -378,9 +375,7 @@ def _cyclomatic_complexity(node: ast.AST) -> int:
             complexity += 1
         elif isinstance(child, (ast.BoolOp,)):
             complexity += len(child.values) - 1
-        elif isinstance(child, ast.IfExp):  # ternary
-            complexity += 1
-        elif isinstance(child, ast.comprehension):
+        elif isinstance(child, (ast.IfExp, ast.comprehension)):  # ternary
             complexity += 1
         # and/or in boolean ops already handled above
     return complexity

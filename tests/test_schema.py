@@ -2,13 +2,14 @@
 
 import json
 
-import pytest
-
 from flux.schema.architecture import (
-    FLUX_ARCHITECTURE,
     get_architecture_schema,
     get_layer_by_id,
     get_module_dependencies,
+)
+from flux.schema.builder_schema import (
+    get_builder_schema,
+    get_open_questions,
 )
 from flux.schema.opcode_schema import (
     get_opcode_schema,
@@ -19,12 +20,6 @@ from flux.schema.tile_schema import (
     get_tile_library_schema,
     search_tiles,
 )
-from flux.schema.builder_schema import (
-    FLUX_BUILDER_SCHEMA,
-    get_builder_schema,
-    get_open_questions,
-)
-
 
 # ══════════════════════════════════════════════════════════════════════════
 # Architecture Schema
@@ -52,7 +47,7 @@ class TestArchitectureSchema:
     def test_core_layers_present(self):
         """All core pipeline layers must be present."""
         arch = get_architecture_schema()
-        layer_ids = {l["id"] for l in arch["layers"]}
+        layer_ids = {layer["id"] for layer in arch["layers"]}
         required = [
             "L0_PARSER", "L1_FIR", "L2_BYTECODE", "L3_VM",
             "L2_OPTIMIZER", "L2_JIT", "L3_COMPILER", "L4_PIPELINE",
@@ -64,7 +59,7 @@ class TestArchitectureSchema:
     def test_extension_layers_present(self):
         """All extension layers must be present."""
         arch = get_architecture_schema()
-        layer_ids = {l["id"] for l in arch["layers"]}
+        layer_ids = {layer["id"] for layer in arch["layers"]}
         required = [
             "EXT_MODULES", "EXT_ADAPTIVE", "EXT_TILES", "EXT_EVOLUTION",
             "EXT_FLYWHEEL", "EXT_SWARM", "EXT_MEMORY", "EXT_SIMULATION",
@@ -157,9 +152,8 @@ class TestModuleDependencies:
             for dep in deps.get(module, []):
                 if dep in in_stack:
                     return True
-                if dep not in visited:
-                    if has_cycle(dep):
-                        return True
+                if dep not in visited and has_cycle(dep):
+                    return True
             in_stack.discard(module)
             return False
 
@@ -598,10 +592,10 @@ class TestSchemaLoading:
     def test_import_from_package(self):
         from flux.schema import (
             get_architecture_schema,
-            get_opcode_schema,
-            get_tile_library_schema,
             get_builder_schema,
+            get_opcode_schema,
             get_open_questions,
+            get_tile_library_schema,
         )
         assert callable(get_architecture_schema)
         assert callable(get_opcode_schema)
@@ -611,7 +605,7 @@ class TestSchemaLoading:
 
     def test_architecture_query_layer(self):
         arch = get_architecture_schema()
-        vm_layer = next(l for l in arch["layers"] if l["id"] == "L3_VM")
+        vm_layer = next(layer for layer in arch["layers"] if layer["id"] == "L3_VM")
         assert "Interpreter" in vm_layer["name"]
 
     def test_opcode_query_expensive(self):

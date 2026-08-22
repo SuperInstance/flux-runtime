@@ -17,21 +17,32 @@ The GrandConductor orchestrates all FLUX subsystems into one cohesive machine:
 
 from __future__ import annotations
 
+import contextlib
 import os
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Optional
+from typing import Any
 
-# ── Core subsystems ──────────────────────────────────────────────────────────
-from flux.synthesis.synthesizer import (
-    FluxSynthesizer,
-    WorkloadResult,
-)
+from flux.cost.model import CostModel
+from flux.creative.live import LiveCodingSession
+from flux.creative.sonification import ExecutionEvent, MusicSequence, Sonifier
+from flux.evolution.evolution import EvolutionReport
 from flux.flywheel.engine import FlywheelEngine
 from flux.flywheel.hypothesis import FlywheelReport
-from flux.swarm.swarm import Swarm
-from flux.swarm.agent import FluxAgent, AgentRole, AgentMessage
-from flux.swarm.topology import SwarmTopology, Topology
+from flux.flywheel.knowledge import KnowledgeBase
+from flux.memory.bandit import MutationBandit
+from flux.memory.experience import (
+    Experience,
+    ExperienceRecorder,
+)
+from flux.memory.experience import (
+    GeneralizedRule as MemoryGeneralizedRule,
+)
+from flux.memory.store import (
+    MemoryStore,
+)
+from flux.modules.card import ModuleCard
 from flux.simulation.digital_twin import (
     DigitalTwin,
     SimulatedResult,
@@ -42,28 +53,19 @@ from flux.simulation.oracle import (
     OracleDecision,
 )
 from flux.simulation.predictor import (
-    PerformancePredictor,
     MemoryStore as PredictorMemoryStore,
 )
-from flux.cost.model import CostModel
-from flux.flywheel.knowledge import KnowledgeBase
-from flux.memory.bandit import MutationBandit
-from flux.memory.store import (
-    MemoryStore,
-    MemoryStats,
+from flux.simulation.predictor import (
+    PerformancePredictor,
 )
-from flux.memory.experience import (
-    Experience,
-    ExperienceRecorder,
-    GeneralizedRule as MemoryGeneralizedRule,
-)
-from flux.evolution.evolution import EvolutionReport
-from flux.evolution.genome import Genome
-from flux.modules.card import ModuleCard
-from flux.creative.sonification import Sonifier, MusicSequence, ExecutionEvent
-from flux.creative.live import LiveCodingSession
-from flux.adaptive.profiler import AdaptiveProfiler
+from flux.swarm.agent import AgentMessage, AgentRole, FluxAgent
+from flux.swarm.swarm import Swarm
+from flux.swarm.topology import SwarmTopology, Topology
 
+# ── Core subsystems ──────────────────────────────────────────────────────────
+from flux.synthesis.synthesizer import (
+    FluxSynthesizer,
+)
 
 # ── Result Types ─────────────────────────────────────────────────────────────
 
@@ -183,7 +185,7 @@ class GrandConductor:
         self.sonifier = Sonifier()
 
         # Live coding session (created on demand)
-        self.live_session: Optional[LiveCodingSession] = None
+        self.live_session: LiveCodingSession | None = None
 
         # Tracking
         self._evolution_reports: list[EvolutionReport] = []
@@ -205,7 +207,7 @@ class GrandConductor:
         """
         return self.synthesizer.load_module(path, source, language)
 
-    def get_module(self, path: str) -> Optional[ModuleCard]:
+    def get_module(self, path: str) -> ModuleCard | None:
         """Get a module card by path."""
         return self.synthesizer.get_module(path)
 
@@ -297,10 +299,8 @@ class GrandConductor:
         )
 
         # Update modularity from selector if available
-        try:
+        with contextlib.suppress(Exception):
             assessment.modularity = self.synthesizer.selector.get_modularity_score()
-        except Exception:
-            pass
 
         return assessment
 
@@ -494,7 +494,7 @@ class GrandConductor:
         """
         return self.swarm.spawn(agent_id, role)
 
-    def despawn_agent(self, agent_id: str) -> Optional[FluxAgent]:
+    def despawn_agent(self, agent_id: str) -> FluxAgent | None:
         """Remove an agent from the swarm.
 
         Args:
@@ -609,7 +609,7 @@ class GrandConductor:
         """
         self.memory.store(key, value, tier="hot")
 
-    def recall(self, key: str) -> Optional[Any]:
+    def recall(self, key: str) -> Any | None:
         """Retrieve a value from memory.
 
         Args:
@@ -639,7 +639,7 @@ class GrandConductor:
         """
         self._experience_recorder.record(experience)
 
-    def wisdom(self, question: str) -> Optional[MemoryGeneralizedRule]:
+    def wisdom(self, question: str) -> MemoryGeneralizedRule | None:
         """Query accumulated wisdom from past experiences.
 
         Args:
@@ -674,26 +674,26 @@ class GrandConductor:
 
             # System report
             report = self.synthesizer.get_system_report()
-            with open(os.path.join(output_dir, "system_report.txt"), "w") as f:
+            with open(os.path.join(output_dir, "system_report.txt"), "w", encoding="utf-8") as f:
                 f.write(report.to_text())
             count += 1
 
             # Module tree
             tree = self.synthesizer.get_module_tree()
-            with open(os.path.join(output_dir, "module_tree.txt"), "w") as f:
+            with open(os.path.join(output_dir, "module_tree.txt"), "w", encoding="utf-8") as f:
                 f.write(f"# Module Tree for {self.name}\n\n")
                 f.write(tree)
             count += 1
 
             # JSON report
             import json
-            with open(os.path.join(output_dir, "system_report.json"), "w") as f:
+            with open(os.path.join(output_dir, "system_report.json"), "w", encoding="utf-8") as f:
                 json.dump(report.to_dict(), f, indent=2, default=str)
             count += 1
 
             # Stats
             stats = self.get_stats()
-            with open(os.path.join(output_dir, "stats.json"), "w") as f:
+            with open(os.path.join(output_dir, "stats.json"), "w", encoding="utf-8") as f:
                 json.dump(stats, f, indent=2, default=str)
             count += 1
 

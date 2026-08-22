@@ -7,20 +7,13 @@ arithmetic (+,-,*,/,%), comparison (==,!=,<,>,<=,>=), calls, int/float literals.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
-from typing import Optional, Union
+from dataclasses import dataclass
+from typing import Union
 
-from flux.fir.types import TypeContext, FIRType, IntType, FloatType, UnitType
-from flux.fir.values import Value
+from flux.fir.blocks import FIRFunction, FIRModule
 from flux.fir.builder import FIRBuilder
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
-from flux.fir.instructions import (
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-)
-
+from flux.fir.types import FIRType, FloatType, TypeContext
+from flux.fir.values import Value
 
 # ── C AST Node Types ────────────────────────────────────────────────────────
 
@@ -66,14 +59,14 @@ class CCall:
 
 @dataclass
 class CReturn:
-    value: Optional[CExpr]
+    value: CExpr | None
 
 
 @dataclass
 class CVarDecl:
     type_name: str
     var_name: str
-    init_value: Optional[CExpr]
+    init_value: CExpr | None
 
 
 @dataclass
@@ -86,7 +79,7 @@ class CAssign:
 class CIf:
     condition: CExpr
     then_body: list
-    else_body: Optional[list]
+    else_body: list | None
 
 
 @dataclass
@@ -97,9 +90,9 @@ class CWhile:
 
 @dataclass
 class CFor:
-    init: Optional[CStmt]
-    condition: Optional[CExpr]
-    update: Optional[CStmt]
+    init: CStmt | None
+    condition: CExpr | None
+    update: CStmt | None
     body: list
 
 
@@ -214,7 +207,7 @@ class CParser:
             )
         return tok
 
-    def _match(self, *kinds: str) -> Optional[Token]:
+    def _match(self, *kinds: str) -> Token | None:
         if self._peek().kind in kinds:
             return self._advance()
         return None

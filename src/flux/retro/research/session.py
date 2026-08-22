@@ -13,14 +13,12 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import time
 import uuid
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
-
+from typing import Any
 
 # ── Directory Layout ─────────────────────────────────────────────────────────
 # retro/research/
@@ -165,44 +163,44 @@ class Reflection:
         """Render as a readable markdown document for human review."""
         lines = [
             f"# Reflection: {self.target} — Iteration {self.iteration}",
-            f"",
+            "",
             f"**Date:** {self.timestamp}",
             f"**Hypothesis:** {self.hypothesis}",
             f"**Confidence:** {self.confidence:.0%}",
-            f"",
-            f"## Observations",
+            "",
+            "## Observations",
         ]
         for obs in self.observations:
             lines.append(f"- {obs}")
         lines.extend([
-            f"",
-            f"## What Worked",
+            "",
+            "## What Worked",
         ])
         for s in self.successes:
             lines.append(f"- ✓ {s}")
         lines.extend([
-            f"",
-            f"## What Didn't Work",
+            "",
+            "## What Didn't Work",
         ])
         for f in self.failures:
             lines.append(f"- ✗ {f}")
         if self.metric_deltas:
-            lines.extend([f"", f"## Metric Changes"])
+            lines.extend(["", "## Metric Changes"])
             for k, v in self.metric_deltas.items():
                 arrow = "+" if v > 0 else ""
                 lines.append(f"- {k}: {arrow}{v}")
         lines.extend([
-            f"",
-            f"## Next Steps",
+            "",
+            "## Next Steps",
         ])
         for ns in self.next_steps:
             lines.append(f"- → {ns}")
         if self.open_questions:
-            lines.extend([f"", f"## Open Research Questions"])
+            lines.extend(["", "## Open Research Questions"])
             for q in self.open_questions:
                 lines.append(f"- ? {q}")
         if self.raw_notes:
-            lines.extend([f"", f"## Raw Notes", f"", self.raw_notes])
+            lines.extend(["", "## Raw Notes", "", self.raw_notes])
         lines.append("")
         return "\n".join(lines)
 
@@ -221,9 +219,9 @@ class Iteration:
     ended_at: str = ""
     hypothesis: str = ""
     approach: str = ""  # "raw_bytecode", "fir_builder", "pipeline", "hybrid"
-    metrics_before: Optional[MetricSnapshot] = None
-    metrics_after: Optional[MetricSnapshot] = None
-    reflection: Optional[Reflection] = None
+    metrics_before: MetricSnapshot | None = None
+    metrics_after: MetricSnapshot | None = None
+    reflection: Reflection | None = None
     artifacts: list[str] = field(default_factory=list)  # paths to saved files
     status: str = "in_progress"  # "in_progress", "completed", "failed", "skipped"
     error: str = ""
@@ -309,7 +307,7 @@ class ResearchSession:
         self.seed_dir = seed_dir or _default_seed_dir()
         self.reflection_dir = reflection_dir or _default_reflection_dir()
 
-        self._current_iteration: Optional[Iteration] = None
+        self._current_iteration: Iteration | None = None
         self._iterations: list[Iteration] = []
         self._config: dict = {}
 

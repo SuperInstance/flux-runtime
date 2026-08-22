@@ -16,8 +16,6 @@ Typical usage::
 
 from __future__ import annotations
 
-from typing import Optional
-
 from flux.a2a.coordinator import AgentCoordinator
 from flux.compiler.pipeline import FluxCompiler
 from flux.runtime.agent import Agent, AgentConfig

@@ -1,4 +1,4 @@
-"""Decision Oracle — combines predictions, twin simulations, and historical data
+"""Decision Oracle - combines predictions, twin simulations, and historical data
 to make optimal evolution decisions.
 
 The oracle answers questions like:
@@ -9,20 +9,14 @@ The oracle answers questions like:
 
 from __future__ import annotations
 
-import time
 from dataclasses import dataclass, field
-from typing import Optional, Any
 
-from flux.evolution.genome import Genome, MutationStrategy
+from flux.evolution.genome import MutationStrategy
 from flux.evolution.mutator import MutationProposal, SystemMutator
-from flux.evolution.pattern_mining import DiscoveredPattern
-from flux.flywheel.hypothesis import Hypothesis
 from flux.flywheel.knowledge import KnowledgeBase
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
 
+from .digital_twin import DigitalTwin
 from .predictor import PerformancePredictor
-from .digital_twin import DigitalTwin, SimulatedResult
-
 
 # ── Data Types ──────────────────────────────────────────────────────────
 
@@ -35,7 +29,7 @@ class OracleDecision:
     reasoning: str = ""
     estimated_speedup: float = 1.0
     estimated_risk: float = 0.5
-    expected_value: float = 0.0   # speedup × confidence × (1 - risk)
+    expected_value: float = 0.0   # speedup x confidence x (1 - risk)
     priority: float = 0.0
 
     @property
@@ -51,7 +45,7 @@ class OracleDecision:
 class ROIEstimate:
     """Return on investment estimate for a mutation.
 
-    ROI = (speedup × frequency × time_saved) / (compile_time + test_time)
+    ROI = (speedup x frequency x time_saved) / (compile_time + test_time)
     """
     proposal: MutationProposal
     estimated_speedup: float = 1.0
@@ -80,7 +74,7 @@ class OracleRecommendation:
     reasoning: str = ""
     alternative_actions: list[str] = field(default_factory=list)
     time_to_implement_ms: float = 0.0
-    roi_estimate: Optional[ROIEstimate] = None
+    roi_estimate: ROIEstimate | None = None
 
 
 # ── Language Cost Data ──────────────────────────────────────────────────
@@ -112,7 +106,7 @@ class DecisionOracle:
         predictor: PerformancePredictor,
         twin: DigitalTwin,
         knowledge: KnowledgeBase,
-        mutator: Optional[SystemMutator] = None,
+        mutator: SystemMutator | None = None,
     ) -> None:
         self.predictor = predictor
         self.twin = twin
@@ -231,7 +225,7 @@ class DecisionOracle:
     def roi_estimate(self, proposal: MutationProposal) -> ROIEstimate:
         """Estimate return on investment for a mutation.
 
-        ROI = (speedup × frequency × time_saved) / (compile_time + test_time)
+        ROI = (speedup x frequency x time_saved) / (compile_time + test_time)
 
         Args:
             proposal: The mutation proposal to evaluate.
@@ -351,7 +345,7 @@ class DecisionOracle:
         best_confidence = 0.0
         best_risk = 0.5
         best_reasoning = ""
-        best_roi: Optional[ROIEstimate] = None
+        best_roi: ROIEstimate | None = None
 
         for mod_path, snap in genome.modules.items():
             heat = snap.heat_level
@@ -437,7 +431,7 @@ class DecisionOracle:
         if best_action.startswith("recompile:"):
             alternatives.append("wait")
             if genome.tiles:
-                alternatives.append(f"replace_tile:{list(genome.tiles.keys())[0]}")
+                alternatives.append(f"replace_tile:{next(iter(genome.tiles.keys()))}")
         elif best_action.startswith("replace_tile:"):
             alternatives.append("wait")
 

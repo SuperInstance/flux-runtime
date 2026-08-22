@@ -10,8 +10,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from flux.tiles.graph import TileGraph
     from flux.creative.sonification import ExecutionEvent
+    from flux.tiles.graph import TileGraph
 
 
 # ── Heat color helpers ──────────────────────────────────────────────────────
@@ -67,7 +67,7 @@ class TileGraphVisualizer:
                 lines.append(f"  │ tags: {tag_str[:18]:<18s} │")
             cost = f"{instance.tile.cost_estimate:.1f}"
             lines.append(f"  │ cost: {cost:<18s} │")
-            lines.append(f"  └──────────────────────────┘")
+            lines.append("  └──────────────────────────┘")
             lines.append("")
 
         # Draw edges
@@ -147,10 +147,7 @@ class TileGraphVisualizer:
         Returns:
             Formatted bar string with percentage
         """
-        if max_value <= 0:
-            pct = 0.0
-        else:
-            pct = min(1.0, max(0.0, value / max_value))
+        pct = 0.0 if max_value <= 0 else min(1.0, max(0.0, value / max_value))
 
         filled = int(pct * width)
         empty = width - filled
@@ -253,14 +250,12 @@ class ExecutionVisualizer:
         # Draw stacked bar
         bar_width = 60
         bar_parts = []
-        color_idx = 0
         block_chars = "█▓▓░░"
 
-        for cat, count in sorted_cats:
+        for color_idx, (_cat, count) in enumerate(sorted_cats):
             block_w = max(1, int(count / total * bar_width))
             ch = block_chars[color_idx % len(block_chars)]
             bar_parts.append(f"{ch * block_w}")
-            color_idx += 1
 
         full_bar = "".join(bar_parts)[:bar_width]
         lines.append(f"  {full_bar}")

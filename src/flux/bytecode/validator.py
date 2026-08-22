@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import struct
 
-from .opcodes import Op, get_format, instruction_size
+from .opcodes import Op, get_format
 
 MAGIC = b"FLUX"
 HEADER_SIZE = 18  # 4s(4) + H(2) + H(2) + H(2) + I(4) + I(4) = 18
@@ -30,7 +30,7 @@ class BytecodeValidator:
 
         # ── 2. Parse and verify header fields ────────────────────────────
         try:
-            _, version, flags, n_funcs, type_off, code_off = struct.unpack_from(
+            _, version, _, n_funcs, type_off, code_off = struct.unpack_from(
                 "<4sHHHII", data, 0
             )
         except struct.error as e:
@@ -122,7 +122,6 @@ class BytecodeValidator:
     ) -> None:
         """Walk instructions in a code range and validate them."""
         pos = start
-        last_opcode: Op | None = None
         has_terminator = False
         instr_offsets: list[int] = []  # for jump target validation
 
@@ -145,7 +144,6 @@ class BytecodeValidator:
                 pos += 1  # skip unknown byte
                 continue
 
-            last_opcode = op
             fmt = get_format(op)
 
             if fmt == "A":
@@ -206,7 +204,7 @@ class BytecodeValidator:
                 if pos + 4 > end:
                     errors.append(f"{context}: truncated Format E at offset {pos - start}")
                     break
-                for reg_idx, byte_off in [(0, pos + 1), (1, pos + 2), (2, pos + 3)]:
+                for _reg_idx, byte_off in [(0, pos + 1), (1, pos + 2), (2, pos + 3)]:
                     reg = data[byte_off]
                     if reg > MAX_REGISTER:
                         errors.append(

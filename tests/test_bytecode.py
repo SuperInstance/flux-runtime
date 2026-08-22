@@ -1,25 +1,33 @@
 """Tests for FLUX bytecode encoder, decoder, and validator."""
 
 import sys
+
 sys.path.insert(0, "src")
 
 import struct
 
-from flux.fir.types import TypeContext, IntType, FloatType
-from flux.fir.values import Value
-from flux.fir.instructions import (
-    IAdd, ISub, IMul, INeg, Return, Jump, Branch, Call,
-    Tell, Ask, TrustCheck, CapRequire, Load, Store, Alloca,
-    IEq, ILt, FAdd, FDiv, Unreachable,
-)
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
-from flux.fir.builder import FIRBuilder
-
-from flux.bytecode.opcodes import Op, get_format
-from flux.bytecode.encoder import BytecodeEncoder, MAGIC, VERSION, HEADER_SIZE
-from flux.bytecode.decoder import BytecodeDecoder, DecodedInstruction, DecodedFunction
+from flux.bytecode.decoder import BytecodeDecoder
+from flux.bytecode.encoder import HEADER_SIZE, MAGIC, VERSION, BytecodeEncoder
+from flux.bytecode.opcodes import Op
 from flux.bytecode.validator import BytecodeValidator
-
+from flux.fir.blocks import FIRModule
+from flux.fir.builder import FIRBuilder
+from flux.fir.instructions import (
+    Ask,
+    Branch,
+    FAdd,
+    FDiv,
+    IAdd,
+    IMul,
+    INeg,
+    ISub,
+    Jump,
+    Tell,
+    TrustCheck,
+    Unreachable,
+)
+from flux.fir.types import TypeContext
+from flux.fir.values import Value
 
 # ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -246,7 +254,7 @@ def test_encode_a2a():
 
     msg = _make_value(0, "msg")
     cap = _make_value(1, "cap")
-    auth = _make_value(2, "auth")
+    _make_value(2, "auth")
     thr = _make_value(3, "thr")
     ctx = TypeContext()
 
@@ -377,18 +385,18 @@ def test_encode_module():
     assert func_names == {"add", "noop", "ping_agent"}, f"Unexpected function names: {func_names}"
 
     # Verify 'add' function has IADD + RET
-    add_func = [f for f in funcs if f.name == "add"][0]
+    add_func = next(f for f in funcs if f.name == "add")
     opcodes = [i.opcode for i in add_func.instructions]
     assert Op.IADD in opcodes, "add function should contain IADD"
     assert Op.RET in opcodes, "add function should contain RET"
 
     # Verify 'noop' function has just RET
-    noop_func = [f for f in funcs if f.name == "noop"][0]
+    noop_func = next(f for f in funcs if f.name == "noop")
     assert len(noop_func.instructions) >= 1
     assert noop_func.instructions[-1].opcode == Op.RET
 
     # Verify 'ping_agent' has TELL + RET
-    ping_func = [f for f in funcs if f.name == "ping_agent"][0]
+    ping_func = next(f for f in funcs if f.name == "ping_agent")
     opcodes = [i.opcode for i in ping_func.instructions]
     assert Op.TELL in opcodes, "ping_agent should contain TELL"
     assert Op.RET in opcodes, "ping_agent should contain RET"

@@ -7,20 +7,15 @@ for/range, return, print, calls, int/float/str literals.
 from __future__ import annotations
 
 import ast
-from typing import Optional
 
+from flux.fir.blocks import FIRFunction, FIRModule
+from flux.fir.builder import FIRBuilder
 from flux.fir.types import (
-    TypeContext, FIRType, IntType, FloatType, BoolType, UnitType, StringType,
+    FIRType,
+    FloatType,
+    TypeContext,
 )
 from flux.fir.values import Value
-from flux.fir.builder import FIRBuilder
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
-from flux.fir.instructions import (
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-)
 
 
 class PythonFrontendCompiler:
@@ -338,7 +333,7 @@ class PythonFrontendCompiler:
         # Generic for loop (while-like)
         self._compile_while(func, ast.While(
             test=ast.Constant(value=True),
-            body=stmt.body + [ast.Break()],
+            body=[*stmt.body, ast.Break()],
             orelse=[],
         ))
 
@@ -536,9 +531,8 @@ class PythonFrontendCompiler:
             return self._make_const(0, self._ctx.get_unit())
 
         # Handle int() and float() casts
-        if isinstance(node.func, ast.Name) and node.func.id in ("int", "float"):
-            if node.args:
-                return self._compile_expr(func, node.args[0])
+        if isinstance(node.func, ast.Name) and node.func.id in ("int", "float") and node.args:
+            return self._compile_expr(func, node.args[0])
 
         # Regular call
         func_name = node.func.id if isinstance(node.func, ast.Name) else "unknown"
@@ -570,7 +564,7 @@ class PythonFrontendCompiler:
 
         # Else
         self._builder.set_block(else_bb)
-        else_val = self._compile_expr(func, node.orelse)
+        self._compile_expr(func, node.orelse)
         if else_bb.terminator is None:
             self._builder.jump(merge_label)
 

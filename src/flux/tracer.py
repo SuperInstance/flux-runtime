@@ -35,7 +35,7 @@ Or via the VM directly::
     from flux.tracer import FluxTracer
 
     tracer = FluxTracer()
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm._tracer = tracer   # attach
     tracer.attach(vm)
     vm.execute()
@@ -46,11 +46,10 @@ from __future__ import annotations
 
 import json
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, ClassVar
 
-from flux.bytecode.opcodes import Op, get_format, instruction_size
-from flux.disasm import FluxDisassembler, DisassembledInstruction
-
+from flux.bytecode.opcodes import Op
+from flux.disasm import FluxDisassembler
 
 __all__ = [
     "FluxTracer",
@@ -66,15 +65,15 @@ class TraceEntry:
     """A single trace entry recording VM state at one instruction."""
 
     __slots__ = (
-        "step",
-        "pc",
+        "flags_after",
+        "flags_before",
         "opcode",
         "opcode_name",
         "operand",
-        "registers_before",
+        "pc",
         "registers_after",
-        "flags_before",
-        "flags_after",
+        "registers_before",
+        "step",
         "timestamp_us",
     )
 
@@ -85,10 +84,10 @@ class TraceEntry:
         opcode: int,
         opcode_name: str,
         operand: str,
-        registers_before: Dict[str, Any],
-        registers_after: Dict[str, Any],
-        flags_before: Dict[str, bool],
-        flags_after: Dict[str, bool],
+        registers_before: dict[str, Any],
+        registers_after: dict[str, Any],
+        flags_before: dict[str, bool],
+        flags_after: dict[str, bool],
         timestamp_us: float,
     ) -> None:
         self.step = step
@@ -102,7 +101,7 @@ class TraceEntry:
         self.flags_after = flags_after
         self.timestamp_us = timestamp_us
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialisation."""
         return {
             "step": self.step,
@@ -128,16 +127,16 @@ class TraceResult:
     """The complete result of a traced execution."""
 
     def __init__(self) -> None:
-        self.entries: List[TraceEntry] = []
+        self.entries: list[TraceEntry] = []
         self.total_cycles: int = 0
         self.halted: bool = False
-        self.error: Optional[str] = None
+        self.error: str | None = None
         self.bytecode_size: int = 0
         self.start_time: float = 0.0
         self.end_time: float = 0.0
-        self.final_registers: Dict[str, Any] = {}
-        self.final_flags: Dict[str, bool] = {}
-        self.memory_regions: List[Dict[str, Any]] = []
+        self.final_registers: dict[str, Any] = {}
+        self.final_flags: dict[str, bool] = {}
+        self.memory_regions: list[dict[str, Any]] = []
 
     @property
     def duration_ms(self) -> float:
@@ -152,7 +151,7 @@ class TraceResult:
             return len(self.entries) / elapsed
         return 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "summary": {
@@ -172,7 +171,7 @@ class TraceResult:
             "entries": [e.to_dict() for e in self.entries],
         }
 
-    def to_json(self, indent: Optional[int] = 2) -> str:
+    def to_json(self, indent: int | None = 2) -> str:
         """Serialize trace to JSON."""
         return json.dumps(self.to_dict(), indent=indent, default=str)
 
@@ -180,12 +179,12 @@ class TraceResult:
 # ── Register / flag helpers ──────────────────────────────────────────────────
 
 
-def _snapshot_registers(regs) -> Dict[str, Any]:
+def _snapshot_registers(regs) -> dict[str, Any]:
     """Capture register file state as a flat dict."""
     snap = regs.snapshot()
     gp = snap.get("gp", [])
     fp = snap.get("fp", [])
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
     for i, v in enumerate(gp):
         result[f"R{i}"] = v
     for i, v in enumerate(fp):
@@ -198,7 +197,7 @@ def _snapshot_registers(regs) -> Dict[str, Any]:
     return result
 
 
-def _snapshot_flags(interpreter) -> Dict[str, bool]:
+def _snapshot_flags(interpreter) -> dict[str, bool]:
     """Capture condition flags from the interpreter."""
     return {
         "zero": interpreter._flag_zero,
@@ -208,9 +207,9 @@ def _snapshot_flags(interpreter) -> Dict[str, bool]:
     }
 
 
-def _snapshot_memory(interpreter) -> List[Dict[str, Any]]:
+def _snapshot_memory(interpreter) -> list[dict[str, Any]]:
     """Capture memory regions state."""
-    regions: List[Dict[str, Any]] = []
+    regions: list[dict[str, Any]] = []
     for name, region in interpreter.memory._regions.items():
         # Only capture small regions fully; hash larger ones
         if region.size <= 256:
@@ -233,7 +232,7 @@ def _snapshot_memory(interpreter) -> List[Dict[str, Any]]:
 # ── Disassembly helper ───────────────────────────────────────────────────────
 
 
-def _disassemble_at(bytecode: bytes, pc: int) -> Tuple[str, str]:
+def _disassemble_at(bytecode: bytes, pc: int) -> tuple[str, str]:
     """Disassemble a single instruction at *pc*.
 
     Returns ``(opcode_name, operand_str)``.
@@ -273,7 +272,7 @@ class ConservationLedger:
     - System / resource:   3 units
     - SIMD:                4 units
     """
-    CATEGORY_WEIGHTS = {
+    CATEGORY_WEIGHTS: ClassVar[dict[str, int]] = {
         "arithmetic": 1,
         "comparison": 1,
         "control_flow": 1,
@@ -294,10 +293,10 @@ class ConservationLedger:
     }
 
     def __init__(self) -> None:
-        self.entries: List[Dict[str, Any]] = []
+        self.entries: list[dict[str, Any]] = []
         self.total_consumed: int = 0
 
-        self.entries: List[Dict[str, Any]] = []
+        self.entries: list[dict[str, Any]] = []
         self.total_consumed: int = 0
 
     def record(self, step: int, pc: int, opcode_name: str, category: str) -> None:
@@ -313,7 +312,7 @@ class ConservationLedger:
             "cumulative": self.total_consumed,
         })
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialise to dictionary."""
         return {
             "total_consumed": self.total_consumed,
@@ -331,7 +330,7 @@ class ConservationLedger:
         ]
 
         # Per-category breakdown
-        cat_totals: Dict[str, int] = {}
+        cat_totals: dict[str, int] = {}
         for entry in self.entries:
             cat = entry["category"]
             cat_totals[cat] = cat_totals.get(cat, 0) + entry["cost"]
@@ -354,9 +353,15 @@ def _categorise_opcode(opcode: int) -> str:
         return "system"
 
     from flux.disasm import (
-        ARITHMETIC_OPS, CONTROL_FLOW_OPS, MEMORY_OPS,
-        COMPARISON_OPS, STACK_OPS, TYPE_OPS, SIMD_OPS,
-        A2A_OPS, SYSTEM_OPS,
+        A2A_OPS,
+        ARITHMETIC_OPS,
+        COMPARISON_OPS,
+        CONTROL_FLOW_OPS,
+        MEMORY_OPS,
+        SIMD_OPS,
+        STACK_OPS,
+        SYSTEM_OPS,
+        TYPE_OPS,
     )
 
     if op in ARITHMETIC_OPS:
@@ -419,7 +424,7 @@ class FluxTracer:
         self.capture_memory = capture_memory
         self.max_trace_entries = max_trace_entries
         self.ledger = ConservationLedger()
-        self._result: Optional[TraceResult] = None
+        self._result: TraceResult | None = None
 
     # ── Attachment ────────────────────────────────────────────────────────
 
@@ -530,7 +535,7 @@ class FluxTracer:
         self._result.bytecode_size = len(bytecode)
         self._result.start_time = time.perf_counter()
 
-        vm = Interpreter(bytecode, memory_size=memory_size)
+        vm = Interpreter(bytecode, memory_size=memory_size, isa="system_a")
         vm.max_cycles = max_steps
         self.attach(vm)
 
@@ -550,7 +555,7 @@ class FluxTracer:
 
     # ── Reporting ─────────────────────────────────────────────────────────
 
-    def report(self, result: Optional[TraceResult] = None) -> str:
+    def report(self, result: TraceResult | None = None) -> str:
         """Generate a human-readable trace report.
 
         Parameters
@@ -564,7 +569,7 @@ class FluxTracer:
         if result is None:
             return "No trace available.  Call trace() first."
 
-        lines: List[str] = []
+        lines: list[str] = []
         lines.append("FLUX Execution Trace")
         lines.append("═" * 72)
         lines.append("")
@@ -663,7 +668,7 @@ class FluxTracer:
 
         return "\n".join(lines)
 
-    def to_json(self, result: Optional[TraceResult] = None, indent: int = 2) -> str:
+    def to_json(self, result: TraceResult | None = None, indent: int = 2) -> str:
         """Export trace as JSON for tooling.
 
         Parameters

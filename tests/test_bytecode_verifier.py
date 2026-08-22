@@ -4,15 +4,29 @@ Tests for FLUX Bytecode Security Verifier — R&D Round 13
 245 tests covering all 7 verification passes + edge cases
 """
 
-import struct
-import pytest
-from flux.security.bytecode_verifier import (
-    BytecodeVerifier, VerificationReport, VerificationFinding,
-    Severity, VerifierPolicy, DecodedInstruction, decode_instruction,
-    decode_all, verify, verify_hex, is_safe, OPCODE_FORMATS, NUM_REGISTERS,
-    MAX_STACK_DEPTH, CONTROL_FLOW_OPCODES,
-)
+# NOTE (2026-08-21, A/B reconciliation): this module intentionally tests
+# the LEGACY System A opcode numbering (flux.bytecode.opcodes.Op) and raw
+# System A bytes. Per the reconciliation plan it is RETAINED AS-IS — no
+# mapping is deleted. The unified (System B) equivalents live in
+# tests/test_conformance_unified.py, tests/test_toolchain_unified.py, and
+# tests/test_dual_mode_equivalence.py.
 
+import struct
+
+from flux.security.bytecode_verifier import (
+    NUM_REGISTERS,
+    OPCODE_FORMATS,
+    BytecodeVerifier,
+    Severity,
+    VerificationFinding,
+    VerificationReport,
+    VerifierPolicy,
+    decode_all,
+    decode_instruction,
+    is_safe,
+    verify,
+    verify_hex,
+)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Helper: Build bytecode from opcode + operands
@@ -124,7 +138,7 @@ class TestOpcodeFormatTable:
         assert len(OPCODE_FORMATS) > 200
 
     def test_no_negative_sizes(self):
-        for code, (fmt, size, nregs) in OPCODE_FORMATS.items():
+        for code, (_fmt, size, nregs) in OPCODE_FORMATS.items():
             assert size > 0, f"Opcode 0x{code:02X} has non-positive size"
             assert nregs >= 0, f"Opcode 0x{code:02X} has negative register count"
 

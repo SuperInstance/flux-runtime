@@ -12,8 +12,8 @@ Python handles the AI (minimax) and game orchestration.
 
 from __future__ import annotations
 
-from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
+
 from ._builder import BytecodeBuilder
 
 # Board memory layout
@@ -91,7 +91,7 @@ class TicTacToeAI:
     def vm_check_winner(self) -> int:
         """Run VM to check for a winner. Returns 0, 1, or 2."""
         bc = self.build_bytecode()
-        vm = Interpreter(bc, memory_size=65536)
+        vm = Interpreter(bc, memory_size=65536, isa="system_a")
         stack = vm.memory.get_region("stack")
         for i in range(9):
             stack.write(_MEM_BOARD + i, bytes([self.board[i]]))
@@ -175,7 +175,7 @@ class TicTacToeAI:
 
             # Verify with VM
             bc = self.build_bytecode()
-            vm = Interpreter(bc, memory_size=65536)
+            vm = Interpreter(bc, memory_size=65536, isa="system_a")
             stack = vm.memory.get_region("stack")
             for i in range(9):
                 stack.write(_MEM_BOARD + i, bytes([self.board[i]]))

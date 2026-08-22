@@ -8,7 +8,7 @@ evolution history, and fitness trends.
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .synthesizer import FluxSynthesizer

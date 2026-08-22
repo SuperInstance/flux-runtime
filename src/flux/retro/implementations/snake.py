@@ -1,6 +1,6 @@
-"""FLUX Retro: Snake — movement and collision in FLUX bytecode.
+"""FLUX Retro: Snake - movement and collision in FLUX bytecode.
 
-The snake moves on an 8×8 grid stored in memory:
+The snake moves on an 8x8 grid stored in memory:
   • 0 = empty,  1 = snake body,  2 = food,  3 = snake head
   • Grid stored at stack memory offset 1000 (64 bytes)
 
@@ -16,8 +16,9 @@ Python orchestrates the game loop and renders the display.
 from __future__ import annotations
 
 import random
-from flux.bytecode.opcodes import Op
+
 from flux.vm.interpreter import Interpreter
+
 from ._builder import BytecodeBuilder
 
 _GRID = 8
@@ -173,14 +174,13 @@ class Snake:
         score = 0
 
         for step in range(_STEPS):
-            vm = Interpreter(bc, memory_size=65536)
+            vm = Interpreter(bc, memory_size=65536, isa="system_a")
             stack = vm.memory.get_region("stack")
 
             # Write grid to memory
             stack.write(_MEM_GRID, bytes(grid))
 
             # Write direction deltas to memory (i32, 4 bytes each)
-            import struct as _struct
             for i in range(4):
                 stack.write_i32(600 + i * 4, _DIR_DR[i])
                 stack.write_i32(620 + i * 4, _DIR_DC[i])
@@ -246,7 +246,7 @@ class Snake:
             "score": score,
             "alive": alive,
             "steps": len(log),
-            "snake_length": len(snake) if alive else len(snake),
+            "snake_length": len(snake),
         }
 
     def _place_food(self, grid: bytearray) -> tuple[int, int]:
@@ -262,29 +262,30 @@ class Snake:
 
         # Preferred directions based on food position
         preferred = []
-        if fr > hr: preferred.append(1)  # down
-        if fr < hr: preferred.append(3)  # up
-        if fc > hc: preferred.append(0)  # right
-        if fc < hc: preferred.append(2)  # left
+        if fr > hr:
+            preferred.append(1)  # down
+        if fr < hr:
+            preferred.append(3)  # up
+        if fc > hc:
+            preferred.append(0)  # right
+        if fc < hc:
+            preferred.append(2)  # left
 
         for d in preferred:
             nr, nc = hr + _DIR_DR[d], hc + _DIR_DC[d]
-            if 0 <= nr < _GRID and 0 <= nc < _GRID:
-                if grid[nr * _GRID + nc] not in (1, 3):
-                    return d
+            if 0 <= nr < _GRID and 0 <= nc < _GRID and grid[nr * _GRID + nc] not in (1, 3):
+                return d
 
         # Try current direction
         nr, nc = hr + _DIR_DR[current_dir], hc + _DIR_DC[current_dir]
-        if 0 <= nr < _GRID and 0 <= nc < _GRID:
-            if grid[nr * _GRID + nc] not in (1, 3):
-                return current_dir
+        if 0 <= nr < _GRID and 0 <= nc < _GRID and grid[nr * _GRID + nc] not in (1, 3):
+            return current_dir
 
         # Try any valid direction
         for d in range(4):
             nr, nc = hr + _DIR_DR[d], hc + _DIR_DC[d]
-            if 0 <= nr < _GRID and 0 <= nc < _GRID:
-                if grid[nr * _GRID + nc] not in (1, 3):
-                    return d
+            if 0 <= nr < _GRID and 0 <= nc < _GRID and grid[nr * _GRID + nc] not in (1, 3):
+                return d
 
         return current_dir  # no valid move
 
@@ -306,7 +307,7 @@ class Snake:
     @staticmethod
     def demonstrate():
         print("=" * 60)
-        print("  FLUX RETRO — SNAKE")
+        print("  FLUX RETRO - SNAKE")
         print("  Movement & collision computed in FLUX bytecode")
         print("=" * 60)
 
@@ -320,7 +321,7 @@ class Snake:
 
         # Show key frames
         log = result["log"]
-        frames = [0] + list(range(4, len(log), 5)) + [len(log) - 1]
+        frames = [0, *list(range(4, len(log), 5)), len(log) - 1]
         frames = sorted(set(f for f in frames if f < len(log)))
 
         dir_names = {0: "→", 1: "↓", 2: "←", 3: "↑"}

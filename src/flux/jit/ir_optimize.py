@@ -8,25 +8,19 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
-from dataclasses import dataclass, field, replace, is_dataclass
-from typing import Optional, Any
+from dataclasses import is_dataclass, replace
+from typing import Any
 
-from flux.fir.types import FIRType, IntType, FloatType, BoolType
-from flux.fir.values import Value
-from flux.fir.instructions import (
-    Instruction, is_terminator,
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IAnd, IOr, IXor, IShl, IShr, INot,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-    ITrunc, ZExt, SExt, FTrunc, FExt, Bitcast,
-    Load, Store, Alloca, GetField, SetField, GetElem, SetElem,
-    MemCopy, MemSet,
-    Jump, Branch, Switch, Call, Return, Unreachable,
-    Tell, Ask, Delegate, TrustCheck, CapRequire,
-)
 from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
+from flux.fir.instructions import (
+    Branch,
+    Call,
+    Instruction,
+    Jump,
+    Return,
+    Switch,
+)
+from flux.fir.values import Value
 
 logger = logging.getLogger(__name__)
 
@@ -238,7 +232,7 @@ def _get_block_successors(block: FIRBlock) -> list[str]:
 
 def const_fold_pass(
     module: FIRModule,
-    known_constants: Optional[dict[int, Any]] = None,
+    known_constants: dict[int, Any] | None = None,
 ) -> int:
     """Fold constant expressions and propagate known values.
 
@@ -312,7 +306,7 @@ def _compute_result_id(
     block: FIRBlock,
     instr: Instruction,
     new_instructions_so_far: list[Instruction],
-) -> Optional[int]:
+) -> int | None:
     """Compute the canonical value ID for an instruction's result.
 
     Follows the builder convention: params are numbered first (per block,
@@ -416,7 +410,7 @@ def _inline_single_block_call(
     callee: FIRFunction,
     call_args: list[Value],
     value_id_offset: int,
-) -> Optional[list[Instruction]]:
+) -> list[Instruction] | None:
     """Inline a single-block callee at a call site.
 
     Creates a copy of the callee's instructions (excluding Return) with
@@ -445,7 +439,7 @@ def _inline_single_block_call(
     # Map callee param value IDs to call argument Value objects
     # Callee params get IDs starting from 0 (builder convention)
     value_map: dict[int, Value] = {}
-    for i, (pname, ptype) in enumerate(block.params):
+    for i, (_pname, _ptype) in enumerate(block.params):
         value_map[i] = call_args[i]
 
     # Shift all other value IDs by offset

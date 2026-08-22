@@ -5,20 +5,20 @@ without running code.  Used by the adaptive language selector and
 self-evolution engine to make optimization decisions.
 """
 
+from flux.cost.energy import CarbonEstimate, EnergyEstimate, EnergyModel
 from flux.cost.model import (
-    CostModel,
     CostEstimate,
+    CostModel,
     ModuleCostReport,
     SpeedupReport,
 )
-from flux.cost.energy import EnergyModel, EnergyEstimate, CarbonEstimate
 
 __all__ = [
-    "CostModel",
+    "CarbonEstimate",
     "CostEstimate",
+    "CostModel",
+    "EnergyEstimate",
+    "EnergyModel",
     "ModuleCostReport",
     "SpeedupReport",
-    "EnergyModel",
-    "EnergyEstimate",
-    "CarbonEstimate",
 ]

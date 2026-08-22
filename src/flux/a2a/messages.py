@@ -1,4 +1,4 @@
-"""A2A Message Types — Fixed-format binary messages for agent-to-agent communication.
+"""A2A Message Types - Fixed-format binary messages for agent-to-agent communication.
 
 Message layout (binary, 52-byte header):
 
@@ -7,8 +7,8 @@ Message layout (binary, 52-byte header):
     0       16     sender_uuid        (128-bit UUID)
     16      16     receiver_uuid      (128-bit UUID)
     32       8     conversation_id    (compact 64-bit)
-    40       1     message_type       (uint8, 0x60–0x7B)
-    41       1     priority           (uint8, 0–15)
+    40       1     message_type       (uint8, 0x60-0x7B)
+    41       1     priority           (uint8, 0-15)
     42       4     trust_token        (uint32 LE)
     46       4     capability_token   (uint32 LE)
     50       2     in_reply_to        (uint16 LE, 0 = None)
@@ -19,8 +19,7 @@ from __future__ import annotations
 
 import struct
 import uuid
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 # Header format: <16s16s8sBBIIH  = 16+16+8+1+1+4+4+2 = 52
 _HEADER_STRUCT = struct.Struct("<16s16s8sBBIIH")
@@ -47,9 +46,9 @@ class A2AMessage:
         When set, marks this message as a reply.  Serialized as a uint16
         extracted from the UUID bytes; deserialized as None when zero.
     message_type : int
-        Protocol verb in range 0x60–0x7B (A2A opcode space).
+        Protocol verb in range 0x60-0x7B (A2A opcode space).
     priority : int
-        Delivery priority 0–15.
+        Delivery priority 0-15.
     trust_token : int
         32-bit unsigned trust evidence token.
     capability_token : int
@@ -61,7 +60,7 @@ class A2AMessage:
     sender: uuid.UUID
     receiver: uuid.UUID
     conversation_id: uuid.UUID
-    in_reply_to: Optional[uuid.UUID]
+    in_reply_to: uuid.UUID | None
     message_type: int
     priority: int
     trust_token: int
@@ -75,11 +74,11 @@ class A2AMessage:
     def __post_init__(self) -> None:
         if not (0x60 <= self.message_type <= 0x7B):
             raise ValueError(
-                f"message_type must be in 0x60–0x7B, got 0x{self.message_type:02X}"
+                f"message_type must be in 0x60-0x7B, got 0x{self.message_type:02X}"
             )
         if not (0 <= self.priority <= 15):
             raise ValueError(
-                f"priority must be 0–15, got {self.priority}"
+                f"priority must be 0-15, got {self.priority}"
             )
         if not (0 <= self.trust_token <= 0xFFFFFFFF):
             raise ValueError(

@@ -1,11 +1,11 @@
 """Tile Registry — global registry of available tiles with search and discovery."""
 
 from __future__ import annotations
-from typing import Optional
+
 from difflib import SequenceMatcher
 
-from .tile import Tile, TileType
 from .library import ALL_BUILTIN_TILES
+from .tile import Tile, TileType
 
 
 class TileRegistry:
@@ -26,7 +26,7 @@ class TileRegistry:
         """Remove a tile by name. No-op if not found."""
         self._tiles.pop(name, None)
 
-    def get(self, name: str) -> Optional[Tile]:
+    def get(self, name: str) -> Tile | None:
         """Get a tile by exact name."""
         return self._tiles.get(name)
 

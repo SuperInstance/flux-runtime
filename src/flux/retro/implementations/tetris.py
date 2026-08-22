@@ -1,11 +1,11 @@
-"""Tetris — simplified FLUX bytecode implementation.
+"""Tetris - simplified FLUX bytecode implementation.
 
 Manages a 10-wide grid stored in a heap memory region.  An I-piece (4
 horizontal blocks) is dropped one row at a time.  When it can no longer
 move down it locks into the grid, completed lines are cleared, and a new
 piece spawns at the top.
 
-The grid is 10×20 = 200 cells, each stored as an i32 (4 bytes).
+The grid is 10x20 = 200 cells, each stored as an i32 (4 bytes).
 Total memory: 800 bytes.  Addressed as  grid_base + (row*10 + col)*4.
 Row 0 is the **top** of the board (where pieces spawn), row 19 is the
 bottom.
@@ -22,8 +22,8 @@ Register layout
 
 from __future__ import annotations
 
-from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
+
 from ._asm import Assembler
 
 
@@ -249,7 +249,7 @@ class Tetris:
 
     @staticmethod
     def render_grid(grid: list[list[int]]) -> str:
-        """ASCII render of a 20×10 Tetris grid."""
+        """ASCII render of a 20x10 Tetris grid."""
         lines = ["  +----------+"]
         for row in grid:
             line = "  |"
@@ -271,10 +271,10 @@ class Tetris:
     def demonstrate(cls) -> None:
         """Build, execute, and display Tetris simulation results."""
         bytecode = cls.build_bytecode()
-        vm = Interpreter(bytecode, memory_size=65536)
+        vm = Interpreter(bytecode, memory_size=65536, isa="system_a")
 
         print("=" * 64)
-        print("  FLUX BYTECODE TETRIS  —  I-piece drop simulation")
+        print("  FLUX BYTECODE TETRIS  -  I-piece drop simulation")
         print("=" * 64)
         print(f"  Bytecode size: {len(bytecode)} bytes")
         print(f"  Grid: {cls.WIDTH}x{cls.HEIGHT}, Drop steps: {cls.DROP_TOTAL}")

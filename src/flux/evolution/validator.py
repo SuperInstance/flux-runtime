@@ -7,11 +7,11 @@ captures baselines, and detects regressions when mutations are applied.
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Optional, Any, Callable
+from typing import Any
 
 from .genome import Genome
-
 
 # ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -381,9 +381,8 @@ class CorrectnessValidator:
     @staticmethod
     def _compare(actual: Any, expected: Any, tolerance: float = 0.0) -> bool:
         """Compare actual vs expected with tolerance."""
-        if tolerance > 0:
-            if isinstance(actual, (int, float)) and isinstance(expected, (int, float)):
-                return abs(actual - expected) <= tolerance
+        if tolerance > 0 and isinstance(actual, (int, float)) and isinstance(expected, (int, float)):
+            return abs(actual - expected) <= tolerance
         return actual == expected
 
     def __repr__(self) -> str:

@@ -24,10 +24,10 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
-import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -35,14 +35,10 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-
-from flux.retro.research.session import (
-    ResearchSession,
-    Seed,
-    MetricSnapshot,
+from flux.retro.research.session import (  # noqa: E402  # requires sys.path setup above
     Reflection,
+    ResearchSession,
 )
-
 
 # ── Game Definitions ─────────────────────────────────────────────────────────
 
@@ -104,7 +100,7 @@ def get_game_class(slug: str):
 
 def run_iteration(game_cls, iteration_num: int, plan: tuple) -> dict:
     """Run a single research iteration on a game."""
-    iter_num, approach, hypothesis = plan
+    _, approach, _ = plan
 
     start = time.perf_counter()
     try:
@@ -114,7 +110,7 @@ def run_iteration(game_cls, iteration_num: int, plan: tuple) -> dict:
         bytecode_size = len(bytecode)
 
         from flux.vm.interpreter import Interpreter
-        vm = Interpreter(bytecode, memory_size=65536)
+        vm = Interpreter(bytecode, memory_size=65536, isa="system_a")
         cycles = vm.execute()
 
         elapsed_ms = (time.perf_counter() - start) * 1000
@@ -162,7 +158,7 @@ def main():
     games_to_run = [args.game] if args.game else list(GAME_IMPORTS.keys())
     n_iter = min(args.iterations, len(ITERATION_PLANS))
 
-    print(f"\n  FLUX Retro Research Runner")
+    print("\n  FLUX Retro Research Runner")
     print(f"  Games: {len(games_to_run)}")
     print(f"  Iterations per game: {n_iter}")
     print(f"  Total planned iterations: {len(games_to_run) * n_iter}")
@@ -235,7 +231,7 @@ def main():
 
     # Print summary
     print(f"\n  {'═'*64}")
-    print(f"  RESEARCH SESSION COMPLETE")
+    print("  RESEARCH SESSION COMPLETE")
     print(f"  {'═'*64}")
     print(f"  Games processed: {len(all_results)}")
     print(f"  Total iterations: {sum(r.get('iterations', 0) for r in all_results.values())}")

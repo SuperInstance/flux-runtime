@@ -8,12 +8,12 @@ based on profiler data and pattern mining results.
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Optional, Any, Callable
+from typing import Any
 
-from .genome import Genome, MutationStrategy, OptimizationRecord
+from .genome import Genome, MutationStrategy
 from .pattern_mining import DiscoveredPattern
-
 
 # ── Proposal Types ────────────────────────────────────────────────────────────
 
@@ -284,7 +284,7 @@ class SystemMutator:
         self,
         proposal: MutationProposal,
         genome: Genome,
-        validation_fn: Optional[Callable[[Genome], bool]] = None,
+        validation_fn: Callable[[Genome], bool] | None = None,
     ) -> MutationResult:
         """Apply a mutation and validate it.
 

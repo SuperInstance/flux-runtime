@@ -337,25 +337,24 @@ def run_conformance_tests(runner_fn):
                     results["results"].append({"name": test["name"], "status": "FAIL", "reason": "VM crashed"})
                     results["failed"] += 1
 
-            elif isinstance(test["expected"], dict):
-                if "register" in test["expected"]:
-                    reg = test["expected"]["register"]
-                    reg_val = state.get("registers", {}).get(reg)
-                    exp_val = test["expected"]["value"]
+            elif isinstance(test["expected"], dict) and "register" in test["expected"]:
+                reg = test["expected"]["register"]
+                reg_val = state.get("registers", {}).get(reg)
+                exp_val = test["expected"]["value"]
 
-                    if "value_neq_zero" in test["expected"]:
-                        if reg_val != 0:
-                            results["results"].append({"name": test["name"], "status": "PASS"})
-                            results["passed"] += 1
-                        else:
-                            results["results"].append({"name": test["name"], "status": "FAIL", "reason": f"R{reg}={reg_val}, expected nonzero"})
-                            results["failed"] += 1
-                    elif reg_val == exp_val:
+                if "value_neq_zero" in test["expected"]:
+                    if reg_val != 0:
                         results["results"].append({"name": test["name"], "status": "PASS"})
                         results["passed"] += 1
                     else:
-                        results["results"].append({"name": test["name"], "status": "FAIL", "reason": f"R{reg}={reg_val}, expected {exp_val}"})
+                        results["results"].append({"name": test["name"], "status": "FAIL", "reason": f"R{reg}={reg_val}, expected nonzero"})
                         results["failed"] += 1
+                elif reg_val == exp_val:
+                    results["results"].append({"name": test["name"], "status": "PASS"})
+                    results["passed"] += 1
+                else:
+                    results["results"].append({"name": test["name"], "status": "FAIL", "reason": f"R{reg}={reg_val}, expected {exp_val}"})
+                    results["failed"] += 1
 
         except Exception as e:
             results["results"].append({"name": test["name"], "status": "ERROR", "reason": str(e)})

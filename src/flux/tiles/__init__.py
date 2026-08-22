@@ -8,32 +8,32 @@ Tiles are reusable computation patterns that can be:
 - Self-generated — the system can discover new tiles from hot code patterns
 """
 
+from .graph import TileEdge, TileGraph
+from .ports import CoercionInfo, PortDirection, TilePort
+from .registry import TileRegistry, default_registry
 from .tile import (
-    Tile,
-    TileType,
-    TileInstance,
     CompositeTile,
     ParallelTile,
+    Tile,
+    TileInstance,
+    TileType,
 )
-from .ports import TilePort, PortDirection, CoercionInfo
-from .graph import TileGraph, TileEdge
-from .registry import TileRegistry, default_registry
 
 __all__ = [
-    # Core
-    "Tile",
-    "TileType",
-    "TileInstance",
+    "CoercionInfo",
     "CompositeTile",
     "ParallelTile",
-    # Ports
-    "TilePort",
     "PortDirection",
-    "CoercionInfo",
+    # Core
+    "Tile",
+    "TileEdge",
     # Graph
     "TileGraph",
-    "TileEdge",
+    "TileInstance",
+    # Ports
+    "TilePort",
     # Registry
     "TileRegistry",
+    "TileType",
     "default_registry",
 ]

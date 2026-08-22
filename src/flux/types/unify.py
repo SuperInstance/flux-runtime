@@ -10,11 +10,21 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any
 
 from flux.fir.types import (
-    FIRType, TypeContext, IntType, FloatType, BoolType, UnitType,
-    StringType, RefType, ArrayType, VectorType, FuncType, StructType,
+    ArrayType,
+    BoolType,
+    FIRType,
+    FloatType,
+    FuncType,
+    IntType,
+    RefType,
+    StringType,
+    StructType,
+    TypeContext,
+    UnitType,
+    VectorType,
 )
 from flux.types.generic import GenericType, TypeVar
 
@@ -151,7 +161,7 @@ class TypeUnifier:
             If None, a new one is created.
     """
 
-    def __init__(self, ctx: Optional[TypeContext] = None) -> None:
+    def __init__(self, ctx: TypeContext | None = None) -> None:
         self.ctx = ctx or TypeContext()
         self._coercion_rules: list[CoercionRule] = []
 
@@ -467,7 +477,7 @@ class TypeUnifier:
             elif base == "Box":
                 if len(arg_types) == 1:
                     return self.ctx.get_ref(arg_types[0])
-                raise ValueError(f"Box expects 1 type argument")
+                raise ValueError("Box expects 1 type argument")
             elif base == "Rc" or base == "Arc":
                 if len(arg_types) == 1:
                     return self.ctx.get_ref(arg_types[0])
@@ -599,7 +609,7 @@ class TypeUnifier:
         """
         # Identity
         if source == target or (isinstance(source, FIRType) and isinstance(target, FIRType)
-                                and type(source) == type(target)
+                                and type(source) is type(target)
                                 and _type_eq(source, target)):
             return 0
 
@@ -655,12 +665,12 @@ class TypeUnifier:
 
         # Generic types with same name
         if (isinstance(source, GenericType) and isinstance(target, GenericType)
-                and source.name == target.name):
-            if len(source.args) == len(target.args):
-                return sum(
-                    self.coercion_cost(s, t)
-                    for s, t in zip(source.args, target.args)
-                )
+                and source.name == target.name
+                and len(source.args) == len(target.args)):
+            return sum(
+                self.coercion_cost(s, t)
+                for s, t in zip(source.args, target.args, strict=False)
+            )
 
         # Incompatible
         return 100
@@ -681,7 +691,7 @@ class TypeUnifier:
         # Implicit coercions: widening (cost 1) and identity (cost 0)
         return cost <= 1
 
-    def unify(self, *types: FIRType) -> Optional[FIRType]:
+    def unify(self, *types: FIRType) -> FIRType | None:
         """Unify multiple types into a single common type.
 
         Finds the least general type that all input types can be
@@ -705,7 +715,7 @@ class TypeUnifier:
                 return None
         return result
 
-    def _unify_pair(self, t1: FIRType, t2: FIRType) -> Optional[FIRType]:
+    def _unify_pair(self, t1: FIRType, t2: FIRType) -> FIRType | None:
         """Unify two types, finding their least upper bound."""
         if _type_eq(t1, t2):
             return t1
@@ -752,7 +762,7 @@ class TypeUnifier:
         if (isinstance(t1, GenericType) and isinstance(t2, GenericType)
                 and t1.name == t2.name and len(t1.args) == len(t2.args)):
             unified_args = []
-            for a1, a2 in zip(t1.args, t2.args):
+            for a1, a2 in zip(t1.args, t2.args, strict=False):
                 ua = self._unify_pair(a1, a2)
                 if ua is None:
                     return None
@@ -788,7 +798,7 @@ class TypeUnifier:
 
 def _type_eq(t1: FIRType, t2: FIRType) -> bool:
     """Deep equality check for FIR types."""
-    if type(t1) != type(t2):
+    if type(t1) is not type(t2):
         return False
 
     if isinstance(t1, IntType):
@@ -806,19 +816,19 @@ def _type_eq(t1: FIRType, t2: FIRType) -> bool:
     if isinstance(t1, FuncType):
         return (len(t1.params) == len(t2.params)
                 and len(t1.returns) == len(t2.returns)
-                and all(_type_eq(a, b) for a, b in zip(t1.params, t2.params))
-                and all(_type_eq(a, b) for a, b in zip(t1.returns, t2.returns)))
+                and all(_type_eq(a, b) for a, b in zip(t1.params, t2.params, strict=False))
+                and all(_type_eq(a, b) for a, b in zip(t1.returns, t2.returns, strict=False)))
     if isinstance(t1, StructType):
         return (t1.name == t2.name
                 and len(t1.fields) == len(t2.fields)
                 and all(
                     n1 == n2 and _type_eq(f1, f2)
-                    for (n1, f1), (n2, f2) in zip(t1.fields, t2.fields)
+                    for (n1, f1), (n2, f2) in zip(t1.fields, t2.fields, strict=False)
                 ))
     if isinstance(t1, GenericType):
         return (t1.name == t2.name
                 and len(t1.args) == len(t2.args)
-                and all(_type_eq(a, b) for a, b in zip(t1.args, t2.args)))
+                and all(_type_eq(a, b) for a, b in zip(t1.args, t2.args, strict=False)))
     if isinstance(t1, TypeVar):
         return t1.name == t2.name
 

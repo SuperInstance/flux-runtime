@@ -1,8 +1,8 @@
-"""FLUX Retro: Mastermind — code-breaking comparison in FLUX bytecode.
+"""FLUX Retro: Mastermind - code-breaking comparison in FLUX bytecode.
 
 The VM computes black/white pegs for a given guess vs. secret:
-  • R0–R3 = secret code (digits 1-6)
-  • R4–R7 = guess code   (digits 1-6)
+  • R0-R3 = secret code (digits 1-6)
+  • R4-R7 = guess code   (digits 1-6)
   • R8     = black pegs (correct digit, correct position)
   • R9     = white pegs (correct digit, wrong position)
 
@@ -14,8 +14,9 @@ Bytecode algorithm:
 from __future__ import annotations
 
 import random
-from flux.bytecode.opcodes import Op
+
 from flux.vm.interpreter import Interpreter
+
 from ._builder import BytecodeBuilder
 
 _CODE_LEN = 4
@@ -119,19 +120,30 @@ class Mastermind:
         b.jle("w_g1_start")
         b.cmp(0, 4)
         b.jne("w_g0_s1")
-        b.inc(9); b.movi(0, 0); b.movi(4, -1); b.jmp("w_g1_start")
+        b.inc(9)
+        b.movi(0, 0)
+        b.movi(4, -1)
+        b.jmp("w_g1_start")
         b.label("w_g0_s1")
         b.cmp(1, 4)
         b.jne("w_g0_s2")
-        b.inc(9); b.movi(1, 0); b.movi(4, -1); b.jmp("w_g1_start")
+        b.inc(9)
+        b.movi(1, 0)
+        b.movi(4, -1)
+        b.jmp("w_g1_start")
         b.label("w_g0_s2")
         b.cmp(2, 4)
         b.jne("w_g0_s3")
-        b.inc(9); b.movi(2, 0); b.movi(4, -1); b.jmp("w_g1_start")
+        b.inc(9)
+        b.movi(2, 0)
+        b.movi(4, -1)
+        b.jmp("w_g1_start")
         b.label("w_g0_s3")
         b.cmp(3, 4)
         b.jne("w_g1_start")
-        b.inc(9); b.movi(3, 0); b.movi(4, -1)
+        b.inc(9)
+        b.movi(3, 0)
+        b.movi(4, -1)
 
         # guess[1] (R5) vs secret[0..3]
         b.label("w_g1_start")
@@ -140,19 +152,30 @@ class Mastermind:
         b.jle("w_g2_start")
         b.cmp(0, 5)
         b.jne("w_g1_s1")
-        b.inc(9); b.movi(0, 0); b.movi(5, -1); b.jmp("w_g2_start")
+        b.inc(9)
+        b.movi(0, 0)
+        b.movi(5, -1)
+        b.jmp("w_g2_start")
         b.label("w_g1_s1")
         b.cmp(1, 5)
         b.jne("w_g1_s2")
-        b.inc(9); b.movi(1, 0); b.movi(5, -1); b.jmp("w_g2_start")
+        b.inc(9)
+        b.movi(1, 0)
+        b.movi(5, -1)
+        b.jmp("w_g2_start")
         b.label("w_g1_s2")
         b.cmp(2, 5)
         b.jne("w_g1_s3")
-        b.inc(9); b.movi(2, 0); b.movi(5, -1); b.jmp("w_g2_start")
+        b.inc(9)
+        b.movi(2, 0)
+        b.movi(5, -1)
+        b.jmp("w_g2_start")
         b.label("w_g1_s3")
         b.cmp(3, 5)
         b.jne("w_g2_start")
-        b.inc(9); b.movi(3, 0); b.movi(5, -1)
+        b.inc(9)
+        b.movi(3, 0)
+        b.movi(5, -1)
 
         # guess[2] (R6) vs secret[0..3]
         b.label("w_g2_start")
@@ -161,19 +184,30 @@ class Mastermind:
         b.jle("w_g3_start")
         b.cmp(0, 6)
         b.jne("w_g2_s1")
-        b.inc(9); b.movi(0, 0); b.movi(6, -1); b.jmp("w_g3_start")
+        b.inc(9)
+        b.movi(0, 0)
+        b.movi(6, -1)
+        b.jmp("w_g3_start")
         b.label("w_g2_s1")
         b.cmp(1, 6)
         b.jne("w_g2_s2")
-        b.inc(9); b.movi(1, 0); b.movi(6, -1); b.jmp("w_g3_start")
+        b.inc(9)
+        b.movi(1, 0)
+        b.movi(6, -1)
+        b.jmp("w_g3_start")
         b.label("w_g2_s2")
         b.cmp(2, 6)
         b.jne("w_g2_s3")
-        b.inc(9); b.movi(2, 0); b.movi(6, -1); b.jmp("w_g3_start")
+        b.inc(9)
+        b.movi(2, 0)
+        b.movi(6, -1)
+        b.jmp("w_g3_start")
         b.label("w_g2_s3")
         b.cmp(3, 6)
         b.jne("w_g3_start")
-        b.inc(9); b.movi(3, 0); b.movi(6, -1)
+        b.inc(9)
+        b.movi(3, 0)
+        b.movi(6, -1)
 
         # guess[3] (R7) vs secret[0..3]
         b.label("w_g3_start")
@@ -182,19 +216,30 @@ class Mastermind:
         b.jle("done")
         b.cmp(0, 7)
         b.jne("w_g3_s1")
-        b.inc(9); b.movi(0, 0); b.movi(7, -1); b.jmp("done")
+        b.inc(9)
+        b.movi(0, 0)
+        b.movi(7, -1)
+        b.jmp("done")
         b.label("w_g3_s1")
         b.cmp(1, 7)
         b.jne("w_g3_s2")
-        b.inc(9); b.movi(1, 0); b.movi(7, -1); b.jmp("done")
+        b.inc(9)
+        b.movi(1, 0)
+        b.movi(7, -1)
+        b.jmp("done")
         b.label("w_g3_s2")
         b.cmp(2, 7)
         b.jne("w_g3_s3")
-        b.inc(9); b.movi(2, 0); b.movi(7, -1); b.jmp("done")
+        b.inc(9)
+        b.movi(2, 0)
+        b.movi(7, -1)
+        b.jmp("done")
         b.label("w_g3_s3")
         b.cmp(3, 7)
         b.jne("done")
-        b.inc(9); b.movi(3, 0); b.movi(7, -1)
+        b.inc(9)
+        b.movi(3, 0)
+        b.movi(7, -1)
 
         b.label("done")
         b.halt()
@@ -205,7 +250,7 @@ class Mastermind:
     def evaluate(self, guess: list[int]) -> dict:
         """Run the VM with secret and guess, return pegs."""
         bc = self.build_bytecode()
-        vm = Interpreter(bc)
+        vm = Interpreter(bc, isa="system_a")
         # Load secret into R0-R3, guess into R4-R7
         for i in range(_CODE_LEN):
             vm.regs.write_gp(i, self.secret[i])
@@ -271,10 +316,10 @@ class Mastermind:
 
     def _python_pegs(self, guess: list[int]) -> dict:
         """Quick Python peg computation for candidate filtering."""
-        black = sum(s == g for s, g in zip(self.secret, guess))
+        black = sum(s == g for s, g in zip(self.secret, guess, strict=False))
         secret_rem = []
         guess_rem = []
-        for s, g in zip(self.secret, guess):
+        for s, g in zip(self.secret, guess, strict=False):
             if s != g:
                 secret_rem.append(s)
                 guess_rem.append(g)
@@ -290,7 +335,7 @@ class Mastermind:
     @staticmethod
     def demonstrate():
         print("=" * 60)
-        print("  FLUX RETRO — MASTERMIND")
+        print("  FLUX RETRO - MASTERMIND")
         print("  Code-breaking with FLUX bytecode comparison engine")
         print("=" * 60)
 
@@ -301,7 +346,7 @@ class Mastermind:
         print(f"  {'':>4}  {'GUESS':>10}  {'BLACK':>6}  {'WHITE':>6}")
         print("  " + "-" * 34)
 
-        for i, (guess, pegs) in enumerate(zip(result["guesses"], result["results"])):
+        for i, (guess, pegs) in enumerate(zip(result["guesses"], result["results"], strict=False)):
             g_str = "".join(str(d) for d in guess)
             b_str = "●" * pegs["black"] if pegs["black"] else " ·"
             w_str = "○" * pegs["white"] if pegs["white"] else " ·"

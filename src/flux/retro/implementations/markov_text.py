@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
+
 from ._asm import Assembler
 
 
@@ -83,7 +84,7 @@ class MarkovChainText:
 
         # Scan cumulative frequencies
         cumul = 0
-        for i, (f_idx, freq) in enumerate(followers):
+        for _i, (_f_idx, freq) in enumerate(followers):
             cumul += freq
             # If target < cumul → select this word
             a.movi(3, cumul)
@@ -96,7 +97,7 @@ class MarkovChainText:
         a.jmp("done")
 
         a.label("found")
-        a.movi(5, f_idx)
+        a.movi(5, _f_idx)
 
         a.label("done")
         a.halt()
@@ -143,7 +144,7 @@ class MarkovChainText:
         word_idx = vocab.index(seed_word.lower())
         rand_counter = 42
 
-        vm = Interpreter(bytes([Op.HALT]), memory_size=65536)
+        vm = Interpreter(bytes([Op.HALT]), memory_size=65536, isa="system_a")
 
         generated = [vocab[word_idx]]
 
@@ -175,7 +176,7 @@ class MarkovChainText:
 
         print(f"\n  Vocabulary: {', '.join(vocab)}")
 
-        print(f"\n  Bigram table:")
+        print("\n  Bigram table:")
         for word_idx in sorted(table.keys()):
             word = vocab[word_idx]
             followers = ", ".join(
@@ -183,7 +184,7 @@ class MarkovChainText:
             )
             print(f"    {word} → {followers}")
 
-        print(f"\n  --- Generation (bytecode-powered word selection) ---\n")
+        print("\n  --- Generation (bytecode-powered word selection) ---\n")
 
         seeds = ["the", "cat", "dog"]
         for seed in seeds:
@@ -212,7 +213,7 @@ class MarkovChainText:
         bc = cls._build_selection_bytecode(best_followers, 5)
         print(f"  Bytecode size: {len(bc)} bytes")
         print(f"  Instructions: {len(bc) // 4} (all 4-byte Format D)")
-        print(f"  Pattern: MOVI + CMP + JL + JE per follower")
+        print("  Pattern: MOVI + CMP + JL + JE per follower")
         print()
 
 

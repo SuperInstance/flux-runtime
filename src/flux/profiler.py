@@ -22,34 +22,19 @@ JSON export for tooling integration::
 
 from __future__ import annotations
 
+import contextlib
 import json
 import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
-from flux.bytecode.opcodes import Op, get_format
-from flux.disasm import (
-    ARITHMETIC_OPS,
-    CONTROL_FLOW_OPS,
-    MEMORY_OPS,
-    COMPARISON_OPS,
-    STACK_OPS,
-    TYPE_OPS,
-    SIMD_OPS,
-    A2A_OPS,
-    SYSTEM_OPS,
-)
+from flux.bytecode.opcodes import Op
 from flux.tracer import (
     FluxTracer,
-    TraceResult,
     _categorise_opcode,
     _disassemble_at,
-    _snapshot_registers,
-    _snapshot_flags,
-    _snapshot_memory,
 )
-
 
 __all__ = ["FluxProfiler", "ProfileResult"]
 
@@ -73,7 +58,7 @@ class OpcodeStats:
             return 0.0
         return self.total_time_us / self.count
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "opcode": f"0x{self.opcode:02X}",
             "opcode_name": self.opcode_name,
@@ -94,7 +79,7 @@ class MemoryAccessPattern:
     addresses_read: Counter = field(default_factory=Counter)
     addresses_written: Counter = field(default_factory=Counter)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "total_reads": self.reads,
             "total_writes": self.writes,
@@ -108,22 +93,22 @@ class ProfileResult:
     """Complete profiling result."""
 
     def __init__(self) -> None:
-        self.opcode_stats: Dict[int, OpcodeStats] = {}
-        self.category_stats: Dict[str, OpcodeStats] = {}
+        self.opcode_stats: dict[int, OpcodeStats] = {}
+        self.category_stats: dict[str, OpcodeStats] = {}
         self.memory_patterns = MemoryAccessPattern()
         self.total_instructions: int = 0
         self.total_time_us: float = 0.0
         self.total_cycles: int = 0
         self.halted: bool = False
-        self.error: Optional[str] = None
+        self.error: str | None = None
         self.bytecode_size: int = 0
         self.conservation_consumed: int = 0
-        self.conservation_by_category: Dict[str, int] = {}
-        self.register_lifetimes: Dict[str, List[Tuple[int, int]]] = {}
-        self.hotspots: List[Dict[str, Any]] = []
+        self.conservation_by_category: dict[str, int] = {}
+        self.register_lifetimes: dict[str, list[tuple[int, int]]] = {}
+        self.hotspots: list[dict[str, Any]] = []
 
     @property
-    def hottest_opcodes(self) -> List[Tuple[str, int, float]]:
+    def hottest_opcodes(self) -> list[tuple[str, int, float]]:
         """Return top-10 hottest opcodes by count.
 
         Returns list of ``(opcode_name, count, percentage)`` tuples.
@@ -140,7 +125,7 @@ class ProfileResult:
         ]
 
     @property
-    def slowest_opcodes(self) -> List[Tuple[str, float, int]]:
+    def slowest_opcodes(self) -> list[tuple[str, float, int]]:
         """Return top-10 slowest opcodes by total time.
 
         Returns list of ``(opcode_name, total_time_us, count)`` tuples.
@@ -155,7 +140,7 @@ class ProfileResult:
             for s in sorted_ops[:10]
         ]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialisation."""
         return {
             "summary": {
@@ -230,7 +215,7 @@ class FluxProfiler:
 
     def __init__(self, warmup_steps: int = 0) -> None:
         self.warmup_steps = warmup_steps
-        self._result: Optional[ProfileResult] = None
+        self._result: ProfileResult | None = None
 
     def profile(
         self,
@@ -260,17 +245,17 @@ class FluxProfiler:
         result.bytecode_size = len(bytecode)
         self._result = result
 
-        vm = Interpreter(bytecode, memory_size=memory_size)
+        vm = Interpreter(bytecode, memory_size=memory_size, isa="system_a")
         vm.max_cycles = max_steps
 
         # Tracking state
         opcode_counter: Counter = Counter()
-        opcode_times: Dict[int, List[float]] = defaultdict(list)
+        opcode_times: dict[int, list[float]] = defaultdict(list)
         category_counter: Counter = Counter()
-        category_times: Dict[str, List[float]] = defaultdict(list)
+        category_times: dict[str, list[float]] = defaultdict(list)
         step_count = 0
         conservation_total = 0
-        conservation_by_cat: Dict[str, int] = defaultdict(int)
+        conservation_by_cat: dict[str, int] = defaultdict(int)
 
         # Conservation weights
         from flux.tracer import ConservationLedger
@@ -296,16 +281,12 @@ class FluxProfiler:
                 if op in _MEMORY_READ_OPS:
                     result.memory_patterns.reads += 1
                     # Try to determine which region
-                    try:
+                    with contextlib.suppress(Exception):
                         result.memory_patterns.regions_accessed["stack"] += 1
-                    except Exception:
-                        pass
                 elif op in _MEMORY_WRITE_OPS:
                     result.memory_patterns.writes += 1
-                    try:
+                    with contextlib.suppress(Exception):
                         result.memory_patterns.regions_accessed["stack"] += 1
-                    except Exception:
-                        pass
             except (ValueError, Exception):
                 pass
 
@@ -396,7 +377,7 @@ class FluxProfiler:
 
     # ── Reporting ─────────────────────────────────────────────────────────
 
-    def report(self, result: Optional[ProfileResult] = None) -> str:
+    def report(self, result: ProfileResult | None = None) -> str:
         """Generate a human-readable profile report.
 
         Parameters
@@ -410,7 +391,7 @@ class FluxProfiler:
         if result is None:
             return "No profile available.  Call profile() first."
 
-        lines: List[str] = []
+        lines: list[str] = []
         lines.append("FLUX Execution Profile")
         lines.append("═" * 72)
         lines.append("")
@@ -506,7 +487,7 @@ class FluxProfiler:
         lines.append(f"  Total reads  : {mp.reads}")
         lines.append(f"  Total writes : {mp.writes}")
         if mp.regions_accessed:
-            lines.append(f"  Regions accessed:")
+            lines.append("  Regions accessed:")
             for region, cnt in mp.regions_accessed.most_common():
                 lines.append(f"    {region}: {cnt}")
         lines.append("")
@@ -533,7 +514,7 @@ class FluxProfiler:
         lines.append("═" * 72)
         return "\n".join(lines)
 
-    def to_json(self, result: Optional[ProfileResult] = None, indent: int = 2) -> str:
+    def to_json(self, result: ProfileResult | None = None, indent: int = 2) -> str:
         """Export profile as JSON for tooling."""
         if result is None:
             result = self._result

@@ -14,10 +14,9 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Any
+from typing import Any
 
 from flux.evolution.genome import MutationStrategy
-
 
 # ── Experiment Outcome ──────────────────────────────────────────────────
 

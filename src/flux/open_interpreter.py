@@ -32,13 +32,12 @@ from __future__ import annotations
 
 import re
 import struct
-from typing import Optional, List, Dict, Any, Tuple
 from dataclasses import dataclass, field
+from typing import Any
 
 from flux.bytecode.opcodes import Op
+from flux.disasm import DisassemblyResult, FluxDisassembler
 from flux.vm.interpreter import Interpreter, VMError
-from flux.disasm import FluxDisassembler, DisassemblyResult
-
 
 # ── Result Data Structures ─────────────────────────────────────────────────────
 
@@ -48,13 +47,13 @@ class ExecutionResult:
     success: bool
     bytecode: bytes
     disassembly: str
-    result: Optional[int] = None
-    registers: Dict[int, int] = field(default_factory=dict)
+    result: int | None = None
+    registers: dict[int, int] = field(default_factory=dict)
     cycles: int = 0
-    error: Optional[str] = None
+    error: str | None = None
     halted: bool = False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return {
             "success": self.success,
@@ -88,7 +87,7 @@ class OpenFluxInterpreter:
             max_cycles: Maximum execution cycles for safety.
         """
         self.max_cycles = max_cycles
-        self._a2a_messages: List[Dict[str, Any]] = []
+        self._a2a_messages: list[dict[str, Any]] = []
 
     def interpret(self, input_text: str) -> ExecutionResult:
         """Interpret input text and execute it.
@@ -109,7 +108,7 @@ class OpenFluxInterpreter:
             disassembly_text = self._format_disassembly(disasm_result)
 
             # Execute bytecode
-            vm = Interpreter(bytecode, max_cycles=self.max_cycles)
+            vm = Interpreter(bytecode, max_cycles=self.max_cycles, isa="system_a")
             vm.on_a2a(self._a2a_handler)
 
             try:
@@ -158,7 +157,7 @@ class OpenFluxInterpreter:
             "data": data.hex(),
         })
 
-    def get_a2a_messages(self) -> List[Dict[str, Any]]:
+    def get_a2a_messages(self) -> list[dict[str, Any]]:
         """Get all A2A messages sent during execution."""
         return self._a2a_messages.copy()
 
@@ -197,7 +196,7 @@ class OpenFluxInterpreter:
 
         return bytes(bytecode)
 
-    def _extract_flux_blocks(self, text: str) -> List[str]:
+    def _extract_flux_blocks(self, text: str) -> list[str]:
         """Extract FLUX code blocks from markdown.
 
         Returns list of code blocks without the wrapping ```flux ... ```
@@ -218,8 +217,8 @@ class OpenFluxInterpreter:
         lines = assembly.strip().split('\n')
 
         # First pass: collect labels and instruction info
-        labels: Dict[str, int] = {}
-        instructions: List[Tuple[int, str]] = []  # (offset, line_without_label)
+        labels: dict[str, int] = {}
+        instructions: list[tuple[int, str]] = []  # (offset, line_without_label)
         offset = 0
 
         for line in lines:
@@ -268,13 +267,11 @@ class OpenFluxInterpreter:
             return 1
         elif opcode in {Op.INC, Op.DEC, Op.PUSH, Op.POP}:
             return 2
-        elif opcode in {Op.MOVI, Op.JMP, Op.JZ, Op.JNZ}:
-            return 4
-        elif opcode in {Op.IADD, Op.ISUB, Op.IMUL, Op.IDIV}:
+        elif opcode in {Op.MOVI, Op.JMP, Op.JZ, Op.JNZ} or opcode in {Op.IADD, Op.ISUB, Op.IMUL, Op.IDIV}:
             return 4
         return 3  # Default to 3 bytes
 
-    def _parse_instruction(self, line: str, labels: Dict[str, int]) -> bytes:
+    def _parse_instruction(self, line: str, labels: dict[str, int]) -> bytes:
         """Parse a single FLUX assembly instruction to bytecode."""
         parts = line.split()
         if not parts:
@@ -315,23 +312,17 @@ class OpenFluxInterpreter:
             if len(parts) == 2:
                 # JMP label
                 target = parts[1].rstrip(',')
-                if target in labels:
-                    # Forward jump: target is ahead, offset is positive
-                    # Backward jump: target is behind, offset is negative
-                    # We can't calculate accurately without knowing current position
-                    # For now, use a placeholder that will be fixed by a second pass
-                    offset = labels[target] - 10  # Rough estimate
-                else:
-                    offset = 0
+                # Forward jump: target is ahead, offset is positive
+                # Backward jump: target is behind, offset is negative
+                # We can't calculate accurately without knowing current position
+                # For now, use a placeholder that will be fixed by a second pass
+                offset = labels[target] - 10 if target in labels else 0  # Rough estimate
                 return struct.pack("<BBh", opcode, 0, offset)
             else:
                 # JZ R0, label
                 reg = self._parse_register(parts[1])
                 target = parts[2].rstrip(',')
-                if target in labels:
-                    offset = labels[target] - 10  # Rough estimate
-                else:
-                    offset = 0
+                offset = labels[target] - 10 if target in labels else 0  # Rough estimate
                 return struct.pack("<BBh", opcode, reg, offset)
 
         elif opcode in {Op.INC, Op.DEC} and len(parts) >= 2:
@@ -349,7 +340,7 @@ class OpenFluxInterpreter:
 
         return b""
 
-    def _parse_instruction_with_offset(self, line: str, labels: Dict[str, int], current_offset: int) -> bytes:
+    def _parse_instruction_with_offset(self, line: str, labels: dict[str, int], current_offset: int) -> bytes:
         """Parse a single FLUX assembly instruction to bytecode, knowing current offset."""
         parts = line.split()
         if not parts:
@@ -400,11 +391,8 @@ class OpenFluxInterpreter:
                 reg = self._parse_register(parts[1])
                 target = parts[2].rstrip(',')
 
-            if target in labels:
-                # Calculate offset: target - after_instruction
-                offset = labels[target] - after_instr_offset
-            else:
-                offset = 0
+            # Offset: unknown-label placeholders are patched by a second pass
+            offset = (labels[target] - after_instr_offset) if target in labels else 0
 
             return struct.pack("<BBh", opcode, reg, offset)
 
@@ -832,7 +820,6 @@ def interactive():
       - Execution result
       - Register state
     """
-    import sys
 
     interpreter = OpenFluxInterpreter()
 
@@ -871,20 +858,20 @@ def interactive():
             print("-" * 60)
 
             if result.success:
-                print(f"✓ Success!")
+                print("✓ Success!")
                 print(f"  Result: R0 = {result.result}")
                 print(f"  Cycles: {result.cycles}")
                 print(f"  Halted: {result.halted}")
 
                 if result.registers:
-                    print(f"\n  Registers:")
+                    print("\n  Registers:")
                     for reg, val in sorted(result.registers.items()):
                         print(f"    R{reg} = {val}")
 
                 # Show A2A messages if any
                 a2a_msgs = interpreter.get_a2a_messages()
                 if a2a_msgs:
-                    print(f"\n  A2A Messages:")
+                    print("\n  A2A Messages:")
                     for msg in a2a_msgs:
                         print(f"    [{msg['opcode']}] {msg['data']}")
             else:
@@ -973,7 +960,7 @@ def run_markdown_file(filepath: str, max_cycles: int = 1_000_000) -> ExecutionRe
     Returns:
         ExecutionResult with bytecode, disassembly, and results.
     """
-    with open(filepath, 'r') as f:
+    with open(filepath) as f:
         content = f.read()
 
     interp = OpenFluxInterpreter(max_cycles=max_cycles)

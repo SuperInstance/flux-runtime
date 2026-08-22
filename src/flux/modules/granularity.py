@@ -6,6 +6,7 @@ Each level represents a different scale of module containment:
 """
 
 from __future__ import annotations
+
 from enum import Enum
 
 
@@ -16,14 +17,14 @@ class Granularity(Enum):
     Higher values = smaller units = faster reload.
     """
 
-    TRAIN = 0       # Largest — full library, slowest reload
+    TRAIN = 0       # Largest - full library, slowest reload
     CARRIAGE = 1    # Sub-library section
     LUGGAGE = 2     # Feature group
     BAG = 3         # Component cluster
     POCKET = 4      # Single component
     WALLET = 5      # Organized sub-component
     SLOT = 6        # Named position
-    CARD = 7        # Atomic unit — fastest hot-reload
+    CARD = 7        # Atomic unit - fastest hot-reload
 
 
 class GranularityMeta:
@@ -31,14 +32,14 @@ class GranularityMeta:
 
     Attributes:
         granularity: The granularity level this metadata describes.
-        reload_cost: Relative cost of reloading at this level (1–100).
+        reload_cost: Relative cost of reloading at this level (1-100).
                      Lower = cheaper (CARD = 1), higher = expensive (TRAIN = 100).
         isolation: How independent units at this level are from siblings.
                    0.0 = fully coupled, 1.0 = fully isolated.
         typical_size: Expected byte range for content at this level (min, max).
     """
 
-    __slots__ = ("granularity", "reload_cost", "isolation", "typical_size")
+    __slots__ = ("granularity", "isolation", "reload_cost", "typical_size")
 
     def __init__(
         self,

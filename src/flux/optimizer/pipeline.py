@@ -1,10 +1,13 @@
 """Optimization pipeline — configurable sequence of passes."""
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..fir.blocks import FIRModule
+
+from typing import ClassVar
 
 from .passes import (
     ConstantFoldingPass,
@@ -16,7 +19,7 @@ from .passes import (
 class OptimizationPipeline:
     """Configurable sequence of optimization passes with fixed-point iteration."""
 
-    DEFAULT_PASSES = [
+    DEFAULT_PASSES: ClassVar[list] = [
         ConstantFoldingPass,
         DeadCodeEliminationPass,
         InlineFunctionsPass,

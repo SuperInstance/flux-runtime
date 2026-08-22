@@ -1,4 +1,4 @@
-"""FLUX Retro: Lunar Lander — physics simulation in pure FLUX bytecode.
+"""FLUX Retro: Lunar Lander - physics simulation in pure FLUX bytecode.
 
 The VM simulates a lunar lander descending to the surface:
   • R0 = altitude  (starts at 1000 m)
@@ -14,14 +14,13 @@ Each tick:  velocity -= 2 (gravity),  optional thrust (+5, costs 1 fuel),
 
 from __future__ import annotations
 
-import struct
-from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
+
 from ._builder import BytecodeBuilder
 
 # Memory layout
 _MEM_TICK_LOG = 1000       # start of tick-log area (altitude, velocity, fuel per tick)
-_LOG_ENTRY_SIZE = 12       # 3 × i32 per tick
+_LOG_ENTRY_SIZE = 12       # 3 x i32 per tick
 _MAX_TICKS = 50
 
 
@@ -42,7 +41,7 @@ class LunarLander:
 
     @staticmethod
     def _default_schedule() -> list[int]:
-        # Free-fall for 25 ticks then try to brake — dramatic demo
+        # Free-fall for 25 ticks then try to brake - dramatic demo
         sched = [0] * _MAX_TICKS
         for t in range(25, 40):
             sched[t] = 1
@@ -153,7 +152,7 @@ class LunarLander:
 
     def run(self) -> dict:
         bc = self.build_bytecode()
-        vm = Interpreter(bc, memory_size=65536)
+        vm = Interpreter(bc, memory_size=65536, isa="system_a")
         # Write thrust schedule into stack memory at offset 500
         stack = vm.memory.get_region("stack")
         for i, t in enumerate(self.thrust_schedule[:_MAX_TICKS]):
@@ -173,7 +172,7 @@ class LunarLander:
     def run_with_log(self) -> dict:
         """Run and also decode the tick-by-tick log from memory."""
         bc = self.build_bytecode()
-        vm = Interpreter(bc, memory_size=65536)
+        vm = Interpreter(bc, memory_size=65536, isa="system_a")
         stack = vm.memory.get_region("stack")
         for i, t in enumerate(self.thrust_schedule[:_MAX_TICKS]):
             stack.write(500 + i, bytes([t]))
@@ -203,7 +202,7 @@ class LunarLander:
     @staticmethod
     def demonstrate():
         print("=" * 60)
-        print("  FLUX RETRO — LUNAR LANDER")
+        print("  FLUX RETRO - LUNAR LANDER")
         print("  Physics simulation in FLUX bytecode")
         print("=" * 60)
 
@@ -212,7 +211,7 @@ class LunarLander:
         log = result["log"]
         rc = result["result_code"]
 
-        print(f"\n  Thrust schedule: free-fall 25 ticks, burn ticks 25-39, coast")
+        print("\n  Thrust schedule: free-fall 25 ticks, burn ticks 25-39, coast")
         print(f"  {'TICK':>4}  {'ALT':>7}  {'VEL':>7}  {'FUEL':>5}  {'BURN':>4}")
         print("  " + "-" * 38)
 

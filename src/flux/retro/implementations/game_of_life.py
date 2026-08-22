@@ -1,6 +1,6 @@
-"""FLUX Retro: Game of Life — cellular automaton in FLUX bytecode.
+"""FLUX Retro: Game of Life - cellular automaton in FLUX bytecode.
 
-An 8×8 grid with Conway's rules, implemented with padded borders (10×10 buffer).
+An 8x8 grid with Conway's rules, implemented with padded borders (10x10 buffer).
 The VM bytecode computes one full generation:
   • Reads 64 cells from source buffer
   • Counts 8 neighbors per cell
@@ -8,16 +8,16 @@ The VM bytecode computes one full generation:
   • Writes next state to destination buffer
 
 Memory layout (stack region):
-  • 1000–1099: Source buffer (10×10 padded grid, 100 bytes)
-  • 1200–1299: Destination buffer (10×10 padded grid, 100 bytes)
+  • 1000-1099: Source buffer (10x10 padded grid, 100 bytes)
+  • 1200-1299: Destination buffer (10x10 padded grid, 100 bytes)
 
 Python orchestrates multiple generations, swaps buffers, and renders.
 """
 
 from __future__ import annotations
 
-from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
+
 from ._builder import BytecodeBuilder
 
 _GRID = 8
@@ -32,7 +32,7 @@ _NBR_OFFSETS = [-11, -10, -9, -1, 1, 9, 10, 11]
 
 
 class GameOfLife:
-    """Conway's Game of Life on an 8×8 grid with FLUX bytecode generation logic."""
+    """Conway's Game of Life on an 8x8 grid with FLUX bytecode generation logic."""
 
     def __init__(self, pattern: str = "glider"):
         self.grid = [[0] * _GRID for _ in range(_GRID)]
@@ -51,7 +51,7 @@ class GameOfLife:
             self.grid[3][3] = 1
             self.grid[3][4] = 1
         elif pattern == "block":
-            # Still life: 2×2 block
+            # Still life: 2x2 block
             self.grid[2][2] = 1
             self.grid[2][3] = 1
             self.grid[3][2] = 1
@@ -76,7 +76,7 @@ class GameOfLife:
     # ── grid ↔ padded buffer conversion ─────────────────────────────────
 
     def _grid_to_padded(self) -> bytearray:
-        """Convert 8×8 grid to 10×10 padded buffer."""
+        """Convert 8x8 grid to 10x10 padded buffer."""
         buf = bytearray(_BUF_SIZE)  # all zeros (border = dead)
         for r in range(_GRID):
             for c in range(_GRID):
@@ -84,7 +84,7 @@ class GameOfLife:
         return buf
 
     def _padded_to_grid(self, buf: bytearray) -> list[list[int]]:
-        """Convert 10×10 padded buffer back to 8×8 grid."""
+        """Convert 10x10 padded buffer back to 8x8 grid."""
         grid = [[0] * _GRID for _ in range(_GRID)]
         for r in range(_GRID):
             for c in range(_GRID):
@@ -115,7 +115,7 @@ class GameOfLife:
         return b.build()
 
     def build_bytecode(self) -> bytes:
-        """Alias — builds one generation of bytecode."""
+        """Alias - builds one generation of bytecode."""
         return self.build_generation_bytecode()
 
     def _emit_cell(self, b: BytecodeBuilder, src_addr: int, dst_addr: int,
@@ -188,9 +188,9 @@ class GameOfLife:
         # Pre-build bytecode (it's the same for every generation)
         bc = self.build_generation_bytecode()
 
-        for gen in range(generations):
+        for _gen in range(generations):
             # Create VM with source buffer pre-loaded
-            vm = Interpreter(bc, memory_size=65536)
+            vm = Interpreter(bc, memory_size=65536, isa="system_a")
             stack = vm.memory.get_region("stack")
 
             # Write source buffer
@@ -220,7 +220,7 @@ class GameOfLife:
         gen_metrics = []
 
         for gen in range(generations):
-            vm = Interpreter(bc, memory_size=65536)
+            vm = Interpreter(bc, memory_size=65536, isa="system_a")
             stack = vm.memory.get_region("stack")
             stack.write(_SRC_BASE, bytes(frames[-1]))
             stack.write(_DST_BASE, bytes(_BUF_SIZE))
@@ -242,7 +242,7 @@ class GameOfLife:
 
     @staticmethod
     def _render_padded(buf: bytearray) -> str:
-        """Render the 8×8 grid from a padded buffer."""
+        """Render the 8x8 grid from a padded buffer."""
         lines = []
         for r in range(_GRID):
             row = ""
@@ -257,7 +257,7 @@ class GameOfLife:
     @staticmethod
     def demonstrate():
         print("=" * 60)
-        print("  FLUX RETRO — GAME OF LIFE")
+        print("  FLUX RETRO - GAME OF LIFE")
         print("  Conway's cellular automaton in FLUX bytecode")
         print("=" * 60)
 

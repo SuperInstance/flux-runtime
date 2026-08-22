@@ -1,17 +1,17 @@
 """Tile Core — the Tile abstraction, TileInstance, CompositeTile, ParallelTile."""
 
 from __future__ import annotations
+
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Any, Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from .ports import TilePort, PortDirection
+from .ports import TilePort
 
 if TYPE_CHECKING:
-    from ..fir.types import TypeContext, FIRType
-    from ..fir.values import Value
     from ..fir.builder import FIRBuilder
-    from ..fir.blocks import FIRModule
+    from ..fir.values import Value
 
 
 class TileType(Enum):
@@ -228,7 +228,7 @@ class ParallelTile:
     ) -> dict[str, Value]:
         """Emit FIR for each parallel instance. Returns last instance outputs."""
         last_outputs = {}
-        for i in range(self.count):
+        for _i in range(self.count):
             # Prefix input names with instance index for uniqueness
             last_outputs = self.tile.to_fir(builder, inputs)
         return last_outputs

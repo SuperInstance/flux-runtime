@@ -7,15 +7,15 @@ to VM syscalls or built-in operations.
 
 from __future__ import annotations
 
-from typing import Optional
-
+from flux.fir.builder import FIRBuilder
 from flux.fir.types import (
-    FIRType, TypeContext, IntType, BoolType, UnitType, StringType,
+    BoolType,
+    FIRType,
+    IntType,
+    StringType,
+    UnitType,
 )
 from flux.fir.values import Value
-from flux.fir.instructions import Call, Unreachable
-from flux.fir.builder import FIRBuilder
-
 
 # ── Base ────────────────────────────────────────────────────────────────────
 
@@ -36,7 +36,7 @@ class IntrinsicFunction:
         builder: FIRBuilder,
         args: list[Value],
         **kwargs,
-    ) -> Optional[Value]:
+    ) -> Value | None:
         """Emit FIR instructions for this intrinsic.
 
         Parameters
@@ -138,7 +138,7 @@ class SizeofFn(IntrinsicFunction):
         self,
         builder: FIRBuilder,
         args: list[Value],
-        target_type: Optional[FIRType] = None,
+        target_type: FIRType | None = None,
         **kwargs,
     ) -> Value:
         if target_type is None and len(args) > 0:
@@ -146,7 +146,7 @@ class SizeofFn(IntrinsicFunction):
         if target_type is None:
             raise ValueError("sizeof() requires a type or typed value")
         # sizeof is computed at compile time; emit a constant call
-        size = _compute_sizeof(target_type)
+        _compute_sizeof(target_type)
         result_type = builder._ctx.get_int(32)
         # Emit call to runtime for dynamic sizeof
         type_tag = Value(id=-1, name=f"__type_{id(target_type)}", type=target_type)
@@ -167,7 +167,7 @@ class AlignofFn(IntrinsicFunction):
         self,
         builder: FIRBuilder,
         args: list[Value],
-        target_type: Optional[FIRType] = None,
+        target_type: FIRType | None = None,
         **kwargs,
     ) -> Value:
         if target_type is None and len(args) > 0:

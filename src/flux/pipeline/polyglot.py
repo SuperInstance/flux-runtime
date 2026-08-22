@@ -3,12 +3,10 @@ to unified FIR and bytecode using cross-language type unification."""
 
 from __future__ import annotations
 
-import struct
 from dataclasses import dataclass, field
-from typing import Optional
 
-from flux.fir.types import TypeContext, FIRType
 from flux.fir.blocks import FIRModule
+from flux.fir.types import FIRType, TypeContext
 from flux.types.unify import TypeUnifier
 
 
@@ -47,8 +45,8 @@ class PolyglotResult:
         Any errors encountered.
     """
 
-    module: Optional[FIRModule] = None
-    bytecode: Optional[bytes] = None
+    module: FIRModule | None = None
+    bytecode: bytes | None = None
     type_mappings: dict[str, FIRType] = field(default_factory=dict)
     errors: list[str] = field(default_factory=list)
 
@@ -73,7 +71,7 @@ class PolyglotCompiler:
 
     def __init__(
         self,
-        type_ctx: Optional[TypeContext] = None,
+        type_ctx: TypeContext | None = None,
         optimize: bool = True,
     ) -> None:
         self._ctx = type_ctx or TypeContext()
@@ -112,8 +110,8 @@ class PolyglotCompiler:
         result = PolyglotResult()
 
         try:
-            from flux.fir.builder import FIRBuilder
             from flux.bytecode.encoder import BytecodeEncoder
+            from flux.fir.builder import FIRBuilder
 
             # Create the target module
             builder = FIRBuilder(self._ctx)
@@ -164,7 +162,7 @@ class PolyglotCompiler:
 
         return result
 
-    def _compile_one(self, src: PolyglotSource) -> Optional[FIRModule]:
+    def _compile_one(self, src: PolyglotSource) -> FIRModule | None:
         """Compile a single source unit to FIR."""
         lang = src.lang.lower().strip()
 
@@ -187,7 +185,7 @@ class PolyglotCompiler:
         compiler = PythonFrontendCompiler()
         return compiler.compile(source)
 
-    def unify_types(self, type_a: str, lang_a: str, type_b: str, lang_b: str) -> Optional[FIRType]:
+    def unify_types(self, type_a: str, lang_a: str, type_b: str, lang_b: str) -> FIRType | None:
         """Unify two types from different languages.
 
         Parameters

@@ -1,18 +1,18 @@
 """Tile Graph — directed acyclic graph of connected tile instances."""
 
 from __future__ import annotations
+
 from collections import deque
-from dataclasses import dataclass, field
-from typing import Optional, TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from .tile import Tile, TileInstance
-from .ports import TilePort
 
 if TYPE_CHECKING:
+    from ..fir.blocks import FIRModule
+    from ..fir.builder import FIRBuilder
     from ..fir.types import TypeContext
     from ..fir.values import Value
-    from ..fir.builder import FIRBuilder
-    from ..fir.blocks import FIRModule, FIRFunction, FIRBlock
 
 
 @dataclass
@@ -125,8 +125,6 @@ class TileGraph:
         Returns:
             A FIRModule containing the compiled graph
         """
-        from ..fir.types import UnitType
-        from ..fir.values import Value
 
         module = builder.new_module("tile_graph")
         func = builder.new_function(module, "graph_main", [], [ctx.get_unit()])
@@ -183,8 +181,8 @@ class TileGraph:
 
         # For single-node patterns
         if len(pattern._nodes) == 1:
-            pat_name = list(pattern._nodes.keys())[0]
-            pat_type = list(pattern_types.values())[0]
+            pat_name = next(iter(pattern._nodes.keys()))
+            pat_type = next(iter(pattern_types.values()))
             for g_name, g_inst in self._nodes.items():
                 if g_inst.tile_type == pat_type:
                     matches.append({pat_name: g_name})
@@ -196,7 +194,7 @@ class TileGraph:
         pat_names = list(pattern._nodes.keys())
 
         for perm in permutations(graph_names, len(pat_names)):
-            mapping = dict(zip(pat_names, perm))
+            mapping = dict(zip(pat_names, perm, strict=False))
             type_match = all(
                 self._nodes[mapping[pn]].tile_type == pattern_types[pn]
                 for pn in pat_names

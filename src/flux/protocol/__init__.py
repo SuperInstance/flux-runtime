@@ -12,47 +12,61 @@ A2A message format.  It introduces:
 - **Message serialization** to/from bytecode-compatible binary format.
 """
 
-from .message import (
-    MessageKind,
-    MessageEnvelope,
-    Request,
-    Response,
-    Event,
-    Error,
-    MessageId,
-)
 from .channel import (
+    BroadcastChannel,
     Channel,
     DirectChannel,
-    BroadcastChannel,
     TopicChannel,
+)
+from .message import (
+    Error,
+    Event,
+    MessageEnvelope,
+    MessageId,
+    MessageKind,
+    Request,
+    Response,
+)
+from .negotiation import (
+    CapabilityOffer,
+    NegotiationState,
+    Negotiator,
+    TrustHandshake,
 )
 from .registry import (
     AgentDescriptor,
-    CapabilityDescriptor,
     AgentRegistry,
-)
-from .negotiation import (
-    NegotiationState,
-    CapabilityOffer,
-    TrustHandshake,
-    Negotiator,
+    CapabilityDescriptor,
 )
 from .serialization import (
-    MessageSerializer,
     BinaryMessageCodec,
+    MessageSerializer,
 )
 
 __all__ = [
-    # Messages
-    "MessageKind", "MessageEnvelope", "Request", "Response", "Event", "Error",
-    "MessageId",
-    # Channels
-    "Channel", "DirectChannel", "BroadcastChannel", "TopicChannel",
     # Registry
-    "AgentDescriptor", "CapabilityDescriptor", "AgentRegistry",
-    # Negotiation
-    "NegotiationState", "CapabilityOffer", "TrustHandshake", "Negotiator",
+    "AgentDescriptor",
+    "AgentRegistry",
+    "BinaryMessageCodec",
+    "BroadcastChannel",
+    "CapabilityDescriptor",
+    "CapabilityOffer",
+    # Channels
+    "Channel",
+    "DirectChannel",
+    "Error",
+    "Event",
+    "MessageEnvelope",
+    "MessageId",
+    # Messages
+    "MessageKind",
     # Serialization
-    "MessageSerializer", "BinaryMessageCodec",
+    "MessageSerializer",
+    # Negotiation
+    "NegotiationState",
+    "Negotiator",
+    "Request",
+    "Response",
+    "TopicChannel",
+    "TrustHandshake",
 ]

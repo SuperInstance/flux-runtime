@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 
 class ConstructType(str, Enum):
@@ -55,7 +54,7 @@ class CodeMapping:
     construct_type: str
     confidence: float = 1.0
     notes: str = ""
-    line_number: Optional[int] = None
+    line_number: int | None = None
 
     def __post_init__(self):
         if not 0.0 <= self.confidence <= 1.0:

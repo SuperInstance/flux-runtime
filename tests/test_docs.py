@@ -11,23 +11,21 @@ Covers:
 from __future__ import annotations
 
 import os
-import tempfile
 
 import pytest
 
+from flux.docs.generator import DocumentationGenerator
 from flux.docs.introspector import (
-    CodeIntrospector,
-    ModuleInfo,
     APIDeclaration,
+    CodeIntrospector,
     ComplexityMetrics,
+    ModuleInfo,
 )
 from flux.docs.renderer import (
-    MarkdownRenderer,
     AsciiRenderer,
+    MarkdownRenderer,
 )
 from flux.docs.stats import CodeStatistics
-from flux.docs.generator import DocumentationGenerator
-
 
 REPO_PATH = os.path.join(os.path.dirname(__file__), "..")
 
@@ -104,7 +102,7 @@ class TestIntrospectorModuleListing:
 
     def test_list_modules_finds_fir(self, introspector):
         modules = introspector.list_modules()
-        names = [m.name for m in modules]
+        [m.name for m in modules]
         assert any("types" in m.path for m in modules if "fir" in m.path)
         assert len(modules) > 10  # project has many modules
 
@@ -439,7 +437,7 @@ class TestGeneratorWriteAll:
     def test_write_all_content_valid(self, generator, tmp_path):
         """Written files should have valid markdown content."""
         generator.write_all(output_dir=str(tmp_path / "out"))
-        api = (tmp_path / "out" / "api_reference.md").read_text()
+        api = (tmp_path / "out" / "api_reference.md").read_text(encoding="utf-8")
         assert "# API Reference" in api
 
 

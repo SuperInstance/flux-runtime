@@ -15,27 +15,40 @@ Covers:
 
 import sys
 import time
+
 import pytest
 
 sys.path.insert(0, "src")
 
-from flux.protocol.message import (
-    MessageKind, MessageEnvelope, MessageId,
-    Request, Response, Event, Error,
-)
 from flux.protocol.channel import (
-    Channel, DirectChannel, BroadcastChannel, TopicChannel, ChannelKind,
+    BroadcastChannel,
+    DirectChannel,
+    TopicChannel,
 )
-from flux.protocol.registry import (
-    AgentDescriptor, CapabilityDescriptor, AgentRegistry,
+from flux.protocol.message import (
+    Error,
+    Event,
+    MessageEnvelope,
+    MessageId,
+    MessageKind,
+    Request,
+    Response,
 )
 from flux.protocol.negotiation import (
-    NegotiationState, CapabilityOffer, TrustHandshake, Negotiator,
+    CapabilityOffer,
+    NegotiationState,
+    Negotiator,
+    TrustHandshake,
+)
+from flux.protocol.registry import (
+    AgentDescriptor,
+    AgentRegistry,
+    CapabilityDescriptor,
 )
 from flux.protocol.serialization import (
-    BinaryMessageCodec, HEADER_SIZE, PROTOCOL_MAGIC,
+    HEADER_SIZE,
+    BinaryMessageCodec,
 )
-
 
 # ════════════════════════════════════════════════════════════════════════════
 # Message Tests
@@ -649,6 +662,7 @@ class TestAgentRegistry:
         reg.register(a)
         reg.register(b)
 
+        a.last_seen = time.time() - 100.0  # guarantee distinct timestamps (Windows clock granularity)
         b.heartbeat()  # b is more recent
         routed = reg.route("compute")
         assert routed is not None
@@ -929,7 +943,7 @@ class TestNegotiator:
             capabilities=[],
             trust_level=0.6,
         )
-        neg.accept_offer(list(neg._offers.keys())[0], "bob")
+        neg.accept_offer(next(iter(neg._offers.keys())), "bob")
 
         assert neg.get_trust_level("alice", "bob") == 0.6
 
@@ -939,7 +953,7 @@ class TestNegotiator:
         assert not neg.has_agreement("alice", "bob")
 
         neg.create_offer(agent_name="alice", capabilities=[])
-        neg.accept_offer(list(neg._offers.keys())[0], "bob")
+        neg.accept_offer(next(iter(neg._offers.keys())), "bob")
 
         assert neg.has_agreement("alice", "bob")
         assert neg.has_agreement("bob", "alice")
@@ -1076,7 +1090,7 @@ class TestBinaryMessageCodec:
 
     def test_batch_encode_decode(self):
         """Multiple messages can be batch-encoded and decoded."""
-        codec = BinaryMessageCodec()
+        BinaryMessageCodec()
         msgs = [
             Request.create(sender="a", receiver="b", method="m1", payload={"i": i})
             for i in range(5)
@@ -1099,7 +1113,7 @@ class TestBinaryMessageCodec:
 
     def test_batch_with_malformed_skipped(self):
         """Malformed messages in a batch are skipped."""
-        codec = BinaryMessageCodec()
+        BinaryMessageCodec()
         msgs = [
             Request.create(sender="a", receiver="b", method="ok"),
         ]

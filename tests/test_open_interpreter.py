@@ -4,18 +4,16 @@ Tests natural language parsing, markdown code blocks, mathematical notation,
 and A2A agent communication patterns.
 """
 
-import pytest
 from flux.open_interpreter import (
+    ExecutionResult,
     OpenFluxInterpreter,
     interpret,
     run_markdown_file,
-    ExecutionResult,
 )
-
 
 # ── Helper Functions ───────────────────────────────────────────────────────────
 
-def assert_success(result: ExecutionResult, expected_result: int = None) -> None:
+def assert_success(result: ExecutionResult, expected_result: int | None = None) -> None:
     """Assert that execution was successful."""
     assert result.success, f"Execution failed: {result.error}"
     if expected_result is not None:

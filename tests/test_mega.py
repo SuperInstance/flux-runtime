@@ -4,21 +4,19 @@
 """
 
 import os
-import sys
 import tempfile
-import time
 
 import pytest
 
 from flux.mega.conductor import (
+    EvolutionSummary,
+    ExecutionReport,
     GrandConductor,
     SystemAssessment,
-    ExecutionReport,
-    EvolutionSummary,
 )
 from flux.mega.demo_mega import run_mega_demo
-from flux.swarm.agent import AgentRole
 from flux.memory.experience import Experience
+from flux.swarm.agent import AgentRole
 
 
 @pytest.fixture

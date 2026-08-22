@@ -12,9 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +26,8 @@ class RecompileResult:
     from_lang: str
     to_lang: str
     source_hash: str = ""
-    bytecode: Optional[bytes] = None
-    error: Optional[str] = None
+    bytecode: bytes | None = None
+    error: str | None = None
     warnings: list[str] = field(default_factory=list)
     compilation_time_ns: int = 0
 
@@ -90,7 +88,7 @@ class CompilerBridge:
         """
         self._compilers.pop(lang, None)
 
-    def get_compiler(self, lang: str) -> Optional[LanguageCompiler]:
+    def get_compiler(self, lang: str) -> LanguageCompiler | None:
         """Get the registered compiler for a language.
 
         Args:
@@ -134,7 +132,7 @@ class CompilerBridge:
         """
         import time as _time
 
-        start = _time.time_ns()
+        start = _time.perf_counter_ns()
         source_hash = hashlib.sha256(source.encode()).hexdigest()[:16]
 
         # Check if recompilation is supported
@@ -152,7 +150,7 @@ class CompilerBridge:
         cache_key = f"{source_hash}:{from_lang}:{to_lang}"
         if self._enable_cache and cache_key in self._cache:
             self._cache_hits += 1
-            elapsed = _time.time_ns() - start
+            elapsed = _time.perf_counter_ns() - start
             return RecompileResult(
                 success=True,
                 from_lang=from_lang,
@@ -166,9 +164,9 @@ class CompilerBridge:
 
         # Build FIR module via the compiler pipeline
         try:
-            from flux.fir.types import TypeContext
-            from flux.fir.builder import FIRBuilder
             from flux.bytecode.encoder import BytecodeEncoder
+            from flux.fir.builder import FIRBuilder
+            from flux.fir.types import TypeContext
 
             actual_ctx = ctx if ctx is not None else TypeContext()
             builder = FIRBuilder(actual_ctx)
@@ -178,7 +176,7 @@ class CompilerBridge:
             encoder = BytecodeEncoder()
             bytecode = encoder.encode(module)
 
-            elapsed = _time.time_ns() - start
+            elapsed = _time.perf_counter_ns() - start
 
             # Cache the result
             if self._enable_cache:
@@ -195,7 +193,7 @@ class CompilerBridge:
                 compilation_time_ns=elapsed,
             )
         except Exception as exc:
-            elapsed = _time.time_ns() - start
+            elapsed = _time.perf_counter_ns() - start
             return RecompileResult(
                 success=False,
                 from_lang=from_lang,

@@ -5,13 +5,13 @@ Allows FLUX agents to signal their available vocabularies, compare capabilities,
 and negotiate compatible communication protocols.
 """
 
+import hashlib
+import json
 import os
 import re
-import json
-import hashlib
+from dataclasses import asdict, dataclass
 from datetime import datetime
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field, asdict
+from typing import Any, ClassVar
 
 
 @dataclass
@@ -44,8 +44,8 @@ class VocabManifest:
 
     def __init__(self, agent_name: str):
         self.agent_name = agent_name
-        self.vocabularies: List[VocabInfo] = []
-        self.tombstones: List[Tombstone] = []
+        self.vocabularies: list[VocabInfo] = []
+        self.tombstones: list[Tombstone] = []
 
     def add_vocabulary(self, name: str, pattern_count: int, version: str = "1.0.0", content: str = ""):
         """Add a vocabulary to the manifest."""
@@ -62,7 +62,7 @@ class VocabManifest:
             reason=reason
         ))
 
-    def generate(self) -> Dict[str, Any]:
+    def generate(self) -> dict[str, Any]:
         """
         Generate manifest summary as a dictionary.
 
@@ -101,7 +101,7 @@ class VocabManifest:
         Returns:
             VocabManifest instance.
         """
-        with open(path, 'r') as f:
+        with open(path) as f:
             data = json.load(f)
 
         manifest = cls(agent_name=data["agent_name"])
@@ -124,7 +124,7 @@ class VocabCompatibility:
     """
 
     @staticmethod
-    def compare(manifest_a: VocabManifest, manifest_b: VocabManifest) -> Dict[str, Any]:
+    def compare(manifest_a: VocabManifest, manifest_b: VocabManifest) -> dict[str, Any]:
         """
         Compare two manifests and return compatibility metrics.
 
@@ -166,7 +166,7 @@ class RepoSignaler:
     """
 
     # Known dialect patterns mapped to domain specialties
-    DIALECT_PATTERNS = {
+    DIALECT_PATTERNS: ClassVar[dict[str, list[str]]] = {
         "maritime": ["maritime", "naval", "ship", "ocean", "port"],
         "math": ["math", "arithmetic", "algebra", "calculus", "sequence"],
         "loops": ["loop", "iterate", "repeat", "while", "for"],
@@ -193,7 +193,7 @@ class RepoSignaler:
             return manifest
 
         # Scan recursively for .ese and .fluxvocab files
-        for root, dirs, files in os.walk(vocab_dir):
+        for root, _dirs, files in os.walk(vocab_dir):
             for fname in files:
                 if fname.endswith('.ese') or fname.endswith('.fluxvocab'):
                     fpath = os.path.join(root, fname)
@@ -204,7 +204,7 @@ class RepoSignaler:
         return manifest
 
     @staticmethod
-    def _parse_vocab_file(path: str) -> Optional[VocabInfo]:
+    def _parse_vocab_file(path: str) -> VocabInfo | None:
         """
         Parse a vocabulary file and extract pattern count.
 
@@ -215,7 +215,7 @@ class RepoSignaler:
             VocabInfo with pattern count and hash, or None if parse fails.
         """
         try:
-            with open(path, 'r') as f:
+            with open(path) as f:
                 content = f.read()
 
             # Count patterns
@@ -257,7 +257,7 @@ class RepoSignaler:
 
         # Check directory names
         dir_scores = {}
-        for root, dirs, files in os.walk(vocab_dir):
+        for _root, dirs, _files in os.walk(vocab_dir):
             for d in dirs:
                 lower_d = d.lower()
                 for dialect, keywords in RepoSignaler.DIALECT_PATTERNS.items():
@@ -266,7 +266,7 @@ class RepoSignaler:
 
         # Check filenames
         file_scores = {}
-        for root, dirs, files in os.walk(vocab_dir):
+        for _root, _dirs, files in os.walk(vocab_dir):
             for f in files:
                 if f.endswith('.ese') or f.endswith('.fluxvocab'):
                     lower_f = f.lower()

@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-import os
 import re
 from pathlib import Path
 
-from .introspector import CodeIntrospector, ModuleInfo
-from .renderer import MarkdownRenderer, AsciiRenderer
+from .introspector import CodeIntrospector
+from .renderer import AsciiRenderer, MarkdownRenderer
 from .stats import CodeStatistics
 
 
@@ -133,11 +132,10 @@ class DocumentationGenerator:
             # Track category comments (lines starting with #)
             if stripped.startswith("#") and not stripped.startswith("# Op"):
                 current_comment = stripped.lstrip("# ").strip()
-            elif stripped.startswith("# ─"):
-                # Section separator
-                if current_comment:
-                    current_category = current_comment
-                    current_comment = ""
+            elif stripped.startswith("# ─") and current_comment:
+                # Section separator: adopt the tracked comment as category
+                current_category = current_comment
+                current_comment = ""
 
             # Match enum members: NAME = 0xHH
             match = re.match(r"^([A-Z][A-Z0-9_]*)\s*=\s*(0x[0-9A-Fa-f]+)", stripped)

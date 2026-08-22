@@ -330,7 +330,7 @@ def main():
         try:
             from flux.vm.interpreter import Interpreter
             print(f"\n{BOLD}{GREEN}Executing...{RESET}")
-            vm = Interpreter(bc, memory_size=4096)
+            vm = Interpreter(bc, memory_size=4096, isa="system_a")
             cycles = vm.execute()
             print(f"  Cycles: {cycles}")
             for i in range(16):

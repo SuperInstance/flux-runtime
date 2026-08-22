@@ -9,12 +9,10 @@ Provides:
 from __future__ import annotations
 
 import struct
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 from flux.fir.blocks import FIRModule
 from flux.fir.printer import print_fir as _print_fir
-
 
 # ── Bytecode Disassembler ────────────────────────────────────────────────────
 
@@ -39,7 +37,7 @@ def disassemble_bytecode(bytecode: bytes, start: int = 0) -> str:
     offset = start
     if len(bytecode) >= 18 and bytecode[:4] == b"FLUX":
         # Parse header
-        magic, version, flags, n_funcs, type_off, code_off = struct.unpack_from(
+        _, version, flags, n_funcs, type_off, code_off = struct.unpack_from(
             "<4sHHHII", bytecode, 0
         )
         lines = [
@@ -242,7 +240,7 @@ class DebugStep:
     duration_us: float = 0.0
     success: bool = True
     detail: str = ""
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class PipelineDebugger:
@@ -260,11 +258,11 @@ class PipelineDebugger:
     def __init__(self, trace: bool = True) -> None:
         self.trace = trace
         self.steps: list[DebugStep] = []
-        self._fir_before_opt: Optional[str] = None
-        self._fir_after_opt: Optional[str] = None
+        self._fir_before_opt: str | None = None
+        self._fir_after_opt: str | None = None
         self._bytecode_hex: str = ""
         self._disassembly: str = ""
-        self._vm_state: Optional[dict] = None
+        self._vm_state: dict | None = None
 
     def run_pipeline(
         self,
@@ -294,6 +292,7 @@ class PipelineDebugger:
         Dictionary with all debug information.
         """
         import time
+
         from flux.pipeline.e2e import FluxPipeline, PipelineResult
 
         self.steps.clear()
@@ -383,7 +382,7 @@ class PipelineDebugger:
         start: float,
         success: bool,
         detail: str = "",
-        error: Optional[str] = None,
+        error: str | None = None,
     ) -> None:
         import time
         elapsed = (time.perf_counter() - start) * 1_000_000  # microseconds
@@ -422,7 +421,7 @@ class PipelineDebugger:
             "functions": list(result.module.functions.keys()) if result.module else [],
         }
 
-    def summary(self, report: Optional[dict] = None) -> str:
+    def summary(self, report: dict | None = None) -> str:
         """Generate a human-readable summary of a debug report.
 
         Parameters

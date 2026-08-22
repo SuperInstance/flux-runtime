@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from struct import pack
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 if TYPE_CHECKING:
     pass
@@ -222,25 +222,23 @@ class Sonifier:
     """
 
     # Heat level → MIDI velocity
-    HEAT_TO_VELOCITY: dict[str, int] = {
+    HEAT_TO_VELOCITY: ClassVar[dict[str, int]] = {
         "FROZEN": 20,
         "COOL": 40,
         "WARM": 70,
         "HOT": 100,
         "HEAT": 127,
     }
-
     # Heat level → musical dynamics name
-    HEAT_TO_DYNAMICS: dict[str, str] = {
+    HEAT_TO_DYNAMICS: ClassVar[dict[str, str]] = {
         "FROZEN": "pp",
         "COOL": "pp",
         "WARM": "mp",
         "HOT": "mf",
         "HEAT": "ff",
     }
-
     # Language → synthesizer timbre name
-    LANGUAGE_TO_TIMBRE: dict[str, str] = {
+    LANGUAGE_TO_TIMBRE: ClassVar[dict[str, str]] = {
         "python": "warm_pad",
         "c": "bright_lead",
         "rust": "metallic_percussion",
@@ -253,19 +251,17 @@ class Sonifier:
         "kotlin": "soft_synth",
         "fir": "pure_square",
     }
-
     # A2A message type → harmony mapping
-    A2A_TO_HARMONY: dict[int, str] = {
+    A2A_TO_HARMONY: ClassVar[dict[int, str]] = {
         0x60: "melody",      # TELL
         0x61: "question",    # ASK
         0x66: "chord",       # BROADCAST
         0x67: "unison",      # REDUCE
         0x78: "percussion",  # BARRIER
     }
-
     # Musical scale: C major scale across octaves (C3-C6)
     # 48 = C3, 60 = C4 (middle C), 72 = C5, 84 = C6
-    _SCALE_NOTES = [
+    _SCALE_NOTES: ClassVar[list[int]] = [
         0, 2, 4, 5, 7, 9, 11,  # C major scale intervals
     ]
 

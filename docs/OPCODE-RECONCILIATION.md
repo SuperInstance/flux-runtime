@@ -5,6 +5,13 @@
 **Status:** CRITICAL — Requires immediate engineering action
 **Classification:** ISA Divergence / Cross-component Incompatibility
 
+> **SUPERSEDED (2026-08-21).** The migration this analysis called for has been
+> **executed** on branch `reconcile/isa-unified-interpreter` (PR #28). See
+> **`docs/RECONCILIATION.md`** for the phase-by-phase timeline, the executed
+> resolution (System B converged as canonical; System A preserved via an ISA
+> selector), the landmine resolutions, and the cutover state. This document is
+> retained for historical context and its A↔B mapping appendix (never deleted).
+
 ---
 
 ## 1. Executive Summary

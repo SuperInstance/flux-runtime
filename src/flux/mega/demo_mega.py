@@ -7,8 +7,8 @@ Run this to verify the entire system works as one cohesive machine:
 
 from __future__ import annotations
 
-import tempfile
 import os
+import tempfile
 
 from flux.mega.conductor import GrandConductor
 from flux.swarm.agent import AgentRole
@@ -42,7 +42,7 @@ def run_mega_demo() -> str:
         conductor.synthesizer.record_call("mega_demo.math.divide", duration_ns=1000, calls=2)
 
         # 4. Assess
-        assessment = conductor.assess()
+        conductor.assess()
 
         # 5. Predict
         prediction = conductor.predict("recompile math/add")

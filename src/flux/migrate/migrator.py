@@ -15,25 +15,23 @@ import ast
 import re
 import time
 from pathlib import Path
-from typing import List, Optional, Set, Tuple
 
 from flux.migrate.report import MigratedFile, MigrationReport
 
-
 # ── Language detection ─────────────────────────────────────────────────────────
 
-LANG_EXTENSIONS: dict[str, Set[str]] = {
+LANG_EXTENSIONS: dict[str, set[str]] = {
     "python": {".py", ".pyw"},
     "c": {".c", ".h", ".cpp", ".hpp", ".cc", ".cxx"},
     "js": {".js", ".jsx", ".mjs", ".cjs"},
 }
 
-ALL_EXTENSIONS: Set[str] = set()
+ALL_EXTENSIONS: set[str] = set()
 for _exts in LANG_EXTENSIONS.values():
     ALL_EXTENSIONS |= _exts
 
 
-def detect_language(path: Path, explicit: Optional[str] = None) -> str:
+def detect_language(path: Path, explicit: str | None = None) -> str:
     """Detect source language from file extension or explicit override.
 
     Args:
@@ -74,12 +72,12 @@ def _fir_comment(comment: str) -> str:
 
 # ── Python migrator ────────────────────────────────────────────────────────────
 
-def _extract_python_imports(tree: ast.AST) -> List[Tuple[str, List[str], bool]]:
+def _extract_python_imports(tree: ast.AST) -> list[tuple[str, list[str], bool]]:
     """Extract import statements from Python AST.
 
     Returns list of (module, names, is_from_import).
     """
-    imports: List[Tuple[str, List[str], bool]] = []
+    imports: list[tuple[str, list[str], bool]] = []
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, ast.Import):
             names = [alias.name for alias in node.names]
@@ -90,7 +88,7 @@ def _extract_python_imports(tree: ast.AST) -> List[Tuple[str, List[str], bool]]:
     return imports
 
 
-def _extract_python_functions(tree: ast.AST) -> List[ast.FunctionDef]:
+def _extract_python_functions(tree: ast.AST) -> list[ast.FunctionDef]:
     """Extract all top-level function definitions."""
     return [
         node for node in ast.iter_child_nodes(tree)
@@ -98,7 +96,7 @@ def _extract_python_functions(tree: ast.AST) -> List[ast.FunctionDef]:
     ]
 
 
-def _extract_python_classes(tree: ast.AST) -> List[ast.ClassDef]:
+def _extract_python_classes(tree: ast.AST) -> list[ast.ClassDef]:
     """Extract all top-level class definitions."""
     return [
         node for node in ast.iter_child_nodes(tree)
@@ -138,7 +136,7 @@ def _count_complexity(node: ast.FunctionDef) -> str:
     return ", ".join(parts) if parts else "simple"
 
 
-def _python_param_types(node: ast.FunctionDef) -> List[str]:
+def _python_param_types(node: ast.FunctionDef) -> list[str]:
     """Extract parameter names and annotation hints."""
     params = []
     for arg in node.args.args:
@@ -164,7 +162,7 @@ def _ast_to_str(node: ast.AST) -> str:
         return ast.dump(node)
 
 
-def _migrate_python(source: str, filename: str) -> Tuple[str, int, int, int]:
+def _migrate_python(source: str, filename: str) -> tuple[str, int, int, int]:
     """Convert Python source to FLUX.MD format.
 
     Returns:
@@ -180,7 +178,7 @@ def _migrate_python(source: str, filename: str) -> Tuple[str, int, int, int]:
     except SyntaxError:
         # Return the raw source wrapped in a minimal FLUX.MD
         w(f"## module: {module_name}")
-        w(f"## lang: python")
+        w("## lang: python")
         w("")
         w(_section_header("Code"))
         w("")
@@ -189,7 +187,7 @@ def _migrate_python(source: str, filename: str) -> Tuple[str, int, int, int]:
 
     # ── Header ─────────────────────────────────────────────────────────────
     w(f"## module: {module_name}")
-    w(f"## lang: python")
+    w("## lang: python")
     w("")
 
     # ── Imports ────────────────────────────────────────────────────────────
@@ -279,12 +277,12 @@ _C_STRUCT_NAME_RE = re.compile(
 )
 
 
-def _extract_c_includes(source: str) -> List[str]:
+def _extract_c_includes(source: str) -> list[str]:
     """Extract #include directives."""
     return _C_INCLUDE_RE.findall(source)
 
 
-def _extract_c_functions(source: str) -> List[Tuple[str, str, int, int]]:
+def _extract_c_functions(source: str) -> list[tuple[str, str, int, int]]:
     """Extract C function signatures.
 
     Returns list of (name, params_str, start_line, brace_count).
@@ -301,9 +299,9 @@ def _extract_c_functions(source: str) -> List[Tuple[str, str, int, int]]:
     return matches
 
 
-def _extract_c_structs(source: str) -> List[str]:
+def _extract_c_structs(source: str) -> list[str]:
     """Extract C struct type names."""
-    names: List[str] = []
+    names: list[str] = []
     # Simple approach: find typedef struct ... NAME patterns
     for m in re.finditer(
         r'typedef\s+struct\s*(?:\w*\s*)?\{([^}]*)\}\s*(\w+)\s*;',
@@ -368,7 +366,7 @@ def _find_c_function_body(source: str, func_name: str, start_pos: int) -> str:
     return func_text
 
 
-def _migrate_c(source: str, filename: str) -> Tuple[str, int, int, int]:
+def _migrate_c(source: str, filename: str) -> tuple[str, int, int, int]:
     """Convert C source to FLUX.MD format.
 
     Returns:
@@ -380,7 +378,7 @@ def _migrate_c(source: str, filename: str) -> Tuple[str, int, int, int]:
     module_name = Path(filename).stem
 
     w(f"## module: {module_name}")
-    w(f"## lang: c")
+    w("## lang: c")
     w("")
 
     # ── Includes ───────────────────────────────────────────────────────────
@@ -404,7 +402,7 @@ def _migrate_c(source: str, filename: str) -> Tuple[str, int, int, int]:
     # ── Functions ──────────────────────────────────────────────────────────
     functions = _extract_c_functions(source)
     func_count = len(functions)
-    for name, params_str, lineno, _ in functions:
+    for name, params_str, _lineno, _ in functions:
         w(_section_header(f"Function: {name}"))
         w("")
         sig = _c_params_to_fir(params_str)
@@ -451,9 +449,9 @@ _JS_IMPORT_RE = re.compile(
 )
 
 
-def _extract_js_imports(source: str) -> List[Tuple[str, str]]:
+def _extract_js_imports(source: str) -> list[tuple[str, str]]:
     """Extract ES module imports. Returns list of (names, module)."""
-    imports: List[Tuple[str, str]] = []
+    imports: list[tuple[str, str]] = []
     for m in _JS_IMPORT_RE.finditer(source):
         names = m.group(1) or m.group(2) or "*"
         module = m.group(3)
@@ -461,9 +459,9 @@ def _extract_js_imports(source: str) -> List[Tuple[str, str]]:
     return imports
 
 
-def _extract_js_functions(source: str) -> List[Tuple[str, str]]:
+def _extract_js_functions(source: str) -> list[tuple[str, str]]:
     """Extract function declarations and arrow functions."""
-    funcs: List[Tuple[str, str]] = []
+    funcs: list[tuple[str, str]] = []
     for m in _JS_FUNC_RE.finditer(source):
         funcs.append((m.group(1), m.group(2)))
     for m in _JS_ARROW_RE.finditer(source):
@@ -471,15 +469,15 @@ def _extract_js_functions(source: str) -> List[Tuple[str, str]]:
     return funcs
 
 
-def _extract_js_classes(source: str) -> List[Tuple[str, str]]:
+def _extract_js_classes(source: str) -> list[tuple[str, str]]:
     """Extract class declarations. Returns list of (name, parent)."""
-    classes: List[Tuple[str, str]] = []
+    classes: list[tuple[str, str]] = []
     for m in _JS_CLASS_RE.finditer(source):
         classes.append((m.group(1), m.group(2) or ""))
     return classes
 
 
-def _migrate_js(source: str, filename: str) -> Tuple[str, int, int, int]:
+def _migrate_js(source: str, filename: str) -> tuple[str, int, int, int]:
     """Convert JavaScript source to FLUX.MD format.
 
     Returns:
@@ -491,7 +489,7 @@ def _migrate_js(source: str, filename: str) -> Tuple[str, int, int, int]:
     module_name = Path(filename).stem
 
     w(f"## module: {module_name}")
-    w(f"## lang: javascript")
+    w("## lang: javascript")
     w("")
 
     # ── Imports ───────────────────────────────────────────────────────────
@@ -564,7 +562,7 @@ class FluxMigrator:
         """
         self.output_dir = Path(output_dir)
         self.verbose = verbose
-        self._lang: Optional[str] = None  # explicit language override
+        self._lang: str | None = None  # explicit language override
 
     def with_language(self, lang: str) -> FluxMigrator:
         """Set explicit language override. Returns self for chaining."""
@@ -672,7 +670,7 @@ class FluxMigrator:
         report.start_time = time.time()
 
         # Collect all recognized source files
-        source_files: List[Path] = []
+        source_files: list[Path] = []
         for ext in ALL_EXTENSIONS:
             source_files.extend(path.rglob(f"*{ext}"))
 
@@ -685,7 +683,7 @@ class FluxMigrator:
             "env", "dist", "build", ".eggs", ".tox", ".mypy_cache",
             ".pytest_cache", ".flux_output", "flux_output",
         }
-        filtered: List[Path] = []
+        filtered: list[Path] = []
         for f in source_files:
             skip = False
             for part in f.parts:

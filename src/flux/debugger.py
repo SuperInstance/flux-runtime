@@ -35,27 +35,24 @@ With tracing::
 
 from __future__ import annotations
 
-import struct
-import sys
 import json
-from typing import Optional, List, Dict, Any, Set, Callable, Union
+import struct
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import Any
 
+from flux.bytecode.opcodes import Op
+from flux.disasm import (
+    Colors,
+    DisassembledInstruction,
+    FluxDisassembler,
+    get_instruction_color,
+)
 from flux.vm.interpreter import (
     Interpreter,
     VMError,
     VMHaltError,
-    VMInvalidOpcodeError,
-    VMDivisionByZeroError,
 )
-from flux.bytecode.opcodes import Op, get_format
-from flux.disasm import (
-    FluxDisassembler,
-    DisassembledInstruction,
-    get_instruction_color,
-    Colors,
-)
-
 
 # ── Debugger data structures ────────────────────────────────────────────────────
 
@@ -64,17 +61,17 @@ from flux.disasm import (
 class StepResult:
     """Result of a single step operation."""
     success: bool
-    instruction: Optional[DisassembledInstruction] = None
+    instruction: DisassembledInstruction | None = None
     pc_before: int = 0
     pc_after: int = 0
     cycles: int = 0
     halted: bool = False
-    error: Optional[str] = None
+    error: str | None = None
     breakpoint_hit: bool = False
-    register_changes: Dict[str, tuple] = field(default_factory=dict)
-    flag_changes: Dict[str, tuple] = field(default_factory=dict)
+    register_changes: dict[str, tuple] = field(default_factory=dict)
+    flag_changes: dict[str, tuple] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
         result = {
             "success": self.success,
@@ -105,7 +102,7 @@ class Breakpoint:
     offset: int
     enabled: bool = True
     hit_count: int = 0
-    condition: Optional[str] = None  # Future: conditional breakpoints
+    condition: str | None = None  # Future: conditional breakpoints
 
 
 @dataclass
@@ -211,24 +208,30 @@ class FluxDebugger(Interpreter):
         memory_size: int = 65536,
         max_cycles: int = 100_000,
         enable_trace: bool = False,
+        isa: str = "system_a",
     ):
-        """Initialize the debugger."""
+        """Initialize the debugger.
+
+        The debugger defaults to System A (legacy) numbering to stay
+        byte-for-byte compatible with the System A disassembler it drives;
+        pass ``isa="unified"`` to debug converged (System B) bytecode.
+        """
         code = self._extract_code(bytecode)
-        super().__init__(code, memory_size=memory_size, max_cycles=max_cycles)
+        super().__init__(code, memory_size=memory_size, max_cycles=max_cycles, isa=isa)
 
         # Debugger state
-        self._breakpoints: Dict[int, Breakpoint] = {}
-        self._watchpoints: List[Watchpoint] = []
+        self._breakpoints: dict[int, Breakpoint] = {}
+        self._watchpoints: list[Watchpoint] = []
         self._disassembler = FluxDisassembler(color_output=False)
         self._original_bytecode = code
-        self._call_stack: List[int] = []  # Track return addresses
-        self._step_callback: Optional[Callable[[StepResult], None]] = None
-        self._pending_bp: Optional[int] = None  # Breakpoint awaiting step-through
+        self._call_stack: list[int] = []  # Track return addresses
+        self._step_callback: Callable[[StepResult], None] | None = None
+        self._pending_bp: int | None = None  # Breakpoint awaiting step-through
 
         # Tracing support
         self._tracer = None
         self._trace_enabled = enable_trace
-        self._trace_entries: List[Dict[str, Any]] = []
+        self._trace_entries: list[dict[str, Any]] = []
         if enable_trace:
             self._init_tracer()
 
@@ -295,7 +298,7 @@ class FluxDebugger(Interpreter):
         # Capture register changes
         def _capture_changes() -> tuple:
             regs_after = self.regs.snapshot()
-            reg_changes: Dict[str, tuple] = {}
+            reg_changes: dict[str, tuple] = {}
             for i in range(16):
                 old_val = regs_before["gp"][i]
                 new_val = regs_after["gp"][i]
@@ -313,9 +316,9 @@ class FluxDebugger(Interpreter):
                 self._flag_carry,
                 self._flag_overflow,
             )
-            flag_changes: Dict[str, tuple] = {}
+            flag_changes: dict[str, tuple] = {}
             flag_names = ["zero", "sign", "carry", "overflow"]
-            for i, (old, new) in enumerate(zip(flags_before, flags_after)):
+            for i, (old, new) in enumerate(zip(flags_before, flags_after, strict=False)):
                 if old != new:
                     flag_changes[flag_names[i]] = (old, new)
 
@@ -425,7 +428,7 @@ class FluxDebugger(Interpreter):
 
     # ── Breakpoint management ───────────────────────────────────────────────
 
-    def add_breakpoint(self, offset: int, condition: Optional[str] = None) -> bool:
+    def add_breakpoint(self, offset: int, condition: str | None = None) -> bool:
         """Add a breakpoint at the given byte offset."""
         if offset not in self._breakpoints:
             self._breakpoints[offset] = Breakpoint(offset=offset, condition=condition)
@@ -455,7 +458,7 @@ class FluxDebugger(Interpreter):
             return True
         return False
 
-    def list_breakpoints(self) -> List[Dict[str, Any]]:
+    def list_breakpoints(self) -> list[dict[str, Any]]:
         """List all breakpoints with their status."""
         return [
             {
@@ -488,7 +491,7 @@ class FluxDebugger(Interpreter):
                 return True
         return False
 
-    def list_watchpoints(self) -> List[str]:
+    def list_watchpoints(self) -> list[str]:
         """List all active watchpoints."""
         return [wp.name for wp in self._watchpoints]
 
@@ -524,7 +527,7 @@ class FluxDebugger(Interpreter):
         stack = self.memory.get_region("stack")
         stack.write(addr, data)
 
-    def backtrace(self) -> List[Dict[str, Any]]:
+    def backtrace(self) -> list[dict[str, Any]]:
         """Get the current call stack (backtrace)."""
         frames = [{"pc": self.pc, "pc_hex": f"0x{self.pc:04X}", "type": "current"}]
         for i, ret_addr in enumerate(reversed(self._call_stack)):
@@ -536,7 +539,7 @@ class FluxDebugger(Interpreter):
             })
         return frames
 
-    def get_flags(self) -> Dict[str, bool]:
+    def get_flags(self) -> dict[str, bool]:
         """Get the current condition flag states."""
         return {
             "zero": self._flag_zero,
@@ -545,11 +548,11 @@ class FluxDebugger(Interpreter):
             "overflow": self._flag_overflow,
         }
 
-    def get_register_dump(self) -> Dict[str, int]:
+    def get_register_dump(self) -> dict[str, int]:
         """Get all general-purpose register values."""
         return {f"R{i}": self.regs.read_gp(i) for i in range(16)}
 
-    def get_stack_snapshot(self, num_words: int = 16) -> List[int]:
+    def get_stack_snapshot(self, num_words: int = 16) -> list[int]:
         """Get a snapshot of the stack (top N words)."""
         values = []
         stack_region = self.memory.get_region("stack")
@@ -568,7 +571,7 @@ class FluxDebugger(Interpreter):
 
     # ── Disassembly integration ─────────────────────────────────────────────
 
-    def disassemble_at(self, offset: int, count: int = 5) -> List[DisassembledInstruction]:
+    def disassemble_at(self, offset: int, count: int = 5) -> list[DisassembledInstruction]:
         """Disassemble instructions starting at a given offset."""
         instructions = []
         current_offset = offset
@@ -587,7 +590,7 @@ class FluxDebugger(Interpreter):
 
         return instructions
 
-    def disassemble_current(self, count: int = 5) -> List[DisassembledInstruction]:
+    def disassemble_current(self, count: int = 5) -> list[DisassembledInstruction]:
         """Disassemble instructions starting at the current PC."""
         return self.disassemble_at(self.pc, count)
 
@@ -622,7 +625,7 @@ class FluxDebugger(Interpreter):
         """Disable execution tracing."""
         self._trace_enabled = False
 
-    def export_trace(self, filepath: Optional[str] = None) -> str:
+    def export_trace(self, filepath: str | None = None) -> str:
         """Export the trace as JSON.
 
         Parameters
@@ -662,12 +665,12 @@ class FluxDebugger(Interpreter):
 
         if self._trace_entries:
             # Count opcodes
-            opcode_counts: Dict[str, int] = {}
+            opcode_counts: dict[str, int] = {}
             for entry in self._trace_entries:
                 op = entry["opcode"]
                 opcode_counts[op] = opcode_counts.get(op, 0) + 1
 
-            lines.append(f"\n  Opcode frequency (top 10):")
+            lines.append("\n  Opcode frequency (top 10):")
             for name, cnt in sorted(opcode_counts.items(), key=lambda x: -x[1])[:10]:
                 pct = cnt / len(self._trace_entries) * 100
                 lines.append(f"    {name:<20} {cnt:>5} ({pct:5.1f}%)")
@@ -1049,7 +1052,7 @@ class FluxDebugger(Interpreter):
             output_fn(f"  ✖ {result.error}")
 
     @staticmethod
-    def _parse_addr(s: str) -> Optional[int]:
+    def _parse_addr(s: str) -> int | None:
         """Parse an address string (hex or decimal)."""
         try:
             if s.lower().startswith("0x"):

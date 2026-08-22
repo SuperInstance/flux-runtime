@@ -9,41 +9,42 @@ Tests for the FluxDisassembler and FluxDebugger classes, including:
 - Integration with existing bytecode
 """
 
+# NOTE (2026-08-21, A/B reconciliation): this module intentionally tests
+# the LEGACY System A opcode numbering (flux.bytecode.opcodes.Op) and raw
+# System A bytes. Per the reconciliation plan it is RETAINED AS-IS — no
+# mapping is deleted. The unified (System B) equivalents live in
+# tests/test_conformance_unified.py, tests/test_toolchain_unified.py, and
+# tests/test_dual_mode_equivalence.py.
+
+import os
 import struct
 import sys
-import os
 
 # Ensure the project source root is on sys.path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from flux.bytecode.opcodes import Op
+from flux.debugger import (
+    FluxDebugger,
+    StepResult,
+)
 from flux.disasm import (
     FluxDisassembler,
-    DisassemblyResult,
-    DisassembledInstruction,
     disassemble,
     disassemble_to_dict,
     disassemble_to_json,
 )
-from flux.debugger import (
-    FluxDebugger,
-    StepResult,
-    Breakpoint,
-    Watchpoint,
-)
-from flux.vm.interpreter import VMError
-
 
 # ── Helper functions ─────────────────────────────────────────────────────────
 
 def _make_flux_binary(code: bytes) -> bytes:
     """Wrap raw bytecode in FLUX binary format."""
-    HEADER_SIZE = 18
+    header_size = 18
     type_table = struct.pack("<H", 0)  # 0 types
     name_pool = b""
     func_table = struct.pack("<III", 0, 0, len(code))
-    code_off = HEADER_SIZE + len(type_table) + len(name_pool) + len(func_table)
-    header = struct.pack("<4sHHHII", b"FLUX", 1, 0, 1, HEADER_SIZE, code_off)
+    code_off = header_size + len(type_table) + len(name_pool) + len(func_table)
+    header = struct.pack("<4sHHHII", b"FLUX", 1, 0, 1, header_size, code_off)
     return header + type_table + name_pool + func_table + code
 
 

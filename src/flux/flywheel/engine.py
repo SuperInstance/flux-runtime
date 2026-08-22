@@ -22,30 +22,26 @@ better at reading the room.
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Any, Callable
+from typing import Any
 
+from flux.evolution.genome import Genome, MutationStrategy
 from flux.synthesis.synthesizer import FluxSynthesizer
-from flux.evolution.genome import MutationStrategy, Genome
-from flux.evolution.mutator import SystemMutator
-from flux.evolution.pattern_mining import PatternMiner
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
 
 from .hypothesis import (
-    Hypothesis,
-    ExperimentResult,
     ExperimentOutcome,
-    ObservationData,
-    LearnedInsights,
+    ExperimentResult,
     FlywheelRecord,
     FlywheelReport,
+    Hypothesis,
     IntegrationReport,
+    LearnedInsights,
+    ObservationData,
 )
-from .knowledge import KnowledgeBase, GeneralizedRule
+from .knowledge import KnowledgeBase
 from .metrics import FlywheelMetrics
-
 
 # ── Flywheel Phase ─────────────────────────────────────────────────────
 
@@ -103,13 +99,13 @@ class FlywheelEngine:
         self._acceleration_curve: list[tuple[int, float]] = []
 
         # Current revolution state
-        self._current_observation: Optional[ObservationData] = None
-        self._current_insights: Optional[LearnedInsights] = None
+        self._current_observation: ObservationData | None = None
+        self._current_insights: LearnedInsights | None = None
         self._current_hypotheses: list[Hypothesis] = []
         self._current_results: list[ExperimentResult] = []
 
         # Validation function (can be set externally)
-        self._validation_fn: Optional[Callable[[Genome], bool]] = None
+        self._validation_fn: Callable[[Genome], bool] | None = None
 
     # ── Main Entry Point ────────────────────────────────────────────────
 
@@ -125,7 +121,7 @@ class FlywheelEngine:
         Returns:
             FlywheelReport with all results and metrics.
         """
-        total_start = time.monotonic_ns()
+        total_start = time.perf_counter_ns()
         report = FlywheelReport()
         report.initial_acceleration = self._acceleration_factor
         report.initial_fitness = self.synth.current_fitness
@@ -147,14 +143,14 @@ class FlywheelEngine:
         # Final state
         report.final_acceleration = self._acceleration_factor
         report.final_fitness = self.synth.current_fitness
-        report.total_time_ns = time.monotonic_ns() - total_start
+        report.total_time_ns = time.perf_counter_ns() - total_start
         report.velocity_trend = self._metrics.get_velocity_trend()
 
         return report
 
     def _run_revolution(self) -> FlywheelRecord:
         """Run a single complete revolution through all 6 phases."""
-        rev_start = time.monotonic_ns()
+        rev_start = time.perf_counter_ns()
         self.revolution += 1
 
         record = FlywheelRecord(revolution=self.revolution)
@@ -232,7 +228,7 @@ class FlywheelEngine:
 
         # Finalize record
         record.fitness_after = self.synth.current_fitness
-        record.revolution_time_ns = time.monotonic_ns() - rev_start
+        record.revolution_time_ns = time.perf_counter_ns() - rev_start
 
         # Record in metrics
         self._metrics.record_revolution(record)
@@ -381,7 +377,7 @@ class FlywheelEngine:
                 metadata={"suggested_language": candidate.get("suggested_language", "rust")},
             )
             # Check if knowledge base says to skip
-            skip, reason = self._knowledge.should_skip(h)
+            skip, _ = self._knowledge.should_skip(h)
             if not skip:
                 hypotheses.append(h)
 
@@ -397,7 +393,7 @@ class FlywheelEngine:
                 confidence=0.6,
                 source="pattern_miner",
             )
-            skip, reason = self._knowledge.should_skip(h)
+            skip, _ = self._knowledge.should_skip(h)
             if not skip:
                 hypotheses.append(h)
 
@@ -413,7 +409,7 @@ class FlywheelEngine:
                 confidence=0.5,
                 source="tile_registry",
             )
-            skip, reason = self._knowledge.should_skip(h)
+            skip, _ = self._knowledge.should_skip(h)
             if not skip:
                 hypotheses.append(h)
 
@@ -438,7 +434,7 @@ class FlywheelEngine:
                     source="research",
                     metadata={"rule_condition": rule.condition},
                 )
-                skip, reason = self._knowledge.should_skip(h)
+                skip, _ = self._knowledge.should_skip(h)
                 if not skip:
                     hypotheses.append(h)
 
@@ -468,12 +464,12 @@ class FlywheelEngine:
 
         def run_single_experiment(hypothesis: Hypothesis) -> ExperimentResult:
             """Run a single experiment for a hypothesis."""
-            start = time.monotonic_ns()
+            start = time.perf_counter_ns()
 
             # Simulate experiment time based on acceleration factor
             # Higher acceleration = faster experiments
             base_time_ns = 1_000_000  # 1ms base experiment time
-            simulated_time = int(base_time_ns / max(self._acceleration_factor, 0.1))
+            int(base_time_ns / max(self._acceleration_factor, 0.1))
 
             try:
                 # Use the synthesizer's evolution mutator to test
@@ -501,7 +497,7 @@ class FlywheelEngine:
                 if self._validation_fn is not None:
                     validation_passed = self._validation_fn(mutated)
 
-                elapsed = time.monotonic_ns() - start
+                elapsed = time.perf_counter_ns() - start
 
                 # Determine outcome
                 if fitness_after > fitness_before * 1.001 and validation_passed:
@@ -533,7 +529,7 @@ class FlywheelEngine:
                 )
 
             except Exception as exc:
-                elapsed = time.monotonic_ns() - start
+                elapsed = time.perf_counter_ns() - start
                 return ExperimentResult(
                     hypothesis=hypothesis,
                     outcome=ExperimentOutcome.FAILURE,
@@ -729,7 +725,7 @@ class FlywheelEngine:
         return list(self._history)
 
     def set_validation_fn(
-        self, fn: Optional[Callable[[Genome], bool]]
+        self, fn: Callable[[Genome], bool] | None
     ) -> None:
         """Set a custom validation function for experiments.
 

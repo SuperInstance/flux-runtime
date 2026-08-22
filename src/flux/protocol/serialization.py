@@ -9,19 +9,16 @@ from __future__ import annotations
 
 import json
 import struct
-import uuid
-from typing import Any, Dict, List, Optional
 
 from .message import (
+    Error,
+    Event,
     MessageEnvelope,
-    MessageKind,
     MessageId,
+    MessageKind,
     Request,
     Response,
-    Event,
-    Error,
 )
-
 
 # ── Binary format constants ────────────────────────────────────────────────
 
@@ -144,7 +141,7 @@ class BinaryMessageCodec(MessageSerializer):
                 f"got {len(data)}"
             )
 
-        (magic, version, kind_val, flags,
+        (magic, version, kind_val, _,
          msg_id_bytes, conv_bytes,
          sender_len, receiver_len,
          timestamp, payload_len, metadata_len) = HEADER_STRUCT.unpack_from(data, 0)
@@ -250,7 +247,7 @@ class BinaryMessageCodec(MessageSerializer):
         return envelope
 
     @staticmethod
-    def encode_message_batch(messages: List[MessageEnvelope]) -> bytes:
+    def encode_message_batch(messages: list[MessageEnvelope]) -> bytes:
         """Encode a batch of messages as length-prefixed entries.
 
         Each message is prefixed with its total length (uint32 LE).
@@ -264,7 +261,7 @@ class BinaryMessageCodec(MessageSerializer):
         return b"".join(parts)
 
     @staticmethod
-    def decode_message_batch(data: bytes) -> List[MessageEnvelope]:
+    def decode_message_batch(data: bytes) -> list[MessageEnvelope]:
         """Decode a batch of length-prefixed messages."""
         codec = BinaryMessageCodec()
         messages = []

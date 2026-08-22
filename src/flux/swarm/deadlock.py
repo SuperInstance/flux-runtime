@@ -9,10 +9,8 @@ from __future__ import annotations
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
 
 from .message_bus import AgentMessage
-
 
 # ── Types ──────────────────────────────────────────────────────────────────
 
@@ -105,7 +103,7 @@ class DeadlockDetector:
 
     # ── Deadlock Detection ─────────────────────────────────────────────
 
-    def detect_cycle(self) -> Optional[list[str]]:
+    def detect_cycle(self) -> list[str] | None:
         """Find a cycle in the wait graph (deadlock).
 
         Uses DFS-based three-color cycle detection.
@@ -113,36 +111,36 @@ class DeadlockDetector:
         Returns:
             A list of agent IDs forming the cycle, or None if no cycle exists.
         """
-        WHITE, GRAY, BLACK = 0, 1, 2
-        color: dict[str, int] = {node: WHITE for node in self._wait_graph}
-        parent: dict[str, Optional[str]] = {}
+        white, gray, black = 0, 1, 2
+        color: dict[str, int] = {node: white for node in self._wait_graph}
+        parent: dict[str, str | None] = {}
 
-        def dfs(node: str) -> Optional[list[str]]:
-            color[node] = GRAY
+        def dfs(node: str) -> list[str] | None:
+            color[node] = gray
             for neighbor in self._wait_graph.get(node, set()):
                 if neighbor not in color:
                     # Neighbor not in graph — skip
                     continue
-                if color[neighbor] == GRAY:
+                if color[neighbor] == gray:
                     # Found cycle — reconstruct path
                     cycle = [neighbor, node]
-                    curr: Optional[str] = node
+                    curr: str | None = node
                     while curr is not None and curr != neighbor:
                         curr = parent.get(curr)
                         if curr is None:
                             break
                         cycle.append(curr)
                     return cycle
-                if color[neighbor] == WHITE:
+                if color[neighbor] == white:
                     parent[neighbor] = node
                     result = dfs(neighbor)
                     if result:
                         return result
-            color[node] = BLACK
+            color[node] = black
             return None
 
         for node in list(self._wait_graph.keys()):
-            if color[node] == WHITE:
+            if color[node] == white:
                 result = dfs(node)
                 if result:
                     return result
@@ -221,9 +219,7 @@ class DeadlockDetector:
             if (
                 prev.sender == agent_a and prev.receiver == agent_b
                 and curr.sender == agent_b and curr.receiver == agent_a
-            ):
-                alternations += 1
-            elif (
+            ) or (
                 prev.sender == agent_b and prev.receiver == agent_a
                 and curr.sender == agent_a and curr.receiver == agent_b
             ):
@@ -258,7 +254,7 @@ class DeadlockDetector:
 
         return DeadlockResolution(
             description=(
-                f"Deadlock detected in cycle: {' → '.join(cycle + [cycle[0]])}. "
+                f"Deadlock detected in cycle: {' → '.join([*cycle, cycle[0]])}. "
                 f"Agent '{yield_agent}' should yield to break the cycle."
             ),
             yield_agent=yield_agent,
@@ -272,7 +268,7 @@ class DeadlockDetector:
     # ── Comprehensive Check ────────────────────────────────────────────
 
     def check_deadlocks(
-        self, message_log: Optional[list[AgentMessage]] = None
+        self, message_log: list[AgentMessage] | None = None
     ) -> list[DeadlockReport]:
         """Run comprehensive deadlock and livelock detection.
 
@@ -299,7 +295,7 @@ class DeadlockDetector:
         # Check for livelocks in message history
         if message_log:
             for agent_id in set(msg.sender for msg in message_log):
-                agent_history = [
+                [
                     msg for msg in message_log
                     if msg.sender == agent_id or msg.receiver == agent_id
                 ]

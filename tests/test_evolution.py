@@ -9,51 +9,44 @@ Tests cover:
 - Integration pipeline: profiler → miner → mutator → validator
 """
 
-import time
 import pytest
 
-from flux.evolution.genome import (
-    Genome,
-    GenomeDiff,
-    ModuleSnapshot,
-    TileSnapshot,
-    ProfilerSnapshot,
-    OptimizationRecord,
-    MutationStrategy,
-)
-from flux.evolution.pattern_mining import (
-    PatternMiner,
-    ExecutionTrace,
-    DiscoveredPattern,
-    TileSuggestion,
-)
-from flux.evolution.mutator import (
-    SystemMutator,
-    MutationProposal,
-    MutationResult,
-    MutationRecord,
-)
-from flux.evolution.validator import (
-    CorrectnessValidator,
-    TestCase,
-    ValidationResult,
-    RegressionReport,
-)
+from flux.adaptive.profiler import AdaptiveProfiler
+from flux.adaptive.selector import AdaptiveSelector
 from flux.evolution.evolution import (
     EvolutionEngine,
     EvolutionRecord,
     EvolutionReport,
     EvolutionStep,
 )
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
-from flux.adaptive.selector import AdaptiveSelector, LANGUAGES
+from flux.evolution.genome import (
+    Genome,
+    ModuleSnapshot,
+    MutationStrategy,
+    OptimizationRecord,
+    TileSnapshot,
+)
+from flux.evolution.mutator import (
+    MutationProposal,
+    MutationResult,
+    SystemMutator,
+)
+from flux.evolution.pattern_mining import (
+    DiscoveredPattern,
+    ExecutionTrace,
+    PatternMiner,
+    TileSuggestion,
+)
+from flux.evolution.validator import (
+    CorrectnessValidator,
+    RegressionReport,
+)
+from flux.fir.types import TypeContext
 from flux.modules.container import ModuleContainer
 from flux.modules.granularity import Granularity
+from flux.tiles.ports import PortDirection, TilePort
 from flux.tiles.registry import TileRegistry
 from flux.tiles.tile import Tile, TileType
-from flux.tiles.ports import TilePort, PortDirection
-from flux.fir.types import TypeContext
-
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -70,7 +63,7 @@ def selector(profiler):
 @pytest.fixture
 def tile_registry():
     reg = TileRegistry()
-    ctx = TypeContext()
+    TypeContext()
     # Register a few test tiles
     t1 = Tile(
         name="test_map",
@@ -537,7 +530,6 @@ class TestGenomeMutation:
         assert genome.generation == 0
 
     def test_mutate_updates_checksum(self, genome):
-        original_checksum = genome.checksum
         mutated = genome.mutate(MutationStrategy.INLINE_OPTIMIZATION, "root")
         assert mutated.checksum != "" or mutated.checksum == ""
         # Checksums should differ if there were actual changes
@@ -600,13 +592,13 @@ class TestPatternMinerRecording:
         assert miner.trace_count == 1
 
     def test_record_multiple_traces(self, miner):
-        for i in range(10):
+        for _i in range(10):
             miner.record_call_sequence(["a", "b", "c"])
         assert miner.trace_count == 10
 
     def test_max_trace_length(self, profiler):
         miner = PatternMiner(profiler, max_trace_length=5)
-        for i in range(10):
+        for _i in range(10):
             miner.record_call_sequence(["a", "b"])
         assert miner.trace_count == 5
 
@@ -846,7 +838,7 @@ class TestMutatorProposals:
                 version=1, checksum="abc", heat_level="HOT", call_count=10,
             )
             genome.language_assignments[f"mod_{i}"] = "python"
-        proposals = mutator.propose_mutations(genome, [])
+        mutator.propose_mutations(genome, [])
         assert len(mutator.get_pending_mutations()) <= 2
 
 
@@ -1388,7 +1380,7 @@ class TestIntegrationPipeline:
         selector = AdaptiveSelector(profiler)
         miner = PatternMiner(profiler)
         mutator = SystemMutator()
-        validator = CorrectnessValidator()
+        CorrectnessValidator()
 
         # 3. Record execution traces
         for _ in range(10):
@@ -1502,7 +1494,7 @@ class TestIntegrationPipeline:
         def workload():
             profiler.record_call("root.math.add", duration_ns=100)
 
-        for i in range(5):
+        for _i in range(5):
             engine.step(module_root, tile_registry, workload=workload)
 
         history = engine.get_history()

@@ -9,10 +9,6 @@ from __future__ import annotations
 import struct
 import time
 from dataclasses import dataclass, field
-from typing import Optional, BinaryIO
-
-from .errors import AsmError, AsmErrorKind
-
 
 # FLUX ELF constants
 FLUX_MAGIC = b"\x7fFLUX"
@@ -93,7 +89,7 @@ class ElfHeader:
     symbols: dict[str, int] = field(default_factory=dict)
 
     # Metadata
-    build_timestamp: Optional[float] = None
+    build_timestamp: float | None = None
     source_filename: str = ""
     linker_version: str = "1.0"
 
@@ -130,7 +126,7 @@ class ElfHeader:
         null_section = Section(name="", section_type=SHT_NULL)
 
         # Build string table section
-        all_section_names = [s.name for s in [null_section, code_section, data_section] + self.sections]
+        all_section_names = [s.name for s in [null_section, code_section, data_section, *self.sections]]
         strtab_data = self._build_string_table(all_section_names)
         strtab_section = Section(
             name=".shstrtab",
@@ -176,7 +172,6 @@ class ElfHeader:
 
         # Section header table offset
         shdr_offset = (current_offset + 15) & ~15
-        shdr_size = ELF64_SECTION_HEADER_SIZE
 
         # Build program headers
         if not self.program_headers:

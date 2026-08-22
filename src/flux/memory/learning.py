@@ -8,10 +8,7 @@ Dynamically adjusts the exploration rate based on improvement signals:
 
 from __future__ import annotations
 
-import math
-from dataclasses import dataclass, field
-from typing import Optional
-
+from dataclasses import dataclass
 
 # ── Learning State ───────────────────────────────────────────────────────────
 
@@ -145,7 +142,7 @@ class LearningRateAdapter:
 
     # ── Convergence Detection ───────────────────────────────────────────
 
-    def should_stop(self, max_generations_no_improvement: Optional[int] = None) -> bool:
+    def should_stop(self, max_generations_no_improvement: int | None = None) -> bool:
         """Has the system converged? No meaningful improvement in N generations.
 
         Args:

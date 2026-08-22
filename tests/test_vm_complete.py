@@ -1,18 +1,27 @@
 """Tests for VM completeness — all newly implemented opcodes."""
 
+# NOTE (2026-08-21, A/B reconciliation): this module intentionally tests
+# the LEGACY System A opcode numbering (flux.bytecode.opcodes.Op) and raw
+# System A bytes. Per the reconciliation plan it is RETAINED AS-IS — no
+# mapping is deleted. The unified (System B) equivalents live in
+# tests/test_conformance_unified.py, tests/test_toolchain_unified.py, and
+# tests/test_dual_mode_equivalence.py.
+
 import struct
+
 import pytest
 
 from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import (
-    Interpreter, VMError, VMTypeError, VMDivisionByZeroError,
-    VMStackOverflowError, VMHaltError,
+    Interpreter,
+    VMDivisionByZeroError,
+    VMTypeError,
 )
 
 
 def _make_vm(bytecode: bytes, memory_size: int = 65536) -> Interpreter:
     """Create an interpreter with given bytecode."""
-    return Interpreter(bytecode, memory_size=memory_size)
+    return Interpreter(bytecode, memory_size=memory_size, isa="system_a")
 
 
 def _i16(val: int) -> bytes:
@@ -1025,7 +1034,7 @@ class TestSystemOpcodes:
         vm = _make_vm(bc)
         vm.execute()
         assert vm.regs.read_gp(0) == 0  # success
-        assert vm._resources.get(1) == True
+        assert vm._resources.get(1)
 
     def test_resource_release(self):
         """RESOURCE_RELEASE: release a resource."""
@@ -1034,7 +1043,7 @@ class TestSystemOpcodes:
         vm._resources[1] = True  # pre-acquire
         vm.execute()
         assert vm.regs.read_gp(0) == 0  # success
-        assert vm._resources.get(1) == False
+        assert not vm._resources.get(1)
 
     def test_debug_break(self):
         """DEBUG_BREAK: triggers callback."""

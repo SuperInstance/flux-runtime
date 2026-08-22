@@ -14,27 +14,20 @@ import time
 
 import pytest
 
-from flux.adaptive.profiler import (
-    AdaptiveProfiler,
-    HeatLevel,
-    ProfileSample,
-    SampleHandle,
-    BottleneckEntry,
-    BottleneckReport,
-)
-from flux.adaptive.selector import (
-    LanguageProfile,
-    LANGUAGES,
-    AdaptiveSelector,
-    SelectionEvent,
-    LanguageRecommendation,
-)
 from flux.adaptive.compiler_bridge import (
     CompilerBridge,
     LanguageCompiler,
-    RecompileResult,
 )
-
+from flux.adaptive.profiler import (
+    AdaptiveProfiler,
+    HeatLevel,
+    SampleHandle,
+)
+from flux.adaptive.selector import (
+    LANGUAGES,
+    AdaptiveSelector,
+    SelectionEvent,
+)
 
 # ═══════════════════════════════════════════════════════════════════════
 # Profiler Tests
@@ -311,7 +304,7 @@ class TestProfilerShouldRecompile:
             p.record_call("hot_mod", duration_ns=100)
         p.record_call("cool_mod", duration_ns=100)
 
-        should, reason = p.should_recompile("cool_mod")
+        should, _ = p.should_recompile("cool_mod")
         assert should is False
 
     def test_heat_should_recompile(self):
@@ -923,13 +916,13 @@ class TestCompilerBridgeCanRecompile:
     def test_missing_source(self):
         bridge = CompilerBridge()
         bridge.register_compiler("rust", LanguageCompiler(lang="rust"))
-        can, reason = bridge.can_recompile("python", "rust")
+        can, _ = bridge.can_recompile("python", "rust")
         assert can is False
 
     def test_missing_target(self):
         bridge = CompilerBridge()
         bridge.register_compiler("python", LanguageCompiler(lang="python"))
-        can, reason = bridge.can_recompile("python", "rust")
+        can, _ = bridge.can_recompile("python", "rust")
         assert can is False
 
     def test_source_cannot_produce_fir(self):

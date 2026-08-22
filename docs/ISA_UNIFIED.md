@@ -1,5 +1,26 @@
 # FLUX Unified ISA — Complete Opcode Table
 
+> **System B (canonical) — status note (2026-08-21).** This document records the
+> converged unified numbering. The authoritative, machine-readable source of truth
+> is `src/flux/bytecode/isa_unified.py` (`build_unified_isa()`); its IntEnum mirror
+> is `flux.bytecode.opcodes_unified.UnifiedOp`. Since the cutover, the VM interpreter
+> **defaults to System B**; System A (legacy, `flux.bytecode.opcodes.Op`) remains fully
+> supported and byte-for-byte unchanged via `Interpreter(isa="system_a")`. Neither
+> table is deleted. See `docs/RECONCILIATION.md` for the phase-by-phase timeline,
+> the A↔B mapping, and the landmine resolutions.
+>
+> **Corrections vs. the original published table below** (resolved during
+> reconciliation, see `RECONCILIATION.md`):
+> - **JZ/JNZ/JLT/JGT are Format F** (`op, rd, imm16` big-endian), **not** Format E
+>   (`rd, rs1`). The rows below still show the original Format E labels; the
+>   executable truth (signal_compiler `_compile_if`, conformance vectors) is Format F.
+> - **imm16/imm32 in Formats F/G are BIG-endian** (high byte first), matching the
+>   MOVI16 vector `[0x40, rd, 0x10, 0x00]` = 4096 and `bytecode/formats.py`.
+> - **0xB0-0xB8** below are shown as `PHY_*` (the Marine Physics extension). That
+>   physics set is a **System A** extension (`opcodes.py`); in System B the same
+>   range is the vector/SIMD block (`VLOAD 0xB0 … VNORM 0xBE`, `VSCALE 0xBF`).
+>
+
 | Hex | Mnemonic | Fmt | Operands | Category | Source | Description |
 |-----|----------|-----|----------|----------|--------|-------------|
 | 0x00 | HALT | A | - | system | ✅ | Stop execution |

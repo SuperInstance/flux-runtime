@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Optional, Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from flux.tiles.tile import Tile, TileInstance
 
@@ -30,7 +30,7 @@ class ChangeRecord:
     tile_name: str
     params_before: dict = field(default_factory=dict)
     params_after: dict = field(default_factory=dict)
-    tile_ref: Optional[Tile] = None
+    tile_ref: Tile | None = None
 
     def __repr__(self) -> str:
         return (
@@ -278,7 +278,7 @@ class LiveCodingSession:
         self._redo_stack.clear()
         self._total_changes += 1
 
-    def undo(self) -> Optional[ChangeRecord]:
+    def undo(self) -> ChangeRecord | None:
         """Undo the last change.
 
         Returns:
@@ -302,18 +302,17 @@ class LiveCodingSession:
                 self._active_tiles[record.tile_name] = instance
                 self._active_tile_params[record.tile_name] = record.params_before
 
-        elif record.action == "modify":
-            # Undo modification = restore old params
-            if record.tile_name in self._active_tiles and record.tile_ref is not None:
-                instance = record.tile_ref.instantiate(**record.params_before)
-                self._active_tiles[record.tile_name] = instance
-                self._active_tile_params[record.tile_name] = record.params_before
+        elif (record.action == "modify") and (record.tile_name in self._active_tiles and record.tile_ref is not None):
+        # Undo modification = restore old params
+            instance = record.tile_ref.instantiate(**record.params_before)
+            self._active_tiles[record.tile_name] = instance
+            self._active_tile_params[record.tile_name] = record.params_before
 
         self._redo_stack.append(record)
         self._total_changes = max(0, self._total_changes - 1)
         return record
 
-    def redo(self) -> Optional[ChangeRecord]:
+    def redo(self) -> ChangeRecord | None:
         """Redo the last undone change.
 
         Returns:
@@ -330,16 +329,16 @@ class LiveCodingSession:
                 self._active_tiles[record.tile_name] = instance
                 self._active_tile_params[record.tile_name] = record.params_after
 
-        elif record.action == "remove":
-            if record.tile_name in self._active_tiles:
-                del self._active_tiles[record.tile_name]
-                self._active_tile_params.pop(record.tile_name, None)
+        elif record.action == "remove" and record.tile_name in self._active_tiles:
+            del self._active_tiles[record.tile_name]
+            self._active_tile_params.pop(record.tile_name, None)
 
-        elif record.action == "modify":
-            if record.tile_name in self._active_tiles and record.tile_ref is not None:
-                instance = record.tile_ref.instantiate(**record.params_after)
-                self._active_tiles[record.tile_name] = instance
-                self._active_tile_params[record.tile_name] = record.params_after
+        elif (record.action == "modify"
+                and record.tile_name in self._active_tiles
+                and record.tile_ref is not None):
+            instance = record.tile_ref.instantiate(**record.params_after)
+            self._active_tiles[record.tile_name] = instance
+            self._active_tile_params[record.tile_name] = record.params_after
 
         self._undo_stack.append(record)
         self._total_changes += 1

@@ -1,9 +1,10 @@
 """FIR Instructions — all instruction types for the FLUX intermediate representation."""
 
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .types import FIRType
@@ -21,7 +22,7 @@ class Instruction(ABC):
         ...
 
     @property
-    def result_type(self) -> Optional[FIRType]:
+    def result_type(self) -> FIRType | None:
         """Return the type produced by this instruction, or None if void."""
         return None
 
@@ -522,7 +523,7 @@ class Switch(Instruction):
 class Call(Instruction):
     func: str
     args: list[Value] = field(default_factory=list)
-    return_type: Optional[FIRType] = None
+    return_type: FIRType | None = None
     @property
     def opcode(self): return "call"
     @property
@@ -531,7 +532,7 @@ class Call(Instruction):
 
 @dataclass
 class Return(Instruction):
-    value: Optional[Value] = None
+    value: Value | None = None
     @property
     def opcode(self): return "return"
 

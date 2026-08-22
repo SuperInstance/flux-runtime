@@ -22,12 +22,12 @@ from __future__ import annotations
 
 import math
 import struct
-from typing import Callable, Optional
+from collections.abc import Callable
 
-from flux.bytecode.opcodes import Op, opcode_size
+from flux.bytecode.opcodes import Op
+from flux.bytecode.opcodes_unified import UnifiedOp
 from flux.vm.memory import MemoryManager
 from flux.vm.registers import RegisterFile
-
 
 # ── Exceptions ─────────────────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ from flux.vm.registers import RegisterFile
 class VMError(Exception):
     """Base exception for all VM runtime errors."""
 
-    def __init__(self, message: str, opcode: Optional[int] = None, pc: Optional[int] = None):
+    def __init__(self, message: str, opcode: int | None = None, pc: int | None = None):
         super().__init__(message)
         self.message = message
         self.opcode = opcode
@@ -80,6 +80,15 @@ class VMResourceError(VMError):
 
 # ── Interpreter ────────────────────────────────────────────────────────────
 
+# System B (unified ISA) A2A opcode → handler name map. Register-based
+# (Format E), unlike System A's variable-length string A2A payloads.
+_UNIFIED_A2A_NAMES = {
+    0x50: "TELL", 0x51: "ASK", 0x52: "DELEG", 0x53: "BCAST",
+    0x54: "ACCEPT", 0x55: "DECLINE", 0x56: "REPORT", 0x57: "MERGE",
+    0x58: "FORK", 0x59: "JOIN", 0x5A: "SIGNAL", 0x5B: "AWAIT",
+    0x5C: "TRUST", 0x5D: "DISCOV", 0x5E: "STATUS", 0x5F: "HEARTBT",
+}
+
 
 class Interpreter:
     """FLUX Micro-VM bytecode interpreter.
@@ -108,7 +117,16 @@ class Interpreter:
         bytecode: bytes,
         memory_size: int = 65536,
         max_cycles: int = MAX_CYCLES,
+        isa: str = "unified",
     ) -> None:
+        # ISA selector. "unified" / "system_b" (DEFAULT) = converged System B
+        # numbering in isa_unified.py — the canonical target post-cutover
+        # (2026-08-21). "system_a" = legacy numbering in opcodes.py, still
+        # fully supported for byte-for-byte compat with pre-cutover bytecode.
+        # Both tables are preserved; this flag chooses which one to dispatch on.
+        _isa = (isa or "unified").strip().lower()
+        self.isa = "unified" if _isa in ("unified", "system_b", "b") else "system_a"
+
         self.regs = RegisterFile()
         self.memory = MemoryManager()
         self.bytecode = bytecode
@@ -126,11 +144,11 @@ class Interpreter:
         self._flag_overflow = False  # set when signed overflow
 
         # I/O callbacks
-        self._io_read_cb: Optional[Callable] = None
-        self._io_write_cb: Optional[Callable] = None
+        self._io_read_cb: Callable | None = None
+        self._io_write_cb: Callable | None = None
 
         # A2A handler (plugin/callback for A2A opcodes)
-        self._a2a_handler: Optional[Callable] = None
+        self._a2a_handler: Callable | None = None
 
         # Box table for BOX/UNBOX/CHECK_TYPE
         self._box_table: list[tuple[int, object]] = []  # (type_tag, value)
@@ -274,6 +292,20 @@ class Interpreter:
         val = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24)
         return val if val < 0x80000000 else val - 0x100000000
 
+    def _fetch_i16_be(self) -> int:
+        """Fetch a big-endian signed 16-bit immediate (System B Format F).
+
+        The unified ISA encodes imm16 big-endian (high byte first) in the
+        executable ground truth (signal_compiler.py ``_emit_format_f`` and the
+        conformance vectors). ``isa_unified.py``'s header now documents this
+        big-endian convention (its earlier little-endian claim was corrected
+        2026-08-21). See docs/RECONCILIATION.md.
+        """
+        hi = self._fetch_u8()
+        lo = self._fetch_u8()
+        val = (hi << 8) | lo
+        return val if val < 0x8000 else val - 0x10000
+
     def _fetch_var_data(self) -> bytes:
         """Fetch variable-length data (Format G): u16 length prefix + data."""
         length = self._fetch_u16()
@@ -291,35 +323,35 @@ class Interpreter:
 
     # ── Decode helpers ─────────────────────────────────────────────────────
 
-    def _decode_operands_A(self) -> tuple:
+    def _decode_operands_A(self) -> tuple:  # noqa: N802  # operand-format decode family (Format A)
         """No operands (Format A)."""
         return ()
 
-    def _decode_operands_B(self) -> tuple[int]:
+    def _decode_operands_B(self) -> tuple[int]:  # noqa: N802  # operand-format decode family (Format B)
         """One register (Format B)."""
         reg = self._fetch_u8()
         return (reg,)
 
-    def _decode_operands_C(self) -> tuple[int, int]:
+    def _decode_operands_C(self) -> tuple[int, int]:  # noqa: N802  # operand-format decode family (Format C)
         """Two registers: rd, rs1 (Format C)."""
         rd = self._fetch_u8()
         rs1 = self._fetch_u8()
         return (rd, rs1)
 
-    def _decode_operands_D(self) -> tuple[int, int]:
+    def _decode_operands_D(self) -> tuple[int, int]:  # noqa: N802  # operand-format decode family (Format D)
         """Register + signed i16 offset (Format D)."""
         rs1 = self._fetch_u8()
         offset = self._fetch_i16()
         return (rs1, offset)
 
-    def _decode_operands_E(self) -> tuple[int, int, int]:
+    def _decode_operands_E(self) -> tuple[int, int, int]:  # noqa: N802  # operand-format decode family (Format E)
         """Three registers: rd, rs1, rs2 (Format E)."""
         rd = self._fetch_u8()
         rs1 = self._fetch_u8()
         rs2 = self._fetch_u8()
         return (rd, rs1, rs2)
 
-    def _decode_operands_MOVI(self) -> tuple[int, int]:
+    def _decode_operands_MOVI(self) -> tuple[int, int]:  # noqa: N802  # operand-format decode family (MOVI format)
         """Register + signed i16 immediate (MOVI format)."""
         reg = self._fetch_u8()
         imm = self._fetch_i16()
@@ -362,22 +394,348 @@ class Interpreter:
 
     # ── A2A dispatch helper ────────────────────────────────────────────────
 
-    def _dispatch_a2a(self, opcode_name: str, data: bytes) -> None:
+    def _dispatch_a2a(self, opcode_name: str, data: bytes, rd: int | None = None) -> None:
         """Dispatch an A2A opcode to the registered handler.
 
         If no handler is registered, the opcode is logged as a no-op stub.
-        The handler may optionally return a value to place in R0.
+        The handler may optionally return a value: in unified mode (``rd``
+        given) it is written to rd per the converged spec (ASK "resp→rd");
+        in System A mode (``rd`` is None) it goes to R0, unchanged.
         """
         if self._a2a_handler is not None:
             result = self._a2a_handler(opcode_name, data)
             if result is not None:
-                self.regs.write_gp(0, int(result))
+                self.regs.write_gp(rd if rd is not None else 0, int(result))
         # If no handler, silently no-op (stub behavior for self-hosting)
 
     # ── Single-step execution ──────────────────────────────────────────────
 
+    def _step_unified(self) -> None:
+        """Execute one instruction using System B (unified ISA) numbering.
+
+        This is the converged 3-agent ISA (isa_unified.py / opcodes_unified.py).
+        It is the DEFAULT execution path since the 2026-08-21 cutover; System A
+        (legacy) is preserved and selectable via ``Interpreter(..., isa="system_a")``.
+        """
+        start_pc = self.pc
+        opcode_byte = self._fetch_u8()
+
+        # ── System control (Format A) ─────────────────────────────────────
+        if opcode_byte == UnifiedOp.HALT:
+            self.running = False
+            self.halted = True
+            return
+        if opcode_byte == UnifiedOp.NOP:
+            return
+        if opcode_byte == UnifiedOp.RET:
+            if self.regs.sp >= self._initial_sp:
+                self.halted = True
+                return
+            self.pc = self._stack_pop()
+            return
+
+        # ── Single-register ops (Format B) ────────────────────────────────
+        if opcode_byte == UnifiedOp.INC:
+            (reg,) = self._decode_operands_B()
+            result = self.regs.read_gp(reg) + 1
+            self.regs.write_gp(reg, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.DEC:
+            (reg,) = self._decode_operands_B()
+            result = self.regs.read_gp(reg) - 1
+            self.regs.write_gp(reg, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.NOT:
+            (reg,) = self._decode_operands_B()
+            result = ~self.regs.read_gp(reg)
+            self.regs.write_gp(reg, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.NEG:
+            (reg,) = self._decode_operands_B()
+            result = -self.regs.read_gp(reg)
+            self.regs.write_gp(reg, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.PUSH:
+            (reg,) = self._decode_operands_B()
+            self._stack_push(self.regs.read_gp(reg))
+            return
+        if opcode_byte == UnifiedOp.POP:
+            (reg,) = self._decode_operands_B()
+            self.regs.write_gp(reg, self._stack_pop())
+            return
+
+        # ── Move immediates ───────────────────────────────────────────────
+        if opcode_byte == UnifiedOp.MOVI:  # Format D: op, rd, imm8 (signed)
+            rd = self._fetch_u8()
+            imm = self._fetch_i8()
+            self.regs.write_gp(rd, imm)
+            self._set_flags(imm)
+            return
+        if opcode_byte == UnifiedOp.MOVI16:  # Format F: op, rd, imm16 (big-endian)
+            rd = self._fetch_u8()
+            imm = self._fetch_i16_be()
+            self.regs.write_gp(rd, imm)
+            self._set_flags(imm)
+            return
+
+        # ── Integer arithmetic / logic (Format E) ─────────────────────────
+        if opcode_byte == UnifiedOp.ADD:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) + self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.SUB:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) - self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.MUL:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) * self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.DIV:
+            rd, rs1, rs2 = self._decode_operands_E()
+            divisor = self.regs.read_gp(rs2)
+            if divisor == 0:
+                raise VMDivisionByZeroError(
+                    "Integer division by zero", opcode=opcode_byte, pc=start_pc,
+                )
+            result = int(self.regs.read_gp(rs1) / divisor)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.MOD:
+            rd, rs1, rs2 = self._decode_operands_E()
+            divisor = self.regs.read_gp(rs2)
+            if divisor == 0:
+                raise VMDivisionByZeroError(
+                    "Integer modulo by zero", opcode=opcode_byte, pc=start_pc,
+                )
+            dividend = self.regs.read_gp(rs1)
+            result = dividend - int(dividend / divisor) * divisor
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.AND:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) & self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.OR:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) | self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.XOR:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) ^ self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.SHL:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) << (self.regs.read_gp(rs2) & 0x1F)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.SHR:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = self.regs.read_gp(rs1) >> (self.regs.read_gp(rs2) & 0x1F)
+            self.regs.write_gp(rd, result)
+            self._set_flags(result)
+            return
+        if opcode_byte == UnifiedOp.MIN:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = min(self.regs.read_gp(rs1), self.regs.read_gp(rs2))
+            self.regs.write_gp(rd, result)
+            return
+        if opcode_byte == UnifiedOp.MAX:
+            rd, rs1, rs2 = self._decode_operands_E()
+            result = max(self.regs.read_gp(rs1), self.regs.read_gp(rs2))
+            self.regs.write_gp(rd, result)
+            return
+
+        # ── Compare (Format E) ────────────────────────────────────────────
+        if opcode_byte == UnifiedOp.CMP_EQ:
+            rd, rs1, rs2 = self._decode_operands_E()
+            a, b = self.regs.read_gp(rs1), self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, 1 if a == b else 0)
+            self._set_cmp_flags(a, b)
+            return
+        if opcode_byte == UnifiedOp.CMP_LT:
+            rd, rs1, rs2 = self._decode_operands_E()
+            a, b = self.regs.read_gp(rs1), self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, 1 if a < b else 0)
+            self._set_cmp_flags(a, b)
+            return
+        if opcode_byte == UnifiedOp.CMP_GT:
+            rd, rs1, rs2 = self._decode_operands_E()
+            a, b = self.regs.read_gp(rs1), self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, 1 if a > b else 0)
+            self._set_cmp_flags(a, b)
+            return
+        if opcode_byte == UnifiedOp.CMP_NE:
+            rd, rs1, rs2 = self._decode_operands_E()
+            a, b = self.regs.read_gp(rs1), self.regs.read_gp(rs2)
+            self.regs.write_gp(rd, 1 if a != b else 0)
+            self._set_cmp_flags(a, b)
+            return
+
+        # ── Float (Format E) ──────────────────────────────────────────────
+        if opcode_byte == UnifiedOp.FADD:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, self.regs.read_fp(rs1) + self.regs.read_fp(rs2))
+            return
+        if opcode_byte == UnifiedOp.FSUB:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, self.regs.read_fp(rs1) - self.regs.read_fp(rs2))
+            return
+        if opcode_byte == UnifiedOp.FMUL:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, self.regs.read_fp(rs1) * self.regs.read_fp(rs2))
+            return
+        if opcode_byte == UnifiedOp.FDIV:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, self.regs.read_fp(rs1) / self.regs.read_fp(rs2))
+            return
+        if opcode_byte == UnifiedOp.FMIN:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, min(self.regs.read_fp(rs1), self.regs.read_fp(rs2)))
+            return
+        if opcode_byte == UnifiedOp.FMAX:
+            rd, rs1, rs2 = self._decode_operands_E()
+            self.regs.write_fp(rd, max(self.regs.read_fp(rs1), self.regs.read_fp(rs2)))
+            return
+        if opcode_byte == UnifiedOp.FTOI:
+            rd, rs1, _ = self._decode_operands_E()
+            self.regs.write_gp(rd, int(self.regs.read_fp(rs1)))
+            return
+        if opcode_byte == UnifiedOp.ITOF:
+            rd, rs1, _ = self._decode_operands_E()
+            self.regs.write_fp(rd, float(self.regs.read_gp(rs1)))
+            return
+
+        # ── Memory / move (Format E) ──────────────────────────────────────
+        if opcode_byte == UnifiedOp.LOAD:
+            rd, rs1, rs2 = self._decode_operands_E()
+            addr = self.regs.read_gp(rs1) + self.regs.read_gp(rs2)
+            stack = self.memory.get_region("stack")
+            self.regs.write_gp(rd, stack.read_i32(addr))
+            return
+        if opcode_byte == UnifiedOp.STORE:
+            rd, rs1, rs2 = self._decode_operands_E()
+            addr = self.regs.read_gp(rs1) + self.regs.read_gp(rs2)
+            stack = self.memory.get_region("stack")
+            stack.write_i32(addr, self.regs.read_gp(rd))
+            return
+        if opcode_byte == UnifiedOp.MOV:
+            rd, rs1, _ = self._decode_operands_E()
+            self.regs.write_gp(rd, self.regs.read_gp(rs1))
+            return
+        if opcode_byte == UnifiedOp.SWP:
+            rd, rs1, _ = self._decode_operands_E()
+            a, b = self.regs.read_gp(rd), self.regs.read_gp(rs1)
+            self.regs.write_gp(rd, b)
+            self.regs.write_gp(rs1, a)
+            return
+
+        # ── Branches ──────────────────────────────────────────────────────
+        # JZ/JNZ/JLT/JGT are Format F (op, rd, imm16 big-endian) — the
+        # executable ground truth (signal_compiler back-patches an imm16,
+        # parallel to JMP). The isa_unified.py "Format E" label was a spec
+        # inconsistency, corrected 2026-08-21.
+        if opcode_byte == UnifiedOp.JZ:
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
+            if self.regs.read_gp(rd) == 0:
+                self.pc += imm16
+            return
+        if opcode_byte == UnifiedOp.JNZ:
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
+            if self.regs.read_gp(rd) != 0:
+                self.pc += imm16
+            return
+        if opcode_byte == UnifiedOp.JLT:
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
+            if self.regs.read_gp(rd) < 0:
+                self.pc += imm16
+            return
+        if opcode_byte == UnifiedOp.JGT:
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
+            if self.regs.read_gp(rd) > 0:
+                self.pc += imm16
+            return
+        if opcode_byte == UnifiedOp.JMP:
+            self._fetch_u8()  # rd (ignored by JMP)
+            imm16 = self._fetch_i16_be()
+            self.pc += imm16
+            return
+        if opcode_byte == UnifiedOp.CALL:
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
+            self._stack_push(self.pc)
+            self.pc = self.regs.read_gp(rd) + imm16
+            return
+        if opcode_byte == UnifiedOp.LOOP:
+            rd = self._fetch_u8()
+            imm16 = self._fetch_i16_be()
+            v = self.regs.read_gp(rd) - 1
+            self.regs.write_gp(rd, v)
+            if v > 0:
+                self.pc -= imm16
+            return
+
+        # ── A2A (Format E) ────────────────────────────────────────────────
+        if opcode_byte in _UNIFIED_A2A_NAMES:
+            rd, rs1, rs2 = self._decode_operands_E()
+            payload = struct.pack(
+                "<III",
+                self.regs.read_gp(rd) & 0xFFFFFFFF,
+                self.regs.read_gp(rs1) & 0xFFFFFFFF,
+                self.regs.read_gp(rs2) & 0xFFFFFFFF,
+            )
+            # Per the converged spec (e.g. ASK "resp→rd"), a handler result
+            # lands in rd (not the System A R0 convention).
+            self._dispatch_a2a(_UNIFIED_A2A_NAMES[opcode_byte], payload, rd=rd)
+            return
+
+        # ── Confidence: C_THRESH (Format D) ───────────────────────────────
+        if opcode_byte == UnifiedOp.C_THRESH:
+            # Confidence machinery is out of scope for the Python interpreter;
+            # consume (rd, imm8) and no-op (documented stub).
+            self._fetch_u8()  # rd
+            self._fetch_u8()  # imm8
+            return
+
+        # ── Unknown / not-yet-implemented unified opcode ──────────────────
+        try:
+            name = UnifiedOp(opcode_byte).name
+        except ValueError:
+            name = "RESERVED"
+        raise VMInvalidOpcodeError(
+            f"Unknown or unimplemented unified opcode: 0x{opcode_byte:02X} ({name})",
+            opcode=opcode_byte,
+            pc=start_pc,
+        )
+
     def _step(self) -> None:
         """Fetch, decode, and execute one instruction."""
+        if self.isa == "unified":
+            self._step_unified()
+            return
         start_pc = self.pc
         opcode_byte = self._fetch_u8()
 
@@ -719,7 +1077,7 @@ class Interpreter:
         # ── Stack: LEAVE (restore frame pointer, deallocate) ───────────────
         if opcode_byte == Op.LEAVE:
             # Format B: [LEAVE][unused:u8]
-            (unused,) = self._decode_operands_B()
+            (_,) = self._decode_operands_B()
             # Restore SP to FP
             self.regs.sp = self.regs.fp
             # Pop old FP
@@ -867,10 +1225,14 @@ class Interpreter:
             data = self._fetch_var_data()
             # data: [name_len:u8][name_bytes][size:u32_le][owner_len:u8][owner_bytes]
             idx = 0
-            name_len = data[idx]; idx += 1
-            name = data[idx:idx + name_len].decode('utf-8', errors='replace').rstrip('\x00'); idx += name_len
-            size = struct.unpack_from('<I', data, idx)[0]; idx += 4
-            owner_len = data[idx]; idx += 1
+            name_len = data[idx]
+            idx += 1
+            name = data[idx:idx + name_len].decode('utf-8', errors='replace').rstrip('\x00')
+            idx += name_len
+            size = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
+            owner_len = data[idx]
+            idx += 1
             owner = data[idx:idx + owner_len].decode('utf-8', errors='replace').rstrip('\x00')
             region = self.memory.create_region(name, size, owner)
             # Store region base pointer in R0
@@ -889,9 +1251,12 @@ class Interpreter:
             data = self._fetch_var_data()
             # [name_len:u8][name][new_owner_len:u8][new_owner]
             idx = 0
-            name_len = data[idx]; idx += 1
-            name = data[idx:idx + name_len].decode('utf-8', errors='replace').rstrip('\x00'); idx += name_len
-            new_owner_len = data[idx]; idx += 1
+            name_len = data[idx]
+            idx += 1
+            name = data[idx:idx + name_len].decode('utf-8', errors='replace').rstrip('\x00')
+            idx += name_len
+            new_owner_len = data[idx]
+            idx += 1
             new_owner = data[idx:idx + new_owner_len].decode('utf-8', errors='replace').rstrip('\x00')
             self.memory.transfer_region(name, new_owner)
             return
@@ -901,10 +1266,14 @@ class Interpreter:
             data = self._fetch_var_data()
             # [region_name_len:u8][region_name][src_offset:u32][dst_offset:u32][size:u32]
             idx = 0
-            rname_len = data[idx]; idx += 1
-            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00'); idx += rname_len
-            src_off = struct.unpack_from('<I', data, idx)[0]; idx += 4
-            dst_off = struct.unpack_from('<I', data, idx)[0]; idx += 4
+            rname_len = data[idx]
+            idx += 1
+            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00')
+            idx += rname_len
+            src_off = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
+            dst_off = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
             size = struct.unpack_from('<I', data, idx)[0]
             region = self.memory.get_region(rname)
             chunk = region.read(src_off, size)
@@ -916,10 +1285,14 @@ class Interpreter:
             data = self._fetch_var_data()
             # [region_name_len:u8][region_name][offset:u32][value:u8][size:u32]
             idx = 0
-            rname_len = data[idx]; idx += 1
-            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00'); idx += rname_len
-            offset = struct.unpack_from('<I', data, idx)[0]; idx += 4
-            value = data[idx]; idx += 1
+            rname_len = data[idx]
+            idx += 1
+            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00')
+            idx += rname_len
+            offset = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
+            value = data[idx]
+            idx += 1
             size = struct.unpack_from('<I', data, idx)[0]
             region = self.memory.get_region(rname)
             region.write(offset, bytes([value]) * size)
@@ -930,10 +1303,14 @@ class Interpreter:
             data = self._fetch_var_data()
             # [region_name_len:u8][region_name][off_a:u32][off_b:u32][size:u32]
             idx = 0
-            rname_len = data[idx]; idx += 1
-            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00'); idx += rname_len
-            off_a = struct.unpack_from('<I', data, idx)[0]; idx += 4
-            off_b = struct.unpack_from('<I', data, idx)[0]; idx += 4
+            rname_len = data[idx]
+            idx += 1
+            rname = data[idx:idx + rname_len].decode('utf-8', errors='replace').rstrip('\x00')
+            idx += rname_len
+            off_a = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
+            off_b = struct.unpack_from('<I', data, idx)[0]
+            idx += 4
             size = struct.unpack_from('<I', data, idx)[0]
             region = self.memory.get_region(rname)
             a = region.read(off_a, size)
@@ -1034,7 +1411,7 @@ class Interpreter:
 
         # ── ISA v3: Confidence ops (0x3D-0x3F) ───────────────────────────
         if opcode_byte == Op.CONF:
-            rd, conf_raw = self._decode_operands_D()
+            rd, _ = self._decode_operands_D()
             return
         if opcode_byte == Op.MERGE:
             rd, rs1, rs2 = self._decode_operands_E()
@@ -1173,7 +1550,7 @@ class Interpreter:
             vd, vs1 = self._decode_operands_C()
             a = self.regs.read_vec(vd)
             b = self.regs.read_vec(vs1)
-            result = bytes(x + y for x, y in zip(a, b))
+            result = bytes(x + y for x, y in zip(a, b, strict=False))
             self.regs.write_vec(vd, result)
             return
 
@@ -1182,7 +1559,7 @@ class Interpreter:
             vd, vs1 = self._decode_operands_C()
             a = self.regs.read_vec(vd)
             b = self.regs.read_vec(vs1)
-            result = bytes(x - y for x, y in zip(a, b))
+            result = bytes(x - y for x, y in zip(a, b, strict=False))
             self.regs.write_vec(vd, result)
             return
 
@@ -1191,7 +1568,7 @@ class Interpreter:
             vd, vs1 = self._decode_operands_C()
             a = self.regs.read_vec(vd)
             b = self.regs.read_vec(vs1)
-            result = bytes(x * y for x, y in zip(a, b))
+            result = bytes(x * y for x, y in zip(a, b, strict=False))
             self.regs.write_vec(vd, result)
             return
 
@@ -1207,7 +1584,7 @@ class Interpreter:
                     opcode=opcode_byte,
                     pc=start_pc,
                 )
-            result = bytes(int(x / y) for x, y in zip(a, b))
+            result = bytes(int(x / y) for x, y in zip(a, b, strict=False))
             self.regs.write_vec(vd, result)
             return
 
@@ -1552,10 +1929,7 @@ class Interpreter:
             rd, rs1, rs2 = self._decode_operands_E()
             attenuation = self.regs.read_fp(rs1)
             depth = max(0.1, self.regs.read_fp(rs2))
-            if attenuation <= 0.01:
-                result = 60.0
-            else:
-                result = min(depth, 1.7 / attenuation)
+            result = 60.0 if attenuation <= 0.01 else min(depth, 1.7 / attenuation)
             self.regs.write_fp(rd, result)
             return
 

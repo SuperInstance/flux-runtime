@@ -2,36 +2,34 @@
 
 import pytest
 
-from flux.creative.sonification import (
-    Sonifier,
-    MusicSequence,
-    MusicEvent,
-    ExecutionEvent,
-)
 from flux.creative.generative import (
-    LSystemTile,
     CellularAutomatonTile,
     FractalTile,
+    LSystemTile,
     ReactionDiffusionTile,
 )
 from flux.creative.live import (
+    BeatResult,
+    ChangeRecord,
     LiveCodingSession,
     PerformanceState,
-    ChangeRecord,
-    VersionRecord,
-    BeatResult,
     Recording,
+    VersionRecord,
+)
+from flux.creative.sonification import (
+    ExecutionEvent,
+    MusicEvent,
+    MusicSequence,
+    Sonifier,
 )
 from flux.creative.visualization import (
-    TileGraphVisualizer,
-    ExecutionVisualizer,
-    HEAT_COLORS,
     HEAT_CHARS,
+    HEAT_COLORS,
+    ExecutionVisualizer,
+    TileGraphVisualizer,
 )
-from flux.tiles.tile import Tile, TileType
 from flux.tiles.graph import TileGraph
-from flux.fir.types import TypeContext
-
+from flux.tiles.tile import Tile, TileType
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Sonifier Tests
@@ -583,41 +581,41 @@ class TestReactionDiffusionTile:
 
     def test_initialize_grid(self):
         rd = ReactionDiffusionTile(grid_size=8)
-        U, V = rd.initialize_grid()
-        assert len(U) == 8
-        assert len(V) == 8
-        assert all(len(row) == 8 for row in U)
+        u, v = rd.initialize_grid()
+        assert len(u) == 8
+        assert len(v) == 8
+        assert all(len(row) == 8 for row in u)
 
     def test_step_preserves_size(self):
         rd = ReactionDiffusionTile(grid_size=8)
-        U, V = rd.initialize_grid()
-        U2, V2 = rd.step(U, V)
-        assert len(U2) == 8
-        assert len(V2) == 8
+        u, v = rd.initialize_grid()
+        u2, v2 = rd.step(u, v)
+        assert len(u2) == 8
+        assert len(v2) == 8
 
     def test_step_clamps_values(self):
         rd = ReactionDiffusionTile(grid_size=8)
-        U, V = rd.initialize_grid()
-        U2, V2 = rd.step(U, V)
-        for row in U2:
+        u, v = rd.initialize_grid()
+        u2, v2 = rd.step(u, v)
+        for row in u2:
             for val in row:
                 assert 0.0 <= val <= 1.0
-        for row in V2:
+        for row in v2:
             for val in row:
                 assert 0.0 <= val <= 1.0
 
     def test_empty_grid_step(self):
         rd = ReactionDiffusionTile(grid_size=0)
-        U, V = [], []
-        U2, V2 = rd.step(U, V)
-        assert U2 == []
-        assert V2 == []
+        u, v = [], []
+        u2, v2 = rd.step(u, v)
+        assert u2 == []
+        assert v2 == []
 
     def test_run(self):
         rd = ReactionDiffusionTile(grid_size=8, iterations=3)
-        U, V = rd.run()
-        assert len(U) == 8
-        assert len(V) == 8
+        u, v = rd.run()
+        assert len(u) == 8
+        assert len(v) == 8
 
     def test_presets(self):
         assert "spots" in ReactionDiffusionTile.PRESETS
@@ -626,18 +624,18 @@ class TestReactionDiffusionTile:
 
     def test_run_with_preset(self):
         rd = ReactionDiffusionTile(grid_size=8, iterations=2)
-        U, V = rd.run(preset="stripes")
+        _, _ = rd.run(preset="stripes")
         assert rd.feed_rate == ReactionDiffusionTile.PRESETS["stripes"]["feed_rate"]
 
     def test_grid_stats(self):
         rd = ReactionDiffusionTile(grid_size=4)
-        V = [
+        v = [
             [0.0, 0.1, 0.2, 0.0],
             [0.0, 0.5, 0.3, 0.0],
             [0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0],
         ]
-        stats = rd.grid_stats(V)
+        stats = rd.grid_stats(v)
         assert "min" in stats
         assert "max" in stats
         assert "mean" in stats
@@ -1082,7 +1080,7 @@ class TestCreativeIntegration:
         ca = CellularAutomatonTile(rule=110, width=8, generations=5)
         history = ca.run()
 
-        s = Sonifier()
+        Sonifier()
         # Convert automaton state to musical sequence
         seq = MusicSequence()
         t = 0.0

@@ -1,4 +1,4 @@
-"""Speculative Execution Engine — executes multiple mutations in parallel (speculatively).
+"""Speculative Execution Engine - executes multiple mutations in parallel (speculatively).
 
 Instead of trying one mutation at a time, this engine:
 1. Generates N hypotheses
@@ -15,18 +15,14 @@ from __future__ import annotations
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Any
 
-from flux.evolution.genome import Genome, MutationStrategy
 from flux.evolution.mutator import (
     MutationProposal,
-    MutationResult,
 )
-from flux.flywheel.hypothesis import Hypothesis, ExperimentResult, ExperimentOutcome
-from flux.adaptive.profiler import AdaptiveProfiler
+from flux.flywheel.hypothesis import ExperimentOutcome, ExperimentResult, Hypothesis
 
 from .digital_twin import DigitalTwin, SimulatedResult
-
 
 # ── Data Types ──────────────────────────────────────────────────────────
 
@@ -36,9 +32,9 @@ class SpeculationResult:
     hypotheses_evaluated: int = 0
     simulations_run: int = 0
     real_executions_run: int = 0
-    best_hypothesis: Optional[Hypothesis] = None
-    best_simulated: Optional[SimulatedResult] = None
-    best_result: Optional[ExperimentResult] = None
+    best_hypothesis: Hypothesis | None = None
+    best_simulated: SimulatedResult | None = None
+    best_result: ExperimentResult | None = None
     total_speedup: float = 1.0
     confidence: float = 0.0
     elapsed_ms: float = 0.0
@@ -98,7 +94,7 @@ class SpeculativeEngine:
 
         Workflow:
         1. Simulate all hypotheses using the digital twin
-        2. Rank by estimated value (speedup × confidence / risk)
+        2. Rank by estimated value (speedup x confidence / risk)
         3. Execute top K in parallel
         4. Keep the best result
         5. Roll back the rest
@@ -131,9 +127,9 @@ class SpeculativeEngine:
 
         result.simulations_run = len(simulated)
 
-        # Step 2: Rank by estimated value (speedup × confidence × (1 - risk))
+        # Step 2: Rank by estimated value (speedup x confidence x (1 - risk))
         def rank_score(item: tuple[Hypothesis, SimulatedResult]) -> float:
-            hyp, sim = item
+            hyp, _ = item
             return hyp.expected_speedup * hyp.confidence * (1.0 - hyp.risk_level)
 
         simulated.sort(key=rank_score, reverse=True)
@@ -279,7 +275,7 @@ class SpeculativeEngine:
 
     def _select_best(
         self, results: list[ExperimentResult]
-    ) -> Optional[ExperimentResult]:
+    ) -> ExperimentResult | None:
         """Select the best result from the executed results.
 
         Priority: SUCCESS > INCONCLUSIVE > FAILURE

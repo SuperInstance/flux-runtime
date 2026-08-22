@@ -1,11 +1,11 @@
 """Capability tokens for FLUX agent security."""
 
 from __future__ import annotations
+
 import hashlib
 import time
 from dataclasses import dataclass
 from enum import IntFlag
-from typing import Optional
 
 
 class Permission(IntFlag):

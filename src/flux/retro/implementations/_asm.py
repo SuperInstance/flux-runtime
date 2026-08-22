@@ -7,6 +7,7 @@ second pass resolves all fixups to correct relative offsets.
 from __future__ import annotations
 
 import struct
+
 from flux.bytecode.opcodes import Op
 
 

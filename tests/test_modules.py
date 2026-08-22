@@ -1,21 +1,19 @@
 """Tests for the nested module system — fractal hot-reload hierarchy."""
 
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
+from flux.fir.types import TypeContext
+from flux.modules.card import ModuleCard
+from flux.modules.container import ModuleContainer, ReloadResult
 from flux.modules.granularity import (
     Granularity,
-    GranularityMeta,
     get_granularity_meta,
 )
-from flux.modules.card import ModuleCard, CompileResult
-from flux.modules.container import ModuleContainer, ReloadResult
-from flux.modules.reloader import FractalReloader, ReloadEvent, GranularityRecommendation
 from flux.modules.namespace import ModuleNamespace, NameNotFoundError
-from flux.fir.types import TypeContext
-
+from flux.modules.reloader import FractalReloader, ReloadEvent
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Granularity tests
@@ -195,7 +193,7 @@ def test_get_by_path_deep():
     """get_by_path resolves deeply nested paths."""
     root = ModuleContainer("root", Granularity.TRAIN)
     car = root.add_child("car1", Granularity.CARRIAGE)
-    lug = car.add_child("luggage_a", Granularity.LUGGAGE)
+    car.add_child("luggage_a", Granularity.LUGGAGE)
     result = root.get_by_path("car1.luggage_a")
     assert result is not None
     assert isinstance(result, ModuleContainer)
@@ -638,7 +636,7 @@ def test_namespace_not_found_raises():
     ns = ModuleNamespace()
     try:
         ns.resolve("missing")
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except NameNotFoundError:
         pass
     print("  PASS test_namespace_not_found_raises")
@@ -651,7 +649,7 @@ def test_namespace_resolve_local():
     child = parent.child_scope()
     try:
         child.resolve_local("x")
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except NameNotFoundError:
         pass
     print("  PASS test_namespace_resolve_local")
@@ -730,8 +728,8 @@ def test_to_dict_deep():
     """to_dict handles deep nesting."""
     root = ModuleContainer("T", Granularity.TRAIN)
     c = root.add_child("C", Granularity.CARRIAGE)
-    l = c.add_child("L", Granularity.LUGGAGE)
-    l.load_card("card_a", "hello")
+    lug = c.add_child("L", Granularity.LUGGAGE)
+    lug.load_card("card_a", "hello")
     d = root.to_dict()
     assert "L" in d["children"]["C"]["children"]
     assert "card_a" in d["children"]["C"]["children"]["L"]["cards"]

@@ -15,16 +15,16 @@ Usage:
     report = synth.get_system_report()
 """
 
+from .report import (
+    SystemReport,
+)
 from .synthesizer import (
     FluxSynthesizer,
     WorkloadResult,
 )
-from .report import (
-    SystemReport,
-)
 
 __all__ = [
     "FluxSynthesizer",
-    "WorkloadResult",
     "SystemReport",
+    "WorkloadResult",
 ]

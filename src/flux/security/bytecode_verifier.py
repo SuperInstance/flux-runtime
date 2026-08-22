@@ -27,8 +27,6 @@ from __future__ import annotations
 import struct
 from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import Optional, List, Dict, Set, Tuple
-
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -86,7 +84,7 @@ class VerificationReport:
     program_hash: str = ""
     program_size: int = 0
     instruction_count: int = 0
-    pass_results: Dict[int, List[VerificationFinding]] = field(default_factory=dict)
+    pass_results: dict[int, list[VerificationFinding]] = field(default_factory=dict)
     passes_completed: int = 0
     is_valid: bool = False
     error_count: int = 0
@@ -124,7 +122,7 @@ class VerificationReport:
 
 # Maps opcode -> (format_letter, byte_size, num_register_operands)
 # Format sizes: A=1, B=2, C=2, D=3, E=4, F=4, G=5
-OPCODE_FORMATS: Dict[int, Tuple[str, int, int]] = {}
+OPCODE_FORMATS: dict[int, tuple[str, int, int]] = {}
 
 # Format A: 0x00-0x03, 0x04-0x07, 0xF0-0xFF
 # Format B: 0x08-0x0F
@@ -226,8 +224,8 @@ class DecodedInstruction:
     format: str = "?"
     offset: int = 0
     size: int = 1
-    registers: List[int] = field(default_factory=list)
-    immediates: List[int] = field(default_factory=list)
+    registers: list[int] = field(default_factory=list)
+    immediates: list[int] = field(default_factory=list)
     is_valid: bool = True
     error: str = ""
 
@@ -245,7 +243,7 @@ def decode_instruction(bytecode: bytes, offset: int) -> DecodedInstruction:
             is_valid=False, error=f"Unknown opcode 0x{opcode:02X}"
         )
 
-    fmt, expected_size, num_regs = OPCODE_FORMATS[opcode]
+    fmt, expected_size, _ = OPCODE_FORMATS[opcode]
 
     # Check if we have enough bytes
     remaining = len(bytecode) - offset
@@ -282,7 +280,7 @@ def decode_instruction(bytecode: bytes, offset: int) -> DecodedInstruction:
     )
 
 
-def decode_all(bytecode: bytes) -> List[DecodedInstruction]:
+def decode_all(bytecode: bytes) -> list[DecodedInstruction]:
     """Decode all instructions in a bytecode program."""
     instructions = []
     offset = 0
@@ -311,7 +309,7 @@ class BytecodeVerifier:
     def __init__(
         self,
         policy: VerifierPolicy = VerifierPolicy.STANDARD,
-        capabilities: Optional[set] = None,
+        capabilities: set | None = None,
         max_stack: int = MAX_STACK_DEPTH,
         max_program_size: int = MAX_PROGRAM_SIZE,
     ):
@@ -400,7 +398,7 @@ class BytecodeVerifier:
     # ── Pass 1: Structural Integrity ──────────────────────────────────────
 
     def _pass_structural_integrity(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Validate instruction encoding and format compliance."""
         for insn in instructions:
@@ -433,7 +431,7 @@ class BytecodeVerifier:
     # ── Pass 2: Register Validation ───────────────────────────────────────
 
     def _pass_register_validation(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Validate all register operands are within valid range."""
         for insn in instructions:
@@ -448,18 +446,17 @@ class BytecodeVerifier:
     # ── Pass 3: Control Flow Analysis ─────────────────────────────────────
 
     def _pass_control_flow(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Verify control flow: every path leads to HALT, no dangling jumps."""
         # Build offset -> instruction index map
-        offset_to_idx: Dict[int, int] = {}
-        valid_offsets: Set[int] = set()
+        offset_to_idx: dict[int, int] = {}
+        valid_offsets: set[int] = set()
         for i, insn in enumerate(instructions):
             offset_to_idx[insn.offset] = i
             valid_offsets.add(insn.offset)
 
         # Find all jump targets and verify they land on valid instruction boundaries
-        jump_targets: Set[int] = set()
         for insn in instructions:
             if not insn.is_valid or insn.opcode not in CONTROL_FLOW_OPCODES:
                 continue
@@ -475,21 +472,19 @@ class BytecodeVerifier:
                 # We cannot know rs1 at verification time, but we can note it
                 continue
 
-            if insn.opcode in {0x43, 0xE0}:  # JMP, JMPL (relative jumps)
-                if insn.immediates:
-                    target = insn.offset + insn.immediates[0]
-                    if target < 0 or target >= len(bytecode) or target not in valid_offsets:
-                        self._add(report, 3, Severity.ERROR, insn.offset, insn.opcode,
-                                  f"Jump target 0x{target:04X} invalid (out of bounds or misaligned)",
-                                  f"Adjust immediate to land on valid instruction offset")
+            if insn.opcode in {0x43, 0xE0} and insn.immediates:  # JMP, JMPL (relative jumps)
+                target = insn.offset + insn.immediates[0]
+                if target < 0 or target >= len(bytecode) or target not in valid_offsets:
+                    self._add(report, 3, Severity.ERROR, insn.offset, insn.opcode,
+                              f"Jump target 0x{target:04X} invalid (out of bounds or misaligned)",
+                              "Adjust immediate to land on valid instruction offset")
 
-            if insn.opcode in {0x44, 0xE1, 0x45, 0xE2}:  # JAL, JALL, CALL, CALLL
-                if insn.immediates:
-                    target = insn.offset + insn.immediates[0]
-                    if target < 0 or target >= len(bytecode) or target not in valid_offsets:
-                        self._add(report, 3, Severity.ERROR, insn.offset, insn.opcode,
-                                  f"Jump/call target 0x{target:04X} invalid (out of bounds or misaligned)",
-                                  f"Adjust immediate to land on valid instruction offset")
+            if insn.opcode in {0x44, 0xE1, 0x45, 0xE2} and insn.immediates:  # JAL, JALL, CALL, CALLL
+                target = insn.offset + insn.immediates[0]
+                if target < 0 or target >= len(bytecode) or target not in valid_offsets:
+                    self._add(report, 3, Severity.ERROR, insn.offset, insn.opcode,
+                              f"Jump/call target 0x{target:04X} invalid (out of bounds or misaligned)",
+                              "Adjust immediate to land on valid instruction offset")
 
         # Check that program has at least one HALT or HALT_ERR
         has_halt = any(insn.opcode in (0x00, 0xF0) for insn in instructions if insn.is_valid)
@@ -501,7 +496,7 @@ class BytecodeVerifier:
     # ── Pass 4: Stack Safety ──────────────────────────────────────────────
 
     def _pass_stack_safety(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Analyze PUSH/POP balance and maximum stack depth."""
         stack_depth = 0
@@ -552,10 +547,9 @@ class BytecodeVerifier:
     # ── Pass 5: Capability Enforcement ────────────────────────────────────
 
     def _pass_capability_enforcement(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Verify privileged opcodes have required capabilities."""
-        privileged_categories = {"sensor", "compute"}
 
         privileged_ops = {
             0x10: "SYS (system call)",
@@ -578,28 +572,26 @@ class BytecodeVerifier:
                               f"Grant SYSTEM capability or remove {name}")
 
             # Check sensor ops (0x80-0x8F)
-            if 0x80 <= insn.opcode <= 0x8F:
-                if "sensor" not in self.capabilities and "io_sensor" not in self.capabilities:
-                    self._add(report, 5, Severity.WARNING, insn.offset, insn.opcode,
-                              f"Sensor opcode 0x{insn.opcode:02X} used without IO_SENSOR capability",
-                              "Grant IO_SENSOR capability or remove sensor operations")
+            if 0x80 <= insn.opcode <= 0x8F and "sensor" not in self.capabilities and "io_sensor" not in self.capabilities:
+                self._add(report, 5, Severity.WARNING, insn.offset, insn.opcode,
+                          f"Sensor opcode 0x{insn.opcode:02X} used without IO_SENSOR capability",
+                          "Grant IO_SENSOR capability or remove sensor operations")
 
             # Check GPU ops
-            if insn.opcode in {0xDB, 0xDC, 0xDD, 0xDE}:
-                if "compute" not in self.capabilities:
-                    self._add(report, 5, Severity.WARNING, insn.offset, insn.opcode,
-                              f"GPU opcode 0x{insn.opcode:02X} used without COMPUTE capability",
-                              "Grant COMPUTE capability or remove GPU operations")
+            if insn.opcode in {0xDB, 0xDC, 0xDD, 0xDE} and "compute" not in self.capabilities:
+                self._add(report, 5, Severity.WARNING, insn.offset, insn.opcode,
+                          f"GPU opcode 0x{insn.opcode:02X} used without COMPUTE capability",
+                          "Grant COMPUTE capability or remove GPU operations")
 
     # ── Pass 6: Dangerous Pattern Detection ───────────────────────────────
 
     def _pass_dangerous_patterns(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Detect potentially dangerous bytecode patterns."""
         has_store = False
         has_load = False
-        store_addrs: List[int] = []
+        store_addrs: list[int] = []
 
         for insn in instructions:
             if not insn.is_valid:
@@ -614,11 +606,10 @@ class BytecodeVerifier:
                 has_load = True
 
             # Infinite loop detection: LOOP (0x46) with large count
-            if insn.opcode == 0x46 and insn.immediates:
-                if insn.immediates[0] == 0:
-                    self._add(report, 6, Severity.WARNING, insn.offset, insn.opcode,
-                              "LOOP with immediate=0 may cause infinite loop",
-                              "Set a non-zero loop bound")
+            if insn.opcode == 0x46 and insn.immediates and insn.immediates[0] == 0:
+                self._add(report, 6, Severity.WARNING, insn.offset, insn.opcode,
+                          "LOOP with immediate=0 may cause infinite loop",
+                          "Set a non-zero loop bound")
 
             # Unconditional jump backward to self (tight infinite loop)
             if insn.opcode == 0x43 and insn.immediates:
@@ -629,13 +620,13 @@ class BytecodeVerifier:
                               "Add exit condition or use LOOP with bounded count")
 
             # Recursive CALL without apparent base case
-            if insn.opcode in {0x45, 0xE2}:  # CALL, CALLL
-                if insn.immediates and insn.immediates[0] != 0xFFFF:
-                    target = insn.offset + insn.immediates[0]
-                    if target == insn.offset:
-                        self._add(report, 6, Severity.WARNING, insn.offset, insn.opcode,
-                                  "CALL to self detected — unbounded recursive call likely",
-                                  "Add base case check before recursive CALL")
+            if (insn.opcode in {0x45, 0xE2}  # CALL, CALLL
+                    and insn.immediates and insn.immediates[0] != 0xFFFF):
+                target = insn.offset + insn.immediates[0]
+                if target == insn.offset:
+                    self._add(report, 6, Severity.WARNING, insn.offset, insn.opcode,
+                              "CALL to self detected — unbounded recursive call likely",
+                              "Add base case check before recursive CALL")
 
         # Write-execute overlap: program can write to its own code
         if has_store and has_load:
@@ -646,12 +637,12 @@ class BytecodeVerifier:
     # ── Pass 7: Memory Safety ─────────────────────────────────────────────
 
     def _pass_memory_safety(
-        self, bytecode: bytes, instructions: List[DecodedInstruction], report: VerificationReport
+        self, bytecode: bytes, instructions: list[DecodedInstruction], report: VerificationReport
     ) -> None:
         """Validate memory access patterns for safety."""
         has_malloc = any(i.opcode == 0xD7 for i in instructions if i.is_valid)
         has_free = any(i.opcode == 0xD8 for i in instructions if i.is_valid)
-        has_memcpy = any(i.opcode == 0x4E for i in instructions if i.is_valid)
+        any(i.opcode == 0x4E for i in instructions if i.is_valid)
         has_mprotect = any(i.opcode == 0xD9 for i in instructions if i.is_valid)
 
         # Check for memory allocation without freeing
@@ -670,17 +661,17 @@ class BytecodeVerifier:
         for insn in instructions:
             if not insn.is_valid:
                 continue
-            if insn.opcode in {0x4E, 0x4F} and insn.immediates:  # COPY, FILL
-                if insn.immediates[0] == 0:
-                    self._add(report, 7, Severity.INFO, insn.offset, insn.opcode,
-                              "COPY/FILL with length=0 — no-op but wastes encode space",
-                              "Remove or set to actual copy length")
+            if insn.opcode in {0x4E, 0x4F} and insn.immediates and insn.immediates[0] == 0:
+                # COPY, FILL with zero length
+                self._add(report, 7, Severity.INFO, insn.offset, insn.opcode,
+                          "COPY/FILL with length=0 — no-op but wastes encode space",
+                          "Remove or set to actual copy length")
 
 
 # ─── Convenience Functions ────────────────────────────────────────────────────
 
 def verify(bytecode: bytes, policy: VerifierPolicy = VerifierPolicy.STANDARD,
-           capabilities: Optional[set] = None) -> VerificationReport:
+           capabilities: set | None = None) -> VerificationReport:
     """Verify FLUX bytecode with default settings."""
     verifier = BytecodeVerifier(policy=policy, capabilities=capabilities)
     return verifier.verify(bytecode)
@@ -693,7 +684,7 @@ def verify_hex(hex_str: str, **kwargs) -> VerificationReport:
     return verify(bytecode, **kwargs)
 
 
-def is_safe(bytecode: bytes, capabilities: Optional[set] = None) -> bool:
+def is_safe(bytecode: bytes, capabilities: set | None = None) -> bool:
     """Quick check: is this bytecode safe to execute?"""
     report = verify(bytecode, VerifierPolicy.STANDARD, capabilities)
     return report.is_valid

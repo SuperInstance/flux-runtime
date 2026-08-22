@@ -1,12 +1,11 @@
 """FIR Blocks, Functions, and Modules — the structural skeleton of a FIR program."""
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Optional
 
-from .types import TypeContext, FIRType, FuncType, StructType
-from .values import Value
+from dataclasses import dataclass, field
+
 from .instructions import Instruction
+from .types import FIRType, FuncType, StructType, TypeContext
 
 
 @dataclass
@@ -17,7 +16,7 @@ class FIRBlock:
     instructions: list[Instruction] = field(default_factory=list)
 
     @property
-    def terminator(self) -> Optional[Instruction]:
+    def terminator(self) -> Instruction | None:
         """Return the last instruction if it exists, else None."""
         return self.instructions[-1] if self.instructions else None
 

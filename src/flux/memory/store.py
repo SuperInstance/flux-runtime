@@ -14,14 +14,12 @@ The forgetting curve (Ebbinghaus-inspired):
 
 from __future__ import annotations
 
+import gzip
 import json
 import os
-import shutil
 import time
-import gzip
-from dataclasses import dataclass, field, asdict
-from typing import Any, Optional
-
+from dataclasses import asdict, dataclass
+from typing import Any
 
 # ── Data Structures ──────────────────────────────────────────────────────────
 
@@ -181,7 +179,7 @@ class MemoryStore:
         elif tier == "frozen":
             self._save_frozen_entry(key, value)
 
-    def retrieve(self, key: str) -> Optional[Any]:
+    def retrieve(self, key: str) -> Any | None:
         """Search hot → warm → cold → frozen for a key.
 
         Returns the value if found, None otherwise.
@@ -271,7 +269,7 @@ class MemoryStore:
         3. If already frozen or expired, delete permanently.
         """
         demoted = 0
-        now = time.time()
+        time.time()
 
         # Decay hot entries
         to_demote_hot = []
@@ -350,7 +348,7 @@ class MemoryStore:
         with gzip.open(filepath, "wt", encoding="utf-8") as f:
             json.dump(data, f)
 
-    def _load_frozen_entry(self, key: str) -> Optional[Any]:
+    def _load_frozen_entry(self, key: str) -> Any | None:
         """Load a single entry from frozen storage."""
         safe_key = self._safe_filename(key)
         filepath = os.path.join(self._frozen_path, f"{safe_key}.json.gz")
@@ -430,24 +428,23 @@ class MemoryStore:
                         "access_count": entry.access_count,
                     })
 
-        if tier in ("frozen", "all"):
-            if os.path.exists(self._frozen_path):
-                for fname in os.listdir(self._frozen_path):
-                    if fname.endswith(".json.gz"):
-                        try:
-                            fpath = os.path.join(self._frozen_path, fname)
-                            with gzip.open(fpath, "rt", encoding="utf-8") as f:
-                                data = json.load(f)
-                            if _matches(data.get("key", "")):
-                                results.append({
-                                    "key": data.get("key", ""),
-                                    "value": data.get("value"),
-                                    "tier": "frozen",
-                                    "relevance": 0.0,
-                                    "access_count": 0,
-                                })
-                        except (json.JSONDecodeError, OSError):
-                            continue
+        if tier in ("frozen", "all") and os.path.exists(self._frozen_path):
+            for fname in os.listdir(self._frozen_path):
+                if fname.endswith(".json.gz"):
+                    try:
+                        fpath = os.path.join(self._frozen_path, fname)
+                        with gzip.open(fpath, "rt", encoding="utf-8") as f:
+                            data = json.load(f)
+                        if _matches(data.get("key", "")):
+                            results.append({
+                                "key": data.get("key", ""),
+                                "value": data.get("value"),
+                                "tier": "frozen",
+                                "relevance": 0.0,
+                                "access_count": 0,
+                            })
+                    except (json.JSONDecodeError, OSError):
+                        continue
 
         return results
 
@@ -559,7 +556,7 @@ class MemoryStore:
         if not os.path.exists(path):
             return {}
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 data = json.load(f)
             return {
                 key: MemoryEntry.from_dict(entry)

@@ -20,34 +20,30 @@ Usage:
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable, Optional, Any
 
-from flux.modules.granularity import Granularity
-from flux.modules.card import ModuleCard
-from flux.modules.container import ModuleContainer, ReloadResult
-from flux.modules.reloader import FractalReloader
-from flux.modules.namespace import ModuleNamespace
 from flux.adaptive.profiler import (
     AdaptiveProfiler,
-    HeatLevel,
     BottleneckReport,
+    HeatLevel,
 )
 from flux.adaptive.selector import (
     AdaptiveSelector,
     LanguageRecommendation,
 )
-from flux.tiles.registry import TileRegistry, default_registry
-from flux.evolution.genome import Genome
-from flux.evolution.pattern_mining import PatternMiner, ExecutionTrace
-from flux.evolution.mutator import SystemMutator
-from flux.evolution.validator import CorrectnessValidator
 from flux.evolution.evolution import (
     EvolutionEngine,
     EvolutionReport,
-    EvolutionRecord,
 )
-
+from flux.evolution.genome import Genome
+from flux.evolution.pattern_mining import PatternMiner
+from flux.evolution.validator import CorrectnessValidator
+from flux.modules.card import ModuleCard
+from flux.modules.container import ModuleContainer, ReloadResult
+from flux.modules.granularity import Granularity
+from flux.modules.reloader import FractalReloader
+from flux.tiles.registry import default_registry
 
 # ── Result types ────────────────────────────────────────────────────────────
 
@@ -171,7 +167,7 @@ class FluxSynthesizer:
 
         return card
 
-    def get_module(self, path: str) -> Optional[ModuleCard]:
+    def get_module(self, path: str) -> ModuleCard | None:
         """Get a module card by slash-separated path.
 
         Args:
@@ -193,7 +189,7 @@ class FluxSynthesizer:
 
         return current.cards.get(parts[-1])
 
-    def get_container(self, path: str) -> Optional[ModuleContainer]:
+    def get_container(self, path: str) -> ModuleContainer | None:
         """Get a container by slash-separated path.
 
         Args:
@@ -243,7 +239,7 @@ class FluxSynthesizer:
         Returns:
             WorkloadResult with profiling data.
         """
-        start = time.monotonic_ns()
+        start = time.perf_counter_ns()
         module_calls_before = self.profiler.module_count
         samples_before = self.profiler.sample_count
 
@@ -255,21 +251,21 @@ class FluxSynthesizer:
             try:
                 fn()
             except Exception as exc:
-                elapsed = time.monotonic_ns() - start
+                elapsed = time.perf_counter_ns() - start
                 return WorkloadResult(
                     success=False,
                     elapsed_ns=elapsed,
                     error=str(exc),
                 )
         except Exception as exc:
-            elapsed = time.monotonic_ns() - start
+            elapsed = time.perf_counter_ns() - start
             return WorkloadResult(
                 success=False,
                 elapsed_ns=elapsed,
                 error=str(exc),
             )
 
-        elapsed = time.monotonic_ns() - start
+        elapsed = time.perf_counter_ns() - start
 
         # Build heatmap string representation
         heatmap = self.profiler.get_heatmap()
@@ -325,7 +321,7 @@ class FluxSynthesizer:
         """
         return self.selector.select_all()
 
-    def get_recommendation(self, module_path: str) -> Optional[LanguageRecommendation]:
+    def get_recommendation(self, module_path: str) -> LanguageRecommendation | None:
         """Get language recommendation for a single module.
 
         Args:
@@ -342,7 +338,7 @@ class FluxSynthesizer:
     def evolve(
         self,
         generations: int = 5,
-        validation_fn: Optional[Callable[[Genome], bool]] = None,
+        validation_fn: Callable[[Genome], bool] | None = None,
     ) -> EvolutionReport:
         """Run the self-evolution loop.
 
@@ -387,8 +383,8 @@ class FluxSynthesizer:
 
     def evolve_step(
         self,
-        workload: Optional[Callable[[], None]] = None,
-        validation_fn: Optional[Callable[[Genome], bool]] = None,
+        workload: Callable[[], None] | None = None,
+        validation_fn: Callable[[Genome], bool] | None = None,
     ) -> EvolutionReport:
         """Run a single evolution step.
 
@@ -399,7 +395,9 @@ class FluxSynthesizer:
         Returns:
             EvolutionReport for the single step.
         """
-        from flux.evolution.evolution import EvolutionReport as ER
+        from flux.evolution.evolution import (
+            EvolutionReport as ER,  # noqa: N817  # deliberate short alias
+        )
 
         step = self.evolution.step(
             module_root=self.root,
@@ -580,7 +578,7 @@ class FluxSynthesizer:
         """Recursively render container tree."""
         connector = "└── " if is_last else "├── "
         card_count = len(container.cards)
-        child_count = len(container.children)
+        len(container.children)
         label = f"{container.name} [{container.granularity.name}]"
         if card_count:
             label += f" ({card_count} cards)"

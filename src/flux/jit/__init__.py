@@ -7,27 +7,27 @@ Provides:
 - Optimization passes: const_fold_pass, dead_code_pass, inline_pass, block_layout_pass
 """
 
+from .cache import CacheEntry, JITCache
 from .compiler import JITCompiler, JITFunction, RegisterAllocation
-from .cache import JITCache, CacheEntry
-from .tracing import ExecutionTracer, BlockProfile, FunctionProfile
 from .ir_optimize import (
+    block_layout_pass,
     const_fold_pass,
     dead_code_pass,
     inline_pass,
-    block_layout_pass,
 )
+from .tracing import BlockProfile, ExecutionTracer, FunctionProfile
 
 __all__ = [
+    "BlockProfile",
+    "CacheEntry",
+    "ExecutionTracer",
+    "FunctionProfile",
+    "JITCache",
     "JITCompiler",
     "JITFunction",
     "RegisterAllocation",
-    "JITCache",
-    "CacheEntry",
-    "ExecutionTracer",
-    "BlockProfile",
-    "FunctionProfile",
+    "block_layout_pass",
     "const_fold_pass",
     "dead_code_pass",
     "inline_pass",
-    "block_layout_pass",
 ]

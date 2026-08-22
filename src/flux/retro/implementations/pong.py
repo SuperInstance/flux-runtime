@@ -16,8 +16,8 @@ Register layout
 
 from __future__ import annotations
 
-from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
+
 from ._asm import Assembler
 
 
@@ -177,9 +177,7 @@ class Pong:
             for x in range(32):
                 if x == bx and y == by:
                     row += "o"
-                elif x == 0 and lp <= y < lp + 3:
-                    row += "|"
-                elif x == 31 and rp <= y < rp + 3:
+                elif (x == 0 and lp <= y < lp + 3) or (x == 31 and rp <= y < rp + 3):
                     row += "|"
                 elif x == 15:
                     row += "."
@@ -196,7 +194,7 @@ class Pong:
     def demonstrate(cls) -> None:
         """Build, execute, and display Pong simulation results."""
         bytecode = cls.build_bytecode()
-        vm = Interpreter(bytecode, memory_size=65536)
+        vm = Interpreter(bytecode, memory_size=65536, isa="system_a")
 
         print("=" * 64)
         print("  FLUX BYTECODE PONG  —  200-frame simulation")
@@ -204,7 +202,7 @@ class Pong:
         print(f"  Bytecode size: {len(bytecode)} bytes")
 
         # Show initial state
-        print(f"\n  Initial state:")
+        print("\n  Initial state:")
         print(cls.render_field(15, 7, 5, 5))
 
         vm.execute()

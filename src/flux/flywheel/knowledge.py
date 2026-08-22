@@ -15,9 +15,8 @@ from __future__ import annotations
 
 import time
 from collections import defaultdict
-from dataclasses import dataclass, field
-from typing import Optional, Any
-
+from dataclasses import dataclass
+from typing import Any
 
 # ── Generalized Rule ───────────────────────────────────────────────────
 
@@ -164,7 +163,7 @@ class KnowledgeBase:
         """
         self.baselines[metric] = value
 
-    def get_baseline(self, metric: str) -> Optional[float]:
+    def get_baseline(self, metric: str) -> float | None:
         """Get the baseline for a metric, or None if not set."""
         return self.baselines.get(metric)
 
@@ -417,7 +416,7 @@ class KnowledgeBase:
         else:
             stats["failures"] += 1
 
-    def _find_rule_by_condition(self, condition: str) -> Optional[GeneralizedRule]:
+    def _find_rule_by_condition(self, condition: str) -> GeneralizedRule | None:
         """Find a rule matching a condition string."""
         indices = self._rule_index.get(condition, [])
         for idx in indices:

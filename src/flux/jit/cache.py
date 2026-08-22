@@ -10,8 +10,8 @@ from __future__ import annotations
 import hashlib
 import logging
 from collections import OrderedDict
-from dataclasses import dataclass, field
-from typing import Any, Optional
+from dataclasses import dataclass
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class JITCache:
     def __init__(
         self,
         max_size: int = 64,
-        max_memory_bytes: Optional[int] = None,
+        max_memory_bytes: int | None = None,
     ) -> None:
         self._max_size = max_size
         self._max_memory_bytes = max_memory_bytes
@@ -56,7 +56,7 @@ class JITCache:
         while self._total_memory() > self._max_memory_bytes and self._cache:
             self._evict_lru()
 
-    def _evict_lru(self) -> Optional[str]:
+    def _evict_lru(self) -> str | None:
         """Evict the least-recently-used entry."""
         if not self._cache:
             return None
@@ -81,7 +81,7 @@ class JITCache:
         """
         return hashlib.sha256(data).hexdigest()
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Look up a cached entry.
 
         Moves the entry to the most-recently-used position on hit.

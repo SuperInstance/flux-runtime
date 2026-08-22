@@ -1,7 +1,8 @@
-"""ModuleNamespace — isolated namespace for module containers."""
+"""ModuleNamespace - isolated namespace for module containers."""
 
 from __future__ import annotations
-from typing import Any, Optional
+
+from typing import Any
 
 
 class NameNotFoundError(KeyError):
@@ -13,13 +14,13 @@ class NameNotFoundError(KeyError):
 class ModuleNamespace:
     """Isolated namespace for a module container.
 
-    Namespaces form a parent–child chain.  ``resolve`` walks up the chain
+    Namespaces form a parent-child chain.  ``resolve`` walks up the chain
     to find a binding, while ``bind`` always writes into the local scope.
     """
 
     __slots__ = ("_bindings", "_parent")
 
-    def __init__(self, parent: Optional[ModuleNamespace] = None) -> None:
+    def __init__(self, parent: ModuleNamespace | None = None) -> None:
         self._bindings: dict[str, Any] = {}
         self._parent = parent
 

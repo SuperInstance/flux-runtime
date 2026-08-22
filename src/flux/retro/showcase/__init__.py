@@ -10,10 +10,10 @@ Usage:
 
 from __future__ import annotations
 
+import argparse
 import sys
 import time
-import argparse
-from pathlib import Path
+from pathlib import Path  # noqa: F401
 
 # ── ANSI Helpers ──────────────────────────────────────────────────────────────
 
@@ -118,7 +118,7 @@ def run_benchmark() -> list[dict]:
     results = []
     order = list(GAMES.keys())
     for slug in order:
-        name, category = GAMES[slug]
+        name, _ = GAMES[slug]
         print(f"\n  Benchmarking: {BOLD}{name}{RESET}")
         times = []
         for _ in range(5):
@@ -160,7 +160,7 @@ def main() -> None:
     if args.list:
         print(f"  {'#':>2}  {'Name':<42}  {'Category':<24}")
         print(f"  {'─'*2}  {'─'*42}  {'─'*24}")
-        for i, (slug, (name, cat)) in enumerate(GAMES.items()):
+        for i, (_slug, (name, cat)) in enumerate(GAMES.items()):
             print(f"  {i+1:>2}  {name:<42}  {cat:<24}")
         print()
         return
@@ -176,8 +176,10 @@ def main() -> None:
         return
 
     if args.research:
-        from flux.retro.research.session import ResearchSession
-        from flux.retro.research.reflection import Reflection  # type: ignore
+        from flux.retro.research.reflection import (
+            Reflection,  # type: ignore  # noqa: F401
+        )
+        from flux.retro.research.session import ResearchSession  # noqa: F401
         sub("Research Mode — Tracking with Seeds & Metrics")
 
     if args.game:

@@ -8,11 +8,9 @@ Provides:
 
 from __future__ import annotations
 
-from flux.fir.blocks import FIRModule
-from flux.fir.types import TypeContext, IntType
-from flux.fir.values import Value
-from flux.fir.builder import FIRBuilder
 from flux.bytecode.encoder import BytecodeEncoder
+from flux.fir.builder import FIRBuilder
+from flux.fir.types import TypeContext
 
 
 class FluxCompiler:

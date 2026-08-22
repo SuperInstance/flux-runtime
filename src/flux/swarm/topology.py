@@ -17,10 +17,7 @@ Provides methods for:
 from __future__ import annotations
 
 from collections import deque
-from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
-
 
 # ── Topology Types ─────────────────────────────────────────────────────────
 
@@ -153,10 +150,10 @@ class Topology:
             current, path = queue.popleft()
             for neighbor in self.connections.get(current, set()):
                 if neighbor == to_id:
-                    return path + [neighbor]
+                    return [*path, neighbor]
                 if neighbor not in visited:
                     visited.add(neighbor)
-                    queue.append((neighbor, path + [neighbor]))
+                    queue.append((neighbor, [*path, neighbor]))
 
         return []  # No path found
 

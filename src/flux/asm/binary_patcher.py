@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import struct
 from dataclasses import dataclass, field
-from typing import Optional, Union
 
 from .errors import AsmError, AsmErrorKind
 
@@ -217,7 +216,7 @@ class BinaryPatcher:
         """Get the current patched data."""
         return bytes(self.data)
 
-    def hexdump(self, start: int = 0, length: Optional[int] = None) -> str:
+    def hexdump(self, start: int = 0, length: int | None = None) -> str:
         """Generate a hexdump of the data."""
         if length is None:
             length = len(self.data) - start

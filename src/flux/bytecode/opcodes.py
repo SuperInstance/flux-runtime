@@ -1,4 +1,15 @@
-"""FLUX bytecode opcodes. Variable-length encoding (1-8 bytes)."""
+"""FLUX bytecode opcodes — System A (legacy). Variable-length encoding (1-8 bytes).
+
+This is **System A**, Oracle1's original VM numbering. It remains fully
+supported and byte-for-byte unchanged for pre-cutover bytecode; select it via
+``Interpreter(isa="system_a")`` (the interpreter DEFAULTS to System B since
+the 2026-08-21 cutover).
+
+System B (canonical converged numbering) lives in ``isa_unified.py`` (source
+of truth) and its IntEnum mirror ``opcodes_unified.UnifiedOp``. See
+``docs/RECONCILIATION.md`` for the migration timeline and the A↔B mapping.
+No mapping in either table is deleted.
+"""
 
 from enum import IntEnum
 

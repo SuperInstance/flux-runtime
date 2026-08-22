@@ -14,18 +14,21 @@ not runtime behavior. Runtime behavior will be tested when the primitives
 are integrated with the SignalCompiler (Phase 1b).
 """
 
-import json
-import pytest
 from flux.a2a.primitives import (
-    BranchPrimitive, BranchBody,
-    ForkPrimitive, ForkInherit, ForkMutation,
+    PRIMITIVE_REGISTRY,
+    BranchBody,
+    BranchPrimitive,
     CoIteratePrimitive,
-    DiscussPrimitive, Participant,
-    SynthesizePrimitive, SynthesisSource,
+    DiscussPrimitive,
+    ForkInherit,
+    ForkMutation,
+    ForkPrimitive,
+    Participant,
     ReflectPrimitive,
-    parse_primitive, PRIMITIVE_REGISTRY,
+    SynthesisSource,
+    SynthesizePrimitive,
+    parse_primitive,
 )
-
 
 # ===========================================================================
 # Helper

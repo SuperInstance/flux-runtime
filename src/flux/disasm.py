@@ -15,13 +15,12 @@ Instruction encoding formats:
 
 from __future__ import annotations
 
-import struct
 import json
-from typing import List, Dict, Any, Optional, Union
+import struct
 from dataclasses import dataclass, field
+from typing import Any
 
-from flux.bytecode.opcodes import Op, get_format, FORMAT_A, FORMAT_B, FORMAT_C, FORMAT_D, FORMAT_E, FORMAT_G
-
+from flux.bytecode.opcodes import Op, get_format
 
 # ── Color codes for terminal output ─────────────────────────────────────────────
 
@@ -131,7 +130,7 @@ class DisassembledInstruction:
     bytes: bytes                   # Raw instruction bytes
     size: int                      # Instruction size in bytes
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return {
             "offset": self.offset,
@@ -146,11 +145,11 @@ class DisassembledInstruction:
 @dataclass
 class DisassemblyResult:
     """Complete disassembly result."""
-    instructions: List[DisassembledInstruction] = field(default_factory=list)
+    instructions: list[DisassembledInstruction] = field(default_factory=list)
     total_bytes: int = 0
-    error: Optional[str] = None
+    error: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for JSON serialization."""
         return {
             "instructions": [instr.to_dict() for instr in self.instructions],
@@ -378,7 +377,7 @@ def disassemble(bytecode: bytes, color_output: bool = True) -> str:
     return "\n".join(lines)
 
 
-def disassemble_to_dict(bytecode: bytes) -> Dict[str, Any]:
+def disassemble_to_dict(bytecode: bytes) -> dict[str, Any]:
     """Disassemble FLUX bytecode and return structured data.
 
     Args:
@@ -410,7 +409,6 @@ def disassemble_to_json(bytecode: bytes, indent: int = 2) -> str:
 
 def main() -> None:
     """Command-line entry point for the disassembler."""
-    import sys
     import argparse
 
     parser = argparse.ArgumentParser(

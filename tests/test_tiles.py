@@ -1,29 +1,51 @@
 """Tests for the FLUX Tile System — composable computation vocabulary."""
 
 import pytest
-from flux.fir.types import TypeContext, IntType, FloatType, BoolType
-from flux.fir.values import Value
-from flux.fir.builder import FIRBuilder
-from flux.fir.blocks import FIRModule
 
-from flux.tiles.tile import Tile, TileType, TileInstance, CompositeTile, ParallelTile
-from flux.tiles.ports import TilePort, PortDirection, CoercionInfo
-from flux.tiles.graph import TileGraph, TileEdge
-from flux.tiles.registry import TileRegistry, default_registry
+from flux.fir.builder import FIRBuilder
+from flux.fir.types import TypeContext
+from flux.fir.values import Value
+from flux.tiles.graph import TileEdge, TileGraph
 from flux.tiles.library import (
-    map_tile, reduce_tile, scan_tile, filter_tile,
-    zip_tile, flatmap_tile, sort_tile, unique_tile,
-    gather_tile, scatter_tile, stream_tile, copy_tile,
-    fill_tile, transpose_tile,
-    loop_tile, while_tile, branch_tile, switch_tile,
-    fuse_tile, pipeline_tile,
-    tell_tile, ask_tile, broadcast_tile, a2a_reduce_tile,
-    a2a_scatter_tile, barrier_tile,
-    print_effect_tile, log_effect_tile, state_mut_tile,
-    cast_tile, reshape_tile, pack_tile, unpack_tile,
-    join_tile, split_tile,
     ALL_BUILTIN_TILES,
+    a2a_reduce_tile,
+    a2a_scatter_tile,
+    ask_tile,
+    barrier_tile,
+    branch_tile,
+    broadcast_tile,
+    cast_tile,
+    copy_tile,
+    fill_tile,
+    filter_tile,
+    flatmap_tile,
+    fuse_tile,
+    gather_tile,
+    join_tile,
+    log_effect_tile,
+    loop_tile,
+    map_tile,
+    pack_tile,
+    pipeline_tile,
+    print_effect_tile,
+    reduce_tile,
+    scan_tile,
+    scatter_tile,
+    sort_tile,
+    split_tile,
+    state_mut_tile,
+    stream_tile,
+    switch_tile,
+    tell_tile,
+    transpose_tile,
+    unique_tile,
+    unpack_tile,
+    while_tile,
+    zip_tile,
 )
+from flux.tiles.ports import CoercionInfo, PortDirection, TilePort
+from flux.tiles.registry import TileRegistry, default_registry
+from flux.tiles.tile import CompositeTile, Tile, TileInstance, TileType
 
 _ctx = TypeContext()
 _i32 = _ctx.get_int(32)
@@ -297,7 +319,7 @@ class TestFIREmissionCompute:
         entry = builder.new_block(func, "entry")
         builder.set_block(entry)
 
-        data = builder.alloca(ctx.get_int(32))
+        builder.alloca(ctx.get_int(32))
         data_val = Value(id=0, name="data", type=ctx.get_int(32))
         results = map_tile.to_fir(builder, {"data": data_val})
         assert "result" in results
@@ -351,7 +373,7 @@ class TestFIREmissionCompute:
 
     def test_tile_without_blueprint_raises(self):
         t = Tile(name="no_impl", tile_type=TileType.COMPUTE)
-        builder, ctx = self._make_builder()
+        builder, _ = self._make_builder()
         with pytest.raises(RuntimeError, match="no FIR blueprint"):
             t.to_fir(builder, {})
 
@@ -1117,7 +1139,7 @@ class TestTileCostEstimation:
         assert comp.cost_estimate == 10.0
 
     def test_a2a_tiles_more_expensive_than_compute(self):
-        for ct in default_registry.by_type(TileType.COMPUTE):
+        for _ct in default_registry.by_type(TileType.COMPUTE):
             for at in default_registry.by_type(TileType.A2A):
                 # A2A tiles should generally be expensive
                 assert at.cost_estimate >= 1.0

@@ -1,20 +1,25 @@
 """Tests for FLUX cross-assembler, macros, linker, binary patcher, and ELF headers."""
 
+# NOTE (2026-08-21, A/B reconciliation): this module intentionally tests
+# the LEGACY System A opcode numbering (flux.bytecode.opcodes.Op) and raw
+# System A bytes. Per the reconciliation plan it is RETAINED AS-IS — no
+# mapping is deleted. The unified (System B) equivalents live in
+# tests/test_conformance_unified.py, tests/test_toolchain_unified.py, and
+# tests/test_dual_mode_equivalence.py.
+
 import sys
+
 sys.path.insert(0, "src")
 
 import json
 import struct
-import os
-import tempfile
 
-from flux.asm.errors import AsmError, AsmErrorKind, SourceLocation, make_error
-from flux.asm.macros import MacroPreprocessor
-from flux.asm.cross_assembler import CrossAssembler, OutputFormat, AssemblyResult
-from flux.asm.linker import FluxLinker, ObjectFile
-from flux.asm.binary_patcher import BinaryPatcher, Patch
+from flux.asm.binary_patcher import BinaryPatcher
+from flux.asm.cross_assembler import CrossAssembler, OutputFormat
 from flux.asm.elf_header import ElfHeader
-
+from flux.asm.errors import AsmError, AsmErrorKind, SourceLocation, make_error
+from flux.asm.linker import FluxLinker, ObjectFile
+from flux.asm.macros import MacroPreprocessor
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Error tests
@@ -161,7 +166,7 @@ def test_macro_ifdef_without_endif_raises():
     pp = MacroPreprocessor()
     try:
         pp.preprocess("#ifdef X\nNOP\n")
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except AsmError as e:
         assert "Unterminated" in str(e)
 
@@ -171,7 +176,7 @@ def test_macro_endif_without_ifdef_raises():
     pp = MacroPreprocessor()
     try:
         pp.preprocess("#endif\n")
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except AsmError as e:
         assert "without" in str(e)
 
@@ -471,7 +476,7 @@ def test_patcher_out_of_bounds():
     patcher = BinaryPatcher(data)
     try:
         patcher.patch_bytes(5, bytes([0xFF]))
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except AsmError as e:
         assert "out of bounds" in str(e).lower()
 
@@ -553,7 +558,7 @@ def test_linker_undefined_symbol():
     linker = FluxLinker()
     try:
         linker.link([obj])
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except AsmError as e:
         assert "Undefined" in str(e)
 
@@ -563,7 +568,7 @@ def test_linker_empty_input():
     linker = FluxLinker()
     try:
         linker.link([])
-        assert False, "Should have raised"
+        raise AssertionError("Should have raised")
     except AsmError as e:
         assert "No object files" in str(e)
 
@@ -829,7 +834,7 @@ def test_opcode_count_over_50():
     from flux.asm.opcodes_compat import OPCODE_DEFS
     # Count only non-aliased opcodes (check by unique opcode byte values)
     unique_opcodes = set()
-    for name, definition in OPCODE_DEFS.items():
+    for _name, definition in OPCODE_DEFS.items():
         unique_opcodes.add(definition.opcode)
     assert len(unique_opcodes) >= 50, f"Only {len(unique_opcodes)} unique opcodes"
 

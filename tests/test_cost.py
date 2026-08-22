@@ -1,24 +1,28 @@
 """Tests for the FLUX cost model and energy estimation."""
 
-import pytest
 
+from flux.cost.energy import EnergyEstimate, EnergyModel
+from flux.cost.model import CostEstimate, CostModel
+from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
+from flux.fir.instructions import (
+    Ask,
+    Branch,
+    Call,
+    FAdd,
+    FDiv,
+    GetElem,
+    IAdd,
+    IDiv,
+    IMul,
+    ISub,
+    Jump,
+    Load,
+    Return,
+    Store,
+    Tell,
+)
 from flux.fir.types import TypeContext
 from flux.fir.values import Value
-from flux.fir.instructions import (
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IAnd, IOr, IXor, IShl, IShr, INot,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-    ITrunc, ZExt, SExt, FTrunc, FExt, Bitcast,
-    Load, Store, Alloca, GetField, SetField, GetElem, SetElem, MemCopy, MemSet,
-    Jump, Branch, Switch, Call, Return, Unreachable,
-    Tell, Ask, Delegate, TrustCheck, CapRequire,
-)
-from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
-from flux.cost.model import CostModel, CostEstimate, ModuleCostReport, SpeedupReport
-from flux.cost.energy import EnergyModel, EnergyEstimate, CarbonEstimate
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -293,7 +297,7 @@ class TestBottleneckDetection:
         module = _empty_module("mod")
         module.functions["only"] = f
         model = CostModel()
-        name, cost = model.bottleneck_function(module)
+        name, _ = model.bottleneck_function(module)
         assert name == "only"
 
 
@@ -520,7 +524,7 @@ class TestEnergyModelInheritsCostModel:
         module = _empty_module("mod")
         module.functions["f"] = f
         model = EnergyModel()
-        name, cost = model.bottleneck_function(module)
+        name, _ = model.bottleneck_function(module)
         assert name == "f"
 
 

@@ -134,7 +134,7 @@ class FluxAgent:
 
     def run(self, arg0: int = 0, arg1: int = 0) -> int:
         """Execute the agent's bytecode with args in R0, R1."""
-        vm = Interpreter(self.bytecode)
+        vm = Interpreter(self.bytecode, isa="system_a")
         vm.regs.write_gp(0, arg0)
         vm.regs.write_gp(1, arg1)
         vm.execute()

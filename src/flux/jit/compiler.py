@@ -11,22 +11,18 @@ from __future__ import annotations
 import logging
 import pickle
 from dataclasses import dataclass, field
-from typing import Any, Optional
 
-from flux.fir.types import FIRType, TypeContext
-from flux.fir.values import Value
-from flux.fir.instructions import Instruction
 from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
+from flux.fir.types import FIRType, TypeContext
 
+from .cache import JITCache
 from .ir_optimize import (
+    _get_operand_values,
+    block_layout_pass,
     const_fold_pass,
     dead_code_pass,
     inline_pass,
-    block_layout_pass,
-    _get_operand_values,
-    _max_value_id,
 )
-from .cache import JITCache
 from .tracing import ExecutionTracer
 
 logger = logging.getLogger(__name__)
@@ -114,7 +110,7 @@ class JITCompiler:
         self._tracer = ExecutionTracer() if enable_tracing else None
 
     @property
-    def tracer(self) -> Optional[ExecutionTracer]:
+    def tracer(self) -> ExecutionTracer | None:
         """Access the execution tracer (or None if tracing is disabled)."""
         return self._tracer
 
@@ -235,7 +231,7 @@ class JITCompiler:
 
         # Include block parameters
         for block in func.blocks:
-            for pname, ptype in block.params:
+            for pname, _ptype in block.params:
                 # Use a canonical ID for block params
                 param_id = hash((block.label, pname))
                 all_values.append(param_id)

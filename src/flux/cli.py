@@ -45,9 +45,10 @@ Usage::
 
 from __future__ import annotations
 
+import argparse
+import contextlib
 import struct
 import sys
-import argparse
 
 # Import get_instruction_color for debugger output
 try:
@@ -389,21 +390,21 @@ def _cmd_hello() -> None:
     import struct as _struct
 
     # ANSI helpers
-    CYAN = "\033[96m"
-    GREEN = "\033[92m"
-    YELLOW = "\033[93m"
-    MAGENTA = "\033[95m"
-    BOLD = "\033[1m"
-    DIM = "\033[2m"
-    RESET = "\033[0m"
+    cyan = "\033[96m"
+    green = "\033[92m"
+    yellow = "\033[93m"
+    magenta = "\033[95m"
+    bold = "\033[1m"
+    dim = "\033[2m"
+    reset = "\033[0m"
 
     print()
-    print(f"{BOLD}{MAGENTA}{'═' * 64}{RESET}")
-    print(f"{BOLD}{MAGENTA}  FLUX Hello World Demo{RESET}")
-    print(f"{BOLD}{MAGENTA}{'═' * 64}{RESET}")
+    print(f"{bold}{magenta}{'═' * 64}{reset}")
+    print(f"{bold}{magenta}  FLUX Hello World Demo{reset}")
+    print(f"{bold}{magenta}{'═' * 64}{reset}")
     print()
-    print(f"  {CYAN}Welcome to the FLUX Virtual Machine!{RESET}")
-    print(f"  Let's compile and run a simple program: {BOLD}3 + 4 = 7{RESET}")
+    print(f"  {cyan}Welcome to the FLUX Virtual Machine!{reset}")
+    print(f"  Let's compile and run a simple program: {bold}3 + 4 = 7{reset}")
     print()
 
     # ── Build raw bytecode: MOVI R0, 3; MOVI R1, 4; IADD R0, R0, R1; HALT
@@ -416,44 +417,44 @@ def _cmd_hello() -> None:
 
     raw_code = movi_r0_3 + movi_r1_4 + iadd + halt
 
-    print(f"  {YELLOW}1. Bytecode Generation{RESET}")
-    print(f"     Source:  3 + 4 = 7")
-    print(f"     Opcodes: MOVI R0, 3 | MOVI R1, 4 | IADD R0, R0, R1 | HALT")
+    print(f"  {yellow}1. Bytecode Generation{reset}")
+    print("     Source:  3 + 4 = 7")
+    print("     Opcodes: MOVI R0, 3 | MOVI R1, 4 | IADD R0, R0, R1 | HALT")
     print(f"     Bytes:   {' '.join(f'{b:02X}' for b in raw_code)} ({len(raw_code)} bytes)")
     print()
 
     # ── Wrap in FLUX binary format
-    HEADER_SIZE = 18
+    header_size = 18
     type_table = _struct.pack("<H", 0)  # 0 types
     name_pool = b""  # no names
     func_table = _struct.pack("<III", 0, 0, len(raw_code))  # entry=0, size=len
-    code_off = HEADER_SIZE + len(type_table) + len(name_pool) + len(func_table)
-    header = _struct.pack("<4sHHHII", b"FLUX", 1, 0, 1, HEADER_SIZE, code_off)
+    code_off = header_size + len(type_table) + len(name_pool) + len(func_table)
+    header = _struct.pack("<4sHHHII", b"FLUX", 1, 0, 1, header_size, code_off)
     flux_binary = header + type_table + name_pool + func_table + raw_code
 
-    print(f"  {YELLOW}2. FLUX Binary Format{RESET}")
+    print(f"  {yellow}2. FLUX Binary Format{reset}")
     print(f"     Header:  magic={flux_binary[:4]}  version=1  funcs=1  code_off={code_off}")
-    print(f"     Total:   {len(flux_binary)} bytes  (header {HEADER_SIZE} + metadata {code_off - HEADER_SIZE} + code {len(raw_code)})")
+    print(f"     Total:   {len(flux_binary)} bytes  (header {header_size} + metadata {code_off - header_size} + code {len(raw_code)})")
     print()
 
     # ── Extract code section and run
     extracted = _extract_code_section(flux_binary)
-    print(f"  {YELLOW}3. Execution{RESET}")
+    print(f"  {yellow}3. Execution{reset}")
 
     from flux.vm.interpreter import Interpreter
 
-    vm = Interpreter(extracted, memory_size=4096)
+    vm = Interpreter(extracted, memory_size=4096, isa="system_a")
     cycles = vm.execute()
     result = vm.regs.read_gp(0)
 
-    print(f"     VM state:")
+    print("     VM state:")
     print(f"       R0 = {result}  (expected 7)")
     print(f"       Cycles used: {cycles}")
     print(f"       Halted: {vm.halted}")
     print()
 
     # ── Register dump
-    print(f"  {YELLOW}4. Register File{RESET}")
+    print(f"  {yellow}4. Register File{reset}")
     for i in range(16):
         val = vm.regs.read_gp(i)
         if val != 0:
@@ -463,22 +464,22 @@ def _cmd_hello() -> None:
     print()
 
     # ── Architecture overview
-    print(f"  {YELLOW}5. FLUX Architecture{RESET}")
-    print(f"     ├─ 64-register file (16 GP, 16 FP, 16 VEC)")
-    print(f"     ├─ 104 opcodes (arithmetic, control flow, memory, A2A)")
-    print(f"     ├─ Variable-length encoding (1-8 bytes per instruction)")
-    print(f"     └─ Binary format: [Header][Type Table][Name Pool][Func Table][Code]")
+    print(f"  {yellow}5. FLUX Architecture{reset}")
+    print("     ├─ 64-register file (16 GP, 16 FP, 16 VEC)")
+    print("     ├─ 104 opcodes (arithmetic, control flow, memory, A2A)")
+    print("     ├─ Variable-length encoding (1-8 bytes per instruction)")
+    print("     └─ Binary format: [Header][Type Table][Name Pool][Func Table][Code]")
     print()
 
     # ── Success message
     if result == 7:
-        print(f"  {GREEN}{BOLD}✓ Success! 3 + 4 = 7 — confirmed by the FLUX VM{RESET}")
+        print(f"  {green}{bold}✓ Success! 3 + 4 = 7 — confirmed by the FLUX VM{reset}")
     else:
-        print(f"  {YELLOW}⚠ Result was {result}, expected 7{RESET}")
+        print(f"  {yellow}⚠ Result was {result}, expected 7{reset}")
     print()
 
-    print(f"  {DIM}Docs: https://github.com/SuperInstance/flux-runtime{RESET}")
-    print(f"  {DIM}Run 'flux --help' for all available commands.{RESET}")
+    print(f"  {dim}Docs: https://github.com/SuperInstance/flux-runtime{reset}")
+    print(f"  {dim}Run 'flux --help' for all available commands.{reset}")
     print()
 
 
@@ -486,7 +487,7 @@ def _cmd_compile(args: argparse.Namespace) -> None:
     """Handle the ``compile`` subcommand."""
     from flux.compiler.pipeline import FluxCompiler
 
-    with open(args.input, "r") as f:
+    with open(args.input) as f:
         source = f.read()
 
     lang = _infer_lang(args.input, args.lang)
@@ -537,9 +538,11 @@ def _compile_python_fallback(source: str) -> bytes:
     and generates raw MOVI/IADD/ISUB/IMUL/IDIV/HALT bytecode.
     """
     import struct
+
     from flux.bytecode.opcodes import Op
 
-    lines = [l.strip() for l in source.strip().splitlines() if l.strip() and not l.strip().startswith("#")]
+    lines = [raw.strip() for raw in source.strip().splitlines()
+             if raw.strip() and not raw.strip().startswith("#")]
     if not lines:
         return _compile_raw_bytecode()
 
@@ -550,10 +553,8 @@ def _compile_python_fallback(source: str) -> bytes:
         # Try simple assignment: name = EXPR
         if "=" in line and not line.startswith("def ") and not line.startswith("if ") and not line.startswith("for ") and not line.startswith("while ") and not line.startswith("return") and not line.startswith("import") and not line.startswith("from"):
             expr = line.split("=", 1)[1].strip()
-            try:
+            with contextlib.suppress(Exception):
                 result_val = eval(expr, {"__builtins__": {}})
-            except Exception:
-                pass
 
     # Generate MOVI R0, result_val; HALT
     if isinstance(result_val, int) and -32768 <= result_val <= 32767:
@@ -593,13 +594,13 @@ def _cmd_run(args: argparse.Namespace) -> None:
     # Strip FLUX header and extract just the code section
     bytecode = _extract_code_section(raw)
 
-    vm = Interpreter(bytecode, max_cycles=args.cycles)
+    vm = Interpreter(bytecode, max_cycles=args.cycles, isa="system_a")
     try:
         cycles = vm.execute()
     except (IndexError, VMError) as exc:
         print(f"Error during execution: {exc}", file=sys.stderr)
-        print(f"  The bytecode may use register indices beyond the VM's 16 GP registers.", file=sys.stderr)
-        print(f"  Try: flux hello  (for a working demo with simple bytecode)", file=sys.stderr)
+        print("  The bytecode may use register indices beyond the VM's 16 GP registers.", file=sys.stderr)
+        print("  Try: flux hello  (for a working demo with simple bytecode)", file=sys.stderr)
         sys.exit(1)
     print(f"Executed in {cycles} cycles. R0={vm.regs.read_gp(0)}")
 
@@ -616,8 +617,9 @@ def _cmd_test() -> None:
 
 def _cmd_version() -> None:
     """Handle the ``version`` subcommand."""
-    import flux
     import platform
+
+    import flux
 
     version = getattr(flux, "__version__", "0.1.0")
     print(f"FLUX v{version}")
@@ -669,11 +671,9 @@ def _cmd_info() -> None:
     module_count = len(list(src_dir.rglob("*.py")))
     # Search upward from this file for the tests/ directory
     search = Path(__file__).resolve().parent
-    test_dir = None
     for _ in range(6):
         candidate = search / "tests"
         if candidate.is_dir():
-            test_dir = candidate
             break
         search = search.parent
     test_count = 1907  # verified by pytest; update after adding tests
@@ -708,7 +708,7 @@ def _cmd_replay(args: argparse.Namespace) -> None:
     # Strip FLUX header and extract just the code section
     bytecode = _extract_code_section(raw)
 
-    vm = Interpreter(bytecode, max_cycles=args.cycles)
+    vm = Interpreter(bytecode, max_cycles=args.cycles, isa="system_a")
 
     # Save reference to the real _step method before monkey-patching
     original_step = vm._step
@@ -737,7 +737,7 @@ def _cmd_replay(args: argparse.Namespace) -> None:
         cycles = vm.execute()
     except (IndexError, VMError) as exc:
         print(f"\n  Execution error at cycle {vm.cycle_count}: {exc}", file=sys.stderr)
-        print(f"  The bytecode may use features not yet supported by the VM.", file=sys.stderr)
+        print("  The bytecode may use features not yet supported by the VM.", file=sys.stderr)
         sys.exit(1)
     print(f"Replay finished in {cycles} cycles. R0={vm.regs.read_gp(0)}")
 
@@ -770,6 +770,7 @@ def _cmd_playground() -> None:
 def _cmd_migrate(args: argparse.Namespace) -> None:
     """Handle the ``migrate`` subcommand."""
     from pathlib import Path
+
     from flux.migrate import FluxMigrator
 
     input_path = Path(args.input)
@@ -778,9 +779,9 @@ def _cmd_migrate(args: argparse.Namespace) -> None:
         sys.exit(1)
 
     print()
-    print(f"  ╔═══════════════════════════════════════════════════════════╗")
-    print(f"  ║                   FLUX MIGRATE v1.0                      ║")
-    print(f"  ╚═══════════════════════════════════════════════════════════╝")
+    print("  ╔═══════════════════════════════════════════════════════════╗")
+    print("  ║                   FLUX MIGRATE v1.0                      ║")
+    print("  ╚═══════════════════════════════════════════════════════════╝")
     print()
 
     migrator = FluxMigrator(
@@ -835,8 +836,9 @@ def _cmd_disasm(args: argparse.Namespace) -> None:
 
 def _cmd_debug(args: argparse.Namespace) -> None:
     """Handle the ``debug`` subcommand — interactive debugger."""
-    from flux.debugger import FluxDebugger
     import cmd
+
+    from flux.debugger import FluxDebugger
 
     with open(args.input, "rb") as f:
         bytecode = f.read()
@@ -873,7 +875,7 @@ Initial state:
             for _ in range(count):
                 result = debugger.step()
                 if result.instruction:
-                    color = get_instruction_color(result.instruction.opcode)
+                    get_instruction_color(result.instruction.opcode)
                     print(f"0x{result.pc_before:04x}: {result.instruction.opcode_name} {result.instruction.operands}")
                 if result.halted:
                     print("Program halted.")
@@ -1036,8 +1038,9 @@ def _cmd_open() -> None:
 def _cmd_run_md(args: argparse.Namespace) -> None:
     """Handle the ``run-md`` subcommand — run markdown file with FLUX code."""
     try:
-        from flux.open_interpreter import run_markdown_file
         import json
+
+        from flux.open_interpreter import run_markdown_file
     except ImportError as e:
         print(f"Error: cannot import flux.open_interpreter — {e}", file=sys.stderr)
         sys.exit(1)
@@ -1051,13 +1054,13 @@ def _cmd_run_md(args: argparse.Namespace) -> None:
         print()
 
         if result.success:
-            print(f"✓ Success!")
+            print("✓ Success!")
             print(f"  Result: R0 = {result.result}")
             print(f"  Cycles: {result.cycles}")
             print(f"  Halted: {result.halted}")
 
             if result.registers:
-                print(f"\n  Registers:")
+                print("\n  Registers:")
                 for reg, val in sorted(result.registers.items()):
                     print(f"    R{reg} = {val}")
         else:

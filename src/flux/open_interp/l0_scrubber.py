@@ -14,8 +14,8 @@ The scrubber prevents vocabulary bloat and maintains the integrity of the L0 lay
 """
 
 import re
-from typing import List, Optional, Set, Tuple
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from typing import ClassVar
 
 
 @dataclass
@@ -25,8 +25,8 @@ class ScrubReport:
     definition: str                          # Definition/description of the candidate
     passed: bool                            # Whether the candidate passed all challenges
     can_tile: bool                          # True if it's just a composition of existing primitives
-    conflicts: List[str]                    # List of conflicts with existing primitives
-    challenges: List[str]                   # Edge-case semantic challenges generated
+    conflicts: list[str]                    # List of conflicts with existing primitives
+    challenges: list[str]                   # Edge-case semantic challenges generated
     recommendation: str                     # 'accept', 'reject', 'needs-refinement'
     reasoning: str = ""                     # Detailed reasoning for the recommendation
     semantic_overlap_score: float = 0.0     # 0-1 score of semantic overlap with existing primitives
@@ -52,10 +52,10 @@ class L0Scrubber:
     Any candidate primitive must survive challenges against these.
     """
 
-    L0_PRIMITIVES = ['self', 'other', 'possible', 'true', 'cause', 'value', 'agreement']
+    L0_PRIMITIVES: ClassVar[list[str]] = ['self', 'other', 'possible', 'true', 'cause', 'value', 'agreement']
 
     # Semantic patterns for each primitive (simplified pattern matching)
-    SEMANTIC_PATTERNS = {
+    SEMANTIC_PATTERNS: ClassVar[dict[str, list[str]]] = {
         'self': [
             r'\b(I|me|my|myself|agent|this\s+system)\b',
             r'\b(internal|subjective|first-person)\b',
@@ -230,7 +230,7 @@ class L0Scrubber:
 
         return False
 
-    def _check_conflicts(self, name: str, definition: str) -> List[str]:
+    def _check_conflicts(self, name: str, definition: str) -> list[str]:
         """
         Check if the candidate conflicts with existing L0 primitives.
 
@@ -241,7 +241,7 @@ class L0Scrubber:
         """
         conflicts = []
         definition_lower = definition.lower()
-        name_lower = name.lower()
+        name.lower()
 
         # Check for negation patterns
         for prim in self.L0_PRIMITIVES:
@@ -293,7 +293,7 @@ class L0Scrubber:
 
         return conflicts
 
-    def _generate_challenges(self, name: str, definition: str) -> List[str]:
+    def _generate_challenges(self, name: str, definition: str) -> list[str]:
         """
         Generate edge-case semantic challenges for the candidate.
 
@@ -301,7 +301,6 @@ class L0Scrubber:
         of the candidate primitive.
         """
         challenges = []
-        combined = f"{name}: {definition}"
 
         # Challenge 1: Boundary conditions
         challenges.append(
@@ -385,8 +384,8 @@ class L0Scrubber:
             report.passed = False
             report.recommendation = 'needs-refinement'
             report.reasoning = (
-                f"Can be expressed as tiling of existing primitives. "
-                f"Must show why it cannot be decomposed."
+                "Can be expressed as tiling of existing primitives. "
+                "Must show why it cannot be decomposed."
             )
 
         # Moderate overlap
@@ -418,7 +417,7 @@ class L0Scrubber:
 
         return report
 
-    def batch_challenge(self, candidates: List[Tuple[str, str]]) -> List[ScrubReport]:
+    def batch_challenge(self, candidates: list[tuple[str, str]]) -> list[ScrubReport]:
         """
         Challenge multiple candidate primitives in batch.
 
@@ -479,7 +478,7 @@ if __name__ == '__main__':
                 print(f"  - {conflict}")
 
         if report.challenges:
-            print(f"Sample Challenges:")
+            print("Sample Challenges:")
             for challenge in report.challenges[:2]:
                 print(f"  - {challenge}")
 

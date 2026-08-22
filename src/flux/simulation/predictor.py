@@ -1,4 +1,4 @@
-"""Performance Predictor — predicts system performance without running workloads.
+"""Performance Predictor - predicts system performance without running workloads.
 
 Uses cost model for static analysis, historical data for regression,
 and trend extrapolation for forecasting.
@@ -7,13 +7,10 @@ and trend extrapolation for forecasting.
 from __future__ import annotations
 
 import time
-import math
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Any, ClassVar
 
-from flux.cost.model import CostModel, CostEstimate
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
-
+from flux.cost.model import CostModel
 
 # ── Memory Store (dict-based fallback) ─────────────────────────────────
 
@@ -52,7 +49,7 @@ class MemoryStore:
         entry.setdefault("timestamp", time.time())
         self._history.append(entry)
 
-    def get_history(self, key: Optional[str] = None) -> list[dict[str, Any]]:
+    def get_history(self, key: str | None = None) -> list[dict[str, Any]]:
         """Get history entries, optionally filtered by a key presence."""
         if key is None:
             return list(self._history)
@@ -104,7 +101,7 @@ class PerformancePredictor:
     """
 
     # Speed factors for different languages
-    SPEED_FACTORS: dict[str, float] = {
+    SPEED_FACTORS: ClassVar[dict[str, float]] = {
         "python": 1.0,
         "typescript": 2.0,
         "csharp": 4.0,
@@ -112,9 +109,8 @@ class PerformancePredictor:
         "c_simd": 16.0,
         "rust": 10.0,
     }
-
     # Base execution times per language (nanoseconds for typical function call)
-    BASE_TIMES_NS: dict[str, float] = {
+    BASE_TIMES_NS: ClassVar[dict[str, float]] = {
         "python": 10000.0,
         "typescript": 5000.0,
         "csharp": 2500.0,
@@ -122,8 +118,7 @@ class PerformancePredictor:
         "c_simd": 625.0,
         "rust": 1000.0,
     }
-
-    def __init__(self, cost_model: CostModel, memory_store: Optional[MemoryStore] = None) -> None:
+    def __init__(self, cost_model: CostModel, memory_store: MemoryStore | None = None) -> None:
         self.cost_model = cost_model
         self.store = memory_store or MemoryStore()
 
@@ -213,9 +208,7 @@ class PerformancePredictor:
             return "HEAT"
         elif fraction < 0.5:
             return "HOT"
-        elif fraction > 0.8:
-            return "COOL"
-        elif call_count <= 1:
+        elif fraction > 0.8 or call_count <= 1:
             return "COOL"
         else:
             return "WARM"
@@ -247,7 +240,7 @@ class PerformancePredictor:
         """Predict which module will be the bottleneck.
 
         The bottleneck is the module with the highest predicted
-        execution time × call frequency.
+        execution time x call frequency.
 
         Args:
             module_paths: List of module paths to evaluate.
@@ -361,7 +354,7 @@ class PerformancePredictor:
                 return "recompile:typescript"
             return "none"
 
-        # COOL — don't optimize
+        # COOL - don't optimize
         return "none"
 
     # ── Helpers ─────────────────────────────────────────────────────────

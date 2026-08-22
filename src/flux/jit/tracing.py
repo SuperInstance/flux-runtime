@@ -11,7 +11,6 @@ from __future__ import annotations
 import logging
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +175,7 @@ class ExecutionTracer:
             List of hot paths.
         """
         paths = []
-        for func_name, profile in self._function_profiles.items():
+        for _func_name, profile in self._function_profiles.items():
             if not profile.block_profiles:
                 continue
 
@@ -251,7 +250,7 @@ class ExecutionTracer:
 
     def get_function_profile(
         self, func_name: str
-    ) -> Optional[FunctionProfile]:
+    ) -> FunctionProfile | None:
         """Get the profile for a specific function.
 
         Returns:

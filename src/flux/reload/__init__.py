@@ -1,5 +1,5 @@
 """FLUX Hot Code Reload Module."""
 
-from .hot_loader import ModuleVersion, HotLoader
+from .hot_loader import HotLoader, ModuleVersion
 
-__all__ = ["ModuleVersion", "HotLoader"]
+__all__ = ["HotLoader", "ModuleVersion"]

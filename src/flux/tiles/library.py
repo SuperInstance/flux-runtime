@@ -1,13 +1,14 @@
 """Tile Library — built-in tile definitions for all categories."""
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
 
-from ..fir.types import TypeContext, BoolType, UnitType, IntType
-from ..fir.values import Value
 from ..fir.builder import FIRBuilder
+from ..fir.types import TypeContext
+from ..fir.values import Value
+from .ports import PortDirection, TilePort
 from .tile import Tile, TileType
-from .ports import TilePort, PortDirection
 
 if TYPE_CHECKING:
     pass
@@ -331,7 +332,7 @@ def _stream_fir_blueprint(
 ) -> dict[str, Value]:
     """Stream: sequential read/write."""
     base = inputs.get("base")
-    offset = inputs.get("offset", None)
+    inputs.get("offset")
     if base:
         result = builder.load(_i32, base, params.get("base_offset", 0))
         return {"result": result}
@@ -442,7 +443,7 @@ def _loop_fir_blueprint(
     params: dict[str, Any],
 ) -> dict[str, Value]:
     """Loop: fixed-count iteration."""
-    count = params.get("count", 10)
+    params.get("count", 10)
     body_fn = params.get("body", "_loop_body")
     init = inputs.get("init")
     if init:
@@ -471,7 +472,7 @@ def _while_fir_blueprint(
 ) -> dict[str, Value]:
     """While: condition-based iteration."""
     init = inputs.get("init")
-    cond_fn = params.get("cond", "_while_cond")
+    params.get("cond", "_while_cond")
     body_fn = params.get("body", "_while_body")
     if init:
         result = builder.call(body_fn, [init], _i32)
@@ -877,7 +878,6 @@ def _cast_fir_blueprint(
     value = inputs.get("value")
     target_type_name = params.get("target_type", "i32")
     if value:
-        from ..fir.types import IntType, FloatType
         if target_type_name.startswith("i"):
             bits = int(target_type_name[1:])
             target = _ctx.get_int(bits)

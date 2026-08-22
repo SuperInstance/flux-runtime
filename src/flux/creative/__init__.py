@@ -10,50 +10,50 @@ Modules:
 - visualization: ASCII and colored text visualizations of tile graphs and traces
 """
 
-from .sonification import (
-    Sonifier,
-    MusicSequence,
-    MusicEvent,
-    ExecutionEvent,
-)
 from .generative import (
-    LSystemTile,
     CellularAutomatonTile,
     FractalTile,
+    LSystemTile,
     ReactionDiffusionTile,
 )
 from .live import (
+    BeatResult,
+    ChangeRecord,
     LiveCodingSession,
     PerformanceState,
-    ChangeRecord,
-    VersionRecord,
-    BeatResult,
     Recording,
+    VersionRecord,
+)
+from .sonification import (
+    ExecutionEvent,
+    MusicEvent,
+    MusicSequence,
+    Sonifier,
 )
 from .visualization import (
-    TileGraphVisualizer,
     ExecutionVisualizer,
+    TileGraphVisualizer,
 )
 
 __all__ = [
-    # Sonification
-    "Sonifier",
-    "MusicSequence",
-    "MusicEvent",
+    "BeatResult",
+    "CellularAutomatonTile",
+    "ChangeRecord",
     "ExecutionEvent",
+    "ExecutionVisualizer",
+    "FractalTile",
     # Generative
     "LSystemTile",
-    "CellularAutomatonTile",
-    "FractalTile",
-    "ReactionDiffusionTile",
     # Live
     "LiveCodingSession",
+    "MusicEvent",
+    "MusicSequence",
     "PerformanceState",
-    "ChangeRecord",
-    "VersionRecord",
-    "BeatResult",
+    "ReactionDiffusionTile",
     "Recording",
+    # Sonification
+    "Sonifier",
     # Visualization
     "TileGraphVisualizer",
-    "ExecutionVisualizer",
+    "VersionRecord",
 ]

@@ -1,16 +1,25 @@
 """Security module tests."""
 
-import math
+# NOTE (2026-08-21, A/B reconciliation): this module intentionally tests
+# the LEGACY System A opcode numbering (flux.bytecode.opcodes.Op) and raw
+# System A bytes. Per the reconciliation plan it is RETAINED AS-IS — no
+# mapping is deleted. The unified (System B) equivalents live in
+# tests/test_conformance_unified.py, tests/test_toolchain_unified.py, and
+# tests/test_dual_mode_equivalence.py.
+
+import os
 import struct
-import sys, os, time
+import sys
+import time
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from flux.security.capabilities import CapabilityToken, CapabilityRegistry, Permission
-from flux.security.resource_limits import ResourceLimits, ResourceMonitor
-from flux.security.sandbox import Sandbox, SandboxManager
-from flux.vm.interpreter import Interpreter, VMA2AError
-from flux.bytecode.opcodes import Op
 from flux.a2a.trust import TrustEngine
+from flux.bytecode.opcodes import Op
+from flux.security.capabilities import CapabilityRegistry, CapabilityToken, Permission
+from flux.security.resource_limits import ResourceLimits, ResourceMonitor
+from flux.security.sandbox import SandboxManager
+from flux.vm.interpreter import Interpreter, VMA2AError
 
 
 def _make_format_g(data: bytes) -> bytes:
@@ -95,10 +104,10 @@ def test_sandbox_lifecycle():
 
 def test_empty_bytecode_raises():
     """Feeding empty bytes to the VM must raise ValueError."""
-    vm = Interpreter(b"")
+    vm = Interpreter(b"", isa="system_a")
     try:
         vm.execute()
-        assert False, "Expected ValueError for empty bytecode"
+        raise AssertionError("Expected ValueError for empty bytecode")
     except ValueError as e:
         assert "empty" in str(e).lower()
     print("  PASS test_empty_bytecode_raises")
@@ -107,10 +116,10 @@ def test_empty_bytecode_raises():
 def test_oversized_bytecode_raises():
     """Bytecode larger than 1 MB must raise ValueError."""
     huge = b'\x00' * (Interpreter.MAX_BYTECODE_SIZE + 1)
-    vm = Interpreter(huge)
+    vm = Interpreter(huge, isa="system_a")
     try:
         vm.execute()
-        assert False, "Expected ValueError for oversized bytecode"
+        raise AssertionError("Expected ValueError for oversized bytecode")
     except ValueError as e:
         assert "exceeds" in str(e).lower()
     print("  PASS test_oversized_bytecode_raises")
@@ -118,7 +127,7 @@ def test_oversized_bytecode_raises():
 
 def test_valid_bytecode_passes_verification():
     """Normal bytecode (NOP + HALT) must pass verification."""
-    vm = Interpreter(bytes([Op.NOP, Op.HALT]))
+    vm = Interpreter(bytes([Op.NOP, Op.HALT]), isa="system_a")
     cycles = vm.execute()
     assert cycles == 2
     print("  PASS test_valid_bytecode_passes_verification")
@@ -130,10 +139,10 @@ def test_valid_bytecode_passes_verification():
 def test_cap_require_without_grant_raises():
     """CAP_REQUIRE for an ungranted capability must raise VMA2AError."""
     bytecode = _cap_require_bytes(42) + bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     try:
         vm.execute()
-        assert False, "Expected VMA2AError for ungranted capability"
+        raise AssertionError("Expected VMA2AError for ungranted capability")
     except VMA2AError as e:
         assert "not granted" in str(e)
     print("  PASS test_cap_require_without_grant_raises")
@@ -142,7 +151,7 @@ def test_cap_require_without_grant_raises():
 def test_cap_grant_then_require_succeeds():
     """CAP_GRANT followed by CAP_REQUIRE for the same cap must succeed."""
     bytecode = _cap_grant_bytes(42) + _cap_require_bytes(42) + bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.execute()
     assert 42 in vm.capabilities
     print("  PASS test_cap_grant_then_require_succeeds")
@@ -151,10 +160,10 @@ def test_cap_grant_then_require_succeeds():
 def test_cap_revoke_then_require_raises():
     """CAP_REVOKE followed by CAP_REQUIRE for the same cap must raise."""
     bytecode = _cap_grant_bytes(7) + _cap_revoke_bytes(7) + _cap_require_bytes(7) + bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     try:
         vm.execute()
-        assert False, "Expected VMA2AError after revocation"
+        raise AssertionError("Expected VMA2AError after revocation")
     except VMA2AError as e:
         assert "not granted" in str(e)
     print("  PASS test_cap_revoke_then_require_raises")
@@ -163,7 +172,7 @@ def test_cap_revoke_then_require_raises():
 def test_capabilities_cleared_on_reset():
     """VM reset must clear the capability set."""
     bytecode = _cap_grant_bytes(1) + bytes([Op.HALT])
-    vm = Interpreter(bytecode)
+    vm = Interpreter(bytecode, isa="system_a")
     vm.execute()
     assert 1 in vm.capabilities
     vm.reset()
@@ -179,7 +188,7 @@ def test_nan_capability_match_raises():
     engine = TrustEngine()
     try:
         engine.record_interaction("a", "b", True, 50.0, capability_match=float('nan'))
-        assert False, "Expected ValueError for NaN capability_match"
+        raise AssertionError("Expected ValueError for NaN capability_match")
     except ValueError as e:
         assert "nan" in str(e).lower()
     print("  PASS test_nan_capability_match_raises")
@@ -190,7 +199,7 @@ def test_nan_behavior_signature_raises():
     engine = TrustEngine()
     try:
         engine.record_interaction("a", "b", True, 50.0, behavior_signature=float('nan'))
-        assert False, "Expected ValueError for NaN behavior_signature"
+        raise AssertionError("Expected ValueError for NaN behavior_signature")
     except ValueError as e:
         assert "nan" in str(e).lower()
     print("  PASS test_nan_behavior_signature_raises")
@@ -201,7 +210,7 @@ def test_nan_latency_raises():
     engine = TrustEngine()
     try:
         engine.record_interaction("a", "b", True, float('nan'))
-        assert False, "Expected ValueError for NaN latency_ms"
+        raise AssertionError("Expected ValueError for NaN latency_ms")
     except ValueError as e:
         assert "nan" in str(e).lower()
     print("  PASS test_nan_latency_raises")
@@ -212,7 +221,7 @@ def test_nan_threshold_raises():
     engine = TrustEngine()
     try:
         engine.check_trust("a", "b", float('nan'))
-        assert False, "Expected ValueError for NaN threshold"
+        raise AssertionError("Expected ValueError for NaN threshold")
     except ValueError as e:
         assert "nan" in str(e).lower()
     print("  PASS test_nan_threshold_raises")

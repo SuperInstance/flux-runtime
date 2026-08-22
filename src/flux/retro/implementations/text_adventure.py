@@ -15,10 +15,9 @@ Register layout (bytecode exit-validator)
 
 from __future__ import annotations
 
-from flux.bytecode.opcodes import Op
 from flux.vm.interpreter import Interpreter
-from ._asm import Assembler
 
+from ._asm import Assembler
 
 # ── Room definitions ─────────────────────────────────────────────────────
 
@@ -154,7 +153,7 @@ class TextAdventure:
     def demonstrate(cls) -> None:
         """Run an automated text adventure tour."""
         bytecode = cls.build_bytecode()
-        vm = Interpreter(bytecode, memory_size=65536)
+        vm = Interpreter(bytecode, memory_size=65536, isa="system_a")
         cls._init_room_data(vm)
 
         # Run once to verify bytecode works
@@ -213,7 +212,7 @@ class TextAdventure:
             if inventory:
                 print(f"\n  Inventory: {', '.join(inventory)}")
             else:
-                print(f"\n  Inventory: (empty)")
+                print("\n  Inventory: (empty)")
 
         # ── Automated tour ──────────────────────────────────────────────
         print("\n  --- Automated Tour ---")
@@ -247,13 +246,13 @@ class TextAdventure:
             elif cmd == "inventory":
                 show_inventory()
 
-        print(f"\n  --- Tour Complete ---")
+        print("\n  --- Tour Complete ---")
         print(f"  Final room: {ROOMS[current_room]['name']}")
         print(f"  Items collected: {len(inventory)}")
         print(f"  Inventory: {', '.join(inventory) if inventory else '(empty)'}")
 
         # Verify bytecode exit check for all rooms/directions
-        print(f"\n  --- Bytecode Exit Validation Verification ---")
+        print("\n  --- Bytecode Exit Validation Verification ---")
         for i, room in enumerate(ROOMS):
             valid = []
             for d in DIR_NAMES:

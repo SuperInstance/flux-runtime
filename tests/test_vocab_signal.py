@@ -1,18 +1,17 @@
 """Tests for vocabulary signaling system."""
 
 import sys
+
 sys.path.insert(0, "src")
 
 import os
-import json
 import tempfile
-import shutil
+
 from flux.open_interp.vocab_signal import (
-    VocabManifest,
-    VocabInfo,
-    Tombstone,
+    RepoSignaler,
     VocabCompatibility,
-    RepoSignaler
+    VocabInfo,
+    VocabManifest,
 )
 
 

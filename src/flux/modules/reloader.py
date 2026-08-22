@@ -8,12 +8,10 @@ from __future__ import annotations
 
 import asyncio
 import time
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
-from .granularity import Granularity, GranularityMeta, get_granularity_meta
 from .container import ModuleContainer, ReloadResult
-
+from .granularity import Granularity, get_granularity_meta
 
 # ── Event / Result types ────────────────────────────────────────────────────
 
@@ -150,7 +148,7 @@ class FractalReloader:
 
         # Walk from root to find the actual container types along the path
         current = self.root
-        for i, part in enumerate(parts):
+        for i, _part in enumerate(parts):
             if isinstance(current, ModuleContainer):
                 next_node = current.get_by_path(".".join(parts[:i + 1]))
                 if isinstance(next_node, ModuleContainer):

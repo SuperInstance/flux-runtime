@@ -7,12 +7,12 @@ memory hierarchy energy models.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
+from typing import ClassVar
 
-from flux.fir.blocks import FIRFunction, FIRModule
+from flux.cost.model import CostModel
+from flux.fir.blocks import FIRFunction
 from flux.fir.instructions import Instruction
-from flux.cost.model import CostModel, CostEstimate
 
 
 @dataclass
@@ -80,7 +80,7 @@ class EnergyModel(CostModel):
     """
 
     # Energy costs per instruction (nanojoules)
-    ENERGY_COSTS: dict[str, float] = {
+    ENERGY_COSTS: ClassVar[dict[str, float]] = {
         # Integer ALU
         "iadd": 0.1, "isub": 0.1, "imul": 0.1, "ineg": 0.1,
         "iand": 0.1, "ior": 0.1, "ixor": 0.1, "ishl": 0.1, "ishr": 0.1,
@@ -109,15 +109,13 @@ class EnergyModel(CostModel):
         "tell": 5000.0, "ask": 5000.0, "delegate": 5000.0,
         "trustcheck": 50.0, "caprequire": 50.0,
     }
-
     # Memory hierarchy energy (nanojoules per access)
-    MEMORY_ENERGY: dict[str, tuple[float, float]] = {
+    MEMORY_ENERGY: ClassVar[dict[str, tuple[float, float]]] = {
         "L1": (0.2, 0.000032),
         "L2": (1.0, 0.05),
         "L3": (5.0, 0.20),
         "DRAM": (25.0, 0.749968),
     }
-
     def _energy_cost(self, instr: Instruction) -> tuple[float, str]:
         """Return (energy_nj, category) for a single instruction."""
         opcode = instr.opcode
@@ -142,9 +140,7 @@ class EnergyModel(CostModel):
             return base_energy, "branch"
         elif opcode == "call":
             return base_energy, "call"
-        elif opcode in ("tell", "ask", "delegate"):
-            return base_energy, "a2a"
-        elif opcode in ("trustcheck", "caprequire"):
+        elif opcode in ("tell", "ask", "delegate") or opcode in ("trustcheck", "caprequire"):
             return base_energy, "a2a"
         elif opcode == "return":
             return base_energy, "branch"
@@ -156,7 +152,7 @@ class EnergyModel(CostModel):
     def _memory_energy(self) -> float:
         """Expected energy per memory access using hierarchy probabilities."""
         expected = 0.0
-        for level, (energy, prob) in self.MEMORY_ENERGY.items():
+        for _level, (energy, prob) in self.MEMORY_ENERGY.items():
             expected += energy * prob
         return expected
 
@@ -205,7 +201,7 @@ class EnergyModel(CostModel):
         energy = self.estimate_energy(func)
         energy_per_exec_kwh = energy.total_nj * 1e-12
         carbon_per_exec_kwh = energy_per_exec_kwh * grid_carbon_g_per_kwh
-        total_carbon = carbon_per_exec_kwh * executions
+        carbon_per_exec_kwh * executions
 
         return CarbonEstimate(
             function_name=func.name,

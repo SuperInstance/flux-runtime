@@ -11,14 +11,10 @@ import traceback
 
 sys.path.insert(0, "src")
 
-from flux.fir.types import TypeContext
-from flux.fir.instructions import IAdd, ISub, IMul, Branch, Jump, Return
+from flux.compiler.pipeline import FluxCompiler
 from flux.fir.blocks import FIRModule
-
 from flux.frontend.c_frontend import CFrontendCompiler
 from flux.frontend.python_frontend import PythonFrontendCompiler
-from flux.compiler.pipeline import FluxCompiler
-
 
 passed = 0
 failed = 0
@@ -30,7 +26,7 @@ def run_test(name, fn):
         fn()
         passed += 1
         print(f"  ✓ {name}")
-    except Exception as e:
+    except Exception:
         failed += 1
         print(f"  ✗ {name}")
         traceback.print_exc()

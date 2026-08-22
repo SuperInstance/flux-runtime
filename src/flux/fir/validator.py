@@ -1,12 +1,10 @@
 """FIR Validator — validates structural invariants of a FIR module."""
 
 from __future__ import annotations
-from typing import Optional
 
-from .types import FIRType
-from .values import Value
+from .blocks import FIRBlock, FIRFunction, FIRModule
 from .instructions import Instruction, is_terminator
-from .blocks import FIRModule, FIRFunction, FIRBlock
+from .values import Value
 
 
 class FIRValidationError:
@@ -32,7 +30,7 @@ class FIRValidator:
         """Validate a module. Returns a list of error strings. Empty = valid."""
         errors: list[str] = []
 
-        for func_name, func in module.functions.items():
+        for _func_name, func in module.functions.items():
             errors.extend(self._validate_function(func))
 
         return errors
@@ -101,7 +99,7 @@ class FIRValidator:
         #    in the same block — cross-block SSA dominance is checked at a
         #    higher level in a real compiler).
         defined: set[int] = set()  # set of value IDs
-        for pname, ptype in block.params:
+        for _pname, _ptype in block.params:
             pass  # Block params don't have Value IDs in this representation
 
         for instr in block.instructions:
@@ -124,7 +122,7 @@ class FIRValidator:
         """Check that all block target references point to existing blocks."""
         errors: list[str] = []
 
-        from .instructions import Jump, Branch, Switch
+        from .instructions import Branch, Jump, Switch
 
         if isinstance(instr, Jump):
             if instr.target_block not in block_labels:

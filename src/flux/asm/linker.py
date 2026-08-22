@@ -10,12 +10,11 @@ Supports:
 
 from __future__ import annotations
 
-import struct
 import json
+import struct
 from dataclasses import dataclass, field
-from typing import Optional, BinaryIO
 
-from .errors import AsmError, AsmErrorKind, SourceLocation
+from .errors import AsmError, AsmErrorKind
 
 
 @dataclass
@@ -40,7 +39,7 @@ class ObjectFile:
     entry_point: int = 0xFFFFFFFF
 
     @staticmethod
-    def MAGIC() -> bytes:
+    def MAGIC() -> bytes:  # noqa: N802  # named for the file-format magic field it returns
         return b"FLUXOBJ\x00"  # 8 bytes, null-padded for struct alignment
 
     HEADER_FORMAT = "<8sIIIII"  # magic(8) + header_size(4) + code_size(4) + n_symbols(4) + n_relocs(4) + entry(4)
@@ -79,7 +78,7 @@ class ObjectFile:
         return bytes(buf)
 
     @classmethod
-    def deserialize(cls, data: bytes, filename: str = "<unknown>") -> "ObjectFile":
+    def deserialize(cls, data: bytes, filename: str = "<unknown>") -> ObjectFile:
         """Deserialize bytes into an ObjectFile."""
         if len(data) < cls.HEADER_SIZE:
             raise AsmError(
@@ -154,7 +153,7 @@ class FluxLinker:
       - Symbol conflict detection
     """
 
-    def __init__(self, entry_symbol: Optional[str] = None):
+    def __init__(self, entry_symbol: str | None = None):
         self.entry_symbol = entry_symbol
         self.errors: list[AsmError] = []
         self.warnings: list[str] = []
@@ -239,7 +238,7 @@ class FluxLinker:
                     data = f.read()
                 obj = ObjectFile.deserialize(data, filename=path)
                 objects.append(obj)
-            except IOError as e:
+            except OSError as e:
                 raise AsmError(
                     message=f"Cannot read object file '{path}': {e}",
                     kind=AsmErrorKind.IO_ERROR,

@@ -3,13 +3,11 @@
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass, field
-from typing import Optional, Union
+from dataclasses import dataclass
 
+from .card import ModuleCard
 from .granularity import Granularity
-from .card import ModuleCard, CompileResult
 from .namespace import ModuleNamespace
-
 
 # ── Result types ────────────────────────────────────────────────────────────
 
@@ -38,23 +36,23 @@ class ModuleContainer:
     """
 
     __slots__ = (
+        "_prev_checksum",
+        "cards",
+        "checksum",
+        "children",
+        "compiled_bytecode",
         "granularity",
         "name",
-        "parent",
-        "children",
-        "cards",
-        "version",
-        "checksum",
-        "compiled_bytecode",
-        "_prev_checksum",
         "namespace",
+        "parent",
+        "version",
     )
 
     def __init__(
         self,
         name: str,
         granularity: Granularity,
-        parent: Optional[ModuleContainer] = None,
+        parent: ModuleContainer | None = None,
     ) -> None:
         self.granularity = granularity
         self.name = name
@@ -64,7 +62,7 @@ class ModuleContainer:
         self.version: int = 0
         self.checksum: str = ""
         self._prev_checksum: str = ""
-        self.compiled_bytecode: Optional[bytes] = None
+        self.compiled_bytecode: bytes | None = None
         self.namespace: ModuleNamespace = ModuleNamespace(
             parent=parent.namespace if parent else None
         )
@@ -76,7 +74,7 @@ class ModuleContainer:
     def path(self) -> str:
         """Dot-separated path from root to this container."""
         parts: list[str] = []
-        node: Optional[ModuleContainer] = self
+        node: ModuleContainer | None = self
         while node is not None:
             parts.append(node.name)
             node = node.parent
@@ -95,7 +93,7 @@ class ModuleContainer:
         self._bump_version()
         return child
 
-    def remove_child(self, name: str) -> Optional[ModuleContainer]:
+    def remove_child(self, name: str) -> ModuleContainer | None:
         """Remove a child container by name.  Returns it or None."""
         child = self.children.pop(name, None)
         if child is not None:
@@ -146,7 +144,7 @@ class ModuleContainer:
         """
         # Handle self-reference (path matches this container's name)
         if path == self.name:
-            target: Union[ModuleContainer, ModuleCard, None] = self
+            target: ModuleContainer | ModuleCard | None = self
         else:
             target = self.get_by_path(path)
 
@@ -208,7 +206,7 @@ class ModuleContainer:
 
     # ── Path resolution ─────────────────────────────────────────────────
 
-    def get_by_path(self, path: str) -> Union[ModuleContainer, ModuleCard, None]:
+    def get_by_path(self, path: str) -> ModuleContainer | ModuleCard | None:
         """Resolve a dot-separated *path* to a container or card.
 
         Examples:
@@ -217,7 +215,7 @@ class ModuleContainer:
             get_by_path("child1.grandchild.card_b")
         """
         parts = path.split(".")
-        current: Union[ModuleContainer, ModuleCard, None] = self
+        current: ModuleContainer | ModuleCard | None = self
         for part in parts:
             if isinstance(current, ModuleContainer):
                 # Try child first, then card

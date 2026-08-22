@@ -1,6 +1,6 @@
 """Language-specific reverse engineering parsers."""
 
-from .python_reverse import PythonReverseEngineer
 from .c_reverse import CReverseEngineer
+from .python_reverse import PythonReverseEngineer
 
-__all__ = ["PythonReverseEngineer", "CReverseEngineer"]
+__all__ = ["CReverseEngineer", "PythonReverseEngineer"]

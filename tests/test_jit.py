@@ -5,30 +5,31 @@ import traceback
 
 sys.path.insert(0, "src")
 
-from flux.fir.types import TypeContext, IntType, FloatType, BoolType, UnitType, StringType
-from flux.fir.values import Value
-from flux.fir.instructions import (
-    IAdd, ISub, IMul, IDiv, INeg,
-    FAdd, FSub, FMul, FDiv,
-    IAnd, IOr, IXor,
-    IEq, ILt,
-    Return, Jump, Branch,
-    Call, Store, Alloca,
-    is_terminator,
-)
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
+from flux.fir.blocks import FIRBlock, FIRFunction, FIRModule
 from flux.fir.builder import FIRBuilder
-
+from flux.fir.instructions import (
+    Branch,
+    Call,
+    FAdd,
+    FMul,
+    IAdd,
+    IMul,
+    ISub,
+    Jump,
+    Return,
+    Store,
+)
+from flux.fir.types import TypeContext
+from flux.fir.values import Value
+from flux.jit.cache import JITCache
 from flux.jit.compiler import JITCompiler, JITFunction, RegisterAllocation
-from flux.jit.cache import JITCache, CacheEntry
-from flux.jit.tracing import ExecutionTracer, BlockProfile, FunctionProfile
 from flux.jit.ir_optimize import (
+    block_layout_pass,
     const_fold_pass,
     dead_code_pass,
     inline_pass,
-    block_layout_pass,
 )
-
+from flux.jit.tracing import ExecutionTracer
 
 passed = 0
 failed = 0
@@ -40,7 +41,7 @@ def run_test(name, fn):
         fn()
         passed += 1
         print(f"  ✓ {name}")
-    except Exception as e:
+    except Exception:
         failed += 1
         print(f"  ✗ {name}")
         traceback.print_exc()
@@ -207,7 +208,7 @@ def test_block_layout_reorder_for_fallthrough():
 
     # Initial order: entry, merge, cold, hot, exit
     func.blocks = [entry, merge, cold, hot, exit_blk]
-    old_labels = [b.label for b in func.blocks]
+    [b.label for b in func.blocks]
 
     reordered = block_layout_pass(mod)
     # The layout pass should have reordered blocks
@@ -406,7 +407,7 @@ def test_const_fold_no_side_effects():
     )
     func.blocks = [entry]
 
-    changes = const_fold_pass(mod, known_constants={0: 5, 1: 0})
+    const_fold_pass(mod, known_constants={0: 5, 1: 0})
     # Only the IAdd should be considered for folding
     # The Store should remain
     has_store = any(isinstance(i, Store) for i in entry.instructions)
@@ -471,7 +472,7 @@ def test_const_fold_float():
 
 def test_jit_compile_simple_function():
     """JITCompiler should compile a simple function."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler()
@@ -487,7 +488,7 @@ def test_jit_compile_simple_function():
 
 def test_jit_compile_optimization_stats():
     """JIT compile should produce optimization statistics."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler(inline_threshold=5)
@@ -501,7 +502,7 @@ def test_jit_compile_optimization_stats():
 
 def test_jit_register_allocation():
     """JIT should produce register allocation."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler()
@@ -514,7 +515,7 @@ def test_jit_register_allocation():
 
 def test_jit_compile_multi_block():
     """JITCompiler should handle multi-block functions."""
-    mod, ctx = _build_multi_block_module()
+    mod, _ = _build_multi_block_module()
     func = mod.functions["max"]
 
     compiler = JITCompiler()
@@ -633,7 +634,7 @@ def test_cache_hit_rate():
     cache.get("a")  # hit
     cache.get("b")  # miss
 
-    assert cache.hit_rate == pytest_approx(2/3, abs=0.01) if 'pytest_approx' in dir() else abs(cache.hit_rate - 2/3) < 0.01
+    assert abs(cache.hit_rate - 2/3) < 0.01
     # Manually check
     assert cache.stats["hits"] == 2
     assert cache.stats["misses"] == 1
@@ -825,7 +826,7 @@ def test_tracer_threshold_setter():
 
 def test_jit_with_tracing():
     """JIT compiler should work with tracing enabled."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler(enable_tracing=True)
@@ -842,7 +843,7 @@ def test_jit_with_tracing():
 
 def test_jit_cache_integration():
     """JIT compiler should use the cache."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler()
@@ -859,7 +860,7 @@ def test_jit_cache_integration():
 
 def test_jit_invalidate_cache():
     """JIT compiler cache invalidation should work."""
-    mod, ctx = _build_add_module()
+    mod, _ = _build_add_module()
     func = mod.functions["add"]
 
     compiler = JITCompiler()

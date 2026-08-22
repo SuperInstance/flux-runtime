@@ -5,24 +5,22 @@ language recommendations, hot reload, evolution, tile composition, namespace
 isolation, system reports, and full demo pipeline.
 """
 
-import time
 import pytest
-from flux.synthesis.synthesizer import FluxSynthesizer, WorkloadResult
-from flux.synthesis.report import SystemReport
-from flux.modules.granularity import Granularity
-from flux.modules.container import ModuleContainer
-from flux.modules.card import ModuleCard
-from flux.modules.reloader import FractalReloader
+
 from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
 from flux.adaptive.selector import AdaptiveSelector, LanguageRecommendation
-from flux.tiles.registry import TileRegistry, default_registry
-from flux.tiles.tile import Tile, TileType
-from flux.tiles.ports import TilePort, PortDirection
-from flux.fir.types import TypeContext, IntType
-from flux.evolution.genome import Genome, MutationStrategy
 from flux.evolution.evolution import EvolutionReport
+from flux.evolution.genome import Genome
 from flux.evolution.validator import CorrectnessValidator
-
+from flux.fir.types import TypeContext
+from flux.modules.card import ModuleCard
+from flux.modules.container import ModuleContainer
+from flux.modules.granularity import Granularity
+from flux.modules.reloader import FractalReloader
+from flux.synthesis.report import SystemReport
+from flux.synthesis.synthesizer import FluxSynthesizer, WorkloadResult
+from flux.tiles.registry import TileRegistry
+from flux.tiles.tile import Tile, TileType
 
 # ── Fixtures ──────────────────────────────────────────────────────────────
 
@@ -384,7 +382,7 @@ class TestTileIntegration:
 
     def test_register_custom_tile(self, synth):
         """Register a custom tile."""
-        ctx = TypeContext()
+        TypeContext()
         tile = Tile(
             name="custom_greeting",
             tile_type=TileType.EFFECT,
@@ -566,10 +564,10 @@ class TestFullPipeline:
         synth.load_module("m", "pass", "python")
         synth.record_call("test_app.m", duration_ns=1000, calls=50)
 
-        report1 = synth.evolve(generations=2)
+        synth.evolve(generations=2)
         gen1 = synth.generation
 
-        report2 = synth.evolve(generations=2)
+        synth.evolve(generations=2)
         gen2 = synth.generation
 
         assert gen2 > gen1

@@ -5,8 +5,8 @@ This module provides machine-readable documentation that tells future AI agents
 """
 
 from __future__ import annotations
-from typing import Any
 
+from typing import Any
 
 FLUX_BUILDER_SCHEMA: dict[str, dict[str, Any]] = {
     "how_to_add_a_tile": {

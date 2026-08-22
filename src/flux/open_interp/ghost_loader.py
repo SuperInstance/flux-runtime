@@ -26,12 +26,11 @@ Usage:
     entry = loader.resurrect(ghosts[0], context={'timestamp': 1234567890})
 """
 
+import hashlib
 import json
 import os
 import time
-import hashlib
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 
 
 @dataclass
@@ -50,7 +49,7 @@ class GhostEntry:
     pruned_at: float                             # Timestamp when pruned
     original_name: str = ""                      # Name before pruning
     description: str = ""                        # Original description
-    tags: List[str] = field(default_factory=list) # Original tags
+    tags: list[str] = field(default_factory=list) # Original tags
     usage_count: int = 0                         # How many times it was used
     last_used: float = 0.0                       # When it was last used
 
@@ -104,8 +103,8 @@ class VocabEntry:
     bytecode_template: str
     result_reg: int = 0
     description: str = ""
-    tags: List[str] = field(default_factory=list)
-    _ghost_origin: Optional[GhostEntry] = None  # Track where this came from
+    tags: list[str] = field(default_factory=list)
+    _ghost_origin: GhostEntry | None = None  # Track where this came from
 
     def __repr__(self) -> str:
         return f"VocabEntry(name='{self.name}', pattern='{self.pattern[:30]}...')"
@@ -124,7 +123,7 @@ class VocabEntry:
         regex_str = ''.join(regex_parts).strip()
         self._regex = re.compile(regex_str, re.IGNORECASE)
 
-    def match(self, text: str) -> Optional[Dict[str, str]]:
+    def match(self, text: str) -> dict[str, str] | None:
         """Try to match text against this pattern."""
         if not hasattr(self, '_regex'):
             self.compile()
@@ -145,10 +144,10 @@ class GhostLoader:
 
     def __init__(self):
         """Initialize the ghost loader."""
-        self._ghosts: List[GhostEntry] = []
-        self._index: Dict[str, List[GhostEntry]] = {}  # name -> ghosts
+        self._ghosts: list[GhostEntry] = []
+        self._index: dict[str, list[GhostEntry]] = {}  # name -> ghosts
 
-    def load_tombstones(self, path: str) -> List[GhostEntry]:
+    def load_tombstones(self, path: str) -> list[GhostEntry]:
         """
         Load tombstoned entries from a file.
 
@@ -161,7 +160,7 @@ class GhostLoader:
         if not os.path.exists(path):
             return []
 
-        with open(path, 'r') as f:
+        with open(path) as f:
             data = json.load(f)
 
         ghosts = []
@@ -174,7 +173,7 @@ class GhostLoader:
 
         return ghosts
 
-    def load_tombstones_from_pruning(self, prune_report, vocab) -> List[GhostEntry]:
+    def load_tombstones_from_pruning(self, prune_report, vocab) -> list[GhostEntry]:
         """
         Create ghost entries from a pruning report.
 
@@ -221,7 +220,7 @@ class GhostLoader:
 
         return ghosts
 
-    def save_tombstones(self, path: str, ghosts: Optional[List[GhostEntry]] = None):
+    def save_tombstones(self, path: str, ghosts: list[GhostEntry] | None = None):
         """
         Save tombstoned entries to a file.
 
@@ -243,7 +242,7 @@ class GhostLoader:
         with open(path, 'w') as f:
             json.dump(data, f, indent=2)
 
-    def resurrect(self, ghost: GhostEntry, context: Optional[dict] = None) -> Optional[VocabEntry]:
+    def resurrect(self, ghost: GhostEntry, context: dict | None = None) -> VocabEntry | None:
         """
         Resurrect a ghost as a full vocabulary entry.
 
@@ -270,7 +269,7 @@ class GhostLoader:
 
         return entry
 
-    def consult(self, ghosts: List[GhostEntry], query: str, limit: int = 5) -> List[GhostEntry]:
+    def consult(self, ghosts: list[GhostEntry], query: str, limit: int = 5) -> list[GhostEntry]:
         """
         Consult ghosts to find entries matching a query.
 
@@ -317,7 +316,7 @@ class GhostLoader:
 
         return [ghost for ghost, score in scored[:limit]]
 
-    def find_by_name(self, name: str) -> List[GhostEntry]:
+    def find_by_name(self, name: str) -> list[GhostEntry]:
         """
         Find all ghosts with a given name.
 
@@ -329,7 +328,7 @@ class GhostLoader:
         """
         return self._index.get(name, [])
 
-    def find_by_hash(self, sha256: str) -> Optional[GhostEntry]:
+    def find_by_hash(self, sha256: str) -> GhostEntry | None:
         """
         Find a ghost by its SHA256 hash.
 
@@ -344,7 +343,7 @@ class GhostLoader:
                 return ghost
         return None
 
-    def find_recent(self, days: int = 30) -> List[GhostEntry]:
+    def find_recent(self, days: int = 30) -> list[GhostEntry]:
         """
         Find ghosts pruned within the last N days.
 
@@ -404,7 +403,7 @@ class GhostLoader:
                 self._index[name] = []
             self._index[name].append(ghost)
 
-    def merge(self, other_ghosts: List[GhostEntry]):
+    def merge(self, other_ghosts: list[GhostEntry]):
         """
         Merge another list of ghosts into this loader.
 

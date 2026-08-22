@@ -1,35 +1,43 @@
 """Tests for the FLUX simulation layer — digital twin, predictor, speculator, oracle."""
 
-import time
 import pytest
 
 from flux.cost.model import CostModel
 from flux.evolution.genome import (
-    Genome, MutationStrategy, ModuleSnapshot, TileSnapshot,
+    Genome,
+    MutationStrategy,
+    TileSnapshot,
 )
 from flux.evolution.mutator import MutationProposal
 from flux.flywheel.hypothesis import (
-    Hypothesis, ExperimentOutcome,
+    Hypothesis,
 )
 from flux.flywheel.knowledge import KnowledgeBase
-from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
-from flux.synthesis.synthesizer import FluxSynthesizer
-
 from flux.simulation.digital_twin import (
-    DigitalTwin, SimulatedResult, SimulatedEvolutionReport,
-    PredictionRecord, WhatIfResult, ChaosReport, ChaosFault,
+    ChaosReport,
+    DigitalTwin,
+    PredictionRecord,
+    SimulatedEvolutionReport,
+    SimulatedResult,
     TwinReport,
-)
-from flux.simulation.predictor import (
-    PerformancePredictor, CapacityForecast, MemoryStore,
-)
-from flux.simulation.speculator import (
-    SpeculativeEngine, SpeculationResult,
+    WhatIfResult,
 )
 from flux.simulation.oracle import (
-    DecisionOracle, OracleDecision, OracleRecommendation, ROIEstimate,
+    DecisionOracle,
+    OracleDecision,
+    OracleRecommendation,
+    ROIEstimate,
 )
-
+from flux.simulation.predictor import (
+    CapacityForecast,
+    MemoryStore,
+    PerformancePredictor,
+)
+from flux.simulation.speculator import (
+    SpeculationResult,
+    SpeculativeEngine,
+)
+from flux.synthesis.synthesizer import FluxSynthesizer
 
 # ════════════════════════════════════════════════════════════════════════
 # Fixtures
@@ -1019,7 +1027,7 @@ class TestOracleWithKnowledge:
 
     def test_oracle_uses_knowledge(self, oracle, knowledge):
         # Add some historical data
-        from flux.flywheel.hypothesis import ExperimentResult, ExperimentOutcome
+        from flux.flywheel.hypothesis import ExperimentOutcome, ExperimentResult
         hyp = Hypothesis(
             description="Test",
             target_path="test_app.core.engine",

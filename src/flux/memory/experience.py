@@ -11,8 +11,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Any, Optional
-
+from typing import Any
 
 # ── Experience ───────────────────────────────────────────────────────────────
 
@@ -168,8 +167,8 @@ class ExperienceRecorder:
         context: dict,
         action: dict,
         outcome: str,
-        metrics: Optional[dict] = None,
-        tags: Optional[set[str]] = None,
+        metrics: dict | None = None,
+        tags: set[str] | None = None,
         generation: int = 0,
     ) -> Experience:
         """Convenience method to create and record an experience.
@@ -370,7 +369,7 @@ class ExperienceRecorder:
 
     # ── Best Mutation ───────────────────────────────────────────────────
 
-    def best_mutation_for(self, context: dict) -> Optional[str]:
+    def best_mutation_for(self, context: dict) -> str | None:
         """Based on experience, what's the best mutation to try?
 
         Looks at the heat level in the context and returns the mutation

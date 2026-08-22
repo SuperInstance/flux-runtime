@@ -9,7 +9,6 @@ Provides the backend for the EVOLVE opcode in the FLUX VM.
 import hashlib
 import time
 from dataclasses import dataclass, field
-from typing import Optional
 
 
 @dataclass
@@ -80,7 +79,7 @@ class EvolutionEngine:
         new_val = behavior.value + delta
         return max(behavior.min_val, min(behavior.max_val, new_val))
 
-    def cycle(self, fitness: float, timestamp: Optional[int] = None) -> int:
+    def cycle(self, fitness: float, timestamp: int | None = None) -> int:
         """Run one evolution cycle. Returns generation number."""
         ts = timestamp or int(time.time() * 1000)
         snapshot = {}
@@ -237,7 +236,7 @@ def test_rollback():
 
     e.rollback(0)  # back to gen 0
     assert e.get("rollback_param") == original
-    print(f"✅ test_rollback: gen 3 → gen 0")
+    print("✅ test_rollback: gen 3 → gen 0")
 
 
 def test_deterministic():
@@ -276,7 +275,7 @@ def test_boundary_clamping():
         e.cycle(0.1)  # aggressive
         assert 0.0 <= e.get("clamped") <= 1.0
 
-    print(f"✅ test_boundary_clamping: always in [0, 1]")
+    print("✅ test_boundary_clamping: always in [0, 1]")
 
 
 if __name__ == "__main__":

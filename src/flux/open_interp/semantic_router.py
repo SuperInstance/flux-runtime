@@ -8,9 +8,7 @@ When an agent's vocabulary is pruned, the table reflects the change.
 This is the knowledge layer that JetsonClaw1 doesn't have —
 he handles hardware routing, I handle semantic routing.
 """
-import json
 import time
-from typing import Dict, List, Optional, Set
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -30,7 +28,7 @@ class VocabularyDomain:
     entries: int = 0
     confidence: float = 1.0
     last_updated: float = 0.0
-    tags: List[str] = field(default_factory=list)
+    tags: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -41,20 +39,20 @@ class AgentKnowledge:
     repo: str
     last_seen: float = 0.0
     status: str = "active"
-    domains: Dict[str, VocabularyDomain] = field(default_factory=dict)
-    specializations: List[str] = field(default_factory=list)
+    domains: dict[str, VocabularyDomain] = field(default_factory=dict)
+    specializations: list[str] = field(default_factory=list)
     vocab_count: int = 0
     test_count: int = 0
-    hardware_profile: Optional[dict] = None
-    can_execute: Set[str] = field(default_factory=set)  # FLUX format names
-    
+    hardware_profile: dict | None = None
+    can_execute: set[str] = field(default_factory=set)  # FLUX format names
+
     def knows_domain(self, domain: str) -> bool:
         return domain in self.domains
-    
+
     def domain_confidence(self, domain: str) -> float:
         d = self.domains.get(domain)
         return d.confidence if d else 0.0
-    
+
     def to_dict(self) -> dict:
         return {
             "agent_name": self.agent_name,
@@ -74,40 +72,40 @@ class AgentKnowledge:
 class SemanticRoutingTable:
     """
     The lighthouse's map of which agent knows what.
-    
+
     Used when:
     - A task comes in that needs a specific domain
     - An agent asks "who knows about X?"
     - A new vocabulary entry needs review by a domain expert
     - An agent needs to find a collaborator
     """
-    
+
     def __init__(self):
-        self.agents: Dict[str, AgentKnowledge] = {}
-    
+        self.agents: dict[str, AgentKnowledge] = {}
+
     def register(self, knowledge: AgentKnowledge) -> None:
         """Register or update an agent's knowledge."""
         self.agents[knowledge.agent_name] = knowledge
-    
+
     def unregister(self, agent_name: str) -> None:
         """Remove an agent from the routing table."""
         self.agents.pop(agent_name, None)
-    
-    def find_expert(self, domain: str, min_confidence: float = 0.5) -> List[AgentKnowledge]:
+
+    def find_expert(self, domain: str, min_confidence: float = 0.5) -> list[AgentKnowledge]:
         """Find agents that know a domain above a confidence threshold."""
         results = []
         for agent in self.agents.values():
             if agent.knows_domain(domain) and agent.domain_confidence(domain) >= min_confidence:
                 results.append(agent)
         return sorted(results, key=lambda a: a.domain_confidence(domain), reverse=True)
-    
-    def find_by_specialization(self, keyword: str) -> List[AgentKnowledge]:
+
+    def find_by_specialization(self, keyword: str) -> list[AgentKnowledge]:
         """Find agents with a specialization matching a keyword."""
         keyword = keyword.lower()
         return [a for a in self.agents.values()
                 if any(keyword in s.lower() for s in a.specializations)]
-    
-    def find_by_tag(self, tag: str) -> List[AgentKnowledge]:
+
+    def find_by_tag(self, tag: str) -> list[AgentKnowledge]:
         """Find agents with vocabulary tagged with a specific tag."""
         results = []
         for agent in self.agents.values():
@@ -116,19 +114,19 @@ class SemanticRoutingTable:
                     results.append(agent)
                     break
         return results
-    
-    def route_task(self, required_domains: List[str], 
-                   required_hardware: Optional[dict] = None) -> Optional[AgentKnowledge]:
+
+    def route_task(self, required_domains: list[str],
+                   required_hardware: dict | None = None) -> AgentKnowledge | None:
         """Route a task to the best agent based on domain expertise and hardware."""
         candidates = list(self.agents.values())
-        
+
         # Filter by domain knowledge
         for domain in required_domains:
             candidates = [c for c in candidates if c.knows_domain(domain)]
-        
+
         if not candidates:
             return None
-        
+
         # Filter by hardware if specified
         if required_hardware:
             filtered = []
@@ -141,16 +139,16 @@ class SemanticRoutingTable:
                         continue
                     filtered.append(c)
             candidates = filtered if filtered else candidates
-        
+
         # Score by total domain confidence
         def score(agent):
             return sum(agent.domain_confidence(d) for d in required_domains)
-        
+
         return max(candidates, key=score) if candidates else None
-    
-    def update_domain(self, agent_name: str, domain: str, 
+
+    def update_domain(self, agent_name: str, domain: str,
                       entries: int = 0, confidence: float = 1.0,
-                      tags: Optional[List[str]] = None) -> bool:
+                      tags: list[str] | None = None) -> bool:
         """Update an agent's domain knowledge."""
         agent = self.agents.get(agent_name)
         if not agent:
@@ -160,7 +158,7 @@ class SemanticRoutingTable:
             last_updated=time.time(), tags=tags or []
         )
         return True
-    
+
     def routing_report(self) -> str:
         """Generate a human-readable routing report."""
         lines = ["# Semantic Routing Table\n"]
@@ -173,15 +171,15 @@ class SemanticRoutingTable:
                 lines.append(f"  Domain {dname}: {domain.entries} entries, confidence {domain.confidence:.1f}")
             lines.append("")
         return "\n".join(lines)
-    
+
     def to_dict(self) -> dict:
         return {name: agent.to_dict() for name, agent in self.agents.items()}
-    
+
     @classmethod
     def from_fleet(cls) -> 'SemanticRoutingTable':
         """Create a routing table with current fleet knowledge."""
         table = cls()
-        
+
         # Oracle1 (self)
         oracle1 = AgentKnowledge(
             agent_name="Oracle1",
@@ -201,7 +199,7 @@ class SemanticRoutingTable:
             "l0-primitives": VocabularyDomain("l0-primitives", 7, 0.95, tags=["constitutional"]),
         }
         table.register(oracle1)
-        
+
         # JetsonClaw1
         jc1 = AgentKnowledge(
             agent_name="JetsonClaw1",
@@ -231,7 +229,7 @@ class SemanticRoutingTable:
             "hav": VocabularyDomain("hav", 1687, 0.85, tags=["vocabulary", "compression"]),
         }
         table.register(jc1)
-        
+
         # Babel Agent
         babel = AgentKnowledge(
             agent_name="Babel",
@@ -248,7 +246,7 @@ class SemanticRoutingTable:
             "viewpoint-opcodes": VocabularyDomain("viewpoint-opcodes", 16, 0.8, tags=["confidence", "evidentiality"]),
         }
         table.register(babel)
-        
+
         # Quill — Architect-rank, protocol design & ISA convergence
         quill = AgentKnowledge(
             agent_name="Quill",
@@ -278,5 +276,5 @@ class SemanticRoutingTable:
                 tags=["formal-specs", "audit-reports", "architecture-docs"]),
         }
         table.register(quill)
-        
+
         return table

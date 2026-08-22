@@ -7,14 +7,17 @@ parametric polymorphism with instantiation and substitution).
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Optional, Union
+from dataclasses import dataclass
 
 from flux.fir.types import (
-    FIRType, TypeContext, IntType, FloatType, BoolType, UnitType,
-    StringType, RefType, ArrayType, VectorType, FuncType, StructType,
+    ArrayType,
+    FIRType,
+    FuncType,
+    RefType,
+    StructType,
+    TypeContext,
+    VectorType,
 )
-
 
 # ── Type Variable ──────────────────────────────────────────────────────────
 
@@ -87,8 +90,8 @@ class TypeScheme:
 
     def instantiate(
         self,
-        substitutions: Optional[dict[str, FIRType]] = None,
-        ctx: Optional[TypeContext] = None,
+        substitutions: dict[str, FIRType] | None = None,
+        ctx: TypeContext | None = None,
     ) -> FIRType:
         """Instantiate the scheme by replacing type variables with concrete types.
 
@@ -241,10 +244,7 @@ def _collect_free_vars(ty: FIRType) -> set[str]:
         for _, f in ty.fields:
             result |= _collect_free_vars(f)
 
-    elif isinstance(ty, (ArrayType, VectorType)):
-        result |= _collect_free_vars(ty.element)
-
-    elif isinstance(ty, RefType):
+    elif isinstance(ty, (ArrayType, VectorType, RefType)):
         result |= _collect_free_vars(ty.element)
 
     return result
@@ -252,7 +252,7 @@ def _collect_free_vars(ty: FIRType) -> set[str]:
 
 # ── Common Generic Types ───────────────────────────────────────────────────
 
-def make_vec(elem_type: FIRType, ctx: Optional[TypeContext] = None) -> GenericType:
+def make_vec(elem_type: FIRType, ctx: TypeContext | None = None) -> GenericType:
     """Create a Vec<T> generic type.
 
     Args:
@@ -268,7 +268,7 @@ def make_vec(elem_type: FIRType, ctx: Optional[TypeContext] = None) -> GenericTy
 def make_map(
     key_type: FIRType,
     value_type: FIRType,
-    ctx: Optional[TypeContext] = None,
+    ctx: TypeContext | None = None,
 ) -> GenericType:
     """Create a Map<K, V> generic type.
 
@@ -285,7 +285,7 @@ def make_map(
 
 def make_option(
     inner_type: FIRType,
-    ctx: Optional[TypeContext] = None,
+    ctx: TypeContext | None = None,
 ) -> GenericType:
     """Create an Option<T> generic type.
 
@@ -301,7 +301,7 @@ def make_option(
 def make_result(
     ok_type: FIRType,
     err_type: FIRType,
-    ctx: Optional[TypeContext] = None,
+    ctx: TypeContext | None = None,
 ) -> GenericType:
     """Create a Result<T, E> generic type.
 
@@ -320,7 +320,7 @@ def make_result(
 def make_scheme(
     var_names: list[str],
     body: FIRType,
-    constraints: Optional[dict[str, tuple]] = None,
+    constraints: dict[str, tuple] | None = None,
 ) -> TypeScheme:
     """Create a TypeScheme with named type variables.
 

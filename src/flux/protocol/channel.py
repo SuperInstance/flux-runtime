@@ -11,11 +11,9 @@ from __future__ import annotations
 
 import enum
 from collections import deque
-from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional, Set
+from collections.abc import Callable
 
-from .message import MessageEnvelope, MessageKind
-
+from .message import MessageEnvelope
 
 # ── Channel kinds ───────────────────────────────────────────────────────────
 
@@ -48,7 +46,7 @@ class Channel:
         """
         raise NotImplementedError
 
-    def receive(self, agent: str, max_count: int = 0) -> List[MessageEnvelope]:
+    def receive(self, agent: str, max_count: int = 0) -> list[MessageEnvelope]:
         """Receive pending messages for an agent.
 
         Parameters
@@ -92,8 +90,8 @@ class DirectChannel(Channel):
     def __init__(self, name: str = "direct", max_buffer: int = 1024) -> None:
         self.name = name
         self._max_buffer = max_buffer
-        self._mailboxes: Dict[str, deque] = {}
-        self._pairs: Dict[str, Set[str]] = {}  # agent → set of connected agents
+        self._mailboxes: dict[str, deque] = {}
+        self._pairs: dict[str, set[str]] = {}  # agent → set of connected agents
 
     def connect(self, agent_a: str, agent_b: str) -> None:
         """Establish a bidirectional connection between two agents."""
@@ -124,7 +122,7 @@ class DirectChannel(Channel):
         mailbox.append(message)
         return True
 
-    def receive(self, agent: str, max_count: int = 0) -> List[MessageEnvelope]:
+    def receive(self, agent: str, max_count: int = 0) -> list[MessageEnvelope]:
         """Drain the mailbox for the given agent."""
         mailbox = self._mailboxes.get(agent)
         if mailbox is None:
@@ -155,7 +153,7 @@ class DirectChannel(Channel):
         mailbox = self._mailboxes.get(agent)
         return len(mailbox) if mailbox else 0
 
-    def connected_agents(self, agent: str) -> Set[str]:
+    def connected_agents(self, agent: str) -> set[str]:
         """Return the set of agents connected to the given agent."""
         return set(self._pairs.get(agent, set()))
 
@@ -174,8 +172,8 @@ class BroadcastChannel(Channel):
     def __init__(self, name: str = "broadcast", max_buffer: int = 1024) -> None:
         self.name = name
         self._max_buffer = max_buffer
-        self._subscribers: Set[str] = set()
-        self._mailboxes: Dict[str, deque] = {}
+        self._subscribers: set[str] = set()
+        self._mailboxes: dict[str, deque] = {}
 
     def send(self, message: MessageEnvelope) -> bool:
         """Broadcast a message to all subscribers except the sender."""
@@ -195,7 +193,7 @@ class BroadcastChannel(Channel):
             delivered = True
         return delivered
 
-    def receive(self, agent: str, max_count: int = 0) -> List[MessageEnvelope]:
+    def receive(self, agent: str, max_count: int = 0) -> list[MessageEnvelope]:
         mailbox = self._mailboxes.get(agent)
         if mailbox is None:
             return []
@@ -226,7 +224,7 @@ class BroadcastChannel(Channel):
         return len(self._subscribers)
 
     @property
-    def subscribers(self) -> Set[str]:
+    def subscribers(self) -> set[str]:
         """Return a copy of the current subscriber set."""
         return set(self._subscribers)
 
@@ -247,11 +245,11 @@ class TopicChannel(Channel):
         self.name = name
         self._max_buffer = max_buffer
         # topic → set of subscriber agents
-        self._topic_subscribers: Dict[str, Set[str]] = {}
+        self._topic_subscribers: dict[str, set[str]] = {}
         # agent → set of subscribed topics
-        self._agent_topics: Dict[str, Set[str]] = {}
+        self._agent_topics: dict[str, set[str]] = {}
         # (agent, topic) → message deque
-        self._mailboxes: Dict[tuple, deque] = {}
+        self._mailboxes: dict[tuple, deque] = {}
 
     def publish(self, message: MessageEnvelope, topic: str) -> bool:
         """Publish a message to a specific topic.
@@ -285,8 +283,8 @@ class TopicChannel(Channel):
         return self.publish(message, topic)
 
     def receive(
-        self, agent: str, max_count: int = 0, topic: Optional[str] = None
-    ) -> List[MessageEnvelope]:
+        self, agent: str, max_count: int = 0, topic: str | None = None
+    ) -> list[MessageEnvelope]:
         """Receive messages for an agent, optionally filtered by topic.
 
         If no topic is specified, returns messages from all subscribed topics.
@@ -352,10 +350,10 @@ class TopicChannel(Channel):
         return len(mailbox) if mailbox else 0
 
     @property
-    def topics(self) -> Set[str]:
+    def topics(self) -> set[str]:
         """Return all active topics."""
         return set(self._topic_subscribers.keys())
 
-    def topic_subscribers(self, topic: str) -> Set[str]:
+    def topic_subscribers(self, topic: str) -> set[str]:
         """Return all subscribers for a specific topic."""
         return set(self._topic_subscribers.get(topic, set()))

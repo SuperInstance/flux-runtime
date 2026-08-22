@@ -6,41 +6,38 @@
   protocol messages, hot reload, stdlib intrinsics.
 """
 
+import os
 import struct
 import sys
-import os
 import traceback
 
 # Ensure the project source root is on sys.path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from flux.bytecode.opcodes import Op
-from flux.fir.types import TypeContext, IntType, FloatType, BoolType
-from flux.fir.values import Value
-from flux.fir.blocks import FIRModule, FIRFunction, FIRBlock
-from flux.fir.builder import FIRBuilder
-from flux.fir.validator import FIRValidator
-from flux.fir.printer import print_fir
-from flux.fir.instructions import (
-    IAdd, ISub, IMul, Return, Unreachable, Call,
-    Tell, Ask, Delegate,
-)
-from flux.bytecode.encoder import BytecodeEncoder
 from flux.bytecode.decoder import BytecodeDecoder
+from flux.bytecode.encoder import BytecodeEncoder
+from flux.bytecode.opcodes import Op
 from flux.compiler.pipeline import FluxCompiler
-from flux.optimizer.pipeline import OptimizationPipeline
-from flux.types.unify import TypeUnifier
-from flux.protocol.message import (
-    MessageKind, MessageId, Request, Response, Event, Error,
+from flux.fir.blocks import FIRModule
+from flux.fir.builder import FIRBuilder
+from flux.fir.instructions import (
+    Call,
 )
-from flux.protocol.serialization import BinaryMessageCodec
-from flux.reload.hot_loader import HotLoader, ModuleVersion
-from flux.stdlib.intrinsics import STDLIB_INTRINSICS, PrintFn
+from flux.fir.types import FloatType, IntType, TypeContext
+from flux.optimizer.pipeline import OptimizationPipeline
 from flux.pipeline.e2e import FluxPipeline
 from flux.pipeline.polyglot import PolyglotCompiler, PolyglotSource
-from flux.pipeline.debug import PipelineDebugger, disassemble_bytecode, print_fir_module
+from flux.protocol.message import (
+    Event,
+    MessageKind,
+    Request,
+    Response,
+)
+from flux.protocol.serialization import BinaryMessageCodec
+from flux.reload.hot_loader import HotLoader
+from flux.stdlib.intrinsics import STDLIB_INTRINSICS
+from flux.types.unify import TypeUnifier
 from flux.vm.interpreter import Interpreter
-
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -83,8 +80,8 @@ def _build_arithmetic_fir() -> FIRModule:
 
     x = builder._new_value("x", i32)
     y = builder._new_value("y", i32)
-    sum_val = builder.iadd(x, y)
-    diff = builder.isub(x, y)
+    builder.iadd(x, y)
+    builder.isub(x, y)
     prod = builder.imul(x, y)
     builder.ret(prod)
 
@@ -146,7 +143,7 @@ def _run_test(name, fn):
     try:
         fn()
         return True, name, None
-    except Exception as e:
+    except Exception:
         return False, name, traceback.format_exc()
 
 
@@ -310,7 +307,7 @@ def test_optimizer_bytecode_roundtrip():
 
     # Run optimization
     opt = OptimizationPipeline()
-    changes = opt.run(module)
+    opt.run(module)
 
     # Encode to bytecode
     encoder = BytecodeEncoder()
@@ -403,7 +400,7 @@ def test_vm_arithmetic_correctness():
         Op.HALT,                       # HALT
     ])
 
-    interp = Interpreter(bytecode, memory_size=65536)
+    interp = Interpreter(bytecode, memory_size=65536, isa="system_a")
     cycles = interp.execute()
 
     assert interp.halted
@@ -418,7 +415,7 @@ def test_vm_arithmetic_correctness():
         Op.HALT,
     ])
 
-    interp2 = Interpreter(bytecode_mul)
+    interp2 = Interpreter(bytecode_mul, isa="system_a")
     interp2.execute()
     assert interp2.regs.read_gp(0) == 42  # 7 * 6 = 42
 
@@ -430,7 +427,7 @@ def test_vm_arithmetic_correctness():
         Op.HALT,
     ])
 
-    interp3 = Interpreter(bytecode_sub)
+    interp3 = Interpreter(bytecode_sub, isa="system_a")
     interp3.execute()
     assert interp3.regs.read_gp(0) == 63  # 100 - 37 = 63
 
@@ -450,7 +447,7 @@ def test_vm_control_flow():
         Op.HALT,
     ])
 
-    interp = Interpreter(bytecode)
+    interp = Interpreter(bytecode, isa="system_a")
     interp.regs.write_gp(0, 5)  # Start at 5
     cycles = interp.execute()
 
@@ -467,7 +464,7 @@ def test_vm_control_flow():
         Op.HALT,
     ])
 
-    interp2 = Interpreter(bytecode_jz)
+    interp2 = Interpreter(bytecode_jz, isa="system_a")
     interp2.execute()
     assert interp2.regs.read_gp(1) == 42  # R1 should stay 42
 
@@ -686,7 +683,7 @@ def test_hot_reload_cycle():
     assert loader._active_calls.get(0, 0) == 0
 
     # GC: load a third version, then GC should keep only active
-    ver3 = loader.load("test_mod", bc_v1, ["main"], source="v3")
+    loader.load("test_mod", bc_v1, ["main"], source="v3")
     # No active calls on ver2, so GC can remove it
     removed = loader.gc("test_mod")
     assert removed >= 0  # May remove old versions

@@ -1,28 +1,30 @@
 """FIR Printer — human-readable text representation of FIR modules."""
 
 from __future__ import annotations
-from typing import Optional
 
-from .types import (
-    FIRType, IntType, FloatType, BoolType, UnitType, StringType,
-    RefType, ArrayType, VectorType, FuncType, StructType, EnumType,
-    RegionType, CapabilityType, AgentType, TrustType,
-)
-from .values import Value
+from .blocks import FIRModule
 from .instructions import (
     Instruction,
-    IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IAnd, IOr, IXor, IShl, IShr, INot,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-    ITrunc, ZExt, SExt, FTrunc, FExt, Bitcast,
-    Load, Store, Alloca, GetField, SetField, GetElem, SetElem, MemCopy, MemSet,
-    Jump, Branch, Switch, Call, Return, Unreachable,
-    Tell, Ask, Delegate, TrustCheck, CapRequire,
 )
-from .blocks import FIRModule, FIRFunction, FIRBlock
-
+from .types import (
+    AgentType,
+    ArrayType,
+    BoolType,
+    CapabilityType,
+    EnumType,
+    FIRType,
+    FloatType,
+    FuncType,
+    IntType,
+    RefType,
+    RegionType,
+    StringType,
+    StructType,
+    TrustType,
+    UnitType,
+    VectorType,
+)
+from .values import Value
 
 # ── Type rendering ──────────────────────────────────────────────────────────
 
@@ -252,7 +254,7 @@ def print_fir(module: FIRModule) -> str:
         params = ", ".join(_type_str(t) for t in func.sig.params)
         rets = ", ".join(_type_str(r) for r in func.sig.returns)
         ret_str = f" -> {rets}" if rets else ""
-        lines.append(f"")
+        lines.append("")
         lines.append(f"  function {fname}({params}){ret_str} {{")
 
         for block in func.blocks:

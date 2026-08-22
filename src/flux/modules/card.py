@@ -5,11 +5,9 @@ from __future__ import annotations
 import hashlib
 import time
 from dataclasses import dataclass, field
-from typing import Optional, Any
 
-from flux.fir.types import TypeContext
 from flux.fir.blocks import FIRModule
-
+from flux.fir.types import TypeContext
 
 # ── Result types ────────────────────────────────────────────────────────────
 
@@ -36,8 +34,8 @@ class ModuleCard:
     name: str
     source: str
     language: str  # "python", "c", "fir", "bytecode"
-    compiled_fir: Optional[FIRModule] = field(default=None, repr=False)
-    compiled_bytecode: Optional[bytes] = field(default=None, repr=False)
+    compiled_fir: FIRModule | None = field(default=None, repr=False)
+    compiled_bytecode: bytes | None = field(default=None, repr=False)
     version: int = field(default=0)
     checksum: str = field(default="")
     metadata: dict = field(default_factory=dict)

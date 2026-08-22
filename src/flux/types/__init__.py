@@ -6,36 +6,41 @@ Provides:
 - Generic/polymorphic type support (GenericType, TypeVar, TypeScheme)
 """
 
-from .unify import TypeUnifier, CoercionRule
-from .compat import are_compatible, coercion_cost, least_upper_bound, compatibility_report
+from .compat import (
+    are_compatible,
+    coercion_cost,
+    compatibility_report,
+    least_upper_bound,
+)
 from .generic import (
-    TypeVar,
     GenericType,
     TypeScheme,
-    make_vec,
+    TypeVar,
+    _collect_free_vars,
+    _substitute,
     make_map,
     make_option,
     make_result,
     make_scheme,
-    _substitute,
-    _collect_free_vars,
+    make_vec,
 )
+from .unify import CoercionRule, TypeUnifier
 
 __all__ = [
-    "TypeUnifier",
     "CoercionRule",
-    "are_compatible",
-    "coercion_cost",
-    "least_upper_bound",
-    "compatibility_report",
-    "TypeVar",
     "GenericType",
     "TypeScheme",
-    "make_vec",
+    "TypeUnifier",
+    "TypeVar",
+    "_collect_free_vars",
+    "_substitute",
+    "are_compatible",
+    "coercion_cost",
+    "compatibility_report",
+    "least_upper_bound",
     "make_map",
     "make_option",
     "make_result",
     "make_scheme",
-    "_substitute",
-    "_collect_free_vars",
+    "make_vec",
 ]

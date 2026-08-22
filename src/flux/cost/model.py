@@ -8,19 +8,15 @@ prediction models.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import ClassVar
 
-from flux.fir.blocks import FIRFunction, FIRModule, FIRBlock
+from flux.fir.blocks import FIRFunction, FIRModule
 from flux.fir.instructions import (
-    Instruction, IAdd, ISub, IMul, IDiv, IMod, INeg,
-    FAdd, FSub, FMul, FDiv, FNeg,
-    IAnd, IOr, IXor, IShl, IShr, INot,
-    IEq, INe, ILt, IGt, ILe, IGe,
-    FEq, FLt, FGt, FLe, FGe,
-    ITrunc, ZExt, SExt, FTrunc, FExt, Bitcast,
-    Load, Store, Alloca, GetField, SetField, GetElem, SetElem, MemCopy, MemSet,
-    Jump, Branch, Switch, Call, Return, Unreachable,
-    Tell, Ask, Delegate, TrustCheck, CapRequire,
+    GetElem,
+    IAdd,
+    Instruction,
+    ISub,
+    Load,
 )
 
 
@@ -92,7 +88,7 @@ class CostModel:
     """
 
     # Base instruction costs (nanoseconds)
-    INSTRUCTION_COSTS: dict[str, float] = {
+    INSTRUCTION_COSTS: ClassVar[dict[str, float]] = {
         # Integer ALU
         "iadd": 0.3, "isub": 0.3, "imul": 0.3, "ineg": 0.3,
         "iand": 0.3, "ior": 0.3, "ixor": 0.3, "ishl": 0.3, "ishr": 0.3,
@@ -121,15 +117,13 @@ class CostModel:
         "tell": 10000.0, "ask": 10000.0, "delegate": 10000.0,
         "trustcheck": 100.0, "caprequire": 100.0,
     }
-
     # Memory hierarchy: (latency_ns, probability_of_accessing_this_level)
-    MEMORY_HIERARCHY: dict[str, tuple[float, float]] = {
+    MEMORY_HIERARCHY: ClassVar[dict[str, tuple[float, float]]] = {
         "L1": (0.5, 0.000032),
         "L2": (3.0, 0.05),
         "L3": (10.0, 0.20),
         "DRAM": (80.0, 0.749968),
     }
-
     # Branch prediction accuracy
     BRANCH_PREDICTION_ACCURACY: float = 0.90
     BRANCH_MISPREDICT_COST_NS: float = 5.0
@@ -159,9 +153,7 @@ class CostModel:
             return self._branch_cost(), "branch"
         elif opcode == "call":
             return base_cost, "call"
-        elif opcode in ("tell", "ask", "delegate"):
-            return base_cost, "a2a"
-        elif opcode in ("trustcheck", "caprequire"):
+        elif opcode in ("tell", "ask", "delegate") or opcode in ("trustcheck", "caprequire"):
             return base_cost, "a2a"
         elif opcode in ("itrunc", "zext", "sext", "ftrunc", "fext", "bitcast"):
             return base_cost, "alu"
@@ -175,7 +167,7 @@ class CostModel:
     def _memory_cost(self) -> float:
         """Expected memory access cost using hierarchy probabilities."""
         expected = 0.0
-        for level, (latency, prob) in self.MEMORY_HIERARCHY.items():
+        for _level, (latency, prob) in self.MEMORY_HIERARCHY.items():
             expected += latency * prob
         return expected
 
@@ -261,7 +253,6 @@ class CostModel:
     def memory_access_pattern(self, func: FIRFunction) -> str:
         """Classify memory access pattern: 'sequential' / 'strided' / 'random'."""
         load_count = 0
-        total_index_variance = 0.0
         has_getelem = False
         has_loop_induction = False
 
@@ -272,10 +263,9 @@ class CostModel:
                 elif isinstance(instr, GetElem):
                     has_getelem = True
                     load_count += 1
-                elif isinstance(instr, (IAdd, ISub)):
-                    # Check if this looks like a loop induction variable
-                    if hasattr(instr.lhs, 'name') and 'i' in getattr(instr.lhs, 'name', '').lower():
-                        has_loop_induction = True
+                elif (isinstance(instr, (IAdd, ISub))) and (hasattr(instr.lhs, 'name') and 'i' in getattr(instr.lhs, 'name', '').lower()):
+                # Check if this looks like a loop induction variable
+                    has_loop_induction = True
 
         if load_count == 0:
             return "none"

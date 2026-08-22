@@ -13,10 +13,8 @@ from __future__ import annotations
 import enum
 import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set
 
-from .registry import CapabilityDescriptor, AgentDescriptor
-
+from .registry import CapabilityDescriptor
 
 # ── Negotiation states ──────────────────────────────────────────────────────
 
@@ -50,7 +48,7 @@ class CapabilityOffer:
     requirements : list
         List of capability names the offering agent requires from the counterparty.
     trust_level : float
-        Minimum trust level required (0.0–1.0).
+        Minimum trust level required (0.0-1.0).
     expires_at : float
         Unix timestamp when this offer expires.
     metadata : dict
@@ -59,11 +57,11 @@ class CapabilityOffer:
 
     offer_id: str = ""
     agent_name: str = ""
-    capabilities: List[CapabilityDescriptor] = field(default_factory=list)
-    requirements: List[str] = field(default_factory=list)
+    capabilities: list[CapabilityDescriptor] = field(default_factory=list)
+    requirements: list[str] = field(default_factory=list)
     trust_level: float = 0.3
     expires_at: float = 0.0
-    metadata: Dict[str, dict] = field(default_factory=dict)
+    metadata: dict[str, dict] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.offer_id:
@@ -78,7 +76,7 @@ class CapabilityOffer:
         return time.time() > self.expires_at
 
     @property
-    def capability_names(self) -> List[str]:
+    def capability_names(self) -> list[str]:
         """Return names of offered capabilities."""
         return [c.name for c in self.capabilities]
 
@@ -162,14 +160,14 @@ class TrustHandshake:
         self.proof = proof
 
     def accept(self) -> None:
-        """Accept the handshake (step 4 — success)."""
+        """Accept the handshake (step 4 - success)."""
         if self.state != NegotiationState.COUNTER_PROPOSED:
             raise ValueError(f"Cannot accept in state {self.state.name}")
         self.state = NegotiationState.ACCEPTED
         self.completed_at = time.time()
 
     def reject(self, reason: str = "") -> None:
-        """Reject the handshake (step 4 — failure)."""
+        """Reject the handshake (step 4 - failure)."""
         self.state = NegotiationState.REJECTED
         self.error = reason
         self.completed_at = time.time()
@@ -222,18 +220,18 @@ class Negotiator:
         self._default_trust = default_trust_level
         self._offer_ttl = offer_ttl
         self._handshake_timeout = handshake_timeout
-        self._offers: Dict[str, CapabilityOffer] = {}
-        self._handshakes: Dict[str, TrustHandshake] = {}
-        self._agreements: Dict[tuple, float] = {}  # (agent_a, agent_b) → trust_level
+        self._offers: dict[str, CapabilityOffer] = {}
+        self._handshakes: dict[str, TrustHandshake] = {}
+        self._agreements: dict[tuple, float] = {}  # (agent_a, agent_b) → trust_level
 
     # ── Offer management ────────────────────────────────────────────────
 
     def create_offer(
         self,
         agent_name: str,
-        capabilities: List[CapabilityDescriptor],
-        requirements: Optional[List[str]] = None,
-        trust_level: Optional[float] = None,
+        capabilities: list[CapabilityDescriptor],
+        requirements: list[str] | None = None,
+        trust_level: float | None = None,
     ) -> CapabilityOffer:
         """Create a new capability offer from an agent."""
         offer = CapabilityOffer(
@@ -246,7 +244,7 @@ class Negotiator:
         self._offers[offer.offer_id] = offer
         return offer
 
-    def get_offer(self, offer_id: str) -> Optional[CapabilityOffer]:
+    def get_offer(self, offer_id: str) -> CapabilityOffer | None:
         """Look up an offer by ID."""
         return self._offers.get(offer_id)
 
@@ -273,7 +271,7 @@ class Negotiator:
         """Reject a capability offer.  Returns True if the offer existed."""
         return self._offers.pop(offer_id, None) is not None
 
-    def expire_offers(self) -> List[str]:
+    def expire_offers(self) -> list[str]:
         """Remove all expired offers.  Returns list of expired offer IDs."""
         expired = []
         for oid, offer in self._offers.items():
@@ -297,7 +295,7 @@ class Negotiator:
         self._handshakes[hs.handshake_id] = hs
         return hs
 
-    def get_handshake(self, handshake_id: str) -> Optional[TrustHandshake]:
+    def get_handshake(self, handshake_id: str) -> TrustHandshake | None:
         """Look up a handshake by ID."""
         return self._handshakes.get(handshake_id)
 
@@ -319,7 +317,7 @@ class Negotiator:
         )
         return True
 
-    def expire_handshakes(self) -> List[str]:
+    def expire_handshakes(self) -> list[str]:
         """Expire all handshakes that have exceeded the timeout.
 
         Returns a list of expired handshake IDs.

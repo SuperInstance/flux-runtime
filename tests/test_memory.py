@@ -2,16 +2,15 @@
 
 import os
 import shutil
-import time
 import tempfile
+import time
 
 import pytest
 
-from flux.memory.store import MemoryStore, MemoryEntry, MemoryStats, TIER_ORDER
-from flux.memory.experience import Experience, ExperienceRecorder, GeneralizedRule
 from flux.memory.bandit import MutationBandit, StrategyStats
+from flux.memory.experience import Experience, ExperienceRecorder, GeneralizedRule
 from flux.memory.learning import LearningRateAdapter, LearningState
-
+from flux.memory.store import MemoryEntry, MemoryStore
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -830,7 +829,7 @@ class TestBanditDistribution:
     def test_get_distribution(self, bandit):
         dist = bandit.get_distribution()
         assert len(dist) == 5
-        for name, (mean, std) in dist.items():
+        for _name, (mean, std) in dist.items():
             assert 0.0 <= mean <= 1.0
             assert std >= 0.0
 

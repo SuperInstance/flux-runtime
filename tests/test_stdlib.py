@@ -9,37 +9,57 @@ Covers:
 """
 
 import sys
+
 import pytest
 
 sys.path.insert(0, "src")
 
-from flux.fir.types import TypeContext, IntType, FloatType, BoolType, StringType
-from flux.fir.values import Value
 from flux.fir.builder import FIRBuilder
-from flux.fir.blocks import FIRModule, FIRFunction
-from flux.fir.instructions import Call, Unreachable, SetField, GetField, GetElem, SetElem, MemSet
-
-from flux.stdlib.intrinsics import (
-    IntrinsicFunction, PrintFn, AssertFn, PanicFn,
-    SizeofFn, AlignofFn, TypeOfFn, STDLIB_INTRINSICS,
+from flux.fir.instructions import Call, GetField, Unreachable
+from flux.fir.types import IntType, StringType, TypeContext
+from flux.fir.values import Value
+from flux.stdlib.agents import (
+    STDLIB_AGENTS,
+    AgentRegistryImpl,
+    MessageQueueImpl,
+    TaskSchedulerImpl,
 )
 from flux.stdlib.collections import (
-    CollectionImpl, ListImpl, MapImpl, SetImpl, QueueImpl, StackImpl,
     STDLIB_COLLECTIONS,
+    ListImpl,
+    MapImpl,
+    QueueImpl,
+    SetImpl,
+    StackImpl,
+)
+from flux.stdlib.intrinsics import (
+    STDLIB_INTRINSICS,
+    AlignofFn,
+    AssertFn,
+    PanicFn,
+    PrintFn,
+    SizeofFn,
+    TypeOfFn,
 )
 from flux.stdlib.math import (
-    MathFunction, MinFn, MaxFn, AbsFn, ClampFn, LerpFn, SqrtFn,
-    STDLIB_MATH, emit_lerp_instructions,
+    STDLIB_MATH,
+    AbsFn,
+    ClampFn,
+    LerpFn,
+    MaxFn,
+    MinFn,
+    SqrtFn,
+    emit_lerp_instructions,
 )
 from flux.stdlib.strings import (
-    StringFunction, ConcatFn, SubstringFn, SplitFn, JoinFn,
-    LengthFn, FormatFn, STDLIB_STRINGS,
+    STDLIB_STRINGS,
+    ConcatFn,
+    FormatFn,
+    JoinFn,
+    LengthFn,
+    SplitFn,
+    SubstringFn,
 )
-from flux.stdlib.agents import (
-    AgentFunction, AgentRegistryImpl, MessageQueueImpl, TaskSchedulerImpl,
-    STDLIB_AGENTS,
-)
-
 
 # ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -71,7 +91,7 @@ class TestIntrinsics:
 
     def test_print_emits_call(self):
         """PrintFn emits a call instruction to flux.print."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         val = Value(id=0, name="x", type=i32)
 
@@ -85,14 +105,14 @@ class TestIntrinsics:
 
     def test_print_requires_argument(self):
         """PrintFn raises ValueError with no arguments."""
-        builder, mod, func = make_builder()
+        builder, _, _ = make_builder()
         with pytest.raises(ValueError, match="at least 1 argument"):
             PrintFn().emit(builder, [])
 
     def test_assert_emits_call(self):
         """AssertFn emits a call instruction to flux.assert."""
-        builder, mod, func = make_builder()
-        i32 = builder._ctx.get_int(32)
+        builder, _, func = make_builder()
+        builder._ctx.get_int(32)
         bool_t = builder._ctx.get_bool()
         cond = Value(id=0, name="cond", type=bool_t)
 
@@ -105,13 +125,13 @@ class TestIntrinsics:
 
     def test_assert_requires_condition(self):
         """AssertFn raises ValueError with no arguments."""
-        builder, mod, func = make_builder()
+        builder, _, _ = make_builder()
         with pytest.raises(ValueError, match="condition"):
             AssertFn().emit(builder, [])
 
     def test_panic_emits_call_and_unreachable(self):
         """PanicFn emits a call followed by unreachable."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         msg = Value(id=0, name="msg", type=string_t)
 
@@ -125,7 +145,7 @@ class TestIntrinsics:
 
     def test_panic_without_arg(self):
         """PanicFn works without arguments (uses default message)."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
 
         PanicFn().emit(builder, [])
 
@@ -136,7 +156,7 @@ class TestIntrinsics:
 
     def test_sizeof_emits_call(self):
         """SizeofFn emits a call to flux.sizeof."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         val = Value(id=0, name="x", type=i32)
 
@@ -149,7 +169,7 @@ class TestIntrinsics:
 
     def test_alignof_emits_call(self):
         """AlignofFn emits a call to flux.alignof."""
-        builder, mod, func = make_builder()
+        builder, _, _ = make_builder()
         i32 = builder._ctx.get_int(32)
         val = Value(id=0, name="x", type=i32)
 
@@ -160,7 +180,7 @@ class TestIntrinsics:
 
     def test_type_of_emits_call(self):
         """TypeOfFn emits a call to flux.type_of returning StringType."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         val = Value(id=0, name="x", type=i32)
 
@@ -173,7 +193,7 @@ class TestIntrinsics:
 
     def test_type_of_requires_argument(self):
         """TypeOfFn raises ValueError with no arguments."""
-        builder, mod, func = make_builder()
+        builder, _, _ = make_builder()
         with pytest.raises(ValueError, match="value"):
             TypeOfFn().emit(builder, [])
 
@@ -254,7 +274,7 @@ class TestCollections:
 
     def test_list_alloc_emits_alloca_and_memset(self):
         """ListImpl.emit_alloc emits alloca + memset instructions."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         cap = Value(id=10, name="cap", type=i32)
 
@@ -271,7 +291,7 @@ class TestCollections:
 
     def test_queue_alloc_emits_memset(self):
         """QueueImpl.emit_alloc emits alloca + memset with correct size."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         cap = Value(id=10, name="cap", type=i32)
 
@@ -286,7 +306,7 @@ class TestCollections:
 
     def test_list_len_emits_getfield(self):
         """ListImpl.emit_len emits a getfield instruction for the len field."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         ctx = builder._ctx
         impl = ListImpl()
         struct_t = impl.get_struct_type(ctx)
@@ -302,7 +322,7 @@ class TestCollections:
 
     def test_map_push_emits_call(self):
         """MapImpl.emit_push emits a runtime call."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         ctx = builder._ctx
         impl = MapImpl()
         struct_t = impl.get_struct_type(ctx)
@@ -316,7 +336,7 @@ class TestCollections:
 
     def test_queue_push_emits_call(self):
         """QueueImpl.emit_push emits a runtime call."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         ctx = builder._ctx
         impl = QueueImpl()
         struct_t = impl.get_struct_type(ctx)
@@ -330,7 +350,7 @@ class TestCollections:
 
     def test_stack_pop_emits_call(self):
         """StackImpl.emit_pop emits a runtime call and returns a value."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         ctx = builder._ctx
         impl = StackImpl()
         struct_t = impl.get_struct_type(ctx)
@@ -344,7 +364,7 @@ class TestCollections:
 
     def test_set_get_emits_call(self):
         """SetImpl.emit_get emits a contains check call."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         ctx = builder._ctx
         impl = SetImpl()
         struct_t = impl.get_struct_type(ctx)
@@ -373,7 +393,7 @@ class TestMath:
 
     def test_min_emits_call(self):
         """MinFn emits a call to flux.min."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         a = Value(id=0, name="a", type=i32)
         b = Value(id=1, name="b", type=i32)
@@ -387,13 +407,13 @@ class TestMath:
 
     def test_min_requires_two_args(self):
         """MinFn raises ValueError with less than 2 arguments."""
-        builder, mod, func = make_builder()
+        builder, _, _ = make_builder()
         with pytest.raises(ValueError, match="2 arguments"):
             MinFn().emit(builder, [])
 
     def test_max_emits_call(self):
         """MaxFn emits a call to flux.max."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         a = Value(id=0, name="a", type=i32)
         b = Value(id=1, name="b", type=i32)
@@ -406,7 +426,7 @@ class TestMath:
 
     def test_abs_emits_call(self):
         """AbsFn emits a call to flux.abs."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         x = Value(id=0, name="x", type=i32)
 
@@ -419,7 +439,7 @@ class TestMath:
 
     def test_clamp_emits_call(self):
         """ClampFn emits a call to flux.clamp with 3 args."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         x = Value(id=0, name="x", type=i32)
         lo = Value(id=1, name="lo", type=i32)
@@ -436,7 +456,7 @@ class TestMath:
 
     def test_lerp_emits_call(self):
         """LerpFn emits a call to flux.lerp with 3 args."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         a = Value(id=0, name="a", type=i32)
         b = Value(id=1, name="b", type=i32)
@@ -450,7 +470,7 @@ class TestMath:
 
     def test_sqrt_emits_call(self):
         """SqrtFn emits a call to flux.sqrt."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         x = Value(id=0, name="x", type=i32)
 
@@ -463,7 +483,7 @@ class TestMath:
 
     def test_emit_lerp_instructions(self):
         """emit_lerp_instructions produces correct FIR instruction sequence."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
         a = Value(id=0, name="a", type=i32)
         b = Value(id=1, name="b", type=i32)
@@ -502,7 +522,7 @@ class TestStrings:
 
     def test_concat_emits_call(self):
         """ConcatFn emits a call to flux.str_concat returning StringType."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         a = Value(id=0, name="a", type=string_t)
         b = Value(id=1, name="b", type=string_t)
@@ -516,13 +536,13 @@ class TestStrings:
 
     def test_concat_requires_two_args(self):
         """ConcatFn raises ValueError with less than 2 arguments."""
-        builder, mod, func = make_builder()
+        builder, _, _ = make_builder()
         with pytest.raises(ValueError, match="2 string"):
             ConcatFn().emit(builder, [])
 
     def test_substring_emits_call(self):
         """SubstringFn emits a call with 3 arguments."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         i32 = builder._ctx.get_int(32)
         s = Value(id=0, name="s", type=string_t)
@@ -538,7 +558,7 @@ class TestStrings:
 
     def test_split_emits_call(self):
         """SplitFn emits a call to flux.str_split."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         s = Value(id=0, name="s", type=string_t)
         delim = Value(id=1, name="delim", type=string_t)
@@ -551,7 +571,7 @@ class TestStrings:
 
     def test_join_emits_call(self):
         """JoinFn emits a call to flux.str_join."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         parts = Value(id=0, name="parts", type=string_t)
         sep = Value(id=1, name="sep", type=string_t)
@@ -564,7 +584,7 @@ class TestStrings:
 
     def test_length_emits_call(self):
         """LengthFn emits a call to flux.str_length returning i32."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         s = Value(id=0, name="s", type=string_t)
 
@@ -578,7 +598,7 @@ class TestStrings:
 
     def test_format_emits_call(self):
         """FormatFn emits a call to flux.str_format."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         template = Value(id=0, name="tmpl", type=string_t)
 
@@ -622,7 +642,7 @@ class TestAgents:
 
     def test_agent_registry_register_emits_call(self):
         """AgentRegistryImpl.emit_register emits a call to flux.agent_register."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         name = Value(id=0, name="name", type=string_t)
 
@@ -635,7 +655,7 @@ class TestAgents:
 
     def test_agent_registry_unregister_emits_call(self):
         """AgentRegistryImpl.emit_unregister emits a void call."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         name = Value(id=0, name="name", type=string_t)
 
@@ -647,7 +667,7 @@ class TestAgents:
 
     def test_agent_registry_list_emits_call(self):
         """AgentRegistryImpl.emit_list emits a call returning a list ref."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
 
         impl = AgentRegistryImpl()
         result = impl.emit_list(builder)
@@ -658,7 +678,7 @@ class TestAgents:
 
     def test_agent_registry_count_emits_call(self):
         """AgentRegistryImpl.emit_count emits a call returning i32."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
 
         impl = AgentRegistryImpl()
         result = impl.emit_count(builder)
@@ -670,7 +690,7 @@ class TestAgents:
 
     def test_message_queue_send_emits_call(self):
         """MessageQueueImpl.emit_send emits a call to flux.mq_send."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         target = Value(id=0, name="target", type=string_t)
         message = Value(id=1, name="msg", type=string_t)
@@ -684,7 +704,7 @@ class TestAgents:
 
     def test_message_queue_send_with_priority(self):
         """MessageQueueImpl.emit_send includes priority when provided."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         i32 = builder._ctx.get_int(32)
         target = Value(id=0, name="target", type=string_t)
@@ -700,7 +720,7 @@ class TestAgents:
 
     def test_message_queue_receive_emits_call(self):
         """MessageQueueImpl.emit_receive emits a call to flux.mq_receive."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
 
         impl = MessageQueueImpl()
         result = impl.emit_receive(builder)
@@ -711,7 +731,7 @@ class TestAgents:
 
     def test_message_queue_drain_emits_call(self):
         """MessageQueueImpl.emit_drain emits a call to flux.mq_drain."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
 
         impl = MessageQueueImpl()
         result = impl.emit_drain(builder)
@@ -722,7 +742,7 @@ class TestAgents:
 
     def test_task_scheduler_schedule_emits_call(self):
         """TaskSchedulerImpl.emit_schedule emits a call to flux.task_schedule."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         string_t = builder._ctx.get_string()
         agent_name = Value(id=0, name="agent", type=string_t)
         task_data = Value(id=1, name="data", type=string_t)
@@ -736,7 +756,7 @@ class TestAgents:
 
     def test_task_scheduler_cancel_emits_call(self):
         """TaskSchedulerImpl.emit_cancel emits a call to flux.task_cancel."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i64 = builder._ctx.get_int(64)
         task_id = Value(id=0, name="task_id", type=i64)
 
@@ -749,7 +769,7 @@ class TestAgents:
 
     def test_task_scheduler_status_emits_call(self):
         """TaskSchedulerImpl.emit_status emits a call to flux.task_status."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i64 = builder._ctx.get_int(64)
         task_id = Value(id=0, name="task_id", type=i64)
 
@@ -762,7 +782,7 @@ class TestAgents:
 
     def test_task_scheduler_wait_with_timeout(self):
         """TaskSchedulerImpl.emit_wait includes timeout when provided."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i64 = builder._ctx.get_int(64)
         i32 = builder._ctx.get_int(32)
         task_id = Value(id=0, name="task_id", type=i64)
@@ -777,7 +797,7 @@ class TestAgents:
 
     def test_task_scheduler_pending_count_emits_call(self):
         """TaskSchedulerImpl.emit_pending_count emits a call."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
 
         impl = TaskSchedulerImpl()
         result = impl.emit_pending_count(builder)
@@ -797,9 +817,9 @@ class TestStdlibIntegration:
 
     def test_multiple_stdlib_calls_in_sequence(self):
         """Multiple stdlib functions can be emitted in sequence."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         i32 = builder._ctx.get_int(32)
-        f32 = builder._ctx.get_float(32)
+        builder._ctx.get_float(32)
         string_t = builder._ctx.get_string()
 
         x = Value(id=0, name="x", type=i32)
@@ -827,7 +847,7 @@ class TestStdlibIntegration:
 
     def test_list_then_print_pattern(self):
         """Common pattern: allocate list, push items, print length."""
-        builder, mod, func = make_builder()
+        builder, _, func = make_builder()
         ctx = builder._ctx
         i32 = ctx.get_int(32)
 

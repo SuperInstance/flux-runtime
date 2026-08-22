@@ -1,15 +1,15 @@
-"""Bytecode Encoder — encodes FIRModule into FLUX binary bytecode format.
+"""Bytecode Encoder - encodes FIRModule into FLUX binary bytecode format.
 
 Binary layout:
   [Header 16B][Type Table][Name Pool][Function Table][Code Section]
 
 Header (16 bytes):
   magic:    b'FLUX'         (4 bytes)
-  version:  uint16 LE        (2 bytes)  — always 1
-  flags:    uint16 LE        (2 bytes)  — reserved, 0
-  n_funcs:  uint16 LE        (2 bytes)  — number of functions
-  type_off: uint32 LE        (4 bytes)  — byte offset to type table
-  code_off: uint32 LE        (4 bytes)  — byte offset to code section
+  version:  uint16 LE        (2 bytes)  - always 1
+  flags:    uint16 LE        (2 bytes)  - reserved, 0
+  n_funcs:  uint16 LE        (2 bytes)  - number of functions
+  type_off: uint32 LE        (4 bytes)  - byte offset to type table
+  code_off: uint32 LE        (4 bytes)  - byte offset to code section
 
 Instruction encoding (variable length, little-endian):
   Format A (1B):  [opcode]
@@ -25,13 +25,13 @@ from __future__ import annotations
 import struct
 from typing import TYPE_CHECKING
 
-from .opcodes import Op
 from ..fir.values import Value
+from .opcodes import Op
 
 if TYPE_CHECKING:
-    from ..fir.blocks import FIRModule, FIRFunction
+    from ..fir.blocks import FIRFunction, FIRModule
     from ..fir.instructions import Instruction
-    from ..fir.types import TypeContext, FIRType
+    from ..fir.types import FIRType, TypeContext
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
@@ -86,7 +86,7 @@ _CONV = {"itrunc": Op.CAST, "zext": Op.CAST, "sext": Op.CAST,
 class BytecodeEncoder:
     """Encodes a FIRModule into FLUX bytecode bytes."""
 
-    def encode(self, module: "FIRModule") -> bytes:
+    def encode(self, module: FIRModule) -> bytes:
         """Encode a FIRModule to FLUX bytecode bytes."""
         # ── 1. Build name pool (null-terminated UTF-8 strings) ────────────
         name_pool = bytearray()
@@ -112,7 +112,7 @@ class BytecodeEncoder:
         # ── 4. Compute section offsets ───────────────────────────────────
         type_off = HEADER_SIZE
         func_table_off = type_off + len(type_table) + len(name_pool)
-        code_off = func_table_off + len(func_entries) * 12  # 3 × u32
+        code_off = func_table_off + len(func_entries) * 12  # 3 x u32
 
         # ── 5. Assemble header (18 bytes) ───────────────────────────────
         header = struct.pack(
@@ -130,7 +130,7 @@ class BytecodeEncoder:
 
     # ── Type table ───────────────────────────────────────────────────────
 
-    def _encode_type_table(self, type_ctx: "TypeContext") -> bytes:
+    def _encode_type_table(self, type_ctx: TypeContext) -> bytes:
         """Serialize all interned types for validation."""
         buf = bytearray()
         types_list = list(type_ctx._types.values())
@@ -139,12 +139,24 @@ class BytecodeEncoder:
             buf.extend(self._encode_type(t))
         return bytes(buf)
 
-    def _encode_type(self, t: "FIRType") -> bytes:
+    def _encode_type(self, t: FIRType) -> bytes:
         """Encode a single FIRType to bytes."""
         from ..fir.types import (
-            IntType, FloatType, BoolType, UnitType, StringType,
-            RefType, ArrayType, VectorType, FuncType, StructType, EnumType,
-            RegionType, CapabilityType, AgentType, TrustType,
+            AgentType,
+            ArrayType,
+            BoolType,
+            CapabilityType,
+            EnumType,
+            FloatType,
+            FuncType,
+            IntType,
+            RefType,
+            RegionType,
+            StringType,
+            StructType,
+            TrustType,
+            UnitType,
+            VectorType,
         )
         buf = bytearray()
 
@@ -225,7 +237,7 @@ class BytecodeEncoder:
 
     # ── Function ─────────────────────────────────────────────────────────
 
-    def _encode_function(self, func: "FIRFunction") -> bytes:
+    def _encode_function(self, func: FIRFunction) -> bytes:
         """Encode all blocks of a FIRFunction into bytecode."""
         buf = bytearray()
 
@@ -292,7 +304,7 @@ class BytecodeEncoder:
 
     # ── Instruction encoding ─────────────────────────────────────────────
 
-    def _encode_instruction(self, instr: "Instruction", instr_to_result: dict[object, int] = None) -> bytes:
+    def _encode_instruction(self, instr: Instruction, instr_to_result: dict[object, int] | None = None) -> bytes:
         """Encode one FIR instruction to bytecode."""
         op_name = instr.opcode
 
@@ -431,7 +443,7 @@ class BytecodeEncoder:
 
         # ── A2A: caprequire (Format G) ───────────────────────────────────
         if op_name == "caprequire":
-            cap_str = f"{instr.capability}:{instr.resource}".encode("utf-8")
+            cap_str = f"{instr.capability}:{instr.resource}".encode()
             data = struct.pack("<B", self._vid(instr.cap)) + cap_str
             return struct.pack("<BH", Op.CAP_REQUIRE, len(data)) + data
 

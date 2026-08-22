@@ -21,39 +21,39 @@ from .engine import (
     FlywheelPhase,
 )
 from .hypothesis import (
-    Hypothesis,
-    ExperimentResult,
     ExperimentOutcome,
-    ObservationData,
-    LearnedInsights,
+    ExperimentResult,
     FlywheelRecord,
     FlywheelReport,
+    Hypothesis,
     IntegrationReport,
+    LearnedInsights,
+    ObservationData,
 )
 from .knowledge import (
-    KnowledgeBase,
     GeneralizedRule,
+    KnowledgeBase,
 )
 from .metrics import (
     FlywheelMetrics,
 )
 
 __all__ = [
+    "ExperimentOutcome",
+    "ExperimentResult",
     # Engine
     "FlywheelEngine",
+    # Metrics
+    "FlywheelMetrics",
     "FlywheelPhase",
-    # Hypothesis & Results
-    "Hypothesis",
-    "ExperimentResult",
-    "ExperimentOutcome",
-    "ObservationData",
-    "LearnedInsights",
     "FlywheelRecord",
     "FlywheelReport",
+    "GeneralizedRule",
+    # Hypothesis & Results
+    "Hypothesis",
     "IntegrationReport",
     # Knowledge
     "KnowledgeBase",
-    "GeneralizedRule",
-    # Metrics
-    "FlywheelMetrics",
+    "LearnedInsights",
+    "ObservationData",
 ]

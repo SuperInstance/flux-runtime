@@ -1,15 +1,19 @@
 """Tests for GhostLoader — the Ghost Vessel Loader."""
 
-import sys
-import os
-import time
 import json
+import os
+import sys
 import tempfile
+import time
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from flux.open_interp.ghost_loader import (
-    GhostEntry, GhostLoader, ResurrectionContext, VocabEntry,
-    create_tombstone
+    GhostEntry,
+    GhostLoader,
+    ResurrectionContext,
+    VocabEntry,
+    create_tombstone,
 )
 
 
@@ -211,7 +215,7 @@ class TestGhostLoaderBasics:
         try:
             self.loader.save_tombstones(temp_path, ghosts)
 
-            with open(temp_path, 'r') as f:
+            with open(temp_path) as f:
                 data = json.load(f)
 
             assert 'version' in data
@@ -644,7 +648,7 @@ class TestResurrectionContext:
 
     def test_resurrection_context_default_timestamp(self):
         """Test that resurrection context gets default timestamp."""
-        context = ResurrectionContext()
+        ResurrectionContext()
         before = time.time()
         time.sleep(0.01)
         context2 = ResurrectionContext()

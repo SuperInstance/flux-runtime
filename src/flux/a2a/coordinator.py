@@ -1,4 +1,4 @@
-"""Agent Coordinator — Orchestrates multiple agents within a single VM.
+"""Agent Coordinator - Orchestrates multiple agents within a single VM.
 
 Ties together :class:`LocalTransport` for message delivery and
 :class:`TrustEngine` for trust-gated communication.  Agents are
@@ -17,9 +17,8 @@ Message flow:
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
-
 import uuid
+from typing import Any
 
 from flux.a2a.messages import A2AMessage
 from flux.a2a.transport import LocalTransport
@@ -36,7 +35,7 @@ class AgentCoordinator:
     """
 
     def __init__(self, trust_threshold: float = 0.3) -> None:
-        self._agents: Dict[str, Dict[str, Any]] = {}
+        self._agents: dict[str, dict[str, Any]] = {}
         self.trust: TrustEngine = TrustEngine()
         self.transport: LocalTransport = LocalTransport()
         self.trust_threshold: float = trust_threshold
@@ -83,7 +82,7 @@ class AgentCoordinator:
         msg_type: int,
         payload: bytes = b"",
         priority: int = 5,
-        in_reply_to: Optional[uuid.UUID] = None,
+        in_reply_to: uuid.UUID | None = None,
     ) -> bool:
         """Send an A2A message between registered agents.
 
@@ -97,11 +96,11 @@ class AgentCoordinator:
         receiver : str
             Name of the receiving agent.
         msg_type : int
-            A2A message type (0x60–0x7B).
+            A2A message type (0x60-0x7B).
         payload : bytes
             Application-level payload.
         priority : int
-            Delivery priority 0–15.
+            Delivery priority 0-15.
         in_reply_to : uuid.UUID, optional
             UUID this message is replying to.
 
@@ -139,7 +138,7 @@ class AgentCoordinator:
             self.trust.record_interaction(sender, receiver, True, 0.1)
         return delivered
 
-    def get_messages(self, agent_id: str) -> List[A2AMessage]:
+    def get_messages(self, agent_id: str) -> list[A2AMessage]:
         """Drain the mailbox for *agent_id* and return all pending messages."""
         info = self._agents.get(agent_id)
         if info is None:
@@ -155,11 +154,11 @@ class AgentCoordinator:
 
     # ── Queries ───────────────────────────────────────────────────────────
 
-    def get_agent_uuid(self, agent_name: str) -> Optional[uuid.UUID]:
+    def get_agent_uuid(self, agent_name: str) -> uuid.UUID | None:
         """Return the UUID for a named agent, or ``None``."""
         info = self._agents.get(agent_name)
         return info["uuid"] if info else None
 
-    def registered_agents(self) -> List[str]:
+    def registered_agents(self) -> list[str]:
         """Return a list of all registered agent names."""
         return list(self._agents.keys())

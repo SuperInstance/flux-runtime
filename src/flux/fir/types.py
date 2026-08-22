@@ -1,9 +1,8 @@
 """FIR Type System — immutable, hashable types with interning via TypeContext."""
 
 from __future__ import annotations
-from dataclasses import dataclass, field
-from typing import Optional
 
+from dataclasses import dataclass
 
 # ── Base ────────────────────────────────────────────────────────────────────
 

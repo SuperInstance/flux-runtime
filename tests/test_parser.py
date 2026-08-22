@@ -6,8 +6,8 @@ Run via:  python -m pytest tests/test_parser.py -v
 
 from __future__ import annotations
 
-import sys
 import os
+import sys
 
 # Ensure src/ is on the path so we can import `flux`
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -21,12 +21,10 @@ from flux.parser.nodes import (
     FluxModule,
     Heading,
     ListBlock,
-    ListItem,
     NativeBlock,
     Paragraph,
     SourceSpan,
 )
-
 
 # ---------------------------------------------------------------------------
 # Sample FLUX.MD document used across several tests

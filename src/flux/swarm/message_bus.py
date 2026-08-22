@@ -1,4 +1,4 @@
-"""Inter-Agent Message Bus — routes messages between agents in the swarm.
+"""Inter-Agent Message Bus - routes messages between agents in the swarm.
 
 Provides a lightweight in-process message bus with:
 - Direct point-to-point messaging
@@ -13,8 +13,6 @@ import time
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Optional
-
 
 # ── Message Types ─────────────────────────────────────────────────────────
 
@@ -30,11 +28,11 @@ class AgentMessage:
         payload: Arbitrary message payload (dict).
         conversation_id: UUID grouping related messages.
         timestamp: Unix timestamp when the message was created.
-        priority: Delivery priority (0–15, higher = more urgent).
+        priority: Delivery priority (0-15, higher = more urgent).
     """
     sender: str
-    receiver: Optional[str] = None
-    topic: Optional[str] = None
+    receiver: str | None = None
+    topic: str | None = None
     msg_type: str = "request"
     payload: dict = field(default_factory=dict)
     conversation_id: str = ""
@@ -80,8 +78,8 @@ class MessageBus:
     """Routes messages between agents in the swarm.
 
     Supports three communication patterns:
-    - **Direct**: send(from_id, to_id, payload) — point-to-point
-    - **Broadcast**: publish(from_id, topic, payload) — one-to-many via topics
+    - **Direct**: send(from_id, to_id, payload) - point-to-point
+    - **Broadcast**: publish(from_id, topic, payload) - one-to-many via topics
     - **Scatter**: send to multiple specific targets
 
     Each agent has an asyncio.Queue for message delivery.
@@ -130,7 +128,7 @@ class MessageBus:
             to_id: Receiver agent ID.
             payload: Message payload dictionary.
             msg_type: Type of message ("request", "response", "event").
-            priority: Delivery priority 0–15.
+            priority: Delivery priority 0-15.
 
         Returns:
             True if delivered, False if receiver not registered.

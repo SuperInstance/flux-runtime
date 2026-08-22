@@ -9,8 +9,6 @@ region's raw bytearray.
 from __future__ import annotations
 
 import struct
-from typing import Optional
-
 
 # ── Memory Region ──────────────────────────────────────────────────────────
 
@@ -18,7 +16,7 @@ from typing import Optional
 class MemoryRegion:
     """A contiguous block of memory with ownership semantics."""
 
-    __slots__ = ("name", "data", "size", "owner", "borrowers")
+    __slots__ = ("borrowers", "data", "name", "owner", "size")
 
     def __init__(self, name: str, size: int, owner: str = "") -> None:
         self.name = name

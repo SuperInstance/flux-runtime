@@ -1,4 +1,4 @@
-"""Pattern Mining — discovers hot execution patterns that could become tiles.
+"""Pattern Mining - discovers hot execution patterns that could become tiles.
 
 Like a music producer finding the perfect sample, the PatternMiner watches
 execution traces to find frequently-occurring subsequences of module calls,
@@ -10,16 +10,15 @@ from __future__ import annotations
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Optional, Any
+from typing import Any
 
 from flux.adaptive.profiler import AdaptiveProfiler, HeatLevel
-
 
 # ── Trace Types ───────────────────────────────────────────────────────────────
 
 @dataclass
 class ExecutionTrace:
-    """A single execution trace — a sequence of module calls."""
+    """A single execution trace - a sequence of module calls."""
     module_calls: list[str] = field(default_factory=list)
     timestamp: float = 0.0
     total_duration_ns: int = 0
@@ -44,7 +43,7 @@ class DiscoveredPattern:
     total_occurrences: int = 0  # total times any subsequence occurs
     avg_duration_ns: float = 0.0
     estimated_speedup: float = 1.0
-    confidence: float = 0.0     # 0.0 to 1.0 — confidence in the pattern
+    confidence: float = 0.0     # 0.0 to 1.0 - confidence in the pattern
     timestamp: float = 0.0
 
     def __post_init__(self):
@@ -66,7 +65,7 @@ class DiscoveredPattern:
 
     @property
     def benefit_score(self) -> float:
-        """Overall benefit score: frequency × speedup × confidence."""
+        """Overall benefit score: frequency x speedup x confidence."""
         return self.frequency * self.estimated_speedup * self.confidence
 
     def __repr__(self) -> str:
@@ -106,7 +105,7 @@ class PatternMiner:
     1. Find all individual module calls and their frequencies
     2. Extend to pairs, triples, etc.
     3. Prune below min_frequency
-    4. Score each pattern by: frequency × estimated_speedup_if_fused
+    4. Score each pattern by: frequency x estimated_speedup_if_fused
 
     Args:
         profiler: The AdaptiveProfiler providing execution data.
@@ -177,7 +176,7 @@ class PatternMiner:
         1. Find all individual module calls and their frequencies
         2. Extend to pairs, triples, etc.
         3. Prune below min_frequency
-        4. Score each pattern by: frequency × estimated_speedup_if_fused
+        4. Score each pattern by: frequency x estimated_speedup_if_fused
 
         Args:
             min_frequency: Minimum number of occurrences to be considered.
