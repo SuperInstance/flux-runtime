@@ -5,6 +5,27 @@ All notable changes to FLUX will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **Open interpreter (`flux run-md`)** — four parser bugs reported by the DSH
+  embassy (see `flux-dsh-plugin/docs/SEAM-REPORT.md` §4.6):
+  - Markdown fences with non-FLUX languages (e.g. ```` ```python ````) are no
+    longer fed to the natural-language parser, which previously mangled
+    Python `return` into an `'ETURN'` parse error; `_parse_register` now
+    accepts only real register names (R0–R15).
+  - Bare assembly text (no fence) now compiles to its real opcodes instead of
+    every mnemonic silently becoming `ISUB`.
+  - Input with no recognizable FLUX instructions (garbage) now raises a clear
+    parse error instead of succeeding as a no-op (`ISUB R0,R0,R0; HALT`).
+  - `MOVI` immediates beyond ±32767 now encode as a register-safe 32-bit load
+    sequence, so e.g. `factorial of 5000000` parses; values beyond 32 bits
+    raise a clear range error instead of truncating.
+  - Assembly parser extended to the full System A integer/control/memory
+    format set (CMP, JG/JE/JNE/JL/JGE/JLE, CALL, IMOD/IREM, bitwise/shift,
+    INEG/INOT, …) so known opcodes are never silently dropped.
+
 ## [0.1.0] - 2026-04-10
 
 Initial release of FLUX — a self-assembling, self-improving bytecode runtime
